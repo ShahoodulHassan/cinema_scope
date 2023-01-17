@@ -1,23 +1,19 @@
-import 'package:cinema_scope/architecture/search_view_model.dart';
 import 'package:cinema_scope/pages/home_page.dart';
 import 'package:cinema_scope/pages/search_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 
 import 'architecture/config_view_model.dart';
-import 'architecture/hero_view_model.dart';
-import 'architecture/home_view_model.dart';
 
 void main() {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => ConfigViewModel()),
-    ChangeNotifierProvider(create: (_) => HeroViewModel()),
-  ], child: MyApp()));
+    // ChangeNotifierProvider(create: (_) => HeroViewModel()),
+  ], child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -102,11 +98,6 @@ class _MyHomePageState extends State<MyHomePage> {
       );
 
   getHomePageRoute() => MaterialPageRoute(
-        builder: (_) => MultiProvider(
-          providers: [
-            ChangeNotifierProvider(create: (_) => HomeViewModel()),
-          ],
-          child: const HomePage(),
-        ),
+        builder: (_) => HomePage(),
       );
 }

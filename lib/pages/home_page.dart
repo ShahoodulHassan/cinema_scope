@@ -1,6 +1,4 @@
 import 'package:cinema_scope/architecture/home_view_model.dart';
-import 'package:cinema_scope/models/search.dart';
-import 'package:cinema_scope/pages/movie_page.dart';
 import 'package:cinema_scope/pages/search_page.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
@@ -10,17 +8,29 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
-import '../architecture/config_view_model.dart';
 import '../constants.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class HomePage extends MultiProvider {
 
-  @override
-  State<HomePage> createState() => _HomePageState();
+ HomePage({super.key}) : super(
+    providers: [
+      ChangeNotifierProvider(create: (_) => HomeViewModel()),
+      // ChangeNotifierProvider(create: (_) => HeroViewModel()),
+    ],
+   builder: (_, __) => const _HomePageChild(),
+  );
+
 }
 
-class _HomePageState extends State<HomePage> with GenericFunctions, Utilities {
+
+class _HomePageChild extends StatefulWidget {
+  const _HomePageChild({Key? key}) : super(key: key);
+
+  @override
+  State<_HomePageChild> createState() => _HomePageChildState();
+}
+
+class _HomePageChildState extends State<_HomePageChild> with GenericFunctions, Utilities {
 
   @override
   void initState() {

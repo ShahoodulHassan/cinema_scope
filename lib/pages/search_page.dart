@@ -10,11 +10,15 @@ import '../architecture/config_view_model.dart';
 import '../constants.dart';
 import '../models/search.dart';
 
-class SearchPage extends ChangeNotifierProvider<SearchViewModel> {
+class SearchPage extends MultiProvider {
   SearchPage({super.key})
       : super(
-          create: (_) => SearchViewModel(),
-          child: const _SearchPageChild(),
+          providers: [
+            ChangeNotifierProvider(create: (_) => SearchViewModel()),
+            // ChangeNotifierProvider(create: (_) => HeroViewModel()),
+          ],
+          builder: (_, __) => const _SearchPageChild(),
+          // child: const _SearchPageChild(),
         );
 }
 
@@ -29,6 +33,8 @@ class _SearchPageChildState extends State<_SearchPageChild>
     with GenericFunctions, Utilities {
   late final ConfigViewModel cvm;
   late final SearchViewModel svm;
+
+  Map<int, List<String?>> imageUrlToId = {};
 
   final TextEditingController _controller = TextEditingController();
   String lastQuery = '';
@@ -135,11 +141,18 @@ class _SearchPageChildState extends State<_SearchPageChild>
                 return ListTile(
                   onTap: () {
                     var id = movie.id;
+                    // context.read<HeroViewModel>().heroImageTag =
+                    //     'search-image-$id';
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) =>
-                            MoviePage(id: id, movie.movieTitle, null, null),
+                        builder: (_) => MoviePage(
+                          id: id,
+                          movie.movieTitle,
+                          imageUrlToId[id]?[0],
+                          imageUrlToId[id]?[1],
+                          'search-image-$id',
+                        ),
                       ),
                     );
                   },
@@ -192,23 +205,25 @@ class _SearchPageChildState extends State<_SearchPageChild>
     super.dispose();
   }
 
-  Widget getBackdropView(MovieResult? movie) {
-    String? url;
-    if (movie != null) {
-      if (movie.backdropPath != null) {
-        final cvm = context.read<ConfigViewModel>();
-        String base = cvm.apiConfig!.images.baseUrl;
-        String size = cvm.apiConfig!.images.backdropSizes[1];
-        url = '$base$size${movie.backdropPath}';
-      }
-      logIfDebug('url:$url');
-      return getImageView(url);
-    } else {
-      return const SizedBox.shrink();
+  Widget getBackdropView(MovieResult movie) {
+    String? imageUrl;
+    String? destImageUrl;
+    if (movie.backdropPath != null) {
+      final cvm = context.read<ConfigViewModel>();
+      String base = cvm.apiConfig!.images.baseUrl;
+      String size = cvm.apiConfig!.images.backdropSizes.first;
+      imageUrl = '$base$size${movie.backdropPath}';
+
+      /// Enable this size for best res images in MoviePage
+      size = cvm.apiConfig!.images.backdropSizes[2];
+      destImageUrl = '$base$size${movie.backdropPath}';
     }
+    imageUrlToId.putIfAbsent(movie.id, () => [imageUrl, destImageUrl]);
+    logIfDebug('url:$imageUrl');
+    return getImageView(imageUrl, movie.id);
   }
 
-  Widget getImageView(String? url) {
+  Widget getImageView(String? url, int id) {
     var child = url != null
         ? ClipRRect(
             borderRadius: BorderRadius.circular(4.0),
@@ -245,7 +260,10 @@ class _SearchPageChildState extends State<_SearchPageChild>
     return AspectRatio(
       aspectRatio: Constants.arBackdrop,
       // That's the actual aspect ratio of TMDB posters
-      child: child,
+      child: Hero(
+        tag: 'search-image-$id',
+        child: child,
+      ),
     );
   }
 }
@@ -363,7 +381,7 @@ class CountDelegate extends SliverPersistentHeaderDelegate
                   padding: const EdgeInsets.only(
                       top: 8, bottom: 8, right: 16.0, left: 16.0),
                   child: Text(
-                    'RESULTS ($count)',
+                    'RESULTS (${applyCommaAndRound(count.toDouble(), 0, true, false)})',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,

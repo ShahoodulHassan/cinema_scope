@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:cinema_scope/architecture/hero_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -234,8 +233,8 @@ class _HomeSectionState extends State<HomeSection>
             color: Colors.transparent,
             child: InkWell(
               onTap: () {
-                context.read<HeroViewModel>().heroImageTag =
-                    '${widget.sectionTitle}-${movie.id}';
+                // context.read<HeroViewModel>().heroImageTag =
+                //     '${widget.sectionTitle}-${movie.id}';
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -244,6 +243,7 @@ class _HomeSectionState extends State<HomeSection>
                       movie.movieTitle,
                       imageUrlToId[movie.id]?[0],
                       imageUrlToId[movie.id]?[1],
+                        '${widget.sectionTitle}-image-${movie.id}'
                     ),
                   ),
                 );
@@ -311,7 +311,7 @@ class _HomeSectionState extends State<HomeSection>
       imageUrl = '$base$size${movie.backdropPath}';
 
       /// If best res images are required, then enable this size definition
-      size = cvm.apiConfig!.images.backdropSizes.last;
+      size = cvm.apiConfig!.images.backdropSizes[2];
 
       destImageUrl = '$base$size${movie.backdropPath}';
     } else {
@@ -327,7 +327,7 @@ class _HomeSectionState extends State<HomeSection>
       }
     } else {
       if (movie.posterPath != null) {
-        size = cvm.apiConfig!.images.posterSizes[1];
+        size = cvm.apiConfig!.images.posterSizes[3];
         imageUrl = '$base$size${movie.posterPath}';
       }
     }
@@ -367,7 +367,7 @@ class _HomeSectionState extends State<HomeSection>
       aspectRatio:
           widget.isBigWidget ? Constants.arBackdrop : Constants.arPoster,
       // That's the actual aspect ratio of TMDB posters
-      child: Hero(tag: '${widget.sectionTitle}-${movie.id}', child: child),
+      child: Hero(tag: '${widget.sectionTitle}-image-${movie.id}', child: child),
     );
   }
 }

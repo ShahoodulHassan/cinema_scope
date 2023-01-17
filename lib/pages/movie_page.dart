@@ -1,4 +1,3 @@
-import 'package:cinema_scope/architecture/hero_view_model.dart';
 import 'package:cinema_scope/architecture/movie_view_model.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
@@ -13,21 +12,24 @@ import '../models/movie.dart';
 class MoviePage extends ChangeNotifierProvider<MovieViewModel> {
   // final String heroTag;
 
-  MoviePage(String title, String? sourceUrl, String? destUrl,
+  MoviePage(
+      String title, String? sourceUrl, String? destUrl, String heroImageTag,
       {super.key, required int id})
       : super(
             create: (_) => MovieViewModel(),
-            child: _MoviePageChild(id, title, sourceUrl, destUrl));
+            child:
+                _MoviePageChild(id, title, sourceUrl, destUrl, heroImageTag));
 }
 
 class _MoviePageChild extends StatefulWidget {
   final int id;
 
   // final String heroTag;
-  final String title;
+  final String title, heroImageTag;
   final String? sourceUrl, destUrl;
 
-  const _MoviePageChild(this.id, this.title, this.sourceUrl, this.destUrl,
+  const _MoviePageChild(
+      this.id, this.title, this.sourceUrl, this.destUrl, this.heroImageTag,
       /*this.heroTag, */ {Key? key})
       : super(key: key);
 
@@ -38,6 +40,10 @@ class _MoviePageChild extends StatefulWidget {
 class _MoviePageChildState extends State<_MoviePageChild>
     with GenericFunctions, Utilities {
   // late final MovieViewModel mvm;
+
+  late final String? sourceUrl = widget.sourceUrl;
+  late final String? destUrl = widget.destUrl;
+  late final String heroImageTag = widget.heroImageTag;
 
   @override
   void initState() {
@@ -67,50 +73,106 @@ class _MoviePageChildState extends State<_MoviePageChild>
             ),
           ),
           SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8, bottom: 4),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ImageView(
+                      widget.sourceUrl, widget.destUrl, widget.heroImageTag),
+                  // getImageView(movie),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text(
+                      widget.title,
+                      textAlign: TextAlign.start,
+                      maxLines: 2,
+                      style: const TextStyle(
+                        fontSize: 24.0,
+                        fontWeight: FontWeight.bold,
+                        height: 1.1,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
             child: Selector<MovieViewModel, Movie?>(
               selector: (_, mvm) => mvm.movie,
               builder: (_, movie, __) {
                 logIfDebug('builder called with movie:$movie');
-                return Padding(
-                  padding: const EdgeInsets.only(top: 8, bottom: 8),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      getImageView(movie),
-                      const SizedBox(height: 8),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text(
-                          widget.title,
-                          textAlign: TextAlign.start,
-                          maxLines: 2,
-                          style: const TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
-                            height: 1.1,
-                          ),
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text(
+                        getYearStringFromDate(movie?.releaseDate),
+                        textAlign: TextAlign.start,
+                        style: const TextStyle(
+                          fontSize: 16.0,
                         ),
                       ),
-                      const SizedBox(height: 4.0),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text(
-                          getYearStringFromDate(movie?.releaseDate),
-                          textAlign: TextAlign.start,
-                          style: const TextStyle(
-                            fontSize: 16.0,
-                          ),
-                        ),
-                      ),
-                      const ExpandableSynopsis(),
-                      getGenres(movie),
-                    ],
-                  ),
+                    ),
+                    const ExpandableSynopsis(),
+                    getGenres(movie),
+                  ],
                 );
               },
             ),
           ),
+          // SliverToBoxAdapter(
+          //   child: Selector<MovieViewModel, Movie?>(
+          //     selector: (_, mvm) => mvm.movie,
+          //     builder: (_, movie, __) {
+          //       logIfDebug('builder called with movie:$movie');
+          //       return Padding(
+          //         padding: const EdgeInsets.only(top: 8, bottom: 8),
+          //         child: Column(
+          //           mainAxisSize: MainAxisSize.min,
+          //           crossAxisAlignment: CrossAxisAlignment.start,
+          //           children: [
+          //             ImageView(widget.sourceUrl, widget.destUrl,
+          //                 widget.heroImageTag),
+          //             // getImageView(movie),
+          //             const SizedBox(height: 8),
+          //             Padding(
+          //               padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          //               child: Text(
+          //                 widget.title,
+          //                 textAlign: TextAlign.start,
+          //                 maxLines: 2,
+          //                 style: const TextStyle(
+          //                   fontSize: 24.0,
+          //                   fontWeight: FontWeight.bold,
+          //                   height: 1.1,
+          //                 ),
+          //               ),
+          //             ),
+          //             const SizedBox(height: 4.0),
+          //             Padding(
+          //               padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          //               child: Text(
+          //                 getYearStringFromDate(movie?.releaseDate),
+          //                 textAlign: TextAlign.start,
+          //                 style: const TextStyle(
+          //                   fontSize: 16.0,
+          //                 ),
+          //               ),
+          //             ),
+          //             const ExpandableSynopsis(),
+          //             getGenres(movie),
+          //           ],
+          //         ),
+          //       );
+          //     },
+          //   ),
+          // ),
         ],
       ),
     );
@@ -225,17 +287,18 @@ class _MoviePageChildState extends State<_MoviePageChild>
       if (widget.destUrl != null && widget.destUrl != widget.sourceUrl) {
         loadableUrl = widget.destUrl;
       }
-      logIfDebug(
-          'sourceUrl:${widget.sourceUrl}, destUrl:${widget.destUrl}, '
-              'loadableUrl:$loadableUrl');
+      logIfDebug('sourceUrl:${widget.sourceUrl}, destUrl:${widget.destUrl}, '
+          'loadableUrl:$loadableUrl');
       String sourcePath = widget.sourceUrl!.split("/").last;
       String destPath = loadableUrl!.split("/").last;
       if (loadableUrl != widget.sourceUrl) {
         child = FadeInImage(
           image: NetworkImage(loadableUrl),
           placeholder: NetworkImage(widget.sourceUrl!),
-          fadeOutDuration: Duration(milliseconds: sourcePath == destPath ? 1 : 300),
-          fadeInDuration: Duration(milliseconds: sourcePath == destPath ? 1 : 700),
+          fadeOutDuration:
+              Duration(milliseconds: sourcePath == destPath ? 1 : 300),
+          fadeInDuration:
+              Duration(milliseconds: sourcePath == destPath ? 1 : 700),
           imageErrorBuilder: (_, error, stacktrace) {
             logIfDebug('image load error:$stacktrace');
             return Image.asset('assets/images/placeholder.png');
@@ -257,7 +320,74 @@ class _MoviePageChildState extends State<_MoviePageChild>
       aspectRatio: Constants.arBackdrop,
       // That's the actual aspect ratio of TMDB posters
       child: Hero(
-        tag: context.read<HeroViewModel>().heroImageTag,
+        tag: widget.heroImageTag,
+        // flightShuttleBuilder: (a, b, c, d, e) {
+        //   return widget.sourceUrl != null
+        //       ? Image.network(widget.sourceUrl!, fit: BoxFit.fill)
+        //       : Padding(
+        //           padding: const EdgeInsets.all(24.0),
+        //           child: Image.asset(
+        //             'assets/images/placeholder.png',
+        //           ),
+        //         );
+        // },
+        child: child,
+      ),
+    );
+  }
+}
+
+class ImageView extends StatelessWidget with GenericFunctions {
+  final String? sourceUrl, destUrl;
+  final String heroImageTag;
+
+  const ImageView(this.sourceUrl, this.destUrl, this.heroImageTag, {Key? key})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    logIfDebug('build called');
+    String? loadableUrl;
+    Widget child = Image.asset('assets/images/placeholder.png');
+    if (sourceUrl != null) {
+      loadableUrl = sourceUrl;
+      if (destUrl != null && destUrl != sourceUrl) {
+        loadableUrl = destUrl;
+      }
+      logIfDebug('sourceUrl:${sourceUrl}, destUrl:${destUrl}, '
+          'loadableUrl:$loadableUrl');
+      String sourcePath = sourceUrl!.split("/").last;
+      String destPath = loadableUrl!.split("/").last;
+      if (loadableUrl != sourceUrl) {
+        child = FadeInImage(
+          image: NetworkImage(loadableUrl),
+          placeholder: NetworkImage(sourceUrl!),
+          fadeOutDuration:
+              Duration(milliseconds: sourcePath == destPath ? 1 : 300),
+          fadeInDuration:
+              Duration(milliseconds: sourcePath == destPath ? 1 : 700),
+          imageErrorBuilder: (_, error, stacktrace) {
+            logIfDebug('image load error:$stacktrace');
+            return Image.asset('assets/images/placeholder.png');
+          },
+          fit: BoxFit.fill,
+        );
+      } else {
+        child = Image.network(
+          loadableUrl,
+          errorBuilder: (_, error, stacktrace) {
+            logIfDebug('image load error:$stacktrace');
+            return Image.asset('assets/images/placeholder.png');
+          },
+          fit: BoxFit.fill,
+        );
+      }
+    }
+    return AspectRatio(
+      aspectRatio: Constants.arBackdrop,
+      // That's the actual aspect ratio of TMDB posters
+      child: Hero(
+        tag: heroImageTag,
         // flightShuttleBuilder: (a, b, c, d, e) {
         //   return widget.sourceUrl != null
         //       ? Image.network(widget.sourceUrl!, fit: BoxFit.fill)
