@@ -13,20 +13,21 @@ import '../models/movie.dart';
 class MoviePage extends ChangeNotifierProvider<MovieViewModel> {
   // final String heroTag;
 
-  MoviePage(/*this.heroTag, */ String? sourceUrl, String? destUrl,
+  MoviePage(String title, String? sourceUrl, String? destUrl,
       {super.key, required int id})
       : super(
             create: (_) => MovieViewModel(),
-            child: _MoviePageChild(id /*, heroTag*/, sourceUrl, destUrl));
+            child: _MoviePageChild(id, title, sourceUrl, destUrl));
 }
 
 class _MoviePageChild extends StatefulWidget {
   final int id;
 
   // final String heroTag;
+  final String title;
   final String? sourceUrl, destUrl;
 
-  const _MoviePageChild(this.id, this.sourceUrl, this.destUrl,
+  const _MoviePageChild(this.id, this.title, this.sourceUrl, this.destUrl,
       /*this.heroTag, */ {Key? key})
       : super(key: key);
 
@@ -56,12 +57,12 @@ class _MoviePageChildState extends State<_MoviePageChild>
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // getAppbarTitle('Search movies'),
-                Selector<MovieViewModel, String>(
-                  builder: (_, title, __) => Visibility(
-                      visible: title.isNotEmpty, child: getAppbarTitle(title)),
-                  selector: (_, mvm) => mvm.movie?.movieTitle ?? '',
-                ),
+                getAppbarTitle(widget.title),
+                // Selector<MovieViewModel, String>(
+                //   builder: (_, title, __) => Visibility(
+                //       visible: title.isNotEmpty, child: getAppbarTitle(title)),
+                //   selector: (_, mvm) => mvm.movie?.movieTitle ?? '',
+                // ),
               ],
             ),
           ),
@@ -77,12 +78,11 @@ class _MoviePageChildState extends State<_MoviePageChild>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       getImageView(movie),
-                      // getBackdropView(movie),
                       const SizedBox(height: 8),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Text(
-                          movie?.movieTitle ?? '',
+                          widget.title,
                           textAlign: TextAlign.start,
                           maxLines: 2,
                           style: const TextStyle(
@@ -162,26 +162,6 @@ class _MoviePageChildState extends State<_MoviePageChild>
     );
   }
 
-  // Widget getBackdropView(Movie? movie) {
-  //   final cvm = context.read<ConfigViewModel>();
-  //   String base = cvm.apiConfig!.images.baseUrl;
-  //   String size = cvm.apiConfig!.images.backdropSizes[1];
-  //   String url = '$base$size${widget.imageUrl}';
-  //   logIfDebug('first url:$url');
-  //   if (movie != null) {
-  //     if (movie.backdropPath != null) {
-  //       // size = cvm.apiConfig!.images.backdropSizes[1];
-  //       url = '$base$size${movie.backdropPath}';
-  //     } else if (movie.images.posters.isNotEmpty) {
-  //       var poster = movie.images.posters.first;
-  //       size = cvm.apiConfig!.images.posterSizes.last;
-  //       url = '$base$size${poster.filePath}';
-  //     }
-  //   }
-  //   logIfDebug('url:$url');
-  //   return getImageView(url: url);
-  // }
-
   String? getImageUrl(Movie? movie) {
     String? imageUrl;
     final cvm = context.read<ConfigViewModel>();
@@ -248,12 +228,14 @@ class _MoviePageChildState extends State<_MoviePageChild>
       logIfDebug(
           'sourceUrl:${widget.sourceUrl}, destUrl:${widget.destUrl}, '
               'loadableUrl:$loadableUrl');
-      if (widget.sourceUrl != loadableUrl) {
+      String sourcePath = widget.sourceUrl!.split("/").last;
+      String destPath = loadableUrl!.split("/").last;
+      if (loadableUrl != widget.sourceUrl) {
         child = FadeInImage(
-          image: NetworkImage(loadableUrl!),
+          image: NetworkImage(loadableUrl),
           placeholder: NetworkImage(widget.sourceUrl!),
-          // loadingBuilder: builder,
-          // frameBuilder: frameBuilder,
+          fadeOutDuration: Duration(milliseconds: sourcePath == destPath ? 1 : 300),
+          fadeInDuration: Duration(milliseconds: sourcePath == destPath ? 1 : 700),
           imageErrorBuilder: (_, error, stacktrace) {
             logIfDebug('image load error:$stacktrace');
             return Image.asset('assets/images/placeholder.png');
@@ -262,7 +244,7 @@ class _MoviePageChildState extends State<_MoviePageChild>
         );
       } else {
         child = Image.network(
-          loadableUrl!,
+          loadableUrl,
           errorBuilder: (_, error, stacktrace) {
             logIfDebug('image load error:$stacktrace');
             return Image.asset('assets/images/placeholder.png');

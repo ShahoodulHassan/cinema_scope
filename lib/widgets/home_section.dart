@@ -241,6 +241,7 @@ class _HomeSectionState extends State<HomeSection>
                   MaterialPageRoute(
                     builder: (_) => MoviePage(
                       id: movie.id,
+                      movie.movieTitle,
                       imageUrlToId[movie.id]?[0],
                       imageUrlToId[movie.id]?[1],
                     ),
@@ -307,7 +308,12 @@ class _HomeSectionState extends State<HomeSection>
     String base = cvm.apiConfig!.images.baseUrl;
     String size = cvm.apiConfig!.images.backdropSizes[1];
     if (movie.backdropPath != null) {
-      destImageUrl = imageUrl = '$base$size${movie.backdropPath}';
+      imageUrl = '$base$size${movie.backdropPath}';
+
+      /// If best res images are required, then enable this size definition
+      size = cvm.apiConfig!.images.backdropSizes.last;
+
+      destImageUrl = '$base$size${movie.backdropPath}';
     } else {
       if (movie.posterPath != null) {
         size = cvm.apiConfig!.images.posterSizes.last;

@@ -138,7 +138,8 @@ class _SearchPageChildState extends State<_SearchPageChild>
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => MoviePage(id: id, null, null),
+                        builder: (_) =>
+                            MoviePage(id: id, movie.movieTitle, null, null),
                       ),
                     );
                   },
