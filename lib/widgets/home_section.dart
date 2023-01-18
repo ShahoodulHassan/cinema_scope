@@ -233,18 +233,15 @@ class _HomeSectionState extends State<HomeSection>
             color: Colors.transparent,
             child: InkWell(
               onTap: () {
-                // context.read<HeroViewModel>().heroImageTag =
-                //     '${widget.sectionTitle}-${movie.id}';
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => MoviePage(
-                      id: movie.id,
-                      movie.movieTitle,
-                      imageUrlToId[movie.id]?[0],
-                      imageUrlToId[movie.id]?[1],
-                        '${widget.sectionTitle}-image-${movie.id}'
-                    ),
+                        id: movie.id,
+                        movie.movieTitle,
+                        imageUrlToId[movie.id]?[0],
+                        imageUrlToId[movie.id]?[1],
+                        '${widget.sectionTitle}-image-${movie.id}'),
                   ),
                 );
               },
@@ -367,7 +364,8 @@ class _HomeSectionState extends State<HomeSection>
       aspectRatio:
           widget.isBigWidget ? Constants.arBackdrop : Constants.arPoster,
       // That's the actual aspect ratio of TMDB posters
-      child: Hero(tag: '${widget.sectionTitle}-image-${movie.id}', child: child),
+      child:
+          Hero(tag: '${widget.sectionTitle}-image-${movie.id}', child: child),
     );
   }
 }
