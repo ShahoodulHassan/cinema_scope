@@ -50,6 +50,7 @@ dependencies:
   async: ^2.9.0
   infinite_scroll_pagination: ^3.2.0
   expandable_text: ^2.3.0
+  cached_network_image: ^3.2.3
 
 dev_dependencies:
   flutter_test:

@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinema_scope/architecture/movie_view_model.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
@@ -5,13 +8,10 @@ import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../architecture/config_view_model.dart';
 import '../constants.dart';
 import '../models/movie.dart';
 
 class MoviePage extends ChangeNotifierProvider<MovieViewModel> {
-  // final String heroTag;
-
   MoviePage(
       String title, String? sourceUrl, String? destUrl, String heroImageTag,
       {super.key, required int id})
@@ -24,13 +24,12 @@ class MoviePage extends ChangeNotifierProvider<MovieViewModel> {
 class _MoviePageChild extends StatefulWidget {
   final int id;
 
-  // final String heroTag;
   final String title, heroImageTag;
   final String? sourceUrl, destUrl;
 
   const _MoviePageChild(
       this.id, this.title, this.sourceUrl, this.destUrl, this.heroImageTag,
-      /*this.heroTag, */ {Key? key})
+      {Key? key})
       : super(key: key);
 
   @override
@@ -39,8 +38,6 @@ class _MoviePageChild extends StatefulWidget {
 
 class _MoviePageChildState extends State<_MoviePageChild>
     with GenericFunctions, Utilities {
-  // late final MovieViewModel mvm;
-
   late final String? sourceUrl = widget.sourceUrl;
   late final String? destUrl = widget.destUrl;
   late final String heroImageTag = widget.heroImageTag;
@@ -64,11 +61,6 @@ class _MoviePageChildState extends State<_MoviePageChild>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 getAppbarTitle(widget.title),
-                // Selector<MovieViewModel, String>(
-                //   builder: (_, title, __) => Visibility(
-                //       visible: title.isNotEmpty, child: getAppbarTitle(title)),
-                //   selector: (_, mvm) => mvm.movie?.movieTitle ?? '',
-                // ),
               ],
             ),
           ),
@@ -126,53 +118,6 @@ class _MoviePageChildState extends State<_MoviePageChild>
               },
             ),
           ),
-          // SliverToBoxAdapter(
-          //   child: Selector<MovieViewModel, Movie?>(
-          //     selector: (_, mvm) => mvm.movie,
-          //     builder: (_, movie, __) {
-          //       logIfDebug('builder called with movie:$movie');
-          //       return Padding(
-          //         padding: const EdgeInsets.only(top: 8, bottom: 8),
-          //         child: Column(
-          //           mainAxisSize: MainAxisSize.min,
-          //           crossAxisAlignment: CrossAxisAlignment.start,
-          //           children: [
-          //             ImageView(widget.sourceUrl, widget.destUrl,
-          //                 widget.heroImageTag),
-          //             // getImageView(movie),
-          //             const SizedBox(height: 8),
-          //             Padding(
-          //               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          //               child: Text(
-          //                 widget.title,
-          //                 textAlign: TextAlign.start,
-          //                 maxLines: 2,
-          //                 style: const TextStyle(
-          //                   fontSize: 24.0,
-          //                   fontWeight: FontWeight.bold,
-          //                   height: 1.1,
-          //                 ),
-          //               ),
-          //             ),
-          //             const SizedBox(height: 4.0),
-          //             Padding(
-          //               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          //               child: Text(
-          //                 getYearStringFromDate(movie?.releaseDate),
-          //                 textAlign: TextAlign.start,
-          //                 style: const TextStyle(
-          //                   fontSize: 16.0,
-          //                 ),
-          //               ),
-          //             ),
-          //             const ExpandableSynopsis(),
-          //             getGenres(movie),
-          //           ],
-          //         ),
-          //       );
-          //     },
-          //   ),
-          // ),
         ],
       ),
     );
@@ -223,118 +168,6 @@ class _MoviePageChildState extends State<_MoviePageChild>
       ),
     );
   }
-
-  String? getImageUrl(Movie? movie) {
-    String? imageUrl;
-    final cvm = context.read<ConfigViewModel>();
-    String base = cvm.apiConfig!.images.baseUrl;
-    String size = cvm.apiConfig!.images.backdropSizes[1];
-
-    if (movie?.backdropPath != null) {
-      imageUrl = '$base$size${movie?.backdropPath}';
-    } else if (movie?.posterPath != null) {
-      size = cvm.apiConfig!.images.posterSizes.last;
-      imageUrl = '$base$size${movie?.posterPath}';
-    }
-    logIfDebug('url:$imageUrl');
-    return imageUrl;
-  }
-
-  Widget getImageView(Movie? movie) {
-    var loadableUrl = getImageUrl(movie);
-    Widget Function(BuildContext, Widget, ImageChunkEvent?)? builder;
-    ImageFrameBuilder? frameBuilder;
-    if (loadableUrl != null && loadableUrl != widget.sourceUrl) {
-      builder = (context, child, progress) {
-        logIfDebug('loadableProgress:$progress');
-        if (progress == null) {
-          return child;
-        }
-        return Image.network(
-          widget.sourceUrl!,
-          fit: BoxFit.fill,
-        );
-      };
-    }
-    if (loadableUrl != null && loadableUrl != widget.sourceUrl) {
-      frameBuilder = (context, child, frame, isSynchronous) {
-        logIfDebug('loadableSync:$isSynchronous');
-        // if (isSynchronous) {
-        return child;
-        // }
-        // return Image.network(widget.imageUrl!);
-      };
-    }
-
-    // logIfDebug(
-    //     'loadableUrl:$loadableUrl, receivedUrl:${widget.sourceUrl}, builder:$builder');
-    // var child = widget.imageUrl != null
-    //     ? FadeInImage(
-    //         image: NetworkImage(loadableUrl ?? widget.imageUrl!),
-    //         placeholder: NetworkImage(widget.imageUrl!),
-    //         // loadingBuilder: builder,
-    //         // frameBuilder: frameBuilder,
-    //         imageErrorBuilder: (_, error, stacktrace) {
-    //           logIfDebug('image load error:$stacktrace');
-    //           return Image.asset('assets/images/placeholder.png');
-    //         },
-    //         fit: BoxFit.fill,
-    //       )
-    //     : Image.asset('assets/images/placeholder.png');
-    Widget child = Image.asset('assets/images/placeholder.png');
-    if (widget.sourceUrl != null) {
-      loadableUrl = widget.sourceUrl;
-      if (widget.destUrl != null && widget.destUrl != widget.sourceUrl) {
-        loadableUrl = widget.destUrl;
-      }
-      logIfDebug('sourceUrl:${widget.sourceUrl}, destUrl:${widget.destUrl}, '
-          'loadableUrl:$loadableUrl');
-      String sourcePath = widget.sourceUrl!.split("/").last;
-      String destPath = loadableUrl!.split("/").last;
-      if (loadableUrl != widget.sourceUrl) {
-        child = FadeInImage(
-          image: NetworkImage(loadableUrl),
-          placeholder: NetworkImage(widget.sourceUrl!),
-          fadeOutDuration:
-              Duration(milliseconds: sourcePath == destPath ? 1 : 300),
-          fadeInDuration:
-              Duration(milliseconds: sourcePath == destPath ? 1 : 700),
-          imageErrorBuilder: (_, error, stacktrace) {
-            logIfDebug('image load error:$stacktrace');
-            return Image.asset('assets/images/placeholder.png');
-          },
-          fit: BoxFit.fill,
-        );
-      } else {
-        child = Image.network(
-          loadableUrl,
-          errorBuilder: (_, error, stacktrace) {
-            logIfDebug('image load error:$stacktrace');
-            return Image.asset('assets/images/placeholder.png');
-          },
-          fit: BoxFit.fill,
-        );
-      }
-    }
-    return AspectRatio(
-      aspectRatio: Constants.arBackdrop,
-      // That's the actual aspect ratio of TMDB posters
-      child: Hero(
-        tag: widget.heroImageTag,
-        // flightShuttleBuilder: (a, b, c, d, e) {
-        //   return widget.sourceUrl != null
-        //       ? Image.network(widget.sourceUrl!, fit: BoxFit.fill)
-        //       : Padding(
-        //           padding: const EdgeInsets.all(24.0),
-        //           child: Image.asset(
-        //             'assets/images/placeholder.png',
-        //           ),
-        //         );
-        // },
-        child: child,
-      ),
-    );
-  }
 }
 
 class ImageView extends StatelessWidget with GenericFunctions {
@@ -354,22 +187,31 @@ class ImageView extends StatelessWidget with GenericFunctions {
       if (destUrl != null && destUrl != sourceUrl) {
         loadableUrl = destUrl;
       }
-      logIfDebug('sourceUrl:${sourceUrl}, destUrl:${destUrl}, '
+      logIfDebug('sourceUrl:$sourceUrl, destUrl:$destUrl, '
           'loadableUrl:$loadableUrl');
       String sourcePath = sourceUrl!.split("/").last;
       String destPath = loadableUrl!.split("/").last;
+      logIfDebug('hasKey: ${imageCache.containsKey(loadableUrl)}');
       if (loadableUrl != sourceUrl) {
-        child = FadeInImage(
-          image: NetworkImage(loadableUrl),
-          placeholder: NetworkImage(sourceUrl!),
+        Widget placeholderView = Image.network(
+          sourceUrl!,
+          fit: sourcePath == destPath ? BoxFit.fill : BoxFit.cover,
+        );
+        if (sourcePath != destPath) {
+          placeholderView = ClipRRect(
+            child: ImageFiltered(
+              imageFilter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+              child: placeholderView,
+            ),
+          );
+        }
+        child = CachedNetworkImage(
+          imageUrl: loadableUrl,
+          placeholder: (_, url) => placeholderView,
           fadeOutDuration:
               Duration(milliseconds: sourcePath == destPath ? 1 : 300),
           fadeInDuration:
               Duration(milliseconds: sourcePath == destPath ? 1 : 700),
-          imageErrorBuilder: (_, error, stacktrace) {
-            logIfDebug('image load error:$stacktrace');
-            return Image.asset('assets/images/placeholder.png');
-          },
           fit: BoxFit.fill,
         );
       } else {
