@@ -148,10 +148,13 @@ class _SearchPageChildState extends State<_SearchPageChild>
                       MaterialPageRoute(
                         builder: (_) => MoviePage(
                           id: id,
-                          movie.movieTitle,
-                          imageUrlToId[id]?[0],
-                          imageUrlToId[id]?[1],
-                          'search-image-$id',
+                          title: movie.movieTitle,
+                          year: getYearStringFromDate(movie.releaseDate),
+                          voteAverage: movie.voteAverage,
+                          overview: movie.overview,
+                          sourceUrl: imageUrlToId[id]?[0],
+                          destUrl: imageUrlToId[id]?[1],
+                          heroImageTag: 'search-image-$id',
                         ),
                       ),
                     );
@@ -199,11 +202,6 @@ class _SearchPageChildState extends State<_SearchPageChild>
     );
   }
 
-  @override
-  void dispose() {
-    // svm.dispose();
-    super.dispose();
-  }
 
   Widget getBackdropView(MovieResult movie) {
     String? imageUrl;

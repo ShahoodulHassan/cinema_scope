@@ -245,6 +245,7 @@ class _TmdbApi implements TmdbApi {
     page = 1,
     language = 'en-US',
     sortBy = 'release_date.desc',
+    includeAdult = 'false',
     withLanguage = 'en',
   }) async {
     const _extra = <String, dynamic>{};
@@ -254,6 +255,7 @@ class _TmdbApi implements TmdbApi {
       r'page': page,
       r'language': language,
       r'sort_by': sortBy,
+      r'include_adult': includeAdult,
       r'with_original_language': withLanguage,
     };
     final _headers = <String, dynamic>{
@@ -397,6 +399,7 @@ class _TmdbApi implements TmdbApi {
     language = 'en-US',
     region = 'US',
     sortBy = 'release_date.asc',
+    includeAdult = 'false',
     originalLanguage = 'en',
     releaseType = '3|2',
   }) async {
@@ -408,6 +411,7 @@ class _TmdbApi implements TmdbApi {
       r'language': language,
       r'region': region,
       r'sort_by': sortBy,
+      r'include_adult': includeAdult,
       r'with_original_language': originalLanguage,
       r'with_release_type': releaseType,
     };

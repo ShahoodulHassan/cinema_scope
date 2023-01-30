@@ -44,11 +44,13 @@ class HomeViewModel extends ApiViewModel {
   /// Fetched latest movies having release date somewhere in the past 7 day,
   /// having 'en' language, sorted by latest first,
   getLatestMovies() async {
-    var dateGte = getFormattedPastDate(7);
+    var dateGte = getFormattedPastDate(15);
     var dateLte = getFormattedNow();
     logIfDebug('$dateGte, $dateLte');
     var value = await api.getLatestMovies(dateGte, dateLte);
     latestMoviesResult = value;
+    latestMoviesResult!.results
+        .removeWhere((element) => element.posterPath == null);
     notifyListeners();
   }
 
@@ -84,10 +86,12 @@ class HomeViewModel extends ApiViewModel {
         .discoverUpcomingMovies(mediaType.name, dateGte, dateLte, page: page);
     logIfDebug(result.results.first.movieTitle);
     if (page == 1) {
-      upcomingMoviesResult = result;
+      upcomingMoviesResult = result
+        ..results.removeWhere((element) => element.posterPath == null);
     } else if (page > 1) {
       var allItems = upcomingMoviesResult?.results ?? [];
-      allItems.addAll(result.results);
+      allItems.addAll(
+          result.results..removeWhere((element) => element.posterPath == null));
       result.results = allItems;
       upcomingMoviesResult = result;
     }
@@ -95,8 +99,8 @@ class HomeViewModel extends ApiViewModel {
   }
 
   getTrending(MediaType mediaType, {TimeWindow? timeWindow}) async {
-    var value = await api
-        .getTrending(mediaType.name, (timeWindow ?? TimeWindow.day).name);
+    var value = await api.getTrending(
+        mediaType.name, (timeWindow ?? TimeWindow.day).name);
     trendingResult = value;
     notifyListeners();
   }
@@ -107,5 +111,3 @@ class HomeViewModel extends ApiViewModel {
     notifyListeners();
   }
 }
-
-

@@ -4,24 +4,20 @@ import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:cinema_scope/widgets/home_section.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 import '../constants.dart';
 
 class HomePage extends MultiProvider {
-
- HomePage({super.key}) : super(
-    providers: [
-      ChangeNotifierProvider(create: (_) => HomeViewModel()),
-      // ChangeNotifierProvider(create: (_) => HeroViewModel()),
-    ],
-   builder: (_, __) => const _HomePageChild(),
-  );
-
+  HomePage({super.key})
+      : super(
+          providers: [
+            ChangeNotifierProvider(create: (_) => HomeViewModel()),
+            // ChangeNotifierProvider(create: (_) => HeroViewModel()),
+          ],
+          builder: (_, __) => const _HomePageChild(),
+        );
 }
-
 
 class _HomePageChild extends StatefulWidget {
   const _HomePageChild({Key? key}) : super(key: key);
@@ -30,8 +26,8 @@ class _HomePageChild extends StatefulWidget {
   State<_HomePageChild> createState() => _HomePageChildState();
 }
 
-class _HomePageChildState extends State<_HomePageChild> with GenericFunctions, Utilities {
-
+class _HomePageChildState extends State<_HomePageChild>
+    with GenericFunctions, Utilities, RouteAware {
   @override
   void initState() {
     logIfDebug('initState called');
@@ -41,13 +37,38 @@ class _HomePageChildState extends State<_HomePageChild> with GenericFunctions, U
   }
 
   @override
+  void didPush() {
+    logIfDebug('didPush called');
+    super.didPush();
+  }
+
+  @override
+  void didPushNext() {
+    logIfDebug('didPushNext called');
+    super.didPushNext();
+  }
+
+  @override
+  void didPopNext() {
+    logIfDebug('didPopNext called');
+    super.didPopNext();
+  }
+
+  @override
   Widget build(BuildContext context) {
     logIfDebug('build called');
     return Scaffold(
       appBar: AppBar(
-        title: getAppbarTitle('Cinema scope'),
+        iconTheme: IconThemeData(
+          color: Colors.green,
+        ),
+        actionsIconTheme: IconThemeData(
+          color: Colors.green,
+        ),
+        title: const Text('Cinema scope'),
         actions: [
           IconButton(
+            tooltip: 'Search',
             onPressed: () {
               Navigator.push(
                 context,
@@ -72,5 +93,4 @@ class _HomePageChildState extends State<_HomePageChild> with GenericFunctions, U
       ),
     );
   }
-
 }

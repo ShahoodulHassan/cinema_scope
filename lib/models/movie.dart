@@ -1,4 +1,5 @@
 import 'package:cinema_scope/models/search.dart';
+import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'configuration.dart';
@@ -313,6 +314,7 @@ class Credits {
   Map<String, dynamic> toJson() => _$CreditsToJson(this);
 }
 
+@CopyWith()
 @JsonSerializable(fieldRename: FieldRename.snake)
 class BaseCast {
   bool adult;
@@ -335,6 +337,7 @@ class BaseCast {
   Map<String, dynamic> toJson() => _$BaseCastToJson(this);
 }
 
+@CopyWith()
 @JsonSerializable(fieldRename: FieldRename.snake)
 class Cast extends BaseCast {
   int castId;
@@ -359,8 +362,11 @@ class Cast extends BaseCast {
 
   @override
   Map<String, dynamic> toJson() => _$CastToJson(this);
+
+
 }
 
+@CopyWith()
 @JsonSerializable(fieldRename: FieldRename.snake)
 class Crew extends BaseCast {
   String department;

@@ -1,36 +1,66 @@
 import 'package:cinema_scope/pages/home_page.dart';
 import 'package:cinema_scope/pages/search_page.dart';
+import 'package:cinema_scope/utilities/generic_functions.dart';
+import 'package:cinema_scope/widgets/app_lifecycle_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import 'architecture/config_view_model.dart';
 
 void main() {
   runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(create: (_) => ConfigViewModel()),
+    ChangeNotifierProvider(
+        create: (_) => ConfigViewModel()..getConfigurations()),
     // ChangeNotifierProvider(create: (_) => HeroViewModel()),
   ], child: const MyApp()));
 }
+
+final RouteObserver<ModalRoute<void>> routeObserver =
+    RouteObserver<ModalRoute<void>>();
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    var mainColor = Colors.indigo;
-    return MaterialApp(
-      title: 'Cinema scope',
-      theme: ThemeData(
-        primarySwatch: mainColor,
-        highlightColor: mainColor.shade100.withOpacity(0.5),
-        useMaterial3: true,
+    var mainColor = Colors.deepPurple;
+    return AppLifecycleManager(
+      child: MaterialApp(
+        title: 'Cinema scope',
+        theme: ThemeData(
+          primarySwatch: mainColor,
+          highlightColor: mainColor.shade100.withOpacity(0.5),
+          useMaterial3: true,
+          fontFamily: GoogleFonts.lato().fontFamily,
+          appBarTheme: AppBarTheme(
+            titleTextStyle: TextStyle(
+              color: Colors.blueGrey.shade600,
+              fontSize: 24.0,
+              fontFamily: GoogleFonts.lato().fontFamily,
+              // fontWeight: FontWeight.bold,
+            ),
+            actionsIconTheme: IconThemeData(
+              color: Colors.green.shade600,
+            ),
+            iconTheme: IconThemeData(
+              color: Colors.green.shade600,
+            ),
+          )
+          // textTheme: Theme.of(context).textTheme.apply(
+          //   fontSizeFactor: 1.1,
+          //   fontSizeDelta: 2.0,
+          // ),
+        ),
+        navigatorObservers: [routeObserver],
+        home: const MyHomePage(title: 'Cinema scope'),
       ),
-      home: const MyHomePage(title: 'Cinema scope'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatefulWidget  {
   const MyHomePage({super.key, required this.title});
 
   final String title;
@@ -39,11 +69,42 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with GenericFunctions,
+    RouteAware {
   @override
   void initState() {
-    context.read<ConfigViewModel>().getConfigurations();
     super.initState();
+    // context.read<ConfigViewModel>().getConfigurations();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)!);
+  }
+
+  @override
+  void didPush() {
+    logIfDebug('didPush called');
+    super.didPush();
+  }
+
+  @override
+  void didPushNext() {
+    logIfDebug('didPushNext called');
+    super.didPushNext();
+  }
+
+  @override
+  void didPopNext() {
+    logIfDebug('didPopNext called');
+    super.didPopNext();
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
   }
 
   @override

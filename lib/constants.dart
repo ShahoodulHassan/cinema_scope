@@ -6,12 +6,16 @@ class Constants {
   static const int vibrateDuration = 250;
 
   static Color accentColor = Colors.deepOrange.shade800;
+  static Color scaffoldColor = const Color(0xFFf4fafe);
 
   static const double arBackdrop = 780 / 439;
   static const double arPoster = 780 / 1170;
+  static const double arProfile = 185 / 278;
   static const double arAvatar = 256 / 256;
 
   static const String moviePageHeroTag = 'movie_page_hero';
+
+  static const String placeholderPath = 'assets/images/placeholder.png';
 
 }
 

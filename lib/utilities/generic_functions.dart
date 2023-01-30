@@ -259,9 +259,9 @@ mixin GenericFunctions {
 
   TextStyle get appbarTitleStyle => TextStyle(
         color: titleColor,
-        fontSize: titleSize,
-        fontFamily: baseFontFamily,
-        fontWeight: weightBold,
+        // fontSize: titleSize,
+        // fontFamily: baseFontFamily,
+        // fontWeight: weightBold,
       );
 
   Widget getAppbarSubtitle(String subtitle) => Text(
@@ -271,9 +271,9 @@ mixin GenericFunctions {
 
   TextStyle get appbarSubtitleStyle => TextStyle(
         color: titleColor,
-        fontSize: subtitleSize,
-        fontFamily: baseFontFamily,
-        fontWeight: weightSemiBold,
+        // fontSize: subtitleSize,
+        // fontFamily: baseFontFamily,
+        // fontWeight: weightSemiBold,
       );
 
   int currentTimeMillis() => DateTime.now().millisecondsSinceEpoch;
@@ -321,6 +321,21 @@ mixin GenericFunctions {
     }
 
     return NumberFormat(formatter, 'en_US').format(value);
+  }
+
+  String runtimeToString(int minutes) {
+    var dur = Duration(minutes: minutes);
+    int hours = dur.inHours;
+    int min = minutes - hours * 60;
+    String separator = hours > 0 && min > 0 ? ' ' : '';
+    return '${hours == 0 ? '' : '${hours}h'}$separator${min == 0 ? '' : '${min}m'}';
+  }
+
+  String durationToMinSec(Duration dur) {
+    var splits = dur.toString().split(':');
+    String minutes = splits[1].padLeft(2, '0');
+    String seconds = splits[2].split('.')[0].padLeft(2, '0');
+    return '$minutes:$seconds';
   }
 
   // No trailing zeroes

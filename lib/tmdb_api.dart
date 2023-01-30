@@ -71,6 +71,7 @@ abstract class TmdbApi {
       {@http.Query("page") int page = 1,
       @http.Query('language') String language = 'en-US',
       @http.Query('sort_by') String sortBy = 'release_date.desc',
+      @http.Query('include_adult') String includeAdult = 'false',
       @http.Query('with_original_language') String withLanguage = 'en'});
 
   @http.GET("/movie/popular")
@@ -111,6 +112,7 @@ abstract class TmdbApi {
     @http.Query('language') String language = 'en-US',
     @http.Query('region') String region = 'US',
     @http.Query('sort_by') String sortBy = 'release_date.asc',
+    @http.Query('include_adult') String includeAdult = 'false',
     @http.Query('with_original_language') String originalLanguage = 'en',
     @http.Query('with_release_type') String releaseType = '3|2',
   });

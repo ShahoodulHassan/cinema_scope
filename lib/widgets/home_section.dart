@@ -39,7 +39,7 @@ class HomeSection extends StatefulWidget {
 }
 
 class _HomeSectionState extends State<HomeSection>
-    with GenericFunctions, Utilities {
+    with GenericFunctions, Utilities, RouteAware {
   final smallFactor = 2.5;
   final bigFactor = 1.0;
   final titleContainerPadding = 8.0;
@@ -111,6 +111,24 @@ class _HomeSectionState extends State<HomeSection>
   Map<int, List<String?>> imageUrlToId = {};
 
   @override
+  void didPush() {
+    logIfDebug('didPush called');
+    super.didPush();
+  }
+
+  @override
+  void didPushNext() {
+    logIfDebug('didPushNext called');
+    super.didPushNext();
+  }
+
+  @override
+  void didPopNext() {
+    logIfDebug('didPopNext called');
+    super.didPopNext();
+  }
+
+  @override
   Widget build(BuildContext context) {
     logIfDebug(
         'width:${MediaQuery.of(context).size.width}, deductible:$deductibleWidth, borderWidth: $totalBorderWidth');
@@ -134,7 +152,7 @@ class _HomeSectionState extends State<HomeSection>
                 ),
               ),
               SizedBox(
-                width: MediaQuery.of(context).size.width,
+                width: screenWidth,
                 height: cardHeight,
                 child: ListView.separated(
                   // shrinkWrap: true,
@@ -190,7 +208,10 @@ class _HomeSectionState extends State<HomeSection>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(4.0),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(4.0),
+                    topRight: Radius.circular(4.0),
+                  ),
                   child: getImageView(movie),
                 ),
                 getRatingWidget(movie),
@@ -238,10 +259,14 @@ class _HomeSectionState extends State<HomeSection>
                   MaterialPageRoute(
                     builder: (_) => MoviePage(
                         id: movie.id,
-                        movie.movieTitle,
-                        imageUrlToId[movie.id]?[0],
-                        imageUrlToId[movie.id]?[1],
-                        '${widget.sectionTitle}-image-${movie.id}'),
+                        title: movie.movieTitle,
+                        year: getYearStringFromDate(movie.releaseDate),
+                        voteAverage: movie.voteAverage,
+                        overview: movie.overview,
+                        sourceUrl: imageUrlToId[movie.id]?[0],
+                        destUrl: imageUrlToId[movie.id]?[1],
+                        heroImageTag:
+                            '${widget.sectionTitle}-image-${movie.id}'),
                   ),
                 );
               },
@@ -333,6 +358,16 @@ class _HomeSectionState extends State<HomeSection>
     return imageUrl;
   }
 
+  String? getCacheImageUrl(MovieResult movie) {
+    if (movie.backdropPath != null) {
+      final cvm = context.read<ConfigViewModel>();
+      String base = cvm.apiConfig!.images.baseUrl;
+      String size = cvm.apiConfig!.images.backdropSizes[2];
+      return '$base$size${movie.backdropPath}';
+    }
+    return null;
+  }
+
   Widget getImageView(MovieResult movie) {
     String? url = getImageUrl(movie);
     var child = url != null
@@ -352,6 +387,13 @@ class _HomeSectionState extends State<HomeSection>
               );
             },
             fit: BoxFit.fill,
+            errorBuilder: (_, __, ___) {
+              return Icon(
+                Icons.error_outline_sharp,
+                size: min(posterWidth, posterHeight) * 0.20,
+                color: Colors.red,
+              );
+            },
           )
         : Padding(
             padding: const EdgeInsets.all(24.0),
@@ -360,6 +402,12 @@ class _HomeSectionState extends State<HomeSection>
               // fit: BoxFit.scaleDown,
             ),
           );
+    // String? cacheImageUrl = getCacheImageUrl(movie);
+    // if (cacheImageUrl != null) {
+    //   logIfDebug('precacheUrl:$cacheImageUrl');
+    //   precacheImage(
+    //       Image.network(cacheImageUrl, fit: BoxFit.fill).image, context);
+    // }
     return AspectRatio(
       aspectRatio:
           widget.isBigWidget ? Constants.arBackdrop : Constants.arPoster,

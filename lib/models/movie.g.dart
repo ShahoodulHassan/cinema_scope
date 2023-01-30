@@ -3,6 +3,509 @@
 part of 'movie.dart';
 
 // **************************************************************************
+// CopyWithGenerator
+// **************************************************************************
+
+abstract class _$BaseCastCWProxy {
+  BaseCast adult(bool adult);
+
+  BaseCast id(int id);
+
+  BaseCast knownForDepartment(String knownForDepartment);
+
+  BaseCast name(String name);
+
+  BaseCast originalName(String originalName);
+
+  BaseCast popularity(double popularity);
+
+  BaseCast creditId(String creditId);
+
+  BaseCast gender(int? gender);
+
+  BaseCast profilePath(String? profilePath);
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `BaseCast(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// BaseCast(...).copyWith(id: 12, name: "My name")
+  /// ````
+  BaseCast call({
+    bool? adult,
+    int? id,
+    String? knownForDepartment,
+    String? name,
+    String? originalName,
+    double? popularity,
+    String? creditId,
+    int? gender,
+    String? profilePath,
+  });
+}
+
+/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfBaseCast.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfBaseCast.copyWith.fieldName(...)`
+class _$BaseCastCWProxyImpl implements _$BaseCastCWProxy {
+  const _$BaseCastCWProxyImpl(this._value);
+
+  final BaseCast _value;
+
+  @override
+  BaseCast adult(bool adult) => this(adult: adult);
+
+  @override
+  BaseCast id(int id) => this(id: id);
+
+  @override
+  BaseCast knownForDepartment(String knownForDepartment) =>
+      this(knownForDepartment: knownForDepartment);
+
+  @override
+  BaseCast name(String name) => this(name: name);
+
+  @override
+  BaseCast originalName(String originalName) =>
+      this(originalName: originalName);
+
+  @override
+  BaseCast popularity(double popularity) => this(popularity: popularity);
+
+  @override
+  BaseCast creditId(String creditId) => this(creditId: creditId);
+
+  @override
+  BaseCast gender(int? gender) => this(gender: gender);
+
+  @override
+  BaseCast profilePath(String? profilePath) => this(profilePath: profilePath);
+
+  @override
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `BaseCast(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// BaseCast(...).copyWith(id: 12, name: "My name")
+  /// ````
+  BaseCast call({
+    Object? adult = const $CopyWithPlaceholder(),
+    Object? id = const $CopyWithPlaceholder(),
+    Object? knownForDepartment = const $CopyWithPlaceholder(),
+    Object? name = const $CopyWithPlaceholder(),
+    Object? originalName = const $CopyWithPlaceholder(),
+    Object? popularity = const $CopyWithPlaceholder(),
+    Object? creditId = const $CopyWithPlaceholder(),
+    Object? gender = const $CopyWithPlaceholder(),
+    Object? profilePath = const $CopyWithPlaceholder(),
+  }) {
+    return BaseCast(
+      adult == const $CopyWithPlaceholder() || adult == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.adult!
+          // ignore: cast_nullable_to_non_nullable
+          : adult as bool,
+      id == const $CopyWithPlaceholder() || id == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.id!
+          // ignore: cast_nullable_to_non_nullable
+          : id as int,
+      knownForDepartment == const $CopyWithPlaceholder() ||
+              knownForDepartment == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.knownForDepartment!
+          // ignore: cast_nullable_to_non_nullable
+          : knownForDepartment as String,
+      name == const $CopyWithPlaceholder() || name == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.name!
+          // ignore: cast_nullable_to_non_nullable
+          : name as String,
+      originalName == const $CopyWithPlaceholder() || originalName == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.originalName!
+          // ignore: cast_nullable_to_non_nullable
+          : originalName as String,
+      popularity == const $CopyWithPlaceholder() || popularity == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.popularity!
+          // ignore: cast_nullable_to_non_nullable
+          : popularity as double,
+      creditId == const $CopyWithPlaceholder() || creditId == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.creditId!
+          // ignore: cast_nullable_to_non_nullable
+          : creditId as String,
+      gender: gender == const $CopyWithPlaceholder()
+          ? _value.gender
+          // ignore: cast_nullable_to_non_nullable
+          : gender as int?,
+      profilePath: profilePath == const $CopyWithPlaceholder()
+          ? _value.profilePath
+          // ignore: cast_nullable_to_non_nullable
+          : profilePath as String?,
+    );
+  }
+}
+
+extension $BaseCastCopyWith on BaseCast {
+  /// Returns a callable class that can be used as follows: `instanceOfBaseCast.copyWith(...)` or like so:`instanceOfBaseCast.copyWith.fieldName(...)`.
+  // ignore: library_private_types_in_public_api
+  _$BaseCastCWProxy get copyWith => _$BaseCastCWProxyImpl(this);
+}
+
+abstract class _$CastCWProxy {
+  Cast adult(bool adult);
+
+  Cast id(int id);
+
+  Cast knownForDepartment(String knownForDepartment);
+
+  Cast name(String name);
+
+  Cast originalName(String originalName);
+
+  Cast popularity(double popularity);
+
+  Cast castId(int castId);
+
+  Cast character(String character);
+
+  Cast creditId(String creditId);
+
+  Cast order(int order);
+
+  Cast gender(int? gender);
+
+  Cast profilePath(String? profilePath);
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `Cast(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// Cast(...).copyWith(id: 12, name: "My name")
+  /// ````
+  Cast call({
+    bool? adult,
+    int? id,
+    String? knownForDepartment,
+    String? name,
+    String? originalName,
+    double? popularity,
+    int? castId,
+    String? character,
+    String? creditId,
+    int? order,
+    int? gender,
+    String? profilePath,
+  });
+}
+
+/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfCast.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfCast.copyWith.fieldName(...)`
+class _$CastCWProxyImpl implements _$CastCWProxy {
+  const _$CastCWProxyImpl(this._value);
+
+  final Cast _value;
+
+  @override
+  Cast adult(bool adult) => this(adult: adult);
+
+  @override
+  Cast id(int id) => this(id: id);
+
+  @override
+  Cast knownForDepartment(String knownForDepartment) =>
+      this(knownForDepartment: knownForDepartment);
+
+  @override
+  Cast name(String name) => this(name: name);
+
+  @override
+  Cast originalName(String originalName) => this(originalName: originalName);
+
+  @override
+  Cast popularity(double popularity) => this(popularity: popularity);
+
+  @override
+  Cast castId(int castId) => this(castId: castId);
+
+  @override
+  Cast character(String character) => this(character: character);
+
+  @override
+  Cast creditId(String creditId) => this(creditId: creditId);
+
+  @override
+  Cast order(int order) => this(order: order);
+
+  @override
+  Cast gender(int? gender) => this(gender: gender);
+
+  @override
+  Cast profilePath(String? profilePath) => this(profilePath: profilePath);
+
+  @override
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `Cast(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// Cast(...).copyWith(id: 12, name: "My name")
+  /// ````
+  Cast call({
+    Object? adult = const $CopyWithPlaceholder(),
+    Object? id = const $CopyWithPlaceholder(),
+    Object? knownForDepartment = const $CopyWithPlaceholder(),
+    Object? name = const $CopyWithPlaceholder(),
+    Object? originalName = const $CopyWithPlaceholder(),
+    Object? popularity = const $CopyWithPlaceholder(),
+    Object? castId = const $CopyWithPlaceholder(),
+    Object? character = const $CopyWithPlaceholder(),
+    Object? creditId = const $CopyWithPlaceholder(),
+    Object? order = const $CopyWithPlaceholder(),
+    Object? gender = const $CopyWithPlaceholder(),
+    Object? profilePath = const $CopyWithPlaceholder(),
+  }) {
+    return Cast(
+      adult == const $CopyWithPlaceholder() || adult == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.adult!
+          // ignore: cast_nullable_to_non_nullable
+          : adult as bool,
+      id == const $CopyWithPlaceholder() || id == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.id!
+          // ignore: cast_nullable_to_non_nullable
+          : id as int,
+      knownForDepartment == const $CopyWithPlaceholder() ||
+              knownForDepartment == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.knownForDepartment!
+          // ignore: cast_nullable_to_non_nullable
+          : knownForDepartment as String,
+      name == const $CopyWithPlaceholder() || name == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.name!
+          // ignore: cast_nullable_to_non_nullable
+          : name as String,
+      originalName == const $CopyWithPlaceholder() || originalName == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.originalName!
+          // ignore: cast_nullable_to_non_nullable
+          : originalName as String,
+      popularity == const $CopyWithPlaceholder() || popularity == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.popularity!
+          // ignore: cast_nullable_to_non_nullable
+          : popularity as double,
+      castId == const $CopyWithPlaceholder() || castId == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.castId!
+          // ignore: cast_nullable_to_non_nullable
+          : castId as int,
+      character == const $CopyWithPlaceholder() || character == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.character!
+          // ignore: cast_nullable_to_non_nullable
+          : character as String,
+      creditId == const $CopyWithPlaceholder() || creditId == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.creditId!
+          // ignore: cast_nullable_to_non_nullable
+          : creditId as String,
+      order == const $CopyWithPlaceholder() || order == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.order!
+          // ignore: cast_nullable_to_non_nullable
+          : order as int,
+      gender: gender == const $CopyWithPlaceholder()
+          ? _value.gender
+          // ignore: cast_nullable_to_non_nullable
+          : gender as int?,
+      profilePath: profilePath == const $CopyWithPlaceholder()
+          ? _value.profilePath
+          // ignore: cast_nullable_to_non_nullable
+          : profilePath as String?,
+    );
+  }
+}
+
+extension $CastCopyWith on Cast {
+  /// Returns a callable class that can be used as follows: `instanceOfCast.copyWith(...)` or like so:`instanceOfCast.copyWith.fieldName(...)`.
+  // ignore: library_private_types_in_public_api
+  _$CastCWProxy get copyWith => _$CastCWProxyImpl(this);
+}
+
+abstract class _$CrewCWProxy {
+  Crew adult(bool adult);
+
+  Crew id(int id);
+
+  Crew knownForDepartment(String knownForDepartment);
+
+  Crew name(String name);
+
+  Crew originalName(String originalName);
+
+  Crew popularity(double popularity);
+
+  Crew creditId(String creditId);
+
+  Crew department(String department);
+
+  Crew job(String job);
+
+  Crew gender(int? gender);
+
+  Crew profilePath(String? profilePath);
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `Crew(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// Crew(...).copyWith(id: 12, name: "My name")
+  /// ````
+  Crew call({
+    bool? adult,
+    int? id,
+    String? knownForDepartment,
+    String? name,
+    String? originalName,
+    double? popularity,
+    String? creditId,
+    String? department,
+    String? job,
+    int? gender,
+    String? profilePath,
+  });
+}
+
+/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfCrew.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfCrew.copyWith.fieldName(...)`
+class _$CrewCWProxyImpl implements _$CrewCWProxy {
+  const _$CrewCWProxyImpl(this._value);
+
+  final Crew _value;
+
+  @override
+  Crew adult(bool adult) => this(adult: adult);
+
+  @override
+  Crew id(int id) => this(id: id);
+
+  @override
+  Crew knownForDepartment(String knownForDepartment) =>
+      this(knownForDepartment: knownForDepartment);
+
+  @override
+  Crew name(String name) => this(name: name);
+
+  @override
+  Crew originalName(String originalName) => this(originalName: originalName);
+
+  @override
+  Crew popularity(double popularity) => this(popularity: popularity);
+
+  @override
+  Crew creditId(String creditId) => this(creditId: creditId);
+
+  @override
+  Crew department(String department) => this(department: department);
+
+  @override
+  Crew job(String job) => this(job: job);
+
+  @override
+  Crew gender(int? gender) => this(gender: gender);
+
+  @override
+  Crew profilePath(String? profilePath) => this(profilePath: profilePath);
+
+  @override
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `Crew(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// Crew(...).copyWith(id: 12, name: "My name")
+  /// ````
+  Crew call({
+    Object? adult = const $CopyWithPlaceholder(),
+    Object? id = const $CopyWithPlaceholder(),
+    Object? knownForDepartment = const $CopyWithPlaceholder(),
+    Object? name = const $CopyWithPlaceholder(),
+    Object? originalName = const $CopyWithPlaceholder(),
+    Object? popularity = const $CopyWithPlaceholder(),
+    Object? creditId = const $CopyWithPlaceholder(),
+    Object? department = const $CopyWithPlaceholder(),
+    Object? job = const $CopyWithPlaceholder(),
+    Object? gender = const $CopyWithPlaceholder(),
+    Object? profilePath = const $CopyWithPlaceholder(),
+  }) {
+    return Crew(
+      adult == const $CopyWithPlaceholder() || adult == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.adult!
+          // ignore: cast_nullable_to_non_nullable
+          : adult as bool,
+      id == const $CopyWithPlaceholder() || id == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.id!
+          // ignore: cast_nullable_to_non_nullable
+          : id as int,
+      knownForDepartment == const $CopyWithPlaceholder() ||
+              knownForDepartment == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.knownForDepartment!
+          // ignore: cast_nullable_to_non_nullable
+          : knownForDepartment as String,
+      name == const $CopyWithPlaceholder() || name == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.name!
+          // ignore: cast_nullable_to_non_nullable
+          : name as String,
+      originalName == const $CopyWithPlaceholder() || originalName == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.originalName!
+          // ignore: cast_nullable_to_non_nullable
+          : originalName as String,
+      popularity == const $CopyWithPlaceholder() || popularity == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.popularity!
+          // ignore: cast_nullable_to_non_nullable
+          : popularity as double,
+      creditId == const $CopyWithPlaceholder() || creditId == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.creditId!
+          // ignore: cast_nullable_to_non_nullable
+          : creditId as String,
+      department == const $CopyWithPlaceholder() || department == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.department!
+          // ignore: cast_nullable_to_non_nullable
+          : department as String,
+      job == const $CopyWithPlaceholder() || job == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.job!
+          // ignore: cast_nullable_to_non_nullable
+          : job as String,
+      gender: gender == const $CopyWithPlaceholder()
+          ? _value.gender
+          // ignore: cast_nullable_to_non_nullable
+          : gender as int?,
+      profilePath: profilePath == const $CopyWithPlaceholder()
+          ? _value.profilePath
+          // ignore: cast_nullable_to_non_nullable
+          : profilePath as String?,
+    );
+  }
+}
+
+extension $CrewCopyWith on Crew {
+  /// Returns a callable class that can be used as follows: `instanceOfCrew.copyWith(...)` or like so:`instanceOfCrew.copyWith.fieldName(...)`.
+  // ignore: library_private_types_in_public_api
+  _$CrewCWProxy get copyWith => _$CrewCWProxyImpl(this);
+}
+
+// **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
