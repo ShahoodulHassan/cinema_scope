@@ -1,6 +1,6 @@
 # cinema_scope
 
-A movie finding and rating app
+A TMDb app to showcase various features and packages of Flutter.
 
 ## Getting Started
 
