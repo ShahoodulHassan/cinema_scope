@@ -241,40 +241,6 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
               );
             },
           ),
-          // Selector<MovieViewModel, List<dynamic>>(
-          //   builder: (_, params, __) {
-          //     var youtubeKeys = params[0] as List<String>?;
-          //     logIfDebug('isPinned:${params[1]}, keys:$youtubeKeys');
-          //     if (youtubeKeys != null && youtubeKeys.isNotEmpty) {
-          //       context.read<YoutubeViewModel>().initialize(youtubeKeys);
-          //     }
-          //     double width = youtubeKeys == null || youtubeKeys.isEmpty
-          //         ? 0
-          //         : MediaQuery.of(context).size.width * 9 / 16;
-          //     logIfDebug('isPinned, width=$width, delWidth=${trailerDelegate?.extent}');
-          //     var del = trailerDelegate == null || width > trailerDelegate!.extent
-          //         ? trailerDelegate = TrailerDelegate(width)
-          //         : trailerDelegate!;
-          //     Uint8List? bytes;
-          //     if (width > 0) {
-          //
-          //     }
-          //     var deli = ImageDelegate(width, youtubeKeys);
-          //     logIfDebug('isPinned, newDelegate:${del.hashCode}');
-          //     return SliverPersistentHeader(
-          //       delegate: deli,
-          //       // floating: false,
-          //       pinned: params[1],
-          //     );
-          //   },
-          //   selector: (_, mvm) {
-          //     List<String>? list = mvm.movie?.videos.results
-          //         .where((video) => video.type == 'Trailer')
-          //         .map((vid) => vid.key)
-          //         .toList();
-          //     return <dynamic>[list, mvm.isTrailerPinned];
-          //   },
-          // ),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.only(top: 8, bottom: 4),
@@ -282,37 +248,7 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Selector<MovieViewModel, List<String>>(
-                  //   selector: (_, mvm) {
-                  //     List<String>? list = mvm.movie?.videos.results
-                  //         .where((video) => video.type == 'Trailer')
-                  //         .map((vid) => vid.key)
-                  //         .toList();
-                  //     return (list != null) ? list : <String>[];
-                  //   },
-                  //   builder: (_, youtubeKeys, __) {
-                  //     if (youtubeKeys.isEmpty) {
-                  //       return const SizedBox.shrink();
-                  //     }
-                  //     return TrailerView(youtubeKeys);
-                  //   },
-                  // ),
-                  // ImageView(
-                  //     widget.sourceUrl, widget.destUrl, widget.heroImageTag),
-                  // getImageView(movie),
                   const SizedBox(height: 8),
-                  // ImageView(
-                  //     widget.sourceUrl, widget.destUrl, widget.heroImageTag),
-                  // // getImageView(movie),
-                  // const SizedBox(height: 8),
-                  // ImageView(
-                  //     widget.sourceUrl, widget.destUrl, widget.heroImageTag),
-                  // // getImageView(movie),
-                  // const SizedBox(height: 8),
-                  // ImageView(
-                  //     widget.sourceUrl, widget.destUrl, widget.heroImageTag),
-                  // // getImageView(movie),
-                  // const SizedBox(height: 8),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Text(
@@ -327,25 +263,27 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(
-                        right: 16.0, left: 16.0, top: 4.0),
+                    padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
                     child: Row(
                       children: [
                         Visibility(
                           visible:
                               widget.year != null && widget.year!.isNotEmpty,
-                          child: Text(
-                            widget.year ?? '',
-                            textAlign: TextAlign.start,
-                            style: const TextStyle(
-                              fontSize: 16.0,
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 16.0),
+                            child: Text(
+                              widget.year ?? '',
+                              textAlign: TextAlign.start,
+                              style: const TextStyle(
+                                fontSize: 16.0,
+                              ),
                             ),
                           ),
                         ),
                         Visibility(
                           visible: widget.voteAverage > 0.0,
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 16.0),
+                            padding: const EdgeInsets.only(right: 16.0),
                             child: Row(
                               children: [
                                 Icon(
@@ -371,15 +309,12 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
                           builder: (_, runtime, __) {
                             return runtime == null
                                 ? const SizedBox.shrink()
-                                : Padding(
-                                    padding: const EdgeInsets.only(left: 16.0),
-                                    child: Text(
-                                      runtimeToString(runtime),
-                                      style: const TextStyle(
-                                        fontSize: 16.0,
-                                        // fontWeight: FontWeight.bold,
-                                        // fontStyle: FontStyle.italic,
-                                      ),
+                                : Text(
+                                    runtimeToString(runtime),
+                                    style: const TextStyle(
+                                      fontSize: 16.0,
+                                      // fontWeight: FontWeight.bold,
+                                      // fontStyle: FontStyle.italic,
                                     ),
                                   );
                           },
@@ -394,7 +329,7 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
                           ? const SizedBox.shrink()
                           : Padding(
                               padding: const EdgeInsets.fromLTRB(
-                                  16.0, 16.0, 16.0, 0.0),
+                                  16.0, 8.0, 16.0, 8.0),
                               child: Text(
                                 '"$tagline"',
                                 textAlign: TextAlign.start,
@@ -430,7 +365,7 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
               },
             ),
           ),
-          const CastSection(),
+          const CastCrewSection(),
           RecommendedMoviesSection(),
         ],
       ),
@@ -440,7 +375,7 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
   Padding getGenres(Movie? movie) {
     final genres = movie?.genres;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 0.0),
+      padding: const EdgeInsets.only(top: 0.0, bottom: 8.0),
       child: SizedBox(
         height: 48,
         child: ListView.separated(
@@ -484,10 +419,10 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
   }
 }
 
-class CastSection extends StatelessWidget {
+class CastCrewSection extends StatelessWidget {
   final int _maxCount = 10;
 
-  const CastSection({Key? key}) : super(key: key);
+  const CastCrewSection({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -498,7 +433,7 @@ class CastSection extends StatelessWidget {
           return SliverToBoxAdapter(child: Container());
         }
         return SliverPadding(
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          padding: const EdgeInsets.symmetric(vertical: 12.0),
           sliver: SliverStack(
             children: [
               /// This serves as the base card on which the content card is
@@ -516,9 +451,11 @@ class CastSection extends StatelessWidget {
                     if (tuple.item1.isNotEmpty)
                       getSectionTitleRow(tuple.item1.length > _maxCount, () {}),
                     if (tuple.item1.isNotEmpty)
-                      getCastListView(
-                          context, tuple.item1.take(_maxCount).toList()),
-                    getCrewView(tuple.item2),
+                      CastListView(
+                        tuple.item1.take(_maxCount).toList(),
+                        MediaQuery.of(context).size.width,
+                      ),
+                    if (tuple.item2.isNotEmpty) getCrewSection(tuple.item2),
                     getSliverSeparator(context),
                   ],
                 ),
@@ -530,7 +467,7 @@ class CastSection extends StatelessWidget {
     );
   }
 
-  Widget getCrewView(List<Crew> crew) {
+  Widget getCrewSection(List<Crew> crew) {
     /// We show only directors and co-directors, each sorted alphabetically.
     /// Co-directors will have their job mentioned with their names.
     var directors = (crew.where((element) => element.job == 'Director').toList()
@@ -546,10 +483,9 @@ class CastSection extends StatelessWidget {
 
     /// We show all crew from the department 'writing'
     var writers = (crew
-                .where((element) => element.department.toLowerCase() == 'writing')
-                .toList()
-              ..sort((a, b) => a.name.toLowerCase().compareTo(b.name
-                  .toLowerCase())));
+        .where((element) => element.department.toLowerCase() == 'writing')
+        .toList()
+      ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase())));
 
     if (directors.isEmpty && writers.isEmpty) return const SizedBox.shrink();
 
@@ -576,15 +512,15 @@ class CastSection extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Column(
         children: [
-          getCrewSection(directors, 'Director'),
-          getCrewSection(combinedWriters, 'Writer'),
+          getCrewTile(directors, 'Director'),
+          getCrewTile(combinedWriters, 'Writer'),
           CompactTextButton('All cast & crew', () {}),
         ],
       ),
     );
   }
 
-  Widget getCrewSection(List<Crew> crew, String label) {
+  Widget getCrewTile(List<Crew> crew, String label) {
     if (crew.isEmpty) return const SizedBox.shrink();
     var names = crew.map((e) => e.name).toSet().join(', ');
 
@@ -614,71 +550,110 @@ class CastSection extends StatelessWidget {
     );
   }
 
-  Widget getCastListView(BuildContext context, List<Cast> casts) {
-    final separatorWidth = 10.0;
-    final listViewHorizontalPadding = 16.0;
-    final listViewVerticalPadding = 16.0;
+  Widget getSliverSeparator(BuildContext context) => Container(
+        height: 1.0,
+        color: Theme.of(context).primaryColorLight,
+      );
 
-    final screenWidth = MediaQuery.of(context).size.width;
-    final cardCount = 2.75;
+  Widget getSectionTitleRow(bool showSeeAll, Function()? onPressed) => Padding(
+        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Top billed cast' /*.toUpperCase()*/,
+              style: TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.5,
+                // height: 1.1,
+              ),
+            ),
+            if (showSeeAll) CompactTextButton('See all', onPressed),
+          ],
+        ),
+      );
+}
 
-    late final deductibleWidth =
-        listViewHorizontalPadding + separatorWidth * cardCount.toInt();
-    late final posterWidth = (screenWidth - deductibleWidth) / cardCount;
+class CastListView extends StatelessWidget {
+  final List<Cast> casts;
+  final double screenWidth;
 
-    final aspectRatio = Constants.arProfile / 0.87;
+  CastListView(this.casts, this.screenWidth, {Key? key}) : super(key: key);
 
-    late final posterHeight = posterWidth / aspectRatio;
+  final separatorWidth = 10.0;
 
-    final maxLines = 2;
+  final listViewHorizontalPadding = 16.0;
 
-    final textHorizPadding = 8.0;
+  final listViewVerticalPadding = 16.0;
 
-    final nameTopPadding = 8.0;
-    final nameBottomPadding = 0.0;
-    final characterTopPadding = 0.0;
-    final characterBottomPadding = 8.0;
+  final cardCount = 2.5;
 
-    final nameStyle = TextStyle(
-      fontSize: 14.0,
-      fontWeight: FontWeight.bold,
-      height: 1.2,
-    );
+  late final deductibleWidth =
+      listViewHorizontalPadding + separatorWidth * cardCount.toInt();
 
-    final characterStyle = TextStyle(
-      fontSize: 14.0,
-      height: 1.2,
-    );
+  late final posterWidth = (screenWidth - deductibleWidth) / cardCount;
 
-    final topRadius = 4.0;
-    final bottomRadius = 0.0;
+  final aspectRatio = Constants.arProfile / 0.87;
 
-    late final nameHeight = nameStyle.height! * nameStyle.fontSize! * maxLines;
+  late final posterHeight = posterWidth / aspectRatio;
 
-    late final characterHeight =
-        characterStyle.height! * characterStyle.fontSize! * maxLines;
+  final maxLines = 2;
 
-    late final nameContainerHeight =
-        nameHeight + nameTopPadding + nameBottomPadding;
+  final textHorizPadding = 8.0;
 
-    late final characterContainerHeight =
-        characterHeight + characterTopPadding + characterBottomPadding;
+  final nameTopPadding = 8.0;
 
-    late final cardHeight =
-        posterHeight + nameContainerHeight + characterContainerHeight;
+  final nameBottomPadding = 0.0;
 
-    /// This 0.8 is being to escape the "A RenderFlex overflowed by 0.800
-    /// pixels on the bottom." error. The error is being caused by not
-    /// assigning any height to the name and character test widgets.
-    /// However, assigning height, especially to name text widget makes it
-    /// expand to two lines no matter if name is actually on one line only,
-    /// thereby showing an extra blank line between home snd tasks.
-    late final viewHeight = cardHeight + listViewVerticalPadding * 2 + 0.8;
+  final characterTopPadding = 0.0;
 
+  final characterBottomPadding = 8.0;
+
+  final nameStyle = const TextStyle(
+    fontSize: 14.0,
+    fontWeight: FontWeight.bold,
+    height: 1.2,
+  );
+
+  final characterStyle = const TextStyle(
+    fontSize: 14.0,
+    height: 1.2,
+  );
+
+  final topRadius = 4.0;
+
+  final bottomRadius = 0.0;
+
+  late final nameHeight = nameStyle.height! * nameStyle.fontSize! * maxLines;
+
+  late final characterHeight =
+      characterStyle.height! * characterStyle.fontSize! * maxLines;
+
+  late final nameContainerHeight =
+      nameHeight + nameTopPadding + nameBottomPadding;
+
+  late final characterContainerHeight =
+      characterHeight + characterTopPadding + characterBottomPadding;
+
+  late final cardHeight =
+      posterHeight + nameContainerHeight + characterContainerHeight;
+
+  /// This 0.8 is being to escape the "A RenderFlex overflowed by 0.800
+  /// pixels on the bottom." error. The error is being caused by not
+  /// assigning any height to the name and character test widgets.
+  /// However, assigning height, especially to name text widget makes it
+  /// expand to two lines no matter if name is actually on one line only,
+  /// thereby showing an extra blank line between home snd tasks.
+  late final viewHeight = cardHeight + listViewVerticalPadding * 2 + 0.8;
+
+  @override
+  Widget build(BuildContext context) {
     return SizedBox(
       width: screenWidth,
       height: viewHeight,
       child: ListView.separated(
+        // primary: false,
         itemBuilder: (_, index) {
           var cast = casts[index];
           return Stack(
@@ -775,30 +750,6 @@ class CastSection extends StatelessWidget {
       ),
     );
   }
-
-  Widget getSliverSeparator(BuildContext context) => Container(
-        height: 1.0,
-        color: Theme.of(context).primaryColorLight,
-      );
-
-  Widget getSectionTitleRow(bool showSeeAll, Function()? onPressed) => Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Top billed cast' /*.toUpperCase()*/,
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.5,
-                // height: 1.1,
-              ),
-            ),
-            if (showSeeAll) CompactTextButton('See all', onPressed),
-          ],
-        ),
-      );
 }
 
 class RecommendedMoviesSection extends StatelessWidget
@@ -823,7 +774,7 @@ class RecommendedMoviesSection extends StatelessWidget
           //     : totalCount ~/ _itemsPerPage * _itemsPerPage +
           //         (remainder > _itemsPerRow ? remainder : 0);
           return SliverPadding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            padding: const EdgeInsets.symmetric(vertical: 12.0),
             sliver: SliverStack(
               insetOnOverlap: false,
               children: [
