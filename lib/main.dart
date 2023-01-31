@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var mainColor = Colors.deepPurple;
+    var appBarItemColor = Colors.black87;
     return AppLifecycleManager(
       child: MaterialApp(
         title: 'Cinema scope',
@@ -36,16 +37,16 @@ class MyApp extends StatelessWidget {
           fontFamily: GoogleFonts.lato().fontFamily,
           appBarTheme: AppBarTheme(
             titleTextStyle: TextStyle(
-              color: Colors.blueGrey.shade600,
+              color: appBarItemColor,
               fontSize: 24.0,
               fontFamily: GoogleFonts.lato().fontFamily,
               // fontWeight: FontWeight.bold,
             ),
             actionsIconTheme: IconThemeData(
-              color: Colors.green.shade600,
+              color: appBarItemColor,
             ),
             iconTheme: IconThemeData(
-              color: Colors.green.shade600,
+              color: appBarItemColor,
             ),
           )
           // textTheme: Theme.of(context).textTheme.apply(
