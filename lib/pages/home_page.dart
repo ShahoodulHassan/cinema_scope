@@ -59,12 +59,6 @@ class _HomePageChildState extends State<_HomePageChild>
     logIfDebug('build called');
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors.green,
-        ),
-        actionsIconTheme: IconThemeData(
-          color: Colors.green,
-        ),
         title: const Text('Cinema scope'),
         actions: [
           IconButton(
