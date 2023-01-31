@@ -32,11 +32,11 @@ class ConfigViewModel extends ApiViewModel {
   String getImageUrl(
     ImageType imageType,
     ImageQuality imageQuality,
-    String youtubeKey,
+    String imagePath,
   ) {
-    return '${imageConfig.baseUrl}'
+    return '${imageConfig.secureBaseUrl}'
         '${_getImageSize(imageType, imageQuality)}'
-        '$youtubeKey';
+        '$imagePath';
   }
 
   ImageConfig get imageConfig => apiConfig!.images;

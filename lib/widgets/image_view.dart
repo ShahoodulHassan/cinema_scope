@@ -53,11 +53,14 @@ class NetworkImageView extends StatelessWidget {
     if (imagePath == null) {
       child = placeholder;
     } else {
+      String imageUrl = imagePath!.contains('/http')
+          ? imagePath!.replaceFirst('/http', 'http')
+          : context
+              .read<ConfigViewModel>()
+              .getImageUrl(imageType, imageQuality, imagePath!);
       child = CachedNetworkImage(
         alignment: Alignment.topRight,
-        imageUrl: context
-            .read<ConfigViewModel>()
-            .getImageUrl(imageType, imageQuality, imagePath!),
+        imageUrl: imageUrl,
         placeholder: (_, __) => placeholder,
         errorWidget: (_, __, ___) {
           return const Center(

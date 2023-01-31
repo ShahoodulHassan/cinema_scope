@@ -28,12 +28,11 @@ class MovieViewModel extends ApiViewModel {
 
   int get totalCastCount => casts.length;
 
-  // List<MovieResult> getRecommendationsForPage(int itemsPerPage) {
-  //   return recommendations
-  //       .skip(itemsPerPage * _recomPageIndex)
-  //       .take(itemsPerPage)
-  //       .toList();
-  // }
+  List<Review> get reviews => movie?.reviews.results ?? [];
+
+  int get totalReviewsCount => movie?.reviews.totalResults ?? 0;
+
+  List<Keyword> get keywords => movie?.keywords.keywords ?? [];
 
   String get synopsis => movie?.overview ?? '';
 
