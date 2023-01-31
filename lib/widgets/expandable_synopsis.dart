@@ -31,7 +31,7 @@ class _ExpandableSynopsisState extends State<ExpandableSynopsis>
     if (widget.overview != null && widget.overview!.isNotEmpty) {
       return Padding(
         padding:
-        const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 4.0),
+        const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
         child: ExpandableText(
           widget.overview!,
           expandText: 'Show more',
