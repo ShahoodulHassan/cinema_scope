@@ -398,7 +398,7 @@ class _TmdbApi implements TmdbApi {
     page = 1,
     language = 'en-US',
     region = 'US',
-    sortBy = 'release_date.asc',
+    sortBy = 'popularity.desc',
     includeAdult = 'false',
     originalLanguage = 'en',
     releaseType = '3|2',
