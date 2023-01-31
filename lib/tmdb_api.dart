@@ -128,4 +128,21 @@ abstract class TmdbApi {
   Future<SearchResult> getNowPlaying(@http.Path("media_type") String mediaType,
       {@http.Query("page") int page = 1,
       @http.Query('language') String language = 'en-US'});
+
+  @http.GET("/discover/{media_type}")
+  @http.Headers(headerMap)
+  Future<SearchResult> discoverMoviesByKeyword(
+    @http.Path("media_type") String mediaType,
+    @http.Query('with_keywords') String keywords,
+    @http.Query('with_genres') String genres,
+    /*@http.Query('release_date.gte') String dateGte,
+    @http.Query('release_date.lte') String dateLte,*/
+    {
+    @http.Query("page") int page = 1,
+    @http.Query('language') String language = 'en-US',
+    @http.Query('region') String region = 'US',
+    @http.Query('sort_by') String sortBy = 'popularity.desc',
+    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query('with_original_language') String originalLanguage = 'en',
+  });
 }
