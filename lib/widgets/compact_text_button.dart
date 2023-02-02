@@ -5,7 +5,7 @@ class CompactTextButton extends StatelessWidget {
   final String title;
   final Function()? onPressed;
 
-  const CompactTextButton(this.title, this.onPressed, {Key? key})
+  const CompactTextButton(this.title, {required this.onPressed, Key? key})
       : super(key: key);
 
   @override

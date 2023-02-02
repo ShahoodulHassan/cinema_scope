@@ -145,4 +145,26 @@ abstract class TmdbApi {
     @http.Query('include_adult') String includeAdult = 'false',
     @http.Query('with_original_language') String originalLanguage = 'en',
   });
+
+  @http.GET("/discover/{media_type}")
+  @http.Headers(headerMap)
+  Future<SearchResult> discoverMoviesByGenre(
+    @http.Path("media_type") String mediaType,
+    @http.Query('with_genres') String genres, {
+    @http.Query("page") int page = 1,
+    @http.Query('language') String language = 'en-US',
+    @http.Query('region') String region = 'US',
+    @http.Query('sort_by') String sortBy = 'popularity.desc',
+    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query('with_original_language') String originalLanguage = 'en',
+  });
+
+  @http.GET("/{media_type}/{media_id}/recommendations")
+  @http.Headers(headerMap)
+  Future<SearchResult> getRecommendations(
+    @http.Path("media_type") String mediaType,
+    @http.Path("media_id") int mediaId, {
+    @http.Query("page") int page = 1,
+    @http.Query('language') String language = 'en-US',
+  });
 }

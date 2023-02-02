@@ -557,6 +557,89 @@ class _TmdbApi implements TmdbApi {
     return value;
   }
 
+  @override
+  Future<SearchResult> discoverMoviesByGenre(
+    mediaType,
+    genres, {
+    page = 1,
+    language = 'en-US',
+    region = 'US',
+    sortBy = 'popularity.desc',
+    includeAdult = 'false',
+    originalLanguage = 'en',
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'with_genres': genres,
+      r'page': page,
+      r'language': language,
+      r'region': region,
+      r'sort_by': sortBy,
+      r'include_adult': includeAdult,
+      r'with_original_language': originalLanguage,
+    };
+    final _headers = <String, dynamic>{
+      r'Content-Type': 'application/json;charset=utf-8',
+      r'Authorization':
+          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYzdiNTdjNTY2ZThhZjk0MTE1YmIyYzBkOTEwZjYxMCIsInN1YiI6IjVhMGE3MDk5YzNhMzY4MjE4YTAxMTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.uyDhjXOvRNfjg_gJFPkSfAuT-F-MFmWVwPoEUftgq1g',
+    };
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<SearchResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/json;charset=utf-8',
+    )
+            .compose(
+              _dio.options,
+              '/discover/${mediaType}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = SearchResult.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<SearchResult> getRecommendations(
+    mediaType,
+    mediaId, {
+    page = 1,
+    language = 'en-US',
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'page': page,
+      r'language': language,
+    };
+    final _headers = <String, dynamic>{
+      r'Content-Type': 'application/json;charset=utf-8',
+      r'Authorization':
+          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYzdiNTdjNTY2ZThhZjk0MTE1YmIyYzBkOTEwZjYxMCIsInN1YiI6IjVhMGE3MDk5YzNhMzY4MjE4YTAxMTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.uyDhjXOvRNfjg_gJFPkSfAuT-F-MFmWVwPoEUftgq1g',
+    };
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<SearchResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/json;charset=utf-8',
+    )
+            .compose(
+              _dio.options,
+              '/${mediaType}/${mediaId}/recommendations',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = SearchResult.fromJson(_result.data!);
+    return value;
+  }
+
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||

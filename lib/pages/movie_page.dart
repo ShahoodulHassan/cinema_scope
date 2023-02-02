@@ -1,6 +1,8 @@
 import 'package:card_swiper/card_swiper.dart';
 import 'package:cinema_scope/architecture/movie_view_model.dart';
 import 'package:cinema_scope/models/search.dart';
+import 'package:cinema_scope/pages/movies_list_page.dart';
+import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:cinema_scope/widgets/image_view.dart';
@@ -72,7 +74,7 @@ class _MoviePageChild extends StatefulWidget {
 }
 
 class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
-    with GenericFunctions, Utilities {
+    with GenericFunctions, Utilities, CommonFunctions {
   late final String? sourceUrl = widget.sourceUrl;
   late final String? destUrl = widget.destUrl;
   late final String heroImageTag = widget.heroImageTag;
@@ -205,16 +207,19 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
                     padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
                     child: Row(
                       children: [
-                        Visibility(
-                          visible:
-                              widget.year != null && widget.year!.isNotEmpty,
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 16.0),
-                            child: Text(
-                              widget.year ?? '',
-                              textAlign: TextAlign.start,
-                              style: const TextStyle(
-                                fontSize: 16.0,
+                        AnimatedSize(
+                          duration: const Duration(milliseconds: 200),
+                          child: Visibility(
+                            visible:
+                                widget.year != null && widget.year!.isNotEmpty,
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 16.0),
+                              child: Text(
+                                widget.year ?? '',
+                                textAlign: TextAlign.start,
+                                style: const TextStyle(
+                                  fontSize: 16.0,
+                                ),
                               ),
                             ),
                           ),
@@ -262,27 +267,30 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
                       ],
                     ),
                   ),
-                  Selector<MovieViewModel, String?>(
-                    builder: (_, tagline, __) {
-                      return tagline == null || tagline.isEmpty
-                          ? const SizedBox.shrink()
-                          : Padding(
-                              padding: const EdgeInsets.fromLTRB(
-                                  16.0, 8.0, 16.0, 8.0),
-                              child: Text(
-                                '"$tagline"',
-                                textAlign: TextAlign.start,
-                                style: GoogleFonts.literata(
-                                  textStyle: const TextStyle(
-                                    fontSize: 18.0,
-                                    // fontWeight: FontWeight.bold,
-                                    fontStyle: FontStyle.italic,
+                  AnimatedSize(
+                    duration: const Duration(milliseconds: 200),
+                    child: Selector<MovieViewModel, String?>(
+                      builder: (_, tagline, __) {
+                        return tagline == null || tagline.isEmpty
+                            ? const SizedBox.shrink()
+                            : Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                    16.0, 8.0, 16.0, 8.0),
+                                child: Text(
+                                  '"$tagline"',
+                                  textAlign: TextAlign.start,
+                                  style: GoogleFonts.literata(
+                                    textStyle: const TextStyle(
+                                      fontSize: 18.0,
+                                      // fontWeight: FontWeight.bold,
+                                      fontStyle: FontStyle.italic,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            );
-                    },
-                    selector: (_, mvm) => mvm.movie?.tagline,
+                              );
+                      },
+                      selector: (_, mvm) => mvm.movie?.tagline,
+                    ),
                   ),
                   ExpandableSynopsis(widget.overview),
                 ],
@@ -327,7 +335,12 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
             final genre = genres?[index];
             if (genre != null) {
               return InkWellOverlay(
-                onTap: () {},
+                onTap: () {
+                  goToMovieListPage(
+                    context,
+                    genres: [genre],
+                  );
+                },
                 borderRadius: BorderRadius.circular(6.0),
                 child: Chip(
                   backgroundColor:
@@ -455,7 +468,7 @@ class CastCrewSection extends StatelessWidget {
         children: [
           getCrewTile(directors, 'Director'),
           getCrewTile(combinedWriters, 'Writer'),
-          CompactTextButton('All cast & crew', () {}),
+          CompactTextButton('All cast & crew', onPressed: () {}),
         ],
       ),
     );
@@ -518,7 +531,7 @@ class CastCrewSection extends StatelessWidget {
                 // height: 1.1,
               ),
             ),
-            if (showSeeAll) CompactTextButton('All cast', onPressed),
+            if (showSeeAll) CompactTextButton('All cast', onPressed: onPressed),
           ],
         ),
       );
@@ -707,21 +720,12 @@ class RecommendedMoviesSection extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    return Selector<MovieViewModel, Tuple2<List<MovieResult>, int>>(
-      selector: (_, mvm) {
-        return Tuple2(mvm.recommendations, mvm.totalRecomCount);
-      },
-      builder: (_, tuple, __) {
-        var recommendations = tuple.item1;
-        if (recommendations.isEmpty) {
+    return Selector<MovieViewModel, RecommendationData?>(
+      selector: (_, mvm) => mvm.recommendationData,
+      builder: (_, data, __) {
+        if (data == null) {
           return SliverToBoxAdapter(child: Container());
         } else {
-          // final totalCount = recommendations.length;
-          // final remainder = totalCount % _itemsPerPage;
-          // itemCount = totalCount < _itemsPerPage
-          //     ? totalCount
-          //     : totalCount ~/ _itemsPerPage * _itemsPerPage +
-          //         (remainder > _itemsPerRow ? remainder : 0);
           return SliverPadding(
             padding: const EdgeInsets.symmetric(vertical: 12.0),
             sliver: SliverStack(
@@ -739,7 +743,11 @@ class RecommendedMoviesSection extends StatelessWidget
                     shape: ContinuousRectangleBorder(),
                   ),
                 ),
-                RecommendedMoviesView(tuple.item1, tuple.item2),
+                RecommendedMoviesView(
+                  data.mediaId,
+                  data.recommendations,
+                  data.totalResults,
+                ),
               ],
             ),
           );
@@ -749,7 +757,9 @@ class RecommendedMoviesSection extends StatelessWidget
   }
 }
 
-class RecommendedMoviesView extends StatelessWidget {
+class RecommendedMoviesView extends StatelessWidget
+    with Utilities, CommonFunctions {
+  final int movieId;
   final List<MovieResult> recommendations;
   final int totalRecomCount;
   final int _itemsPerRow = 3;
@@ -775,6 +785,7 @@ class RecommendedMoviesView extends StatelessWidget {
       (_remainder > _itemsPerRow ? 1 : 0);
 
   RecommendedMoviesView(
+    this.movieId,
     this.recommendations,
     this.totalRecomCount, {
     Key? key,
@@ -784,7 +795,7 @@ class RecommendedMoviesView extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiSliver(
       children: [
-        getSectionTitleRow(_itemCount, totalRecomCount),
+        getSectionTitleRow(context, _itemCount, totalRecomCount),
         SliverPosterGrid(
           recommendations,
           itemsPerRow: _itemsPerRow,
@@ -796,7 +807,11 @@ class RecommendedMoviesView extends StatelessWidget {
     );
   }
 
-  SliverToBoxAdapter getSectionTitleRow(int itemCount, int totalRecomCount) {
+  SliverToBoxAdapter getSectionTitleRow(
+    BuildContext context,
+    int itemCount,
+    int totalRecomCount,
+  ) {
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
@@ -813,7 +828,9 @@ class RecommendedMoviesView extends StatelessWidget {
               ),
             ),
             if (totalRecomCount > itemCount)
-              CompactTextButton('See all', () {}),
+              CompactTextButton('See all', onPressed: () {
+                goToMovieListPage(context, mediaId: movieId);
+              }),
           ],
         ),
       ),
@@ -821,7 +838,7 @@ class RecommendedMoviesView extends StatelessWidget {
   }
 }
 
-class SliverPosterGrid extends StatelessWidget with Utilities {
+class SliverPosterGrid extends StatelessWidget with Utilities, CommonFunctions {
   final int itemsPerRow;
   final int itemsPerPage;
   final double _topRadius = 12.0;
@@ -886,7 +903,9 @@ class SliverPosterGrid extends StatelessWidget with Utilities {
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
               child: CompactTextButton('PREV',
-                  index > 0 ? () => mvm.recomPageIndex = index - 1 : null),
+                  onPressed: (index > 0
+                      ? () => mvm.recomPageIndex = index - 1
+                      : null)),
             ),
             Text(
               '${index + 1} / $_pageCount',
@@ -897,11 +916,10 @@ class SliverPosterGrid extends StatelessWidget with Utilities {
             ),
             Padding(
               padding: const EdgeInsets.only(left: 8.0),
-              child: CompactTextButton(
-                  'NEXT',
-                  index < (_pageCount - 1)
+              child: CompactTextButton('NEXT',
+                  onPressed: (index < (_pageCount - 1)
                       ? () => mvm.recomPageIndex = index + 1
-                      : null),
+                      : null)),
             ),
           ],
         ),
@@ -980,29 +998,13 @@ class SliverPosterGrid extends StatelessWidget with Utilities {
     );
   }
 
-  void goToMoviePage(BuildContext context, MovieResult movie, String? destUrl) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => MoviePage(
-            id: movie.id,
-            title: movie.movieTitle,
-            year: getYearStringFromDate(movie.releaseDate),
-            voteAverage: movie.voteAverage,
-            overview: movie.overview,
-            sourceUrl: null,
-            destUrl: destUrl,
-            heroImageTag: ''),
-      ),
-    ).then((value) {});
-  }
-
   List<MovieResult> getListForPage(List<MovieResult> list, int index) {
     return list.skip(itemsPerPage * index).take(itemsPerPage).toList();
   }
 }
 
-class KeywordsSection extends StatelessWidget with GenericFunctions {
+class KeywordsSection extends StatelessWidget
+    with GenericFunctions, Utilities, CommonFunctions {
   final int _maxCount = 10;
 
   const KeywordsSection({Key? key}) : super(key: key);
@@ -1046,7 +1048,14 @@ class KeywordsSection extends StatelessWidget with GenericFunctions {
                         children: tuple.item1.map((e) {
                           return InkWellOverlay(
                             onTap: () {
-                              logIfDebug('${e.name} clicked');
+                              goToMovieListPage(
+                                context,
+                                keywords: [e],
+                                genres: context
+                                    .read<MovieViewModel>()
+                                    .movie
+                                    ?.genres,
+                              );
                             },
                             borderRadius: BorderRadius.circular(6.0),
                             child: Chip(
@@ -1105,7 +1114,7 @@ class KeywordsSection extends StatelessWidget with GenericFunctions {
                 // height: 1.1,
               ),
             ),
-            if (showSeeAll) CompactTextButton('See all', onPressed),
+            if (showSeeAll) CompactTextButton('See all', onPressed: onPressed),
           ],
         ),
       );
@@ -1147,7 +1156,8 @@ class ReviewsSection extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
-                      child: CompactTextButton('Write a review', () {}),
+                      child:
+                          CompactTextButton('Write a review', onPressed: () {}),
                     ),
                     getSliverSeparator(context),
                   ],
@@ -1179,7 +1189,7 @@ class ReviewsSection extends StatelessWidget {
                 // height: 1.1,
               ),
             ),
-            if (showSeeAll) CompactTextButton('See all', onPressed),
+            if (showSeeAll) CompactTextButton('See all', onPressed: onPressed),
           ],
         ),
       );

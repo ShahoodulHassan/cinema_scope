@@ -15,6 +15,10 @@ class MovieViewModel extends ApiViewModel {
     notifyListeners();
   }
 
+  RecommendationData? get recommendationData => movie == null
+      ? null
+      : RecommendationData(movie!.id, movie!.recommendations);
+
   List<MovieResult> get recommendations =>
       (movie?.recommendations.results
         ?..removeWhere((element) => element.posterPath == null)) ??

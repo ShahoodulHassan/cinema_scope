@@ -390,3 +390,17 @@ class Crew extends BaseCast {
   @override
   Map<String, dynamic> toJson() => _$CrewToJson(this);
 }
+
+
+/// That's a custom object unrelated to what objects the API has to offer
+class RecommendationData<MediaType> {
+  final int mediaId;
+  final SearchResult result;
+
+  RecommendationData(this.mediaId, this.result);
+
+  List<MovieResult> get recommendations =>
+      (result.results..removeWhere((element) => element.posterPath == null));
+
+  int get totalResults => result.totalResults;
+}

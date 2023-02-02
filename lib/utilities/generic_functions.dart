@@ -252,11 +252,6 @@ mixin GenericFunctions {
 
   Color? get titleColor => Colors.blueGrey[700];
 
-  Widget getAppbarTitle(String title) => Text(
-        title,
-        style: appbarTitleStyle,
-      );
-
   TextStyle get appbarTitleStyle => TextStyle(
         color: titleColor,
         // fontSize: titleSize,
