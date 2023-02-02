@@ -90,7 +90,7 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
     super.initState();
     mvm = context.read<MovieViewModel>()..getMovieWithDetail(widget.id);
     final cvm = context.read<ConfigViewModel>();
-    String base = cvm.apiConfig!.images.baseUrl;
+    String base = cvm.apiConfig!.images.secureBaseUrl;
     String size = cvm.apiConfig!.images.backdropSizes[1];
     backdropBaseUrl = '$base$size';
   }
