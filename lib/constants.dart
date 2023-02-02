@@ -18,6 +18,13 @@ class Constants {
 
   static const String placeholderPath = 'assets/images/placeholder.png';
 
+  static const String pkApiConfig = 'pk_api_config';
+  static const String pkCountryConfig = 'pk_country_config';
+  static const String pkLanguageConfig = 'pk_language_config';
+  static const String pkTranslationConfig = 'pk_translation_config';
+  static const String pkCombinedGenres = 'pk_combined_genres';
+  static const String pkConfigStoreDate = 'pk_config_store_date';
+
 }
 
 enum MediaType {

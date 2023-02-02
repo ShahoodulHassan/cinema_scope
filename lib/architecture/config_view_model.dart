@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
 
@@ -6,25 +7,29 @@ import 'package:cinema_scope/constants.dart';
 
 import '../models/configuration.dart';
 import '../models/movie.dart';
+import '../utilities/utilities.dart';
 
 class ConfigViewModel extends ApiViewModel {
+  final int interval = 2; // In prod, it would be 30 days
+
   AppLifecycleState _appState = AppLifecycleState.detached;
 
-  ApiConfiguration? apiConfig;
+  ApiConfiguration? get apiConfig => getPrefApiConfiguration();
 
-  List<CountryConfig>? cfgCountries;
+  List<CountryConfig> get cfgCountries => getPrefCountryConfig();
 
-  List<LanguageConfig>? cfgLanguages;
+  List<LanguageConfig> get cfgLanguages => getPrefLanguageConfig();
 
-  List<String>? cfgTranslations;
+  List<String> get cfgTranslations => getPrefTranslationConfig();
 
-  List<MediaGenre>? combinedGenres;
+  List<MediaGenre> get combinedGenres => getPrefCombinedGenres();
 
-  bool get isConfigFetched =>
+  bool get isConfigComplete =>
       apiConfig != null &&
-      cfgCountries != null &&
-      cfgLanguages != null &&
-      cfgTranslations != null;
+      cfgCountries.isNotEmpty &&
+      cfgLanguages.isNotEmpty &&
+      cfgTranslations.isNotEmpty &&
+      combinedGenres.isNotEmpty;
 
   AppLifecycleState get appState => _appState;
 
@@ -63,32 +68,125 @@ class ConfigViewModel extends ApiViewModel {
 
   ConfigViewModel() : super();
 
-  getConfigurations() async {
-    apiConfig = await api.getApiConfiguration();
-    cfgCountries = await api.getCountryConfiguration();
-    cfgLanguages = await api.getLanguageConfiguration();
-    cfgTranslations = await api.getTranslationConfiguration();
-    combinedGenres = await getAllGenres();
+  _fetchConfigurations() async {
+    logIfDebug('fetchConfigurations called');
+    setPrefApiConfiguration(await api.getApiConfiguration());
+    setPrefCountryConfig(await api.getCountryConfiguration());
+    setPrefLanguageConfig(await api.getLanguageConfiguration());
+    setPrefTranslationConfig(await api.getTranslationConfiguration());
+    setPrefCombinedGenres(await getCombinedGenres());
+    setPrefConfigStoreDate(DateTime.now());
     notifyListeners();
   }
 
-  Future<List<MediaGenre>> getAllGenres() async {
+  checkConfigurations() async {
+    if (isNewConfigRequired) {
+      logIfDebug('new configurations required');
+      _fetchConfigurations();
+    } else {
+      logIfDebug('new configurations not required');
+    }
+  }
+
+  Future<List<MediaGenre>> getCombinedGenres() async {
     var movieGenres = await api.getGenres(MediaType.movie.name);
     var tvGenres = await api.getGenres(MediaType.tv.name);
     List<MediaGenre> combinedGenres = movieGenres.genres
-        .map((e) => MediaGenre.fromGenre(genre: e, mediaType: MediaType.movie))
-        .toList() + tvGenres.genres
-        .map((e) => MediaGenre.fromGenre(genre: e, mediaType: MediaType.tv))
-        .toList();
-    logIfDebug('genres:$combinedGenres');
+            .map((e) =>
+                MediaGenre.fromGenre(genre: e, mediaType: MediaType.movie))
+            .toList() +
+        tvGenres.genres
+            .map((e) => MediaGenre.fromGenre(genre: e, mediaType: MediaType.tv))
+            .toList();
     return combinedGenres;
   }
 
   String getGenreName(MediaType mediaType, int id) {
-    return combinedGenres!
+    return combinedGenres
         .singleWhere(
             (element) => element.mediaType == mediaType && element.id == id)
         .name;
+  }
+
+  /// Without casting the decoded data to List, we don't get a List<MediaGenre>
+  List<MediaGenre> getPrefCombinedGenres() {
+    var json = PrefUtil.getValue<String>(Constants.pkCombinedGenres, '');
+    return json.isEmpty
+        ? []
+        : (jsonDecode(json) as List)
+            .map((json) => MediaGenre.fromJson(json))
+            .toList();
+  }
+
+  void setPrefCombinedGenres(List<MediaGenre> genres) {
+    PrefUtil.setValue(Constants.pkCombinedGenres, jsonEncode(genres));
+  }
+
+  ApiConfiguration? getPrefApiConfiguration() {
+    var json = PrefUtil.getValue(Constants.pkApiConfig, '');
+    return json.isEmpty
+        ? null
+        : ApiConfiguration.fromJson(jsonDecode(json) as Map<String, dynamic>);
+  }
+
+  void setPrefApiConfiguration(ApiConfiguration apiConfig) {
+    PrefUtil.setValue(Constants.pkApiConfig, jsonEncode(apiConfig.toJson()));
+  }
+
+  List<CountryConfig> getPrefCountryConfig() {
+    var json = PrefUtil.getValue(Constants.pkCountryConfig, '');
+    return json.isEmpty
+        ? []
+        : (jsonDecode(json) as List)
+            .map((e) => CountryConfig.fromJson(e))
+            .toList();
+  }
+  
+  void setPrefCountryConfig(List<CountryConfig> config) {
+    PrefUtil.setValue(Constants.pkCountryConfig, jsonEncode(config));
+  }
+
+  List<LanguageConfig> getPrefLanguageConfig() {
+    var json = PrefUtil.getValue(Constants.pkLanguageConfig, '');
+    return json.isEmpty
+        ? []
+        : (jsonDecode(json) as List)
+        .map((e) => LanguageConfig.fromJson(e))
+        .toList();
+  }
+
+  void setPrefLanguageConfig(List<LanguageConfig> config) {
+    PrefUtil.setValue(Constants.pkLanguageConfig, jsonEncode(config));
+  }
+
+  List<String> getPrefTranslationConfig() {
+    var json = PrefUtil.getValue(Constants.pkTranslationConfig, '');
+    return json.isEmpty
+        ? []
+        : (jsonDecode(json) as List)
+        .map((e) => e as String)
+        .toList();
+  }
+
+  void setPrefTranslationConfig(List<String> config) {
+    PrefUtil.setValue(Constants.pkTranslationConfig, jsonEncode(config));
+  }
+
+  /// New configurations need to be fetched if no date was stored (new install)
+  /// or the last fetch date is more than 30 days old
+  bool get isNewConfigRequired {
+    var lastDate = getPrefConfigStoreDate();
+    return lastDate == null ||
+        DateTime.now().difference(lastDate).inDays > interval;
+  }
+
+  DateTime? getPrefConfigStoreDate() {
+    var dateStr = PrefUtil.getValue<String>(Constants.pkConfigStoreDate, '');
+    return DateTime.tryParse(dateStr);
+  }
+
+  void setPrefConfigStoreDate(DateTime date) {
+    PrefUtil.setValue(Constants.pkConfigStoreDate, date.toString());
   }
 }
 

@@ -1,6 +1,7 @@
 import 'package:cinema_scope/pages/home_page.dart';
 import 'package:cinema_scope/pages/search_page.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
+import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:cinema_scope/widgets/app_lifecycle_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,11 +10,14 @@ import 'package:provider/provider.dart';
 
 import 'architecture/config_view_model.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await PrefUtil.init();
+  // await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  await AppInfo.init();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
-        create: (_) => ConfigViewModel()..getConfigurations()),
-    // ChangeNotifierProvider(create: (_) => HeroViewModel()),
+        create: (_) => ConfigViewModel()..checkConfigurations()),
   ], child: const MyApp()));
 }
 
@@ -115,8 +119,9 @@ class _MyHomePageState extends State<MyHomePage> with GenericFunctions,
         title: Text(widget.title),
       ),
       body: Selector<ConfigViewModel, bool>(
-        builder: (_, isConfigFetched, __) {
-          return isConfigFetched
+        builder: (_, isConfigComplete, __) {
+          logIfDebug('isConfigComplete:$isConfigComplete');
+          return isConfigComplete
               ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -144,7 +149,7 @@ class _MyHomePageState extends State<MyHomePage> with GenericFunctions,
               : const SizedBox.shrink();
         },
         selector: (_, cvm) {
-          return cvm.isConfigFetched;
+          return cvm.isConfigComplete;
         },
       ),
       // floatingActionButton: FloatingActionButton(
