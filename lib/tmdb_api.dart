@@ -40,6 +40,13 @@ abstract class TmdbApi {
   @http.Headers(headerMap)
   Future<List<String>> getTranslationConfiguration();
 
+  @http.GET("/genre/{media_type}/list")
+  @http.Headers(headerMap)
+  Future<GenreResult> getGenres(
+    @http.Path("media_type") String mediaType, {
+    @http.Query('language') String language = 'en-US',
+  });
+
   /// Media retrieval method
 
   @http.GET("/movie/{id}")

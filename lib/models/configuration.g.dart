@@ -66,3 +66,14 @@ Map<String, dynamic> _$CountryConfigToJson(CountryConfig instance) =>
       'iso_3166_1': instance.iso31661,
       'english_name': instance.englishName,
     };
+
+GenreResult _$GenreResultFromJson(Map<String, dynamic> json) => GenreResult(
+      (json['genres'] as List<dynamic>)
+          .map((e) => Genre.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$GenreResultToJson(GenreResult instance) =>
+    <String, dynamic>{
+      'genres': instance.genres,
+    };

@@ -1,7 +1,6 @@
-
-
-
 import 'package:json_annotation/json_annotation.dart';
+
+import 'movie.dart';
 
 part 'configuration.g.dart';
 
@@ -66,4 +65,18 @@ class CountryConfig {
       _$CountryConfigFromJson(json);
 
   Map<String, dynamic> toJson() => _$CountryConfigToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class GenreResult {
+
+  List<Genre> genres;
+
+  GenreResult(this.genres);
+
+  factory GenreResult.fromJson(Map<String, dynamic> json) =>
+      _$GenreResultFromJson(json);
+
+  Map<String, dynamic> toJson() => _$GenreResultToJson(this);
+
 }

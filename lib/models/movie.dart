@@ -1,3 +1,4 @@
+import 'package:cinema_scope/constants.dart';
 import 'package:cinema_scope/models/search.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -85,7 +86,8 @@ class Movie {
   String toString() {
     return (StringBuffer('Movie: ')
           ..write('title: $title\t')
-          ..write('synopsis: ${overview?.substring(0, (overview?.length ?? 0) ~/ 3)}\t')
+          ..write(
+              'synopsis: ${overview?.substring(0, (overview?.length ?? 0) ~/ 3)}\t')
           ..write('genres: $genres\t')
           ..write('date: $releaseDate'))
         .toString();
@@ -362,8 +364,6 @@ class Cast extends BaseCast {
 
   @override
   Map<String, dynamic> toJson() => _$CastToJson(this);
-
-
 }
 
 @CopyWith()
@@ -391,9 +391,8 @@ class Crew extends BaseCast {
   Map<String, dynamic> toJson() => _$CrewToJson(this);
 }
 
-
 /// That's a custom object unrelated to what objects the API has to offer
-class RecommendationData<MediaType> {
+class RecommendationData {
   final int mediaId;
   final SearchResult result;
 
@@ -403,4 +402,24 @@ class RecommendationData<MediaType> {
       (result.results..removeWhere((element) => element.posterPath == null));
 
   int get totalResults => result.totalResults;
+}
+
+class MediaGenre extends Genre {
+  final MediaType mediaType;
+
+  MediaGenre(super.id, super.name, this.mediaType);
+
+  factory MediaGenre.fromGenre({
+    required Genre genre,
+    required MediaType mediaType,
+  }) =>
+      MediaGenre(genre.id, genre.name, mediaType);
+
+  @override
+  String toString() {
+    return (StringBuffer('MediaGenre: ')
+          ..write('type: ${mediaType.name}\t')
+          ..write('name: $name'))
+        .toString();
+  }
 }

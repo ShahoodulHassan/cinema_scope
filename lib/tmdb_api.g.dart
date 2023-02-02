@@ -141,6 +141,38 @@ class _TmdbApi implements TmdbApi {
   }
 
   @override
+  Future<GenreResult> getGenres(
+    mediaType, {
+    language = 'en-US',
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'language': language};
+    final _headers = <String, dynamic>{
+      r'Content-Type': 'application/json;charset=utf-8',
+      r'Authorization':
+          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYzdiNTdjNTY2ZThhZjk0MTE1YmIyYzBkOTEwZjYxMCIsInN1YiI6IjVhMGE3MDk5YzNhMzY4MjE4YTAxMTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.uyDhjXOvRNfjg_gJFPkSfAuT-F-MFmWVwPoEUftgq1g',
+    };
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<GenreResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/json;charset=utf-8',
+    )
+            .compose(
+              _dio.options,
+              '/genre/${mediaType}/list',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = GenreResult.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
   Future<Movie> getMovie(id) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
