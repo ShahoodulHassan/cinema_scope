@@ -404,6 +404,7 @@ class RecommendationData {
   int get totalResults => result.totalResults;
 }
 
+@JsonSerializable(fieldRename: FieldRename.snake)
 class MediaGenre extends Genre {
   final MediaType mediaType;
 
@@ -414,6 +415,12 @@ class MediaGenre extends Genre {
     required MediaType mediaType,
   }) =>
       MediaGenre(genre.id, genre.name, mediaType);
+
+  factory MediaGenre.fromJson(Map<String, dynamic> json) =>
+      _$MediaGenreFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$MediaGenreToJson(this);
 
   @override
   String toString() {

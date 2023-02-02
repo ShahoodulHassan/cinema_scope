@@ -890,3 +890,23 @@ Map<String, dynamic> _$CrewToJson(Crew instance) => <String, dynamic>{
       'department': instance.department,
       'job': instance.job,
     };
+
+MediaGenre _$MediaGenreFromJson(Map<String, dynamic> json) => MediaGenre(
+      json['id'] as int,
+      json['name'] as String,
+      $enumDecode(_$MediaTypeEnumMap, json['media_type']),
+    );
+
+Map<String, dynamic> _$MediaGenreToJson(MediaGenre instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'media_type': _$MediaTypeEnumMap[instance.mediaType]!,
+    };
+
+const _$MediaTypeEnumMap = {
+  MediaType.all: 'all',
+  MediaType.movie: 'movie',
+  MediaType.tv: 'tv',
+  MediaType.people: 'people',
+};
