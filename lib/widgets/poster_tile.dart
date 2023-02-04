@@ -55,7 +55,7 @@ class PosterTile extends StatelessWidget {
                       if (subtitle != null) subtitle!,
                       if (description != null)
                         Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
+                          padding: const EdgeInsets.only(top: 0.0),
                           child: description!,
                         ),
                     ],
