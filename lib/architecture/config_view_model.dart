@@ -122,6 +122,15 @@ class ConfigViewModel extends ApiViewModel {
     PrefUtil.setValue(Constants.pkCombinedGenres, jsonEncode(genres));
   }
 
+  String getGenreNamesFromIds(List<int> genreIds, MediaType mediaType) {
+    return genreIds
+        .map((id) => combinedGenres
+        .singleWhere(
+            (genre) => genre.mediaType == mediaType && genre.id == id)
+        .name)
+        .join(', ');
+  }
+
   ApiConfiguration? getPrefApiConfiguration() {
     var json = PrefUtil.getValue(Constants.pkApiConfig, '');
     return json.isEmpty
