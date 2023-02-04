@@ -150,161 +150,75 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
                     topRadius: 4.0,
                     bottomRadius: 4.0,
                   ),
-                  subtitle: Row(
-                    children: [
-                      Visibility(
-                        visible: movie.releaseDate != null &&
-                            movie.releaseDate!.isNotEmpty,
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 16.0),
-                          child: Text(
-                            getYearStringFromDate(movie.releaseDate),
-                            textAlign: TextAlign.start,
-                            style: const TextStyle(fontSize: 15.0),
-                          ),
-                        ),
-                      ),
-                      Visibility(
-                        visible: movie.voteAverage > 0.0,
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 16.0),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.star_sharp,
-                                size: 20.0,
-                                color: Constants.ratingIconColor,
+                  subtitle: Padding(
+                    padding: const EdgeInsets.only(top: 1.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Visibility(
+                              visible: movie.releaseDate != null &&
+                                  movie.releaseDate!.isNotEmpty,
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 16.0),
+                                child: Text(
+                                  getYearStringFromDate(movie.releaseDate),
+                                  textAlign: TextAlign.start,
+                                  style: const TextStyle(fontSize: 15.0),
+                                ),
                               ),
-                              Text(
-                                ' ${applyCommaAndRound(
-                                  movie.voteAverage,
-                                  1,
-                                  false,
-                                  true,
-                                )}',
-                                style: const TextStyle(fontSize: 15.0),
+                            ),
+                            Visibility(
+                              visible: movie.voteAverage > 0.0,
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.star_sharp,
+                                    size: 20.0,
+                                    color: Constants.ratingIconColor,
+                                  ),
+                                  Text(
+                                    ' ${applyCommaAndRound(
+                                      movie.voteAverage,
+                                      1,
+                                      false,
+                                      true,
+                                    )}',
+                                    style: const TextStyle(fontSize: 15.0),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                        if (movie.genreIds.isNotEmpty)
+                          Text(
+                            getGenreNamesFromIds(
+                                movie.genreIds, MediaType.movie),
+                            style: const TextStyle(
+                              fontSize: 14.0,
+                              height: 1.2,
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                   description: movie.overview.isNotEmpty
-                      ? Text(
-                          movie.overview,
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 14.0,
-                            height: 1.1,
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            movie.overview,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 14.0,
+                              height: 1.1,
+                            ),
                           ),
                         )
                       : null,
                 );
-                // return InkWellOverlay(
-                //   onTap: () => goToMoviePage(context, movie),
-                //   child: IntrinsicHeight(
-                //     child: Row(
-                //       crossAxisAlignment: CrossAxisAlignment.start,
-                //       children: [
-                //         const SizedBox(width: 8.0),
-                //         SizedBox(
-                //           width: (MediaQuery.of(context).size.width) * 0.25,
-                //           // height: (MediaQuery.of(context).size.width) * 0.25 / Constants.arPoster,
-                //           child: NetworkImageView(
-                //             movie.posterPath,
-                //             imageType: ImageType.poster,
-                //             aspectRatio: Constants.arPoster,
-                //             topRadius: 4.0,
-                //             bottomRadius: 4.0,
-                //           ),
-                //         ),
-                //         Expanded(
-                //           child: Padding(
-                //             padding:
-                //                 const EdgeInsets.symmetric(horizontal: 8.0),
-                //             child: Column(
-                //               mainAxisAlignment: MainAxisAlignment.center,
-                //               crossAxisAlignment: CrossAxisAlignment.start,
-                //               children: [
-                //                 Text(
-                //                   movie.title,
-                //                   maxLines: 2,
-                //                   overflow: TextOverflow.ellipsis,
-                //                   style: const TextStyle(
-                //                     height: 1.2,
-                //                     fontSize: 16.0,
-                //                     fontWeight: FontWeight.bold,
-                //                   ),
-                //                 ),
-                //                 // const SizedBox(height: 0.0),
-                //                 Row(
-                //                   children: [
-                //                     Visibility(
-                //                       visible: movie.releaseDate != null &&
-                //                           movie.releaseDate!.isNotEmpty,
-                //                       child: Padding(
-                //                         padding:
-                //                             const EdgeInsets.only(right: 16.0),
-                //                         child: Text(
-                //                           getYearStringFromDate(
-                //                               movie.releaseDate),
-                //                           textAlign: TextAlign.start,
-                //                           style: const TextStyle(
-                //                             fontSize: 15.0,
-                //                           ),
-                //                         ),
-                //                       ),
-                //                     ),
-                //                     Visibility(
-                //                       visible: movie.voteAverage > 0.0,
-                //                       child: Padding(
-                //                         padding:
-                //                             const EdgeInsets.only(right: 16.0),
-                //                         child: Row(
-                //                           children: [
-                //                             Icon(
-                //                               Icons.star_sharp,
-                //                               size: 20.0,
-                //                               color: Constants.ratingIconColor,
-                //                             ),
-                //                             Text(
-                //                               ' ${applyCommaAndRound(movie.voteAverage, 1, false, true)}'
-                //                               // '   (${applyCommaAndRoundNoZeroes(movie.voteCount * 1.0, 0, true)})'
-                //                               '',
-                //                               style: const TextStyle(
-                //                                 // fontWeight: FontWeight.normal,
-                //                                 fontSize: 15.0,
-                //                                 // height: 1.0,
-                //                               ),
-                //                             ),
-                //                           ],
-                //                         ),
-                //                       ),
-                //                     ),
-                //                   ],
-                //                 ),
-                //                 const SizedBox(height: 8.0),
-                //                 if (movie.overview.isNotEmpty)
-                //                   Text(
-                //                     movie.overview,
-                //                     maxLines: 3,
-                //                     overflow: TextOverflow.ellipsis,
-                //                     style: const TextStyle(
-                //                       fontSize: 14.0,
-                //                       height: 1.1,
-                //                     ),
-                //                   ),
-                //                 // Text(getYearStringFromDate(movie.releaseDate)),
-                //               ],
-                //             ),
-                //           ),
-                //         )
-                //       ],
-                //     ),
-                //   ),
-                // );
               },
               newPageProgressIndicatorBuilder: (_) => const Center(
                 child: Padding(
@@ -331,6 +245,17 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
         ],
       ),
     );
+  }
+
+  String getGenreNamesFromIds(List<int> genreIds, MediaType mediaType) {
+    return genreIds
+        .map((id) => context
+            .read<ConfigViewModel>()
+            .combinedGenres
+            .singleWhere(
+                (genre) => genre.mediaType == mediaType && genre.id == id)
+            .name)
+        .join(', ');
   }
 
   void goToMoviePage(BuildContext context, MovieResult movie,
