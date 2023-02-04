@@ -9,7 +9,7 @@ import '../pages/movies_list_page.dart';
 
 mixin CommonFunctions on Utilities {
 
-  goToMoviePage(BuildContext context, MovieResult movie, String? destUrl) {
+  goToMoviePage(BuildContext context, MovieResult movie, {String? destUrl}) {
     Navigator.push(
       context,
       MaterialPageRoute(
