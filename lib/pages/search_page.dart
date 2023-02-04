@@ -1,5 +1,5 @@
 import 'package:cinema_scope/architecture/search_view_model.dart';
-import 'package:cinema_scope/pages/movie_page.dart';
+import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import '../architecture/config_view_model.dart';
 import '../constants.dart';
 import '../models/search.dart';
+import '../widgets/poster_tile.dart';
 
 class SearchPage extends MultiProvider {
   SearchPage({super.key})
@@ -30,13 +31,13 @@ class _SearchPageChild extends StatefulWidget {
 }
 
 class _SearchPageChildState extends State<_SearchPageChild>
-    with GenericFunctions, Utilities {
+    with GenericFunctions, Utilities, CommonFunctions {
   late final ConfigViewModel cvm;
   late final SearchViewModel svm;
 
   Map<int, List<String?>> imageUrlToId = {};
 
-  final TextEditingController _controller = TextEditingController();
+  // final TextEditingController _controller = TextEditingController();
   String lastQuery = '';
 
   @override
@@ -71,7 +72,7 @@ class _SearchPageChildState extends State<_SearchPageChild>
             //     // ),
             //   ],
             // ),
-            automaticallyImplyLeading: false,
+            automaticallyImplyLeading: true,
             toolbarHeight: 0,
             elevation: 24,
             bottom: SearchAppbar(),
@@ -138,42 +139,43 @@ class _SearchPageChildState extends State<_SearchPageChild>
             builderDelegate: PagedChildBuilderDelegate<MovieResult>(
               itemBuilder: (_, movie, index) {
                 logIfDebug('itemBuilder called with index:$index');
-                return ListTile(
-                  onTap: () {
-                    var id = movie.id;
-                    // context.read<HeroViewModel>().heroImageTag =
-                    //     'search-image-$id';
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => MoviePage(
-                          id: id,
-                          title: movie.movieTitle,
-                          year: getYearStringFromDate(movie.releaseDate),
-                          voteAverage: movie.voteAverage,
-                          overview: movie.overview,
-                          sourceUrl: imageUrlToId[id]?[0],
-                          destUrl: imageUrlToId[id]?[1],
-                          heroImageTag: 'search-image-$id',
-                        ),
-                      ),
-                    );
-                  },
-                  leading: getBackdropView(movie),
-                  title: Text(
-                    '${index + 1}. ${movie.movieTitle ?? 'Title not available'}',
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                    style: const TextStyle(
-                      height: 1.2,
-                    ),
-                  ),
-                  subtitle: Text(
-                    getYearStringFromDate(movie.releaseDate),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                );
+                return MoviePosterTile(movie: movie);
+                // return ListTile(
+                //   onTap: () {
+                //     var id = movie.id;
+                //     // context.read<HeroViewModel>().heroImageTag =
+                //     //     'search-image-$id';
+                //     Navigator.push(
+                //       context,
+                //       MaterialPageRoute(
+                //         builder: (_) => MoviePage(
+                //           id: id,
+                //           title: movie.movieTitle,
+                //           year: getYearStringFromDate(movie.releaseDate),
+                //           voteAverage: movie.voteAverage,
+                //           overview: movie.overview,
+                //           sourceUrl: imageUrlToId[id]?[0],
+                //           destUrl: imageUrlToId[id]?[1],
+                //           heroImageTag: 'search-image-$id',
+                //         ),
+                //       ),
+                //     );
+                //   },
+                //   leading: getBackdropView(movie),
+                //   title: Text(
+                //     '${index + 1}. ${movie.movieTitle ?? 'Title not available'}',
+                //     overflow: TextOverflow.ellipsis,
+                //     maxLines: 2,
+                //     style: const TextStyle(
+                //       height: 1.2,
+                //     ),
+                //   ),
+                //   subtitle: Text(
+                //     getYearStringFromDate(movie.releaseDate),
+                //     maxLines: 1,
+                //     overflow: TextOverflow.ellipsis,
+                //   ),
+                // );
               },
               newPageProgressIndicatorBuilder: (_) => const Center(
                 child: Padding(
@@ -201,7 +203,6 @@ class _SearchPageChildState extends State<_SearchPageChild>
       ),
     );
   }
-
 
   Widget getBackdropView(MovieResult movie) {
     String? imageUrl;
@@ -342,8 +343,13 @@ class _SearchAppbarState extends State<SearchAppbar> with GenericFunctions {
                   const EdgeInsets.only(top: 10.0, bottom: 10.0, right: 16.0),
               // isDense: true,
               // constraints: BoxConstraints.tightFor(width: double.maxFinite, height: 80),
-              prefixIcon: const Icon(Icons.search),
-              hintText: 'Search movies',
+              prefixIcon: InkWell(
+                onTap: () => Navigator.pop(context),
+                borderRadius: BorderRadius.circular(30.0),
+                child: const Icon(Icons.arrow_back),
+              ),
+              suffixIcon: const Icon(Icons.search_sharp),
+              hintText: 'Search movies, TV, people',
               filled: true,
               fillColor: Theme.of(context).primaryColorLight.withOpacity(0.5),
             ),
