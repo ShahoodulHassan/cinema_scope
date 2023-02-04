@@ -1,13 +1,11 @@
 import 'package:card_swiper/card_swiper.dart';
 import 'package:cinema_scope/architecture/movie_view_model.dart';
 import 'package:cinema_scope/models/search.dart';
-import 'package:cinema_scope/pages/movies_list_page.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:cinema_scope/widgets/image_view.dart';
 import 'package:cinema_scope/widgets/route_aware_state.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -203,70 +201,72 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-                    child: Row(
-                      children: [
-                        AnimatedSize(
-                          duration: const Duration(milliseconds: 200),
-                          child: Visibility(
-                            visible:
-                                widget.year != null && widget.year!.isNotEmpty,
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 16.0),
-                              child: Text(
-                                widget.year ?? '',
-                                textAlign: TextAlign.start,
-                                style: const TextStyle(
-                                  fontSize: 16.0,
+                  if ((widget.year != null && widget.year!.isNotEmpty) ||
+                      widget.voteAverage > 0.0)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+                      child: Row(
+                        children: [
+                          AnimatedSize(
+                            duration: const Duration(milliseconds: 200),
+                            child: Visibility(
+                              visible: widget.year != null &&
+                                  widget.year!.isNotEmpty,
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 16.0),
+                                child: Text(
+                                  widget.year ?? '',
+                                  textAlign: TextAlign.start,
+                                  style: const TextStyle(
+                                    fontSize: 16.0,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        Visibility(
-                          visible: widget.voteAverage > 0.0,
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 16.0),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.star_sharp,
-                                  size: 22.0,
-                                  color: Constants.ratingIconColor,
-                                ),
-                                Text(
-                                  ' ${applyCommaAndRound(widget.voteAverage, 1, false, true)}'
-                                  // '   (${applyCommaAndRoundNoZeroes(movie.voteCount * 1.0, 0, true)})'
-                                  '',
-                                  style: const TextStyle(
-                                    // fontWeight: FontWeight.normal,
-                                    fontSize: 16.0,
-                                    // height: 1.0,
+                          Visibility(
+                            visible: widget.voteAverage > 0.0,
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 16.0),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.star_sharp,
+                                    size: 22.0,
+                                    color: Constants.ratingIconColor,
                                   ),
-                                ),
-                              ],
+                                  Text(
+                                    ' ${applyCommaAndRound(widget.voteAverage, 1, false, true)}'
+                                    // '   (${applyCommaAndRoundNoZeroes(movie.voteCount * 1.0, 0, true)})'
+                                    '',
+                                    style: const TextStyle(
+                                      // fontWeight: FontWeight.normal,
+                                      fontSize: 16.0,
+                                      // height: 1.0,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        Selector<MovieViewModel, int?>(
-                          builder: (_, runtime, __) {
-                            return runtime == null
-                                ? const SizedBox.shrink()
-                                : Text(
-                                    runtimeToString(runtime),
-                                    style: const TextStyle(
-                                      fontSize: 16.0,
-                                      // fontWeight: FontWeight.bold,
-                                      // fontStyle: FontStyle.italic,
-                                    ),
-                                  );
-                          },
-                          selector: (_, mvm) => mvm.movie?.runtime,
-                        ),
-                      ],
+                          Selector<MovieViewModel, int?>(
+                            builder: (_, runtime, __) {
+                              return runtime == null
+                                  ? const SizedBox.shrink()
+                                  : Text(
+                                      runtimeToString(runtime),
+                                      style: const TextStyle(
+                                        fontSize: 16.0,
+                                        // fontWeight: FontWeight.bold,
+                                        // fontStyle: FontStyle.italic,
+                                      ),
+                                    );
+                            },
+                            selector: (_, mvm) => mvm.movie?.runtime,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
                   AnimatedSize(
                     duration: const Duration(milliseconds: 200),
                     child: Selector<MovieViewModel, String?>(
@@ -298,18 +298,23 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
             ),
           ),
           SliverToBoxAdapter(
-            child: Selector<MovieViewModel, Movie?>(
-              selector: (_, mvm) => mvm.movie,
-              builder: (_, movie, __) {
-                logIfDebug('builder called with movie:$movie');
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    getGenres(movie),
-                  ],
-                );
-              },
+            child: AnimatedSize(
+              duration: const Duration(milliseconds: 250),
+              child: Selector<MovieViewModel, Movie?>(
+                selector: (_, mvm) => mvm.movie,
+                builder: (_, movie, __) {
+                  logIfDebug('builder called with movie:$movie');
+                  return movie != null && movie.genres.isNotEmpty
+                      ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          getGenreView(movie),
+                        ],
+                      )
+                      : const SizedBox.shrink();
+                },
+              ),
             ),
           ),
           const CastCrewSection(),
@@ -321,8 +326,9 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
     );
   }
 
-  Padding getGenres(Movie? movie) {
-    final genres = movie?.genres;
+  /// This method expects a non-empty list of genres
+  Widget getGenreView(Movie movie) {
+    final genres = movie.genres;
     return Padding(
       padding: const EdgeInsets.only(top: 4.0, bottom: 8.0),
       child: SizedBox(
@@ -332,48 +338,44 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
           separatorBuilder: (_, index) => const SizedBox(width: 8),
           scrollDirection: Axis.horizontal,
           itemBuilder: (BuildContext context, int index) {
-            final genre = genres?[index];
-            if (genre != null) {
-              return InkWellOverlay(
-                onTap: () {
-                  goToMovieListPage(
-                    context,
-                    genres: [genre],
-                  );
-                },
-                borderRadius: BorderRadius.circular(6.0),
-                child: Chip(
-                  backgroundColor:
-                      Theme.of(context).primaryColorLight.withOpacity(0.17),
-                  padding: EdgeInsets.zero,
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  label: Text(
-                    genre.name,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Theme.of(context).primaryColorDark,
-                    ),
-                  ),
-                  side: BorderSide(
+            final genre = genres[index];
+            return InkWellOverlay(
+              onTap: () {
+                goToMovieListPage(
+                  context,
+                  genres: [genre],
+                );
+              },
+              borderRadius: BorderRadius.circular(6.0),
+              child: Chip(
+                backgroundColor:
+                    Theme.of(context).primaryColorLight.withOpacity(0.17),
+                padding: EdgeInsets.zero,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                label: Text(
+                  genre.name,
+                  style: TextStyle(
+                    fontSize: 14,
                     color: Theme.of(context).primaryColorDark,
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6.0),
-                  ),
                 ),
-              );
-            } else {
-              return const SizedBox.shrink();
-            }
+                side: BorderSide(
+                  color: Theme.of(context).primaryColorDark,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6.0),
+                ),
+              ),
+            );
           },
-          itemCount: genres?.length ?? 0,
+          itemCount: genres.length,
         ),
       ),
     );
   }
 }
 
-class CastCrewSection extends StatelessWidget {
+class CastCrewSection extends StatelessWidget with GenericFunctions {
   final int _maxCount = 10;
 
   const CastCrewSection({Key? key}) : super(key: key);
@@ -482,7 +484,7 @@ class CastCrewSection extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: () {
-          print('Crew clicked');
+          logIfDebug('Crew clicked');
         },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -723,7 +725,7 @@ class RecommendedMoviesSection extends StatelessWidget
     return Selector<MovieViewModel, RecommendationData?>(
       selector: (_, mvm) => mvm.recommendationData,
       builder: (_, data, __) {
-        if (data == null) {
+        if (data == null || data.totalResults == 0) {
           return SliverToBoxAdapter(child: Container());
         } else {
           return SliverPadding(
@@ -989,7 +991,7 @@ class SliverPosterGrid extends StatelessWidget with Utilities, CommonFunctions {
             child: InkWell(
               borderRadius: _borderRadius,
               onTap: () {
-                goToMoviePage(context, movie, destUrl);
+                goToMoviePage(context, movie, destUrl: destUrl);
               },
             ),
           ),
