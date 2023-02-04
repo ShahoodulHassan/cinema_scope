@@ -1,9 +1,7 @@
-import 'package:cinema_scope/architecture/config_view_model.dart';
 import 'package:cinema_scope/constants.dart';
 import 'package:cinema_scope/models/search.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
-import 'package:cinema_scope/widgets/image_view.dart';
 import 'package:cinema_scope/widgets/poster_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -138,87 +136,7 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
             pagingController:
                 context.read<MoviesListViewModel>().pagingController,
             builderDelegate: PagedChildBuilderDelegate<MovieResult>(
-              itemBuilder: (_, movie, index) {
-                return PosterTile(
-                  onTap: () => goToMoviePage(context, movie),
-                  title: movie.title,
-                  poster: NetworkImageView(
-                    movie.posterPath,
-                    imageType: ImageType.poster,
-                    aspectRatio: Constants.arPoster,
-                    topRadius: 4.0,
-                    bottomRadius: 4.0,
-                  ),
-                  subtitle: Padding(
-                    padding: const EdgeInsets.only(top: 1.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Visibility(
-                              visible: movie.releaseDate != null &&
-                                  movie.releaseDate!.isNotEmpty,
-                              child: Padding(
-                                padding: const EdgeInsets.only(right: 16.0),
-                                child: Text(
-                                  getYearStringFromDate(movie.releaseDate),
-                                  textAlign: TextAlign.start,
-                                  style: const TextStyle(fontSize: 15.0),
-                                ),
-                              ),
-                            ),
-                            Visibility(
-                              visible: movie.voteAverage > 0.0,
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.star_sharp,
-                                    size: 20.0,
-                                    color: Constants.ratingIconColor,
-                                  ),
-                                  Text(
-                                    ' ${applyCommaAndRound(
-                                      movie.voteAverage,
-                                      1,
-                                      false,
-                                      true,
-                                    )}',
-                                    style: const TextStyle(fontSize: 15.0),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        if (movie.genreIds.isNotEmpty)
-                          Text(
-                            getGenreNamesFromIds(
-                                movie.genreIds, MediaType.movie),
-                            style: const TextStyle(
-                              fontSize: 14.0,
-                              height: 1.2,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  description: movie.overview.isNotEmpty
-                      ? Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Text(
-                            movie.overview,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 14.0,
-                              height: 1.1,
-                            ),
-                          ),
-                        )
-                      : null,
-                );
-              },
+              itemBuilder: (_, movie, index) => MoviePosterTile(movie: movie),
               newPageProgressIndicatorBuilder: (_) => const Center(
                 child: Padding(
                   padding: EdgeInsets.all(16.0),
@@ -244,17 +162,6 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
         ],
       ),
     );
-  }
-
-  String getGenreNamesFromIds(List<int> genreIds, MediaType mediaType) {
-    return genreIds
-        .map((id) => context
-            .read<ConfigViewModel>()
-            .combinedGenres
-            .singleWhere(
-                (genre) => genre.mediaType == mediaType && genre.id == id)
-            .name)
-        .join(', ');
   }
 
   void goToMoviePage(BuildContext context, MovieResult movie,
