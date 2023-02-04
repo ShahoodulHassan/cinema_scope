@@ -4,7 +4,6 @@ import 'package:cinema_scope/models/search.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:cinema_scope/widgets/image_view.dart';
-import 'package:cinema_scope/widgets/ink_well_overlay.dart';
 import 'package:cinema_scope/widgets/poster_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
