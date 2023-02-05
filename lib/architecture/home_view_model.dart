@@ -5,14 +5,14 @@ import 'package:cinema_scope/widgets/home_section.dart';
 import '../models/search.dart';
 
 class HomeViewModel extends ApiViewModel {
-  SearchResult? latestMoviesResult;
-  SearchResult? popularMoviesResult;
-  SearchResult? topRatedMoviesResult;
-  SearchResult? upcomingMoviesResult;
-  SearchResult? trendingResult;
-  SearchResult? nowPlayingResult;
+  MovieSearchResult? latestMoviesResult;
+  MovieSearchResult? popularMoviesResult;
+  MovieSearchResult? topRatedMoviesResult;
+  MovieSearchResult? upcomingMoviesResult;
+  MovieSearchResult? trendingResult;
+  MovieSearchResult? nowPlayingResult;
 
-  SearchResult? getResultBySectionTitle(SectionTitle title) {
+  MovieSearchResult? getResultBySectionTitle(SectionTitle title) {
     switch (title) {
       case SectionTitle.nowPlaying:
         return nowPlayingResult;

@@ -306,12 +306,12 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
                   logIfDebug('builder called with movie:$movie');
                   return movie != null && movie.genres.isNotEmpty
                       ? Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          getGenreView(movie),
-                        ],
-                      )
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            getGenreView(movie),
+                          ],
+                        )
                       : const SizedBox.shrink();
                 },
               ),
@@ -539,7 +539,7 @@ class CastCrewSection extends StatelessWidget with GenericFunctions {
       );
 }
 
-class CastListView extends StatelessWidget {
+class CastListView extends StatelessWidget with Utilities, CommonFunctions {
   final List<Cast> casts;
   final double screenWidth;
 
@@ -682,21 +682,7 @@ class CastListView extends StatelessWidget {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(topRadius),
                     onTap: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (_) => MoviePage(
-                      //         id: movie.id,
-                      //         title: movie.movieTitle,
-                      //         year: getYearStringFromDate(movie.releaseDate),
-                      //         voteAverage: movie.voteAverage,
-                      //         overview: movie.overview,
-                      //         sourceUrl: imageUrlToId[movie.id]?[0],
-                      //         destUrl: imageUrlToId[movie.id]?[1],
-                      //         heroImageTag:
-                      //         '${widget.sectionTitle}-image-${movie.id}'),
-                      //   ),
-                      // );
+                      goToPersonPage(context, cast);
                     },
                   ),
                 ),
@@ -714,6 +700,7 @@ class CastListView extends StatelessWidget {
       ),
     );
   }
+
 }
 
 class RecommendedMoviesSection extends StatelessWidget
@@ -991,7 +978,7 @@ class SliverPosterGrid extends StatelessWidget with Utilities, CommonFunctions {
             child: InkWell(
               borderRadius: _borderRadius,
               onTap: () {
-                goToMoviePage(context, movie, destUrl: destUrl);
+                goToMoviePageByMovieResult(context, movie, destUrl: destUrl);
               },
             ),
           ),
@@ -1619,11 +1606,11 @@ class ImageDelegate extends SliverPersistentHeaderDelegate
 
   final PageController controller = PageController();
 
-  final double radius = 4.0;
+  final double radius = 0.0;
 
   final int delay = 7000;
 
-  final double fraction = 0.88;
+  final double fraction = 1.0/*0.88*/;
 
   ImageDelegate(this.baseUrl, this.extent, this.thumbMap);
 
@@ -1641,8 +1628,8 @@ class ImageDelegate extends SliverPersistentHeaderDelegate
             indicatorLayout: PageIndicatorLayout.SCALE,
             autoplayDelay: delay,
             // transformer: ScaleAndFadeTransformer(),
-            viewportFraction: fraction,
-            scale: fraction + 0.04,
+            // viewportFraction: fraction,
+            // scale: fraction + 0.04,
             fade: 0.7,
             pagination: const SwiperPagination(),
             // itemWidth: MediaQuery.of(context).size.width,

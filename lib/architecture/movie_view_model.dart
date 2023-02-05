@@ -1,3 +1,4 @@
+import 'package:async/async.dart';
 import 'package:cinema_scope/architecture/search_view_model.dart';
 import 'package:cinema_scope/models/search.dart';
 
@@ -9,6 +10,8 @@ class MovieViewModel extends ApiViewModel {
   int _recomPageIndex = 0;
 
   int get recomPageIndex => _recomPageIndex;
+
+  CancelableOperation? _operation;
 
   set recomPageIndex(int index) {
     _recomPageIndex = index;
@@ -78,9 +81,16 @@ class MovieViewModel extends ApiViewModel {
   MovieViewModel() : super();
 
   getMovieWithDetail(int id) async {
-    movie = await api.getMovieWithDetail(id);
-    notifyListeners();
-    compileThumbnails();
+    _operation = CancelableOperation<Movie>.fromFuture(
+      api.getMovieWithDetail(id),
+    ).then((result) {
+      movie = result;
+      notifyListeners();
+      compileThumbnails();
+    });
+    // movie = await api.getMovieWithDetail(id);
+    // notifyListeners();
+    // compileThumbnails();
   }
 
   // getMovie(int id) async {
@@ -103,6 +113,12 @@ class MovieViewModel extends ApiViewModel {
       logIfDebug('isPinned, thumbMap:$thumbMap');
       notifyListeners();
     }
+  }
+
+  @override
+  void dispose() {
+    _operation?.cancel();
+    super.dispose();
   }
 }
 

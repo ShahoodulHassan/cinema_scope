@@ -5,6 +5,7 @@ import 'package:retrofit/http.dart' as http;
 
 import 'models/configuration.dart';
 import 'models/movie.dart';
+import 'models/person.dart';
 import 'models/search.dart';
 
 part 'tmdb_api.g.dart';
@@ -59,12 +60,23 @@ abstract class TmdbApi {
       {@http.Query('append_to_response') String append =
           'videos,images,recommendations,similar,keywords,reviews,credits'});
 
-  /// https://api.themoviedb.org/3/search/movie?api_key=ec7b57c566e8af94115bb2c0d910f610&query=Jack+Reacher
+  /// https://api.themoviedb.org/3/search/movie?api_key=ec7b57c566e8af94115bb2c0d910f610&language=en-US&page=1&query=Jack+Reacher
   @http.GET("/search/movie")
   @http.Headers(headerMap)
-  Future<SearchResult> searchMovies(@http.Query("query") String query,
+  Future<MovieSearchResult> searchMovies(@http.Query("query") String query,
       {@http.Query("page") int page = 1,
       @http.Query('language') String language = 'en'});
+
+  /// https://api.themoviedb.org/3/search/multi?api_key=ec7b57c566e8af94115bb2c0d910f610&language=en-US&query=jack&page=10&include_adult=true&region=US
+  @http.GET("/search/multi")
+  @http.Headers(headerMap)
+  Future<MultiSearchResult> performMultiSearch(
+    @http.Query("query") String query, {
+    @http.Query("page") int page = 1,
+    @http.Query('language') String language = 'en',
+    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query('region') String region = 'US',
+  });
 
   /// https://api.themoviedb.org/3/discover/movie?
   /// api_key=ec7b57c566e8af94115bb2c0d910f610&page=1&language=en-US
@@ -72,7 +84,7 @@ abstract class TmdbApi {
   /// &sort_by=release_date.desc&with_original_language=en
   @http.GET("/discover/movie")
   @http.Headers(headerMap)
-  Future<SearchResult> getLatestMovies(
+  Future<MovieSearchResult> getLatestMovies(
       @http.Query('release_date.gte') String dateGte,
       @http.Query('release_date.lte') String dateLte,
       {@http.Query("page") int page = 1,
@@ -83,19 +95,19 @@ abstract class TmdbApi {
 
   @http.GET("/movie/popular")
   @http.Headers(headerMap)
-  Future<SearchResult> getPopularMovies(
+  Future<MovieSearchResult> getPopularMovies(
       {@http.Query("page") int page = 1,
       @http.Query('language') String language = 'en-US'});
 
   @http.GET("/movie/top_rated")
   @http.Headers(headerMap)
-  Future<SearchResult> getTopRatedMovies(
+  Future<MovieSearchResult> getTopRatedMovies(
       {@http.Query("page") int page = 1,
       @http.Query('language') String language = 'en-US'});
 
   @http.GET("/movie/upcoming")
   @http.Headers(headerMap)
-  Future<SearchResult> getUpcomingMovies({
+  Future<MovieSearchResult> getUpcomingMovies({
     @http.Query("page") int page = 1,
     @http.Query('language') String language = 'en-US',
     @http.Query('region') String region = 'US',
@@ -111,7 +123,7 @@ abstract class TmdbApi {
   /// release_date.lte (30 days from tomorrow [Now + 31])
   @http.GET("/discover/{media_type}")
   @http.Headers(headerMap)
-  Future<SearchResult> discoverUpcomingMovies(
+  Future<MovieSearchResult> discoverUpcomingMovies(
     @http.Path("media_type") String mediaType,
     @http.Query('release_date.gte') String dateGte,
     @http.Query('release_date.lte') String dateLte, {
@@ -126,19 +138,21 @@ abstract class TmdbApi {
 
   @http.GET("/trending/{media_type}/{time_window}")
   @http.Headers(headerMap)
-  Future<SearchResult> getTrending(@http.Path("media_type") String mediaType,
+  Future<MovieSearchResult> getTrending(
+      @http.Path("media_type") String mediaType,
       @http.Path("time_window") String timeWindow,
       {@http.Query("page") int page = 1});
 
   @http.GET("/{media_type}/now_playing")
   @http.Headers(headerMap)
-  Future<SearchResult> getNowPlaying(@http.Path("media_type") String mediaType,
+  Future<MovieSearchResult> getNowPlaying(
+      @http.Path("media_type") String mediaType,
       {@http.Query("page") int page = 1,
       @http.Query('language') String language = 'en-US'});
 
   @http.GET("/discover/{media_type}")
   @http.Headers(headerMap)
-  Future<SearchResult> discoverMoviesByKeyword(
+  Future<MovieSearchResult> discoverMoviesByKeyword(
     @http.Path("media_type") String mediaType,
     @http.Query('with_keywords') String keywords,
     @http.Query('with_genres') String genres,
@@ -155,7 +169,7 @@ abstract class TmdbApi {
 
   @http.GET("/discover/{media_type}")
   @http.Headers(headerMap)
-  Future<SearchResult> discoverMoviesByGenre(
+  Future<MovieSearchResult> discoverMoviesByGenre(
     @http.Path("media_type") String mediaType,
     @http.Query('with_genres') String genres, {
     @http.Query("page") int page = 1,
@@ -168,10 +182,19 @@ abstract class TmdbApi {
 
   @http.GET("/{media_type}/{media_id}/recommendations")
   @http.Headers(headerMap)
-  Future<SearchResult> getRecommendations(
+  Future<MovieSearchResult> getRecommendations(
     @http.Path("media_type") String mediaType,
     @http.Path("media_id") int mediaId, {
     @http.Query("page") int page = 1,
+    @http.Query('language') String language = 'en-US',
+  });
+
+  @http.GET("/person/{id}")
+  @http.Headers(headerMap)
+  Future<Person> getPersonWithDetail(
+    @http.Path("id") int id, {
+    @http.Query('append_to_response') String append =
+        'movie_credits,tv_credits,external_ids,images,tagged_images',
     @http.Query('language') String language = 'en-US',
   });
 }

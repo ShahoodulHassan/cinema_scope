@@ -35,8 +35,8 @@ class Movie {
   double voteAverage;
   int voteCount;
   VideoResult videos;
-  SearchResult similar;
-  SearchResult recommendations;
+  MovieSearchResult similar;
+  MovieSearchResult recommendations;
   ImageResult images;
   KeywordResult keywords;
   Credits credits;
@@ -318,24 +318,27 @@ class Credits {
 
 @CopyWith()
 @JsonSerializable(fieldRename: FieldRename.snake)
-class BaseCast {
-  bool adult;
-  int? gender;
-  int id;
-  String knownForDepartment;
-  String name;
+class BaseCast extends BasePersonResult {
   String originalName;
-  double popularity;
-  String? profilePath;
   String creditId;
 
-  BaseCast(this.adult, this.id, this.knownForDepartment, this.name,
-      this.originalName, this.popularity, this.creditId,
-      {this.gender, this.profilePath});
+  BaseCast(
+    super.id,
+    super.adult,
+    super.name,
+    super.knownForDepartment,
+    this.originalName,
+    this.creditId, {
+    super.mediaType,
+    super.popularity,
+    super.profilePath,
+    super.gender,
+  });
 
   factory BaseCast.fromJson(Map<String, dynamic> json) =>
       _$BaseCastFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$BaseCastToJson(this);
 }
 
@@ -347,18 +350,19 @@ class Cast extends BaseCast {
   int order;
 
   Cast(
-      super.adult,
-      super.id,
-      super.knownForDepartment,
-      super.name,
-      super.originalName,
-      super.popularity,
-      this.castId,
-      this.character,
-      super.creditId,
-      this.order,
-      {super.gender,
-      super.profilePath});
+    super.id,
+    super.adult,
+    super.name,
+    super.knownForDepartment,
+    super.originalName,
+    super.creditId,
+    this.castId,
+    this.character,
+    this.order, {
+    super.popularity,
+    super.profilePath,
+    super.gender,
+  });
 
   factory Cast.fromJson(Map<String, dynamic> json) => _$CastFromJson(json);
 
@@ -373,17 +377,18 @@ class Crew extends BaseCast {
   String job;
 
   Crew(
-      super.adult,
-      super.id,
-      super.knownForDepartment,
-      super.name,
-      super.originalName,
-      super.popularity,
-      super.creditId,
-      this.department,
-      this.job,
-      {super.gender,
-      super.profilePath});
+    super.id,
+    super.adult,
+    super.name,
+    super.knownForDepartment,
+    super.originalName,
+    super.creditId,
+    this.department,
+    this.job, {
+    super.popularity,
+    super.gender,
+    super.profilePath,
+  });
 
   factory Crew.fromJson(Map<String, dynamic> json) => _$CrewFromJson(json);
 
@@ -394,7 +399,7 @@ class Crew extends BaseCast {
 /// That's a custom object unrelated to what objects the API has to offer
 class RecommendationData {
   final int mediaId;
-  final SearchResult result;
+  final MovieSearchResult result;
 
   RecommendationData(this.mediaId, this.result);
 

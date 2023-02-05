@@ -234,7 +234,7 @@ class _TmdbApi implements TmdbApi {
   }
 
   @override
-  Future<SearchResult> searchMovies(
+  Future<MovieSearchResult> searchMovies(
     query, {
     page = 1,
     language = 'en',
@@ -253,7 +253,7 @@ class _TmdbApi implements TmdbApi {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<SearchResult>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<MovieSearchResult>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -266,12 +266,53 @@ class _TmdbApi implements TmdbApi {
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = SearchResult.fromJson(_result.data!);
+    final value = MovieSearchResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<SearchResult> getLatestMovies(
+  Future<MultiSearchResult> performMultiSearch(
+    query, {
+    page = 1,
+    language = 'en',
+    includeAdult = 'false',
+    region = 'US',
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'query': query,
+      r'page': page,
+      r'language': language,
+      r'include_adult': includeAdult,
+      r'region': region,
+    };
+    final _headers = <String, dynamic>{
+      r'Content-Type': 'application/json;charset=utf-8',
+      r'Authorization':
+          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYzdiNTdjNTY2ZThhZjk0MTE1YmIyYzBkOTEwZjYxMCIsInN1YiI6IjVhMGE3MDk5YzNhMzY4MjE4YTAxMTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.uyDhjXOvRNfjg_gJFPkSfAuT-F-MFmWVwPoEUftgq1g',
+    };
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<MultiSearchResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/json;charset=utf-8',
+    )
+            .compose(
+              _dio.options,
+              '/search/multi',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = MultiSearchResult.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<MovieSearchResult> getLatestMovies(
     dateGte,
     dateLte, {
     page = 1,
@@ -298,7 +339,7 @@ class _TmdbApi implements TmdbApi {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<SearchResult>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<MovieSearchResult>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -311,12 +352,12 @@ class _TmdbApi implements TmdbApi {
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = SearchResult.fromJson(_result.data!);
+    final value = MovieSearchResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<SearchResult> getPopularMovies({
+  Future<MovieSearchResult> getPopularMovies({
     page = 1,
     language = 'en-US',
   }) async {
@@ -333,7 +374,7 @@ class _TmdbApi implements TmdbApi {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<SearchResult>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<MovieSearchResult>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -346,12 +387,12 @@ class _TmdbApi implements TmdbApi {
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = SearchResult.fromJson(_result.data!);
+    final value = MovieSearchResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<SearchResult> getTopRatedMovies({
+  Future<MovieSearchResult> getTopRatedMovies({
     page = 1,
     language = 'en-US',
   }) async {
@@ -368,7 +409,7 @@ class _TmdbApi implements TmdbApi {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<SearchResult>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<MovieSearchResult>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -381,12 +422,12 @@ class _TmdbApi implements TmdbApi {
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = SearchResult.fromJson(_result.data!);
+    final value = MovieSearchResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<SearchResult> getUpcomingMovies({
+  Future<MovieSearchResult> getUpcomingMovies({
     page = 1,
     language = 'en-US',
     region = 'US',
@@ -405,7 +446,7 @@ class _TmdbApi implements TmdbApi {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<SearchResult>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<MovieSearchResult>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -418,12 +459,12 @@ class _TmdbApi implements TmdbApi {
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = SearchResult.fromJson(_result.data!);
+    final value = MovieSearchResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<SearchResult> discoverUpcomingMovies(
+  Future<MovieSearchResult> discoverUpcomingMovies(
     mediaType,
     dateGte,
     dateLte, {
@@ -455,7 +496,7 @@ class _TmdbApi implements TmdbApi {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<SearchResult>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<MovieSearchResult>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -468,12 +509,12 @@ class _TmdbApi implements TmdbApi {
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = SearchResult.fromJson(_result.data!);
+    final value = MovieSearchResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<SearchResult> getTrending(
+  Future<MovieSearchResult> getTrending(
     mediaType,
     timeWindow, {
     page = 1,
@@ -488,7 +529,7 @@ class _TmdbApi implements TmdbApi {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<SearchResult>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<MovieSearchResult>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -501,12 +542,12 @@ class _TmdbApi implements TmdbApi {
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = SearchResult.fromJson(_result.data!);
+    final value = MovieSearchResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<SearchResult> getNowPlaying(
+  Future<MovieSearchResult> getNowPlaying(
     mediaType, {
     page = 1,
     language = 'en-US',
@@ -524,7 +565,7 @@ class _TmdbApi implements TmdbApi {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<SearchResult>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<MovieSearchResult>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -537,12 +578,12 @@ class _TmdbApi implements TmdbApi {
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = SearchResult.fromJson(_result.data!);
+    final value = MovieSearchResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<SearchResult> discoverMoviesByKeyword(
+  Future<MovieSearchResult> discoverMoviesByKeyword(
     mediaType,
     keywords,
     genres, {
@@ -572,7 +613,7 @@ class _TmdbApi implements TmdbApi {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<SearchResult>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<MovieSearchResult>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -585,12 +626,12 @@ class _TmdbApi implements TmdbApi {
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = SearchResult.fromJson(_result.data!);
+    final value = MovieSearchResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<SearchResult> discoverMoviesByGenre(
+  Future<MovieSearchResult> discoverMoviesByGenre(
     mediaType,
     genres, {
     page = 1,
@@ -618,7 +659,7 @@ class _TmdbApi implements TmdbApi {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<SearchResult>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<MovieSearchResult>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -631,12 +672,12 @@ class _TmdbApi implements TmdbApi {
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = SearchResult.fromJson(_result.data!);
+    final value = MovieSearchResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<SearchResult> getRecommendations(
+  Future<MovieSearchResult> getRecommendations(
     mediaType,
     mediaId, {
     page = 1,
@@ -655,7 +696,7 @@ class _TmdbApi implements TmdbApi {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<SearchResult>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<MovieSearchResult>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -668,7 +709,43 @@ class _TmdbApi implements TmdbApi {
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = SearchResult.fromJson(_result.data!);
+    final value = MovieSearchResult.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<Person> getPersonWithDetail(
+    id, {
+    append = 'movie_credits,tv_credits,external_ids,images,tagged_images',
+    language = 'en-US',
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'append_to_response': append,
+      r'language': language,
+    };
+    final _headers = <String, dynamic>{
+      r'Content-Type': 'application/json;charset=utf-8',
+      r'Authorization':
+          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYzdiNTdjNTY2ZThhZjk0MTE1YmIyYzBkOTEwZjYxMCIsInN1YiI6IjVhMGE3MDk5YzNhMzY4MjE4YTAxMTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.uyDhjXOvRNfjg_gJFPkSfAuT-F-MFmWVwPoEUftgq1g',
+    };
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result =
+        await _dio.fetch<Map<String, dynamic>>(_setStreamType<Person>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/json;charset=utf-8',
+    )
+            .compose(
+              _dio.options,
+              '/person/${id}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = Person.fromJson(_result.data!);
     return value;
   }
 

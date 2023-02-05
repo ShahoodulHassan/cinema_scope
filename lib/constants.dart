@@ -31,7 +31,7 @@ enum MediaType {
   all,
   movie,
   tv,
-  people,
+  person,
 
 }
 

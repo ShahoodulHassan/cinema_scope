@@ -7,7 +7,7 @@ import '../models/movie.dart';
 import '../models/search.dart';
 
 class MoviesListViewModel extends ApiViewModel {
-  SearchResult? searchResult;
+  MovieSearchResult? searchResult;
 
   final PagingController<int, MovieResult> _pagingController;
 
@@ -51,9 +51,10 @@ class MoviesListViewModel extends ApiViewModel {
     _pagingController.addPageRequestListener(_listener!);
   }
 
-  void _appendPageAndNotify(SearchResult result, int page) {
+  void _appendPageAndNotify(MovieSearchResult result, int page) {
     searchResult = result;
     final isLastPage = (result.totalPages ?? 1) == page;
+    if (page == 1) _pagingController.itemList = <MovieResult>[];
     var results = result.results;
     if (isLastPage) {
       _pagingController.appendLastPage(results);
@@ -70,7 +71,7 @@ class MoviesListViewModel extends ApiViewModel {
     int page = 1,
   }) async {
     logIfDebug('id:$mediaId');
-    _operation = CancelableOperation<SearchResult>.fromFuture(
+    _operation = CancelableOperation<MovieSearchResult>.fromFuture(
       api.getRecommendations(mediaType.name, mediaId, page: page),
     ).then((result) => _appendPageAndNotify(result, page));
   }
@@ -82,11 +83,9 @@ class MoviesListViewModel extends ApiViewModel {
   }) async {
     String gIds = genreIds.join('|');
     logIfDebug('gIds:$gIds');
-    _operation = CancelableOperation<SearchResult>.fromFuture(
+    _operation = CancelableOperation<MovieSearchResult>.fromFuture(
       api.discoverMoviesByGenre(mediaType.name, gIds, page: page),
-    ).then((result) {
-      _appendPageAndNotify(result, page);
-    });
+    ).then((result) => _appendPageAndNotify(result, page));
   }
 
   _discoverByKeyword({
@@ -98,11 +97,9 @@ class MoviesListViewModel extends ApiViewModel {
     String gIds = genreIds.join('|');
     String kIds = keywords.map((e) => e.id).join(',');
     logIfDebug('gIds:$gIds, kIds:$kIds');
-    _operation = CancelableOperation<SearchResult>.fromFuture(
+    _operation = CancelableOperation<MovieSearchResult>.fromFuture(
       api.discoverMoviesByKeyword(mediaType.name, kIds, gIds, page: page),
-    ).then((result) {
-      _appendPageAndNotify(result, page);
-    });
+    ).then((result) => _appendPageAndNotify(result, page));
   }
 
   _disposePageController() {

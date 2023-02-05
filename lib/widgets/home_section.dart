@@ -132,7 +132,7 @@ class _HomeSectionState extends State<HomeSection>
   Widget build(BuildContext context) {
     logIfDebug(
         'width:${MediaQuery.of(context).size.width}, deductible:$deductibleWidth, borderWidth: $totalBorderWidth');
-    return Selector<HomeViewModel, SearchResult?>(
+    return Selector<HomeViewModel, MovieSearchResult?>(
       selector: (_, hvm) => hvm.getResultBySectionTitle(widget.sectionTitle),
       builder: (_, result, __) {
         if (result != null) {

@@ -13,13 +13,13 @@ import '../tmdb_api.dart';
 
 class SearchViewModel extends ApiViewModel with Utilities {
 
-  SearchResult? searchResult;
+  MultiSearchResult? searchResult;
 
   String query = '';
 
-  late PagingController<int, MovieResult> _pagingController;
+  late PagingController<int, BaseResult> _pagingController;
 
-  PagingController<int, MovieResult> get pagingController => _pagingController;
+  PagingController<int, BaseResult> get pagingController => _pagingController;
 
   Function(int)? _listener;
 
@@ -33,7 +33,7 @@ class SearchViewModel extends ApiViewModel with Utilities {
     _pagingController = PagingController(firstPageKey: 1);
     _listener ??= (pageKey) {
       logIfDebug('page listener called for pageKey=$pageKey');
-      searchPagedMovies(query, page: pageKey);
+      /*if (pageKey == 1) */searchPagedMovies(query, page: pageKey);
     };
     _pagingController.addPageRequestListener(_listener!);
   }
@@ -43,16 +43,16 @@ class SearchViewModel extends ApiViewModel with Utilities {
     this.query = query;
     _operation?.cancel();
     if (query.isEmpty) {
-      _pagingController.appendLastPage(<MovieResult>[]);
+      _pagingController.appendLastPage(<BaseResult>[]);
     } else {
-      _operation = CancelableOperation<SearchResult>.fromFuture(
+      _operation = CancelableOperation<MultiSearchResult>.fromFuture(
         Future.delayed(const Duration(milliseconds: 500),
-                () => api.searchMovies(query, page: page)),
+                () => api.performMultiSearch(query, page: page)),
       ).then((result) async {
         debugPrint('searchResult:$result');
         searchResult = result;
         final isLastPage = (result.totalPages ?? 1) == page;
-        if (page == 1) _pagingController.itemList = <MovieResult>[];
+        if (page == 1) _pagingController.itemList = <BaseResult>[];
         var results = result.results;
         // await sortResults(results);
         if (isLastPage) {

@@ -136,46 +136,19 @@ class _SearchPageChildState extends State<_SearchPageChild>
           ),
           PagedSliverList(
             pagingController: svm.pagingController,
-            builderDelegate: PagedChildBuilderDelegate<MovieResult>(
-              itemBuilder: (_, movie, index) {
-                logIfDebug('itemBuilder called with index:$index');
-                return MoviePosterTile(movie: movie);
-                // return ListTile(
-                //   onTap: () {
-                //     var id = movie.id;
-                //     // context.read<HeroViewModel>().heroImageTag =
-                //     //     'search-image-$id';
-                //     Navigator.push(
-                //       context,
-                //       MaterialPageRoute(
-                //         builder: (_) => MoviePage(
-                //           id: id,
-                //           title: movie.movieTitle,
-                //           year: getYearStringFromDate(movie.releaseDate),
-                //           voteAverage: movie.voteAverage,
-                //           overview: movie.overview,
-                //           sourceUrl: imageUrlToId[id]?[0],
-                //           destUrl: imageUrlToId[id]?[1],
-                //           heroImageTag: 'search-image-$id',
-                //         ),
-                //       ),
-                //     );
-                //   },
-                //   leading: getBackdropView(movie),
-                //   title: Text(
-                //     '${index + 1}. ${movie.movieTitle ?? 'Title not available'}',
-                //     overflow: TextOverflow.ellipsis,
-                //     maxLines: 2,
-                //     style: const TextStyle(
-                //       height: 1.2,
-                //     ),
-                //   ),
-                //   subtitle: Text(
-                //     getYearStringFromDate(movie.releaseDate),
-                //     maxLines: 1,
-                //     overflow: TextOverflow.ellipsis,
-                //   ),
-                // );
+            builderDelegate: PagedChildBuilderDelegate<BaseResult>(
+              itemBuilder: (_, result, index) {
+                logIfDebug('itemBuilder called with index:$index, $result');
+                var mediaType = result.mediaType;
+                logIfDebug('mediaType:${mediaType}');
+                if (mediaType == MediaType.movie.name) {
+                  return MoviePosterTile(movie: result as MovieResult);
+                } else if (mediaType == MediaType.person.name) {
+                  return PersonPosterTile(person: result as PersonResult);
+                } else if (mediaType == MediaType.tv.name) {
+                  return TvPosterTile(tv: result as TvResult);
+                }
+                return const SizedBox.shrink();
               },
               newPageProgressIndicatorBuilder: (_) => const Center(
                 child: Padding(
