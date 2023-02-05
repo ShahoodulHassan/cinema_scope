@@ -76,8 +76,9 @@ class _HomePageChildState extends State<_HomePageChild>
       body: SingleChildScrollView(
         child: Column(
           children: const [
-            HomeSection(SectionTitle.nowPlaying, isBigWidget: true),
-            HomeSection(SectionTitle.dailyTrending),
+            HomeSection(SectionTitle.dailyTrending, isBigWidget: true),
+            HomeSection(SectionTitle.nowPlaying/*, isBigWidget: true*/),
+
             HomeSection(SectionTitle.latest),
             HomeSection(SectionTitle.popular),
             HomeSection(SectionTitle.topRated),
