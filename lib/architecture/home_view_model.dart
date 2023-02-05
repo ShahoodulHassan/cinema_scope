@@ -30,8 +30,11 @@ class HomeViewModel extends ApiViewModel {
   }
 
   getAllResults(MediaType mediaType, {TimeWindow? timeWindow}) async {
-    await getNowPlaying(mediaType);
+    /// We add two page long upcoming movies
     await getTrending(mediaType, timeWindow: timeWindow);
+    await getTrending(mediaType, timeWindow: timeWindow, page: 2);
+
+    await getNowPlaying(mediaType);
     await getLatestMovies();
     await getPopularMovies();
     await getTopRatedMovies();
@@ -98,10 +101,17 @@ class HomeViewModel extends ApiViewModel {
     notifyListeners();
   }
 
-  getTrending(MediaType mediaType, {TimeWindow? timeWindow}) async {
-    var value = await api.getTrending(
-        mediaType.name, (timeWindow ?? TimeWindow.day).name);
-    trendingResult = value;
+  getTrending(MediaType mediaType, {TimeWindow? timeWindow, int page = 1}) async {
+    var result = await api.getTrending(
+        mediaType.name, (timeWindow ?? TimeWindow.day).name, page: page);
+    if (page == 1) {
+      trendingResult = result;
+    } else if (page > 1) {
+      var allItems = trendingResult?.results ?? [];
+      allItems.addAll(result.results);
+      result.results = allItems;
+      trendingResult = result;
+    }
     notifyListeners();
   }
 
