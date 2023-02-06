@@ -4,7 +4,6 @@ import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:cinema_scope/widgets/app_lifecycle_manager.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -115,6 +114,7 @@ class _MyHomePageState extends State<MyHomePage> with GenericFunctions,
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
         title: Text(widget.title),
       ),
@@ -123,27 +123,48 @@ class _MyHomePageState extends State<MyHomePage> with GenericFunctions,
           logIfDebug('isConfigComplete:$isConfigComplete');
           return isConfigComplete
               ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      MaterialButton(
-                        color: Theme.of(context).primaryColor,
-                        child: const Text(
-                          'HOME',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                  child: IntrinsicWidth(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        ElevatedButton.icon(
+                          // color: Theme.of(context).primaryColor,
+                          label: const Text(
+                            'HOME',
+                            style: TextStyle(
+                              // color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              getHomePageRoute(),
+                              // getSearchPageRoute(),
+                            );
+                          }, icon: const Icon(Icons.home_outlined),
                         ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            getHomePageRoute(),
-                            // getSearchPageRoute(),
-                          );
-                        },
-                      ),
-                    ],
+                        const SizedBox(height: 16.0,),
+                        ElevatedButton.icon(
+                          // color: Theme.of(context).primaryColor,
+                          label: const Text(
+                            'SEARCH',
+                            style: TextStyle(
+                              // color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              getSearchPageRoute(),
+                              // getSearchPageRoute(),
+                            );
+                          }, icon: const Icon(Icons.search_rounded),
+                        ),
+                      ],
+                    ),
                   ),
                 )
               : const SizedBox.shrink();
