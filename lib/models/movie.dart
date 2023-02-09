@@ -329,7 +329,7 @@ class BaseCast extends BasePersonResult {
     super.knownForDepartment,
     this.originalName,
     this.creditId, {
-    super.mediaType,
+    // super.mediaType,
     super.popularity,
     super.profilePath,
     super.gender,

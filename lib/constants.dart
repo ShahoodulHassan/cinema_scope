@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 
 class Constants {
@@ -18,12 +16,27 @@ class Constants {
 
   static const String placeholderPath = 'assets/images/placeholder.png';
 
+  static const String imdbPersonUrl = 'https://www.imdb.com/name/';
+  static const String imdbTitleUrl = 'https://www.imdb.com/title/';
+  static const String twitterBaseUrl = 'https://twitter.com/';
+  static const String facebookBaseUrl = 'https://www.facebook.com/';
+  static const String instagramBaseUrl = 'https://www.instagram.com/';
+
   static const String pkApiConfig = 'pk_api_config';
   static const String pkCountryConfig = 'pk_country_config';
   static const String pkLanguageConfig = 'pk_language_config';
   static const String pkTranslationConfig = 'pk_translation_config';
   static const String pkCombinedGenres = 'pk_combined_genres';
   static const String pkConfigStoreDate = 'pk_config_store_date';
+
+
+  static final Map<String, String> departMap = {
+    Department.acting.name: 'Actor',
+    Department.directing.name: 'Director',
+    Department.editing.name: 'Editor',
+    Department.production.name: 'Producer',
+    Department.writing.name: 'Writer',
+  };
 
 }
 
@@ -32,11 +45,21 @@ enum MediaType {
   movie,
   tv,
   person,
-
 }
 
 enum TimeWindow {
   day,
   week,
+}
 
+enum Department {
+  acting('Acting'),
+  directing('Directing'),
+  editing('Editing'),
+  production('Production'),
+  writing('Writing');
+
+  final String name;
+
+  const Department(this.name);
 }

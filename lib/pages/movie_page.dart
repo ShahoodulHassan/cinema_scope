@@ -407,10 +407,15 @@ class CastCrewSection extends StatelessWidget with GenericFunctions {
                     if (tuple.item1.isNotEmpty)
                       getSectionTitleRow(tuple.item1.length > _maxCount, () {}),
                     if (tuple.item1.isNotEmpty)
-                      CastListView(
+                      CastListView<Cast>(
                         tuple.item1.take(_maxCount).toList(),
                         MediaQuery.of(context).size.width,
                       ),
+                    // if (tuple.item2.isNotEmpty)
+                    //   CastListView<Crew>(
+                    //     tuple.item2,
+                    //     MediaQuery.of(context).size.width,
+                    //   ),
                     if (tuple.item2.isNotEmpty) getCrewSection(tuple.item2),
                     getSliverSeparator(context),
                   ],
@@ -539,8 +544,9 @@ class CastCrewSection extends StatelessWidget with GenericFunctions {
       );
 }
 
-class CastListView extends StatelessWidget with Utilities, CommonFunctions {
-  final List<Cast> casts;
+class CastListView<T extends BaseCast> extends StatelessWidget with Utilities,
+    CommonFunctions {
+  final List<T> casts;
   final double screenWidth;
 
   CastListView(this.casts, this.screenWidth, {Key? key}) : super(key: key);
@@ -641,6 +647,7 @@ class CastListView extends StatelessWidget with Utilities, CommonFunctions {
                         topRadius: topRadius,
                         bottomRadius: bottomRadius,
                         fit: BoxFit.fitWidth,
+                        heroImageTag: '${cast.id}',
                       ),
                       Container(
                         padding: EdgeInsets.fromLTRB(
@@ -666,7 +673,7 @@ class CastListView extends StatelessWidget with Utilities, CommonFunctions {
                         ),
                         // height: characterContainerHeight,
                         child: Text(
-                          cast.character,
+                          cast is Cast ? cast.character : (cast as Crew).job,
                           maxLines: maxLines,
                           overflow: TextOverflow.ellipsis,
                           style: characterStyle,

@@ -60,12 +60,27 @@ abstract class TmdbApi {
       {@http.Query('append_to_response') String append =
           'videos,images,recommendations,similar,keywords,reviews,credits'});
 
-  /// https://api.themoviedb.org/3/search/movie?api_key=ec7b57c566e8af94115bb2c0d910f610&language=en-US&page=1&query=Jack+Reacher
+  /// https://api.themoviedb.org/3/search/movie?api_key=ec7b57c566e8af94115bb2c0d910f610&language=en-US&page=1&include_adult=true&region=US&query=Jack+Reacher
   @http.GET("/search/movie")
   @http.Headers(headerMap)
-  Future<MovieSearchResult> searchMovies(@http.Query("query") String query,
-      {@http.Query("page") int page = 1,
-      @http.Query('language') String language = 'en'});
+  Future<MovieSearchResult> searchMovies(
+    @http.Query("query") String query, {
+    @http.Query("page") int page = 1,
+    @http.Query('language') String language = 'en',
+    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query('region') String region = 'US',
+  });
+
+  /// https://api.themoviedb.org/3/search/person?api_key=ec7b57c566e8af94115bb2c0d910f610&language=en-US&page=1&include_adult=true&region=US&query=Jack
+  @http.GET("/search/person")
+  @http.Headers(headerMap)
+  Future<PersonSearchResult> searchPersons(
+    @http.Query("query") String query, {
+    @http.Query("page") int page = 1,
+    @http.Query('language') String language = 'en',
+    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query('region') String region = 'US',
+  });
 
   /// https://api.themoviedb.org/3/search/multi?api_key=ec7b57c566e8af94115bb2c0d910f610&language=en-US&query=jack&page=10&include_adult=true&region=US
   @http.GET("/search/multi")
@@ -194,7 +209,7 @@ abstract class TmdbApi {
   Future<Person> getPersonWithDetail(
     @http.Path("id") int id, {
     @http.Query('append_to_response') String append =
-        'movie_credits,tv_credits,external_ids,images,tagged_images',
+        'movie_credits,tv_credits,combined_credits,external_ids,images,tagged_images',
     @http.Query('language') String language = 'en-US',
   });
 }

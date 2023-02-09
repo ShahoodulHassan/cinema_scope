@@ -328,6 +328,7 @@ class PersonPosterTile extends StatelessWidget
         aspectRatio: Constants.arProfile,
         topRadius: 4.0,
         bottomRadius: 4.0,
+        heroImageTag: '${person.id}',
       ),
       subtitle: person.knownForDepartment.isNotEmpty || person.gender != null
           ? Padding(

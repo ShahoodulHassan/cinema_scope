@@ -19,6 +19,8 @@ class NetworkImageView extends StatelessWidget {
 
   final BoxFit fit;
 
+  final String? heroImageTag;
+
   final Widget placeholder = Image.asset(
     Constants.placeholderPath,
     fit: BoxFit.contain,
@@ -45,6 +47,7 @@ class NetworkImageView extends StatelessWidget {
     this.topRadius = 0.0,
     this.bottomRadius = 0.0,
     this.fit = BoxFit.fill,
+    this.heroImageTag,
   }) : super(key: key);
 
   @override
@@ -77,7 +80,9 @@ class NetworkImageView extends StatelessWidget {
       aspectRatio: aspectRatio,
       child: ClipRRect(
         borderRadius: borderRadius,
-        child: child,
+        child: heroImageTag != null
+            ? Hero(tag: heroImageTag!, child: child)
+            : child,
       ),
     );
   }

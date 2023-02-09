@@ -28,9 +28,9 @@ mixin CommonFunctions on Utilities {
     BuildContext context, {
     required int id,
     required String title,
-    String? releaseDate,
+    required String? releaseDate,
     required double voteAverage,
-    String? overview,
+    required String? overview,
     String? destUrl,
   }) {
     Navigator.push(

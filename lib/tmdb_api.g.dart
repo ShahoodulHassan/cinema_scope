@@ -238,12 +238,16 @@ class _TmdbApi implements TmdbApi {
     query, {
     page = 1,
     language = 'en',
+    includeAdult = 'false',
+    region = 'US',
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'query': query,
       r'page': page,
       r'language': language,
+      r'include_adult': includeAdult,
+      r'region': region,
     };
     final _headers = <String, dynamic>{
       r'Content-Type': 'application/json;charset=utf-8',
@@ -267,6 +271,47 @@ class _TmdbApi implements TmdbApi {
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = MovieSearchResult.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<PersonSearchResult> searchPersons(
+    query, {
+    page = 1,
+    language = 'en',
+    includeAdult = 'false',
+    region = 'US',
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'query': query,
+      r'page': page,
+      r'language': language,
+      r'include_adult': includeAdult,
+      r'region': region,
+    };
+    final _headers = <String, dynamic>{
+      r'Content-Type': 'application/json;charset=utf-8',
+      r'Authorization':
+          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYzdiNTdjNTY2ZThhZjk0MTE1YmIyYzBkOTEwZjYxMCIsInN1YiI6IjVhMGE3MDk5YzNhMzY4MjE4YTAxMTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.uyDhjXOvRNfjg_gJFPkSfAuT-F-MFmWVwPoEUftgq1g',
+    };
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<PersonSearchResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/json;charset=utf-8',
+    )
+            .compose(
+              _dio.options,
+              '/search/person',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = PersonSearchResult.fromJson(_result.data!);
     return value;
   }
 
@@ -716,7 +761,8 @@ class _TmdbApi implements TmdbApi {
   @override
   Future<Person> getPersonWithDetail(
     id, {
-    append = 'movie_credits,tv_credits,external_ids,images,tagged_images',
+    append =
+        'movie_credits,tv_credits,combined_credits,external_ids,images,tagged_images',
     language = 'en-US',
   }) async {
     const _extra = <String, dynamic>{};

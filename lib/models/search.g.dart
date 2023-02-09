@@ -6,40 +6,72 @@ part of 'search.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+BaseSearchResult _$BaseSearchResultFromJson(Map<String, dynamic> json) =>
+    BaseSearchResult(
+      json['page'] as int,
+      json['total_pages'] as int,
+      json['total_results'] as int,
+    );
+
+Map<String, dynamic> _$BaseSearchResultToJson(BaseSearchResult instance) =>
+    <String, dynamic>{
+      'page': instance.page,
+      'total_pages': instance.totalPages,
+      'total_results': instance.totalResults,
+    };
+
 MovieSearchResult _$MovieSearchResultFromJson(Map<String, dynamic> json) =>
     MovieSearchResult(
       json['page'] as int,
+      json['total_pages'] as int,
+      json['total_results'] as int,
       (json['results'] as List<dynamic>)
           .map((e) => MovieResult.fromJson(e as Map<String, dynamic>))
           .toList(),
-      json['total_pages'] as int,
-      json['total_results'] as int,
     );
 
 Map<String, dynamic> _$MovieSearchResultToJson(MovieSearchResult instance) =>
     <String, dynamic>{
       'page': instance.page,
-      'results': instance.results,
       'total_pages': instance.totalPages,
       'total_results': instance.totalResults,
+      'results': instance.results,
+    };
+
+PersonSearchResult _$PersonSearchResultFromJson(Map<String, dynamic> json) =>
+    PersonSearchResult(
+      json['page'] as int,
+      json['total_pages'] as int,
+      json['total_results'] as int,
+      (json['results'] as List<dynamic>)
+          .map((e) => PersonResult.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$PersonSearchResultToJson(PersonSearchResult instance) =>
+    <String, dynamic>{
+      'page': instance.page,
+      'total_pages': instance.totalPages,
+      'total_results': instance.totalResults,
+      'results': instance.results,
     };
 
 MultiSearchResult _$MultiSearchResultFromJson(Map<String, dynamic> json) =>
     MultiSearchResult(
       json['page'] as int,
+      json['total_pages'] as int,
+      json['total_results'] as int,
       (json['results'] as List<dynamic>)
           .map((e) => BaseResult.fromJson(e as Map<String, dynamic>))
           .toList(),
-      json['total_pages'] as int,
-      json['total_results'] as int,
     );
 
 Map<String, dynamic> _$MultiSearchResultToJson(MultiSearchResult instance) =>
     <String, dynamic>{
       'page': instance.page,
-      'results': instance.results,
       'total_pages': instance.totalPages,
       'total_results': instance.totalResults,
+      'results': instance.results,
     };
 
 BaseResult _$BaseResultFromJson(Map<String, dynamic> json) => BaseResult(
@@ -66,6 +98,7 @@ MediaResult _$MediaResultFromJson(Map<String, dynamic> json) => MediaResult(
       popularity: (json['popularity'] as num?)?.toDouble(),
       posterPath: json['poster_path'] as String?,
       backdropPath: json['backdrop_path'] as String?,
+      adult: json['adult'] as bool?,
     );
 
 Map<String, dynamic> _$MediaResultToJson(MediaResult instance) =>
@@ -80,6 +113,7 @@ Map<String, dynamic> _$MediaResultToJson(MediaResult instance) =>
       'vote_count': instance.voteCount,
       'vote_average': instance.voteAverage,
       'original_language': instance.originalLanguage,
+      'adult': instance.adult,
     };
 
 KnownFor _$KnownForFromJson(Map<String, dynamic> json) => KnownFor(
@@ -128,6 +162,54 @@ Map<String, dynamic> _$KnownForToJson(KnownFor instance) => <String, dynamic>{
       'original_name': instance._originalName,
     };
 
+CombinedResult _$CombinedResultFromJson(Map<String, dynamic> json) =>
+    CombinedResult(
+      json['id'] as int,
+      json['overview'] as String,
+      (json['genre_ids'] as List<dynamic>).map((e) => e as int).toList(),
+      json['vote_count'] as int,
+      (json['vote_average'] as num).toDouble(),
+      json['original_language'] as String,
+      mediaType: json['media_type'] as String?,
+      popularity: (json['popularity'] as num?)?.toDouble(),
+      posterPath: json['poster_path'] as String?,
+      backdropPath: json['backdrop_path'] as String?,
+      adult: json['adult'] as bool?,
+      originalTitle: json['original_title'] as String?,
+      title: json['title'] as String?,
+      video: json['video'] as bool?,
+      releaseDate: json['release_date'] as String?,
+      originCountry: (json['origin_country'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      name: json['name'] as String?,
+      originalName: json['original_name'] as String?,
+      firstAirDate: json['first_air_date'] as String?,
+    );
+
+Map<String, dynamic> _$CombinedResultToJson(CombinedResult instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'media_type': instance.mediaType,
+      'popularity': instance.popularity,
+      'poster_path': instance.posterPath,
+      'backdrop_path': instance.backdropPath,
+      'overview': instance.overview,
+      'genre_ids': instance.genreIds,
+      'vote_count': instance.voteCount,
+      'vote_average': instance.voteAverage,
+      'original_language': instance.originalLanguage,
+      'adult': instance.adult,
+      'release_date': instance.releaseDate,
+      'first_air_date': instance.firstAirDate,
+      'origin_country': instance.originCountry,
+      'original_title': instance.originalTitle,
+      'title': instance.title,
+      'name': instance.name,
+      'original_name': instance.originalName,
+      'video': instance.video,
+    };
+
 MovieResult _$MovieResultFromJson(Map<String, dynamic> json) => MovieResult(
       json['id'] as int,
       json['overview'] as String,
@@ -135,16 +217,15 @@ MovieResult _$MovieResultFromJson(Map<String, dynamic> json) => MovieResult(
       json['vote_count'] as int,
       (json['vote_average'] as num).toDouble(),
       json['original_language'] as String,
-      json['adult'] as bool,
       json['original_title'] as String,
       json['title'] as String,
       json['video'] as bool,
-      mediaType: json['media_type'] as String?,
       popularity: (json['popularity'] as num?)?.toDouble(),
       posterPath: json['poster_path'] as String?,
       backdropPath: json['backdrop_path'] as String?,
+      adult: json['adult'] as bool?,
       releaseDate: json['release_date'] as String?,
-    );
+    )..mediaType = json['media_type'] as String?;
 
 Map<String, dynamic> _$MovieResultToJson(MovieResult instance) =>
     <String, dynamic>{
@@ -158,8 +239,8 @@ Map<String, dynamic> _$MovieResultToJson(MovieResult instance) =>
       'vote_count': instance.voteCount,
       'vote_average': instance.voteAverage,
       'original_language': instance.originalLanguage,
-      'release_date': instance.releaseDate,
       'adult': instance.adult,
+      'release_date': instance.releaseDate,
       'original_title': instance.originalTitle,
       'title': instance.title,
       'video': instance.video,
@@ -177,12 +258,12 @@ TvResult _$TvResultFromJson(Map<String, dynamic> json) => TvResult(
           .toList(),
       json['name'] as String,
       json['original_name'] as String,
-      mediaType: json['media_type'] as String?,
       popularity: (json['popularity'] as num?)?.toDouble(),
       posterPath: json['poster_path'] as String?,
       backdropPath: json['backdrop_path'] as String?,
       firstAirDate: json['first_air_date'] as String?,
-    );
+      adult: json['adult'] as bool?,
+    )..mediaType = json['media_type'] as String?;
 
 Map<String, dynamic> _$TvResultToJson(TvResult instance) => <String, dynamic>{
       'id': instance.id,
@@ -195,6 +276,7 @@ Map<String, dynamic> _$TvResultToJson(TvResult instance) => <String, dynamic>{
       'vote_count': instance.voteCount,
       'vote_average': instance.voteAverage,
       'original_language': instance.originalLanguage,
+      'adult': instance.adult,
       'first_air_date': instance.firstAirDate,
       'origin_country': instance.originCountry,
       'name': instance.name,
@@ -207,11 +289,10 @@ BasePersonResult _$BasePersonResultFromJson(Map<String, dynamic> json) =>
       json['adult'] as bool,
       json['name'] as String,
       json['known_for_department'] as String,
-      mediaType: json['media_type'] as String?,
       popularity: (json['popularity'] as num?)?.toDouble(),
       profilePath: json['profile_path'] as String?,
       gender: json['gender'] as int?,
-    );
+    )..mediaType = json['media_type'] as String?;
 
 Map<String, dynamic> _$BasePersonResultToJson(BasePersonResult instance) =>
     <String, dynamic>{
@@ -233,11 +314,10 @@ PersonResult _$PersonResultFromJson(Map<String, dynamic> json) => PersonResult(
       (json['known_for'] as List<dynamic>)
           .map((e) => KnownFor.fromJson(e as Map<String, dynamic>))
           .toList(),
-      mediaType: json['media_type'] as String?,
       popularity: (json['popularity'] as num?)?.toDouble(),
       profilePath: json['profile_path'] as String?,
       gender: json['gender'] as int?,
-    );
+    )..mediaType = json['media_type'] as String?;
 
 Map<String, dynamic> _$PersonResultToJson(PersonResult instance) =>
     <String, dynamic>{

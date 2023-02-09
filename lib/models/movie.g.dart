@@ -19,8 +19,6 @@ abstract class _$BaseCastCWProxy {
 
   BaseCast creditId(String creditId);
 
-  BaseCast mediaType(String? mediaType);
-
   BaseCast popularity(double? popularity);
 
   BaseCast profilePath(String? profilePath);
@@ -40,7 +38,6 @@ abstract class _$BaseCastCWProxy {
     String? knownForDepartment,
     String? originalName,
     String? creditId,
-    String? mediaType,
     double? popularity,
     String? profilePath,
     int? gender,
@@ -74,9 +71,6 @@ class _$BaseCastCWProxyImpl implements _$BaseCastCWProxy {
   BaseCast creditId(String creditId) => this(creditId: creditId);
 
   @override
-  BaseCast mediaType(String? mediaType) => this(mediaType: mediaType);
-
-  @override
   BaseCast popularity(double? popularity) => this(popularity: popularity);
 
   @override
@@ -100,7 +94,6 @@ class _$BaseCastCWProxyImpl implements _$BaseCastCWProxy {
     Object? knownForDepartment = const $CopyWithPlaceholder(),
     Object? originalName = const $CopyWithPlaceholder(),
     Object? creditId = const $CopyWithPlaceholder(),
-    Object? mediaType = const $CopyWithPlaceholder(),
     Object? popularity = const $CopyWithPlaceholder(),
     Object? profilePath = const $CopyWithPlaceholder(),
     Object? gender = const $CopyWithPlaceholder(),
@@ -137,10 +130,6 @@ class _$BaseCastCWProxyImpl implements _$BaseCastCWProxy {
           ? _value.creditId!
           // ignore: cast_nullable_to_non_nullable
           : creditId as String,
-      mediaType: mediaType == const $CopyWithPlaceholder()
-          ? _value.mediaType
-          // ignore: cast_nullable_to_non_nullable
-          : mediaType as String?,
       popularity: popularity == const $CopyWithPlaceholder()
           ? _value.popularity
           // ignore: cast_nullable_to_non_nullable
@@ -825,11 +814,10 @@ BaseCast _$BaseCastFromJson(Map<String, dynamic> json) => BaseCast(
       json['known_for_department'] as String,
       json['original_name'] as String,
       json['credit_id'] as String,
-      mediaType: json['media_type'] as String?,
       popularity: (json['popularity'] as num?)?.toDouble(),
       profilePath: json['profile_path'] as String?,
       gender: json['gender'] as int?,
-    );
+    )..mediaType = json['media_type'] as String?;
 
 Map<String, dynamic> _$BaseCastToJson(BaseCast instance) => <String, dynamic>{
       'id': instance.id,
