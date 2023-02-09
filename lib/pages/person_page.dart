@@ -372,10 +372,7 @@ class PersonalSection extends StatelessWidget
             title: 'Personal info',
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 16.0,
-                ),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -482,31 +479,28 @@ class PersonalSection extends StatelessWidget
     );
   }
 
-  Padding getAlsoKnownAsView(Person person) => Padding(
-      padding: const EdgeInsets.only(top: 16.0),
-      child: Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            getLabelView('Also known as'),
-            ListView.separated(
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (_, index) =>
-                  getTextView(person.alsoKnownAs[index]),
-              separatorBuilder: (context, index) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 2.0),
-                child: Container(
-                  height: 0.20,
-                  color: Theme.of(context).primaryColor.withOpacity(0.7),
-                ),
-              ),
-              itemCount: person.alsoKnownAs.length,
-            ),
-          ],
+  Widget getAlsoKnownAsView(Person person) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const SizedBox(height: 16.0),
+      getLabelView('Also known as'),
+      ListView.separated(
+        padding: EdgeInsets.zero,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (_, index) =>
+            getTextView(person.alsoKnownAs[index]),
+        separatorBuilder: (context, index) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2.0),
+          child: Container(
+            height: 0.20,
+            color: Theme.of(context).primaryColor.withOpacity(0.7),
+          ),
         ),
-      ));
+        itemCount: person.alsoKnownAs.length,
+      ),
+    ],
+  );
 
   String getBirthText(String? birthDay, bool dead) {
     if (birthDay == null || birthDay.isEmpty) return '-';
