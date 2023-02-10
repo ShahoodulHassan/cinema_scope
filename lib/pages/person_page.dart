@@ -167,10 +167,10 @@ class _PersonPageChildState extends State<_PersonPageChild>
               ),
             ),
           ),
-          const PersonalInfoSection(),
-          const BiographySection(),
-          FilmographySection(),
-          const ImagesSection(),
+          const _PersonalInfoSection(),
+          const _BiographySection(),
+          _FilmographySection(),
+          const _ImagesSection(),
           const SliverToBoxAdapter(child: SizedBox(height: 36)),
         ],
       ),
@@ -312,9 +312,9 @@ class BaseSectionSliver extends StatelessWidget {
       );
 }
 
-class PersonalInfoSection extends StatelessWidget
+class _PersonalInfoSection extends StatelessWidget
     with GenericFunctions, Utilities, CommonFunctions {
-  const PersonalInfoSection({Key? key}) : super(key: key);
+  const _PersonalInfoSection({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -546,8 +546,8 @@ class PersonalInfoSection extends StatelessWidget
   }
 }
 
-class BiographySection extends StatelessWidget {
-  const BiographySection({Key? key}) : super(key: key);
+class _BiographySection extends StatelessWidget {
+  const _BiographySection({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -575,8 +575,8 @@ class BiographySection extends StatelessWidget {
   }
 }
 
-class ImagesSection extends StatelessWidget with GenericFunctions {
-  const ImagesSection({Key? key}) : super(key: key);
+class _ImagesSection extends StatelessWidget with GenericFunctions {
+  const _ImagesSection({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -633,12 +633,7 @@ class ImageCardListView extends StatelessWidget
 
   final listViewVerticalPadding = 16.0;
 
-  // final cardCount = 2.5;
-  //
   late final deductibleWidth = listViewHorizontalPadding + separatorWidth;
-
-  //
-  // late final posterWidth = (screenWidth - listViewHorizontalPadding - separatorWidth) / 2.9;
 
   /// Backdrop width is calculated assuming we want to show 1.33 backdrop images
   /// on one screen
@@ -648,52 +643,9 @@ class ImageCardListView extends StatelessWidget
   /// baseline.
   late final imageHeight = backdropWidth / Constants.arBackdrop;
 
-  // final maxLines = 2;
-  //
-  // final textHorizPadding = 8.0;
-  //
-  // final nameTopPadding = 8.0;
-  //
-  // final nameBottomPadding = 2.0;
-  //
-  // final yearTopPadding = 0.0;
-  //
-  // final yearBottomPadding = 8.0;
-  //
-  // final jobTopPadding = 0.0;
-  //
-  // final jobBottomPadding = 8.0;
-  //
-  // final iconSize = 18.0;
-  //
-  // final nameStyle = const TextStyle(
-  //   fontSize: 14.0,
-  //   fontWeight: FontWeight.bold,
-  //   height: 1.2,
-  // );
-  //
-  // final jobStyle = const TextStyle(
-  //   fontSize: 14.0,
-  //   height: 1.2,
-  // );
-
   final topRadius = 4.0;
 
   final bottomRadius = 0.0;
-
-  // late final nameHeight = nameStyle.height! * nameStyle.fontSize! * maxLines;
-  //
-  // late final jobHeight = jobStyle.height! * jobStyle.fontSize! * maxLines;
-  //
-  // late final yearHeight = jobStyle.height! * jobStyle.fontSize!;
-  //
-  // late final nameContainerHeight =
-  //     nameHeight + nameTopPadding + nameBottomPadding;
-  //
-  // late final jobContainerHeight = jobHeight + jobTopPadding + jobBottomPadding;
-  //
-  // late final yearContainerHeight =
-  //     max(iconSize, yearHeight) + yearTopPadding + yearBottomPadding;
 
   late final cardHeight = imageHeight;
 
@@ -707,10 +659,6 @@ class ImageCardListView extends StatelessWidget
       child: ListView.separated(
         itemBuilder: (_, index) {
           var image = images[index];
-          // var title = image.mediaTitle /*getMediaTitle(image)*/;
-          // var year =
-          //     getYearStringFromDate(image.mediaReleaseDate) /*getYear(image)*/;
-          // var job = getJob(image);
           return Stack(
             children: [
               Card(
@@ -736,94 +684,6 @@ class ImageCardListView extends StatelessWidget
                         bottomRadius: bottomRadius,
                         // fit: BoxFit.fitHeight,
                       ),
-                      // Container(
-                      //   padding: EdgeInsets.fromLTRB(
-                      //     textHorizPadding,
-                      //     nameTopPadding,
-                      //     textHorizPadding,
-                      //     nameBottomPadding,
-                      //   ),
-                      //   // height: nameContainerHeight,
-                      //   child: Text(
-                      //     title,
-                      //     maxLines: maxLines,
-                      //     overflow: TextOverflow.ellipsis,
-                      //     style: nameStyle,
-                      //   ),
-                      // ),
-                      // if (year.isNotEmpty || image.voteAverage > 0.0)
-                      //   Padding(
-                      //     padding: EdgeInsets.fromLTRB(
-                      //       textHorizPadding,
-                      //       yearTopPadding,
-                      //       textHorizPadding,
-                      //       yearBottomPadding,
-                      //     ),
-                      //     child: Row(
-                      //       children: [
-                      //         Visibility(
-                      //           visible: year.isNotEmpty,
-                      //           child: Padding(
-                      //             padding: const EdgeInsets.only(right: 8.0),
-                      //             child: Text(
-                      //               year,
-                      //               textAlign: TextAlign.start,
-                      //               style: jobStyle,
-                      //             ),
-                      //           ),
-                      //         ),
-                      //         Visibility(
-                      //           visible: image.voteAverage > 0.0,
-                      //           child: Padding(
-                      //             padding: const EdgeInsets.only(right: 8.0),
-                      //             child: Row(
-                      //               children: [
-                      //                 Icon(
-                      //                   Icons.star_sharp,
-                      //                   size: iconSize,
-                      //                   color: Constants.ratingIconColor,
-                      //                 ),
-                      //                 Text(
-                      //                   ' ${applyCommaAndRound(
-                      //                     image.voteAverage,
-                      //                     1,
-                      //                     false,
-                      //                     true,
-                      //                   )}',
-                      //                   style: jobStyle,
-                      //                 ),
-                      //               ],
-                      //             ),
-                      //           ),
-                      //         ),
-                      //         Visibility(
-                      //           visible: image.mediaType == MediaType.tv.name,
-                      //           child: Text(
-                      //             'TV',
-                      //             style: jobStyle,
-                      //           ),
-                      //         ),
-                      //       ],
-                      //     ),
-                      //   ),
-                      // Visibility(
-                      //   visible: job.isNotEmpty,
-                      //   child: Container(
-                      //     padding: EdgeInsets.fromLTRB(
-                      //       textHorizPadding,
-                      //       jobTopPadding,
-                      //       textHorizPadding,
-                      //       jobBottomPadding,
-                      //     ),
-                      //     // height: characterContainerHeight,
-                      //     child: Text(
-                      //       job,
-                      //       maxLines: maxLines,
-                      //       overflow: TextOverflow.ellipsis,
-                      //       style: jobStyle,
-                      //     ),
-                      //   ),
-                      // ),
                     ],
                   ),
                 ),
@@ -861,18 +721,12 @@ class ImageCardListView extends StatelessWidget
     );
   }
 
-// String getJob(CombinedResult item) {
-//   // logIfDebug('getJob=>id:${item.id}, title:${getMediaTitle(item)}, type:${item.mediaType}');
-//   if (item is CombinedOfCast) return item.character;
-//   if (item is CombinedOfCrew) return item.job;
-//   return '';
-// }
 }
 
-class FilmographySection extends StatelessWidget with GenericFunctions {
+class _FilmographySection extends StatelessWidget with GenericFunctions {
   final int _maxCount = 10;
 
-  FilmographySection({Key? key}) : super(key: key);
+  _FilmographySection({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
