@@ -909,6 +909,7 @@ const _$MediaTypeEnumMap = {
   MediaType.all: 'all',
   MediaType.movie: 'movie',
   MediaType.tv: 'tv',
+  MediaType.season: 'season',
   MediaType.episode: 'episode',
   MediaType.person: 'person',
 };

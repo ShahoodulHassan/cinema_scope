@@ -416,9 +416,12 @@ class TaggedImage extends ImageDetail {
   static BaseResult _getMedia(String mediaType, Map<String, dynamic> mediaMap) {
     if (mediaType == MediaType.tv.name) {
       return TvResult.fromJson(mediaMap);
+    } else if (mediaType == MediaType.season.name) {
+      return TvSeason.fromJson(mediaMap);
     } else if (mediaType == MediaType.episode.name) {
       return TvEpisode.fromJson(mediaMap);
-    } else {
+    }
+    else {
       return MovieResult.fromJson(mediaMap);
     }
   }

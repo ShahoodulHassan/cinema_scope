@@ -44,6 +44,7 @@ enum MediaType {
   all,
   movie,
   tv,
+  season,
   episode,
   person,
 }
