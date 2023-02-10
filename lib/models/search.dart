@@ -47,7 +47,7 @@ class PersonSearchResult extends BaseSearchResult {
 }
 
 /// Custom fromJson had to be implemented to cater for the different sub classes
-/// of BaseResult that may be found inside the results variable.
+/// of BaseResult that may be found inside the 'results' variable.
 @JsonSerializable(fieldRename: FieldRename.snake)
 class MultiSearchResult extends BaseSearchResult {
   List<BaseResult> results;

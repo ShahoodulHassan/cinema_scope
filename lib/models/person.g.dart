@@ -20,6 +20,8 @@ Person _$PersonFromJson(Map<String, dynamic> json) => Person(
       json['external_ids'] == null
           ? null
           : ExternalIds.fromJson(json['external_ids'] as Map<String, dynamic>),
+      PersonImageResult.fromJson(json['images'] as Map<String, dynamic>),
+      TaggedImageResult.fromJson(json['tagged_images'] as Map<String, dynamic>),
       popularity: (json['popularity'] as num?)?.toDouble(),
       gender: json['gender'] as int?,
       birthday: json['birthday'] as String?,
@@ -50,6 +52,8 @@ Map<String, dynamic> _$PersonToJson(Person instance) => <String, dynamic>{
       'tv_credits': instance.tvCredits,
       'combined_credits': instance.combinedCredits,
       'external_ids': instance.externalIds,
+      'images': instance.images,
+      'tagged_images': instance.taggedImages,
     };
 
 ExternalIds _$ExternalIdsFromJson(Map<String, dynamic> json) => ExternalIds(
@@ -402,4 +406,63 @@ Map<String, dynamic> _$TvOfCrewToJson(TvOfCrew instance) => <String, dynamic>{
       'job': instance.job,
       'credit_id': instance.creditId,
       'episode_count': instance.episodeCount,
+    };
+
+PersonImageResult _$PersonImageResultFromJson(Map<String, dynamic> json) =>
+    PersonImageResult(
+      (json['profiles'] as List<dynamic>)
+          .map((e) => ImageDetail.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$PersonImageResultToJson(PersonImageResult instance) =>
+    <String, dynamic>{
+      'profiles': instance.profiles,
+    };
+
+TaggedImageResult _$TaggedImageResultFromJson(Map<String, dynamic> json) =>
+    TaggedImageResult(
+      json['page'] as int,
+      json['total_pages'] as int,
+      json['total_results'] as int,
+      (json['results'] as List<dynamic>)
+          .map((e) => TaggedImage.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$TaggedImageResultToJson(TaggedImageResult instance) =>
+    <String, dynamic>{
+      'page': instance.page,
+      'total_pages': instance.totalPages,
+      'total_results': instance.totalResults,
+      'results': instance.results,
+    };
+
+TaggedImage _$TaggedImageFromJson(Map<String, dynamic> json) => TaggedImage(
+      (json['aspect_ratio'] as num).toDouble(),
+      json['height'] as int,
+      json['file_path'] as String,
+      (json['vote_average'] as num).toDouble(),
+      json['vote_count'] as int,
+      json['width'] as int,
+      json['id'] as String,
+      json['image_type'] as String,
+      json['media_type'] as String,
+      BaseResult.fromJson(json['media'] as Map<String, dynamic>),
+      iso6391: json['iso_639_1'] as String?,
+    );
+
+Map<String, dynamic> _$TaggedImageToJson(TaggedImage instance) =>
+    <String, dynamic>{
+      'aspect_ratio': instance.aspectRatio,
+      'height': instance.height,
+      'iso_639_1': instance.iso6391,
+      'file_path': instance.filePath,
+      'vote_average': instance.voteAverage,
+      'vote_count': instance.voteCount,
+      'width': instance.width,
+      'id': instance.id,
+      'image_type': instance.imageType,
+      'media_type': instance.mediaType,
+      'media': instance.media,
     };

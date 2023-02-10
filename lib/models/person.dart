@@ -1,5 +1,9 @@
+import 'package:cinema_scope/constants.dart';
 import 'package:cinema_scope/models/search.dart';
+import 'package:cinema_scope/models/tv.dart';
 import 'package:json_annotation/json_annotation.dart';
+
+import 'movie.dart';
 
 part 'person.g.dart';
 
@@ -16,6 +20,8 @@ class Person extends BasePersonResult {
   TvCredits tvCredits;
   CombinedCredits combinedCredits;
   ExternalIds? externalIds;
+  PersonImageResult images;
+  TaggedImageResult taggedImages;
 
   Person(
     super.id,
@@ -27,7 +33,9 @@ class Person extends BasePersonResult {
     this.movieCredits,
     this.tvCredits,
     this.combinedCredits,
-    this.externalIds, {
+    this.externalIds,
+    this.images,
+    this.taggedImages, {
     super.popularity,
     super.gender,
     this.birthday,
@@ -335,4 +343,89 @@ class TvOfCrew extends TvResult {
 
   @override
   Map<String, dynamic> toJson() => _$TvOfCrewToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class PersonImageResult {
+  List<ImageDetail> profiles;
+
+  PersonImageResult(this.profiles);
+
+  factory PersonImageResult.fromJson(Map<String, dynamic> json) =>
+      _$PersonImageResultFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$PersonImageResultToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class TaggedImageResult extends BaseSearchResult {
+  List<TaggedImage> results;
+
+  TaggedImageResult(
+      super.page, super.totalPages, super.totalResults, this.results);
+
+  factory TaggedImageResult.fromJson(Map<String, dynamic> json) =>
+      _$TaggedImageResultFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$TaggedImageResultToJson(this);
+}
+
+/// Custom fromJson had to be implemented to cater for the different sub classes
+/// of MediaResult that may be found inside the 'media' variable.
+@JsonSerializable(fieldRename: FieldRename.snake)
+class TaggedImage extends ImageDetail {
+  String id;
+  String imageType;
+  String mediaType;
+  BaseResult media;
+
+  TaggedImage(
+    super.aspectRatio,
+    super.height,
+    super.filePath,
+    super.voteAverage,
+    super.voteCount,
+    super.width,
+    this.id,
+    this.imageType,
+    this.mediaType,
+    this.media, {
+    super.iso6391,
+  });
+
+  factory TaggedImage.fromJson(Map<String, dynamic> json) {
+    var mediaType = json['media_type'] as String;
+    var mediaMap = json['media'] as Map<String, dynamic>;
+    return TaggedImage(
+      (json['aspect_ratio'] as num).toDouble(),
+      json['height'] as int,
+      json['file_path'] as String,
+      (json['vote_average'] as num).toDouble(),
+      json['vote_count'] as int,
+      json['width'] as int,
+      json['id'] as String,
+      json['image_type'] as String,
+      mediaType,
+      _getMedia(mediaType, mediaMap),
+      iso6391: json['iso_639_1'] as String?,
+    );
+  }
+
+  static BaseResult _getMedia(String mediaType, Map<String, dynamic> mediaMap) {
+    if (mediaType == MediaType.tv.name) {
+      return TvResult.fromJson(mediaMap);
+    } else if (mediaType == MediaType.episode.name) {
+      return TvEpisode.fromJson(mediaMap);
+    } else {
+      return MovieResult.fromJson(mediaMap);
+    }
+  }
+
+  // factory TaggedImage.fromJson(Map<String, dynamic> json) =>
+  //     _$TaggedImageFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$TaggedImageToJson(this);
 }
