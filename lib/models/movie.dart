@@ -376,6 +376,11 @@ class Crew extends BaseCast {
   String department;
   String job;
 
+  /// A custom field that contains comma separated jobs of a crew member in a
+  /// media title.
+  /// e.g., (Screenplay, Writer, Adaptation)
+  String? jobs;
+
   Crew(
     super.id,
     super.adult,
@@ -388,6 +393,7 @@ class Crew extends BaseCast {
     super.popularity,
     super.gender,
     super.profilePath,
+    this.jobs,
   });
 
   factory Crew.fromJson(Map<String, dynamic> json) => _$CrewFromJson(json);

@@ -5,6 +5,8 @@ import 'package:cinema_scope/architecture/config_view_model.dart';
 import 'package:cinema_scope/constants.dart';
 import 'package:cinema_scope/models/movie.dart';
 import 'package:cinema_scope/models/person.dart';
+import 'package:cinema_scope/pages/FilmographyPage.dart';
+import 'package:cinema_scope/pages/ImagePage.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:cinema_scope/widgets/expandable_synopsis.dart';
@@ -68,16 +70,11 @@ class _PersonPageChild extends StatefulWidget {
 
 class _PersonPageChildState extends State<_PersonPageChild>
     with Utilities, CommonFunctions {
-  late final PersonViewModel pvm;
-
   @override
   void initState() {
-    pvm = context.read<PersonViewModel>()
-      ..fetchPersonWithDetail(
-        widget.id,
-        widget.name,
-        widget.knownFor,
-      );
+    context
+        .read<PersonViewModel>()
+        .fetchPersonWithDetail(widget.id, widget.name, widget.knownFor);
     super.initState();
   }
 
@@ -659,6 +656,10 @@ class ImageCardListView extends StatelessWidget
       child: ListView.separated(
         itemBuilder: (_, index) {
           var image = images[index];
+          var imageType = image is TaggedImage
+              ? ImageType.values
+                  .firstWhere((element) => element.name == image.imageType)
+              : ImageType.profile;
           return Stack(
             children: [
               Card(
@@ -676,12 +677,11 @@ class ImageCardListView extends StatelessWidget
                     children: [
                       NetworkImageView(
                         image.filePath,
-                        imageType: image.aspectRatio < 1
-                            ? ImageType.profile
-                            : ImageType.backdrop,
+                        imageType: imageType,
                         aspectRatio: image.aspectRatio,
                         topRadius: topRadius,
                         bottomRadius: bottomRadius,
+                        // heroImageTag: image.filePath,
                         // fit: BoxFit.fitHeight,
                       ),
                     ],
@@ -694,6 +694,14 @@ class ImageCardListView extends StatelessWidget
                   child: InkWell(
                     borderRadius: BorderRadius.circular(topRadius),
                     onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) {
+                          return ImagePage(
+                            image: image,
+                            imageType: imageType,
+                          );
+                        },
+                      ));
                       // goToMoviePage(
                       //   context,
                       //   id: image.id,
@@ -720,7 +728,6 @@ class ImageCardListView extends StatelessWidget
       ),
     );
   }
-
 }
 
 class _FilmographySection extends StatelessWidget with GenericFunctions {
@@ -748,11 +755,33 @@ class _FilmographySection extends StatelessWidget with GenericFunctions {
             Container(
               alignment: Alignment.center,
               padding: const EdgeInsets.only(bottom: 8.0),
-              child: CompactTextButton('All filmography', onPressed: () {}),
+              child: CompactTextButton('All filmography', onPressed: () {
+                var pvm = context.read<PersonViewModel>();
+                var person = pvm.personWithKnownFor.person;
+                goToFilmographyPage(
+                    context, person!.id, person.name, person.combinedCredits);
+              }),
             ),
           ],
         );
       },
+    );
+  }
+
+  goToFilmographyPage(
+    BuildContext context,
+    int id,
+    String name,
+    CombinedCredits combinedCredits,
+  ) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (_) => FilmographyPage(
+                id: id,
+                name: name,
+                combinedCredits: combinedCredits,
+              )),
     );
   }
 }
@@ -978,15 +1007,17 @@ class PosterCardListView extends StatelessWidget
                   child: InkWell(
                     borderRadius: BorderRadius.circular(topRadius),
                     onTap: () {
-                      goToMoviePage(
-                        context,
-                        id: item.id,
-                        title: title,
-                        overview: item.overview,
-                        releaseDate:
-                            item.mediaReleaseDate /*getReleaseDate(item)*/,
-                        voteAverage: item.voteAverage,
-                      );
+                      if (item.mediaType == MediaType.movie.name) {
+                        goToMoviePage(
+                          context,
+                          id: item.id,
+                          title: title,
+                          overview: item.overview,
+                          releaseDate:
+                              item.mediaReleaseDate /*getReleaseDate(item)*/,
+                          voteAverage: item.voteAverage,
+                        );
+                      } else {}
                     },
                   ),
                 ),

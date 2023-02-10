@@ -94,4 +94,7 @@ mixin CommonFunctions on Utilities {
         return '-';
     }
   }
+
+  String departmentToRole(String department) =>
+      Constants.departMap[department] ?? department;
 }

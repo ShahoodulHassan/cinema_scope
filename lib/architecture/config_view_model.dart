@@ -62,6 +62,9 @@ class ConfigViewModel extends ApiViewModel {
       case ImageType.profile:
         sizes = imageConfig.profileSizes;
         break;
+      case ImageType.still:
+        sizes = imageConfig.stillSizes;
+        break;
     }
     return sizes[max(sizes.length - imageQuality.quality, 0)];
   }
@@ -214,5 +217,6 @@ enum ImageType {
   poster,
   backdrop,
   profile,
+  still,
   // logo,
 }

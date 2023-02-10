@@ -59,7 +59,8 @@ enum Department {
   directing('Directing'),
   editing('Editing'),
   production('Production'),
-  writing('Writing');
+  writing('Writing'),
+  crew('Crew');
 
   final String name;
 

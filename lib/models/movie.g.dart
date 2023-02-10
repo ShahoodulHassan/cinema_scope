@@ -356,6 +356,8 @@ abstract class _$CrewCWProxy {
 
   Crew profilePath(String? profilePath);
 
+  Crew jobs(String? jobs);
+
   /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `Crew(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
   /// Usage
@@ -374,6 +376,7 @@ abstract class _$CrewCWProxy {
     double? popularity,
     int? gender,
     String? profilePath,
+    String? jobs,
   });
 }
 
@@ -418,6 +421,9 @@ class _$CrewCWProxyImpl implements _$CrewCWProxy {
   Crew profilePath(String? profilePath) => this(profilePath: profilePath);
 
   @override
+  Crew jobs(String? jobs) => this(jobs: jobs);
+
+  @override
 
   /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `Crew(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
@@ -437,6 +443,7 @@ class _$CrewCWProxyImpl implements _$CrewCWProxy {
     Object? popularity = const $CopyWithPlaceholder(),
     Object? gender = const $CopyWithPlaceholder(),
     Object? profilePath = const $CopyWithPlaceholder(),
+    Object? jobs = const $CopyWithPlaceholder(),
   }) {
     return Crew(
       id == const $CopyWithPlaceholder() || id == null
@@ -492,6 +499,10 @@ class _$CrewCWProxyImpl implements _$CrewCWProxy {
           ? _value.profilePath
           // ignore: cast_nullable_to_non_nullable
           : profilePath as String?,
+      jobs: jobs == const $CopyWithPlaceholder()
+          ? _value.jobs
+          // ignore: cast_nullable_to_non_nullable
+          : jobs as String?,
     );
   }
 }
@@ -875,6 +886,7 @@ Crew _$CrewFromJson(Map<String, dynamic> json) => Crew(
       popularity: (json['popularity'] as num?)?.toDouble(),
       gender: json['gender'] as int?,
       profilePath: json['profile_path'] as String?,
+      jobs: json['jobs'] as String?,
     )..mediaType = json['media_type'] as String?;
 
 Map<String, dynamic> _$CrewToJson(Crew instance) => <String, dynamic>{
@@ -890,6 +902,7 @@ Map<String, dynamic> _$CrewToJson(Crew instance) => <String, dynamic>{
       'credit_id': instance.creditId,
       'department': instance.department,
       'job': instance.job,
+      'jobs': instance.jobs,
     };
 
 MediaGenre _$MediaGenreFromJson(Map<String, dynamic> json) => MediaGenre(

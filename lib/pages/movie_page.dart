@@ -375,7 +375,8 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
   }
 }
 
-class CastCrewSection extends StatelessWidget with GenericFunctions {
+class CastCrewSection extends StatelessWidget
+    with GenericFunctions, Utilities, CommonFunctions {
   final int _maxCount = 10;
 
   const CastCrewSection({Key? key}) : super(key: key);
@@ -416,7 +417,8 @@ class CastCrewSection extends StatelessWidget with GenericFunctions {
                     //     tuple.item2,
                     //     MediaQuery.of(context).size.width,
                     //   ),
-                    if (tuple.item2.isNotEmpty) getCrewSection(tuple.item2),
+                    if (tuple.item2.isNotEmpty)
+                      getCrewSection(context, tuple.item2),
                     getSliverSeparator(context),
                   ],
                 ),
@@ -428,10 +430,15 @@ class CastCrewSection extends StatelessWidget with GenericFunctions {
     );
   }
 
-  Widget getCrewSection(List<Crew> crew) {
+  Widget getCrewSection(BuildContext context, List<Crew> crew) {
     /// We show only directors and co-directors, each sorted alphabetically.
     /// Co-directors will have their job mentioned with their names.
-    var directors = (crew.where((element) => element.job == 'Director').toList()
+    var labelDirector = Constants.departMap[Department.directing.name]!;
+    var labelWriter = Constants.departMap[Department.writing.name]!;
+    var directors = (crew
+            .where((element) =>
+                element.job == labelDirector)
+            .toList()
           ..sort(
               (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()))) +
         (crew
@@ -439,12 +446,12 @@ class CastCrewSection extends StatelessWidget with GenericFunctions {
                 .toList()
               ..sort((a, b) =>
                   a.name.toLowerCase().compareTo(b.name.toLowerCase())))
-            .map((e) => e.copyWith(name: '${e.name} (${e.job})'))
+            .map((e) => e.copyWith(jobs: ' (${e.job})'))
             .toList();
 
     /// We show all crew from the department 'writing'
     var writers = (crew
-        .where((element) => element.department.toLowerCase() == 'writing')
+        .where((element) => element.department == Department.writing.name)
         .toList()
       ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase())));
 
@@ -463,33 +470,36 @@ class CastCrewSection extends StatelessWidget with GenericFunctions {
     for (var id in crewMap.keys) {
       var writer = crewMap[id]!.first;
       var jobs = crewMap[id]!.map((e) => e.job).toList();
-      var jobSuffix = jobs.length == 1 && jobs.first == 'Writer'
+      var jobString = jobs.length == 1 && jobs.first == labelWriter
           ? ''
           : ' (${jobs.join(', ')})';
-      combinedWriters.add(writer.copyWith(name: '${writer.name}$jobSuffix'));
+      combinedWriters.add(writer.copyWith(jobs: jobString));
     }
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Column(
         children: [
-          getCrewTile(directors, 'Director'),
-          getCrewTile(combinedWriters, 'Writer'),
+          getCrewTile(context, directors, labelDirector),
+          getCrewTile(context, combinedWriters, labelWriter),
           CompactTextButton('All cast & crew', onPressed: () {}),
         ],
       ),
     );
   }
 
-  Widget getCrewTile(List<Crew> crew, String label) {
+  Widget getCrewTile(BuildContext context, List<Crew> crew, String label) {
     if (crew.isEmpty) return const SizedBox.shrink();
-    var names = crew.map((e) => e.name).toSet().join(', ');
+    var names = crew.map((e) => '${e.name}${e.jobs ?? ''}').join(', ');
+    // var names = crew.map((e) => e.name).toSet().join(', ');
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: () {
-          logIfDebug('Crew clicked');
+          if (crew.length == 1) {
+            goToPersonPage(context, crew.first);
+          }
         },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -544,8 +554,8 @@ class CastCrewSection extends StatelessWidget with GenericFunctions {
       );
 }
 
-class CastListView<T extends BaseCast> extends StatelessWidget with Utilities,
-    CommonFunctions {
+class CastListView<T extends BaseCast> extends StatelessWidget
+    with Utilities, CommonFunctions {
   final List<T> casts;
   final double screenWidth;
 
@@ -707,7 +717,6 @@ class CastListView<T extends BaseCast> extends StatelessWidget with Utilities,
       ),
     );
   }
-
 }
 
 class RecommendedMoviesSection extends StatelessWidget
@@ -1617,7 +1626,7 @@ class ImageDelegate extends SliverPersistentHeaderDelegate
 
   final int delay = 7000;
 
-  final double fraction = 1.0/*0.88*/;
+  final double fraction = 1.0 /*0.88*/;
 
   ImageDelegate(this.baseUrl, this.extent, this.thumbMap);
 
