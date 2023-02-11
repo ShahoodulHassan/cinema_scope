@@ -1338,29 +1338,32 @@ class ReviewsListView extends StatelessWidget with GenericFunctions {
                                 bottomRadius: avatarSize,
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 8.0,
-                                right: 8.0,
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  InkWellOverlay(
-                                    child: Text(
-                                      review.author,
-                                      style: nameStyle,
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 8.0,
+                                  right: 8.0,
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    InkWellOverlay(
+                                      child: Text(
+                                        review.author,
+                                        maxLines: 1,
+                                        style: nameStyle,
+                                      ),
+                                      onTap: () {
+                                        logIfDebug('${review.author} clicked');
+                                      },
                                     ),
-                                    onTap: () {
-                                      logIfDebug('${review.author} clicked');
-                                    },
-                                  ),
-                                  Text(
-                                    getReadableDate(review.createdAt),
-                                    style: dateTextStyle,
-                                  ),
-                                ],
+                                    Text(
+                                      getReadableDate(review.createdAt),
+                                      style: dateTextStyle,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
@@ -1643,6 +1646,8 @@ class ImageDelegate extends SliverPersistentHeaderDelegate
             itemCount: thumbMap.length,
             indicatorLayout: PageIndicatorLayout.SCALE,
             autoplayDelay: delay,
+            /// Helps in precaching the page
+            allowImplicitScrolling: true,
             // transformer: ScaleAndFadeTransformer(),
             // viewportFraction: fraction,
             // scale: fraction + 0.04,
