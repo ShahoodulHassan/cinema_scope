@@ -24,7 +24,6 @@ class ImagePage extends StatelessWidget {
     initialPage: initialPage,
   );
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,9 +39,7 @@ class ImagePage extends StatelessWidget {
         allowImplicitScrolling: true,
       ),
       // body: PageView.builder(
-      //   itemBuilder: (context, index) {
-      //     return buildPhotoView(context, images[index]);
-      //   },
+      //   itemBuilder: (context, index) => buildPhotoView(context, images[index]),
       //   controller: _controller,
       //   itemCount: images.length,
       //   allowImplicitScrolling: true,
@@ -55,16 +52,31 @@ class ImagePage extends StatelessWidget {
       imageProvider: Image.network(getImageUrl(image, context)).image,
       maxScale: PhotoViewComputedScale.contained * 4.0,
       minScale: PhotoViewComputedScale.contained * 1.0,
-      loadingBuilder: (_, __) {
+      loadingBuilder: (_, progress) {
         return Container(
           color: Colors.black,
-          alignment: Alignment.center,
-          child: NetworkImageView(
-            image.filePath,
-            imageType: imageType,
-            aspectRatio: image.aspectRatio,
-            imageQuality: placeholderQuality,
-            // heroImageTag: image.filePath,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              NetworkImageView(
+                image.filePath,
+                imageType: imageType,
+                aspectRatio: image.aspectRatio,
+                imageQuality: placeholderQuality,
+                // heroImageTag: image.filePath,
+              ),
+              if (progress != null)
+                Center(
+                  child: CircularProgressIndicator(
+                    backgroundColor: Theme.of(context).primaryColorLight,
+                    color: Theme.of(context).primaryColor,
+                    value: progress.expectedTotalBytes != null
+                        ? progress.cumulativeBytesLoaded /
+                            progress.expectedTotalBytes!
+                        : null,
+                  ),
+                ),
+            ],
           ),
         );
       },
