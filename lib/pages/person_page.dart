@@ -5,7 +5,7 @@ import 'package:cinema_scope/architecture/config_view_model.dart';
 import 'package:cinema_scope/constants.dart';
 import 'package:cinema_scope/models/movie.dart';
 import 'package:cinema_scope/models/person.dart';
-import 'package:cinema_scope/pages/FilmographyPage.dart';
+import 'package:cinema_scope/pages/filmography_page.dart';
 import 'package:cinema_scope/pages/ImagePage.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
@@ -313,6 +313,8 @@ class _PersonalInfoSection extends StatelessWidget
     with GenericFunctions, Utilities, CommonFunctions {
   const _PersonalInfoSection({Key? key}) : super(key: key);
 
+  final _separator = const SizedBox(height: 16.0);
+
   @override
   Widget build(BuildContext context) {
     return Selector<PersonViewModel, Person?>(
@@ -344,7 +346,10 @@ class _PersonalInfoSection extends StatelessWidget
                         getTextView(getGenderText(person.gender)),
                       ],
                     ),
-                    const SizedBox(height: 16.0),
+                    _separator,
+                    getBirthSection(person, dead, place, birthdayText),
+                    if (dead) getDeathSection(deathDay, person),
+                    _separator,
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -352,7 +357,7 @@ class _PersonalInfoSection extends StatelessWidget
                         getTextView(person.knownForDepartment),
                       ],
                     ),
-                    const SizedBox(height: 16.0),
+                    _separator,
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -363,70 +368,6 @@ class _PersonalInfoSection extends StatelessWidget
                         ),
                       ],
                     ),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //   children: [
-                    //     Column(
-                    //       crossAxisAlignment: CrossAxisAlignment.start,
-                    //       children: [
-                    //         getLabelView('Known for'),
-                    //         getTextView(person.knownForDepartment),
-                    //       ],
-                    //     ),
-                    //     const SizedBox(width: 8.0),
-                    //     Column(
-                    //       crossAxisAlignment: CrossAxisAlignment.start,
-                    //       children: [
-                    //         getLabelView('Known credits'),
-                    //         getTextView(
-                    //           applyCommaAndRoundNoZeroes(
-                    //               person.knownCredits.toDouble(), 0, true),
-                    //         ),
-                    //       ],
-                    //     ),
-                    //   ],
-                    // ),
-                    const SizedBox(height: 16.0),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              getLabelView('Birth'),
-                              getTextView(getBirthText(person.birthday, dead)),
-                              if (place != null && place.isNotEmpty)
-                                getTextView(place),
-                              if (birthdayText.isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 4.0),
-                                  child: getTextView(birthdayText),
-                                ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                    if (dead)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 16.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  getLabelView('Death'),
-                                  getTextView(getDeathText(
-                                    deathDay!,
-                                    person.birthday,
-                                  )),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
                     if (person.alsoKnownAs.isNotEmpty)
                       getAlsoKnownAsView(person),
                   ],
@@ -437,6 +378,51 @@ class _PersonalInfoSection extends StatelessWidget
         }
       },
       selector: (_, pvm) => pvm.personWithKnownFor.person,
+    );
+  }
+
+  Widget getDeathSection(String? deathDay, Person person) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                getLabelView('Death'),
+                getTextView(getDeathText(
+                  deathDay!,
+                  person.birthday,
+                )),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget getBirthSection(
+      Person person, bool dead, String? place, String birthdayText) {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              getLabelView('Birth'),
+              getTextView(getBirthText(person.birthday, dead)),
+              if (place != null && place.isNotEmpty) getTextView(place),
+              if (birthdayText.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4.0),
+                  child: getTextView(birthdayText),
+                ),
+            ],
+          ),
+        )
+      ],
     );
   }
 
@@ -660,6 +646,11 @@ class ImageCardListView extends StatelessWidget
               ? ImageType.values
                   .firstWhere((element) => element.name == image.imageType)
               : ImageType.profile;
+          var imageQuality = image is TaggedImage &&
+                  image.imageType == ImageType.still.name &&
+                  image.aspectRatio > 1.0
+              ? ImageQuality.high
+              : ImageQuality.medium;
           return Stack(
             children: [
               Card(
@@ -681,6 +672,7 @@ class ImageCardListView extends StatelessWidget
                         aspectRatio: image.aspectRatio,
                         topRadius: topRadius,
                         bottomRadius: bottomRadius,
+                        imageQuality: imageQuality,
                         // heroImageTag: image.filePath,
                         // fit: BoxFit.fitHeight,
                       ),
@@ -697,8 +689,10 @@ class ImageCardListView extends StatelessWidget
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (_) {
                           return ImagePage(
-                            image: image,
+                            images: images,
+                            initialPage: index,
                             imageType: imageType,
+                            placeholderQuality: imageQuality,
                           );
                         },
                       ));
