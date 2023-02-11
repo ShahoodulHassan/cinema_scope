@@ -1,3 +1,4 @@
+import 'package:card_swiper/card_swiper.dart';
 import 'package:cinema_scope/architecture/config_view_model.dart';
 import 'package:cinema_scope/models/movie.dart';
 import 'package:cinema_scope/widgets/image_view.dart';
@@ -5,40 +6,77 @@ import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 
-
 class ImagePage extends StatelessWidget {
-  final ImageDetail image;
+  final List<ImageDetail> images;
+  final int initialPage;
   final ImageType imageType;
+  final ImageQuality placeholderQuality;
 
-  const ImagePage({
-    required this.image,
+  ImagePage({
+    required this.images,
+    required this.initialPage,
     required this.imageType,
+    this.placeholderQuality = ImageQuality.medium,
     Key? key,
   }) : super(key: key);
 
+  late final PageController _controller = PageController(
+    initialPage: initialPage,
+  );
+
+
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      body: Swiper(
+        itemBuilder: (context, index) {
+          return buildPhotoView(context, images[index]);
+        },
+        index: initialPage,
+        itemCount: images.length,
+        // autoplay: true,
+        indicatorLayout: PageIndicatorLayout.SCALE,
+        pagination: const SwiperPagination(),
+        allowImplicitScrolling: true,
+      ),
+      // body: PageView.builder(
+      //   itemBuilder: (context, index) {
+      //     return buildPhotoView(context, images[index]);
+      //   },
+      //   controller: _controller,
+      //   itemCount: images.length,
+      //   allowImplicitScrolling: true,
+      // ),
+    );
+  }
+
+  PhotoView buildPhotoView(BuildContext context, ImageDetail image) {
+    return PhotoView(
+      imageProvider: Image.network(getImageUrl(image, context)).image,
+      maxScale: PhotoViewComputedScale.contained * 4.0,
+      minScale: PhotoViewComputedScale.contained * 1.0,
+      loadingBuilder: (_, __) {
+        return Container(
+          color: Colors.black,
+          alignment: Alignment.center,
+          child: NetworkImageView(
+            image.filePath,
+            imageType: imageType,
+            aspectRatio: image.aspectRatio,
+            imageQuality: placeholderQuality,
+            // heroImageTag: image.filePath,
+          ),
+        );
+      },
+    );
+  }
+
+  String getImageUrl(ImageDetail image, BuildContext context) {
     String imageUrl = image.filePath.contains('/http')
         ? image.filePath.replaceFirst('/http', 'http')
         : context
             .read<ConfigViewModel>()
             .getImageUrl(imageType, ImageQuality.original, image.filePath);
-    return Scaffold(
-      body: PhotoView(
-        imageProvider: Image.network(imageUrl).image,
-        loadingBuilder: (_, __) {
-          return Container(
-            color: Colors.black,
-            alignment: Alignment.center,
-            child: NetworkImageView(
-              image.filePath,
-              imageType: imageType,
-              aspectRatio: image.aspectRatio,
-              // heroImageTag: image.filePath,
-            ),
-          );
-        },
-      ),
-    );
+    return imageUrl;
   }
 }
