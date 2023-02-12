@@ -31,24 +31,20 @@ class FilmographyViewModel extends ChangeNotifier
 
   final Set<String> _allMediaTypes = {};
 
-  Map<String, bool> availableGenreNames = {};
-
-  Map<String, bool> availableDepartments = {};
-
-  Map<String, bool> availableMediaTypes = {};
+  /// A nullable bool provides the luxury to assign up to three values,
+  /// true / false / null to a key.
+  /// We assume a key as selected if the value is true or null, where null means
+  /// that the selection was by force, not by tapping on the filter chip.
+  /// Selection by force is required when there is only one entry in the map
+  /// and the value of the key is false.
+  Map<String, bool?> availableGenreNames = {};
+  Map<String, bool?> availableDepartments = {};
+  Map<String, bool?> availableMediaTypes = {};
 
   initialize(CombinedCredits combinedCredits, List<MediaGenre> combinedGenres) {
     this.combinedCredits = combinedCredits;
     this.combinedGenres = combinedGenres;
     _processCombinedCredits();
-
-    /// A bit hacky but I don't know of another way of knowing when the first
-    /// list is loaded in the build(), so that notifyListeners() is called only
-    /// after that.
-    // Future.delayed(
-    //   const Duration(milliseconds: 500),
-    //   () => processCombinedCredits(),
-    // );
   }
 
   _processCombinedCredits() async {
@@ -96,48 +92,54 @@ class FilmographyViewModel extends ChangeNotifier
 
   _prepareAvailableFilters({bool notify = true}) async {
     if (_results.isNotEmpty) {
-      var depts = <String, bool>{};
-      var types = <String, bool>{};
-      var genres = <String, bool>{};
+      var depts = <String, bool?>{};
+      var types = <String, bool?>{};
+      var genres = <String, bool?>{};
       for (var result in _results) {
         for (var genreId in result.genreIds) {
           var mediaGenre = combinedGenres.singleWhere((element) =>
               element.mediaType.name == result.mediaType &&
               element.id == genreId);
-          genres[mediaGenre.name] = /*availableGenreNames.length == 1 ? false :*/
+          genres[mediaGenre.name] =
               availableGenreNames[mediaGenre.name] ?? false;
         }
 
         if (result.mediaType != null) {
-          types[result.mediaType!] = /*availableMediaTypes.length == 1 ? false :*/
+          types[result.mediaType!] =
               availableMediaTypes[result.mediaType] ?? false;
         }
 
         var deptMap = _mediaToDeptJobsMap[result.id];
         if (deptMap != null) {
           for (var dept in deptMap.keys) {
-            depts[dept] = /*availableDepartments.length == 1
-                ? false
-                :*/ availableDepartments[dept] ?? false;
+            depts[dept] = availableDepartments[dept] ?? false;
           }
         }
 
-        // if (result is CombinedOfCast) {
-        //   depts[Department.acting.name] =
-        //       availableDepartments[Department.acting.name] ?? false;
-        // } else if (result is CombinedOfCrew) {
-        //   depts[result.department] =
-        //       availableDepartments[result.department] ?? false;
-        // }
       }
-      if (depts.length == 1) depts[depts.entries.first.key] = true;
-      if (types.length == 1) types[types.entries.first.key] = true;
+
+      /// If there is only one entry in a map and its value is false, we set
+      /// the value to null in order to set it as selected. This is called
+      /// [force selection] and is the exact reason why a nullable bool was
+      /// used in the map.
+      /// This force selection is reset to false in [filterResults]
+      if (depts.length == 1) {
+        var key = depts.entries.first.key;
+        if (depts[key] == false) depts[key] = null;
+      }
+      if (types.length == 1) {
+        var key = types.entries.first.key;
+        if (types[key] == false) types[key] = null;
+      }
       if (genres.length == 1) {
-        genres[genres.entries.first.key] = true;
+        var key = genres.entries.first.key;
+        if (genres[key] == false) genres[key] = null;
       } else if (genres.length > 1) {
-        genres = Map.fromEntries(
-            genres.entries.toList()..sort((e1, e2) => e1.key.compareTo(e2.key)));
+        /// Genres are sorted alphabetically
+        genres = Map<String, bool?>.fromEntries(genres.entries.toList()
+          ..sort((e1, e2) => e1.key.compareTo(e2.key)));
       }
+
       availableDepartments = depts;
       availableMediaTypes = types;
       availableGenreNames = genres;
@@ -172,75 +174,60 @@ class FilmographyViewModel extends ChangeNotifier
         'types:$_allMediaTypes'
         'allGenres:$_allGenresMap');
 
-    // availableDepartments = {};
-    // for (var element in _allDepartments) {
-    //   availableDepartments[element] = false;
-    // }
-    //
-    // availableMediaTypes = {};
-    // for (var element in _allMediaTypes) {
-    //   availableMediaTypes[element] = false;
-    // }
-    //
-    // availableGenreNames = {};
-    // for (var element in _allGenresMap.keys) {
-    //   availableGenreNames[element] = false;
-    // }
-
-    // logIfDebug('_prepareAllFilters=>depts:$availableDepartments'
-    //     'types:$availableMediaTypes'
-    //     'allGenres:$_allGenresMap'
-    //     'genreNames:$availableGenreNames');
   }
 
   toggleDepartments(String name, bool isSelected) async {
-    // if (availableDepartments.length > 1) {
-      availableDepartments = Map<String, bool>.from(availableDepartments)
-        ..[name] = isSelected;
-      filterResults();
-    // }
+    availableDepartments = Map<String, bool?>.from(availableDepartments)
+      ..[name] = isSelected;
+    filterResults();
   }
 
   toggleMediaTypes(String name, bool selected) async {
-    // if (availableMediaTypes.length > 1) {
-      availableMediaTypes = Map<String, bool>.from(availableMediaTypes)
-        ..[name] = selected;
-      filterResults();
-    // }
+    availableMediaTypes = Map<String, bool?>.from(availableMediaTypes)
+      ..[name] = selected;
+    filterResults();
   }
 
   toggleGenres(String name, bool selected) async {
-    // if (availableGenreNames.length > 1) {
-      availableGenreNames = Map<String, bool>.from(availableGenreNames)
-        ..[name] = selected;
-      filterResults();
-    // }
+    availableGenreNames = Map<String, bool?>.from(availableGenreNames)
+      ..[name] = selected;
+    filterResults();
   }
 
   filterResults() async {
-    // if (availableDepartments.length == 1) {
-    //   availableDepartments[availableDepartments.entries.first.key] = false;
-    // }
-    // if (availableMediaTypes.length == 1) {
-    //   availableMediaTypes[availableMediaTypes.entries.first.key] = false;
-    // }
-    // if (availableGenreNames.length == 1) {
-    //   availableGenreNames[availableGenreNames.entries.first.key] = false;
-    // }
+    /// Here, we reset the value to false if it was force selected (set to null)
+    /// earlier.
+    if (availableDepartments.length == 1) {
+      var key = availableDepartments.entries.first.key;
+      var value = availableDepartments[key];
+      if (value == null) availableDepartments[key] = false;
+    }
+    if (availableMediaTypes.length == 1) {
+      var key = availableMediaTypes.entries.first.key;
+      var value = availableMediaTypes[key];
+      if (value == null) availableMediaTypes[key] = false;
+    }
+    if (availableGenreNames.length == 1) {
+      var key = availableGenreNames.entries.first.key;
+      var value = availableGenreNames[key];
+      if (value == null) availableGenreNames[key] = false;
+    }
+
+    logIfDebug('filterResults=>Available:$availableDepartments');
 
     var selectedDepts = availableDepartments.entries
-        .where((element) => element.value)
+        .where((element) => element.value == null || element.value!)
         .toList()
         .map((e) => e.key);
     var selectedTypes = availableMediaTypes.entries
-        .where((element) => element.value)
+        .where((element) => element.value == null || element.value!)
         .toList()
         .map((e) => e.key);
     var selectedGenreNames = availableGenreNames.entries
-        .where((element) => element.value)
+        .where((element) => element.value == null || element.value!)
         .toList()
         .map((e) => e.key);
-
+    logIfDebug('filterResults=>Selected:$selectedDepts');
     var selectedMediaGenres = <MediaGenre>{};
     for (var entry in _allGenresMap.entries) {
       if (selectedGenreNames.contains(entry.key)) {
