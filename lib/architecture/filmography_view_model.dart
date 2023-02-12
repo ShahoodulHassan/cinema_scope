@@ -1,72 +1,323 @@
 import 'package:cinema_scope/constants.dart';
 import 'package:cinema_scope/models/person.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
+import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:flutter/widgets.dart';
 
+import '../models/movie.dart';
 import '../models/search.dart';
 
 class FilmographyViewModel extends ChangeNotifier
-    with Utilities, CommonFunctions {
+    with GenericFunctions, Utilities, CommonFunctions {
   late final CombinedCredits combinedCredits;
+  late final List<MediaGenre> combinedGenres;
 
   List<CombinedResult> _results = [];
 
   List<CombinedResult> get results => _results;
 
-  Map<int, Map<String, List<String>>> mediaDepartJobsMap = {};
+  final Map<String, Set<int>> _deptToMediaMap = {};
 
-  initialize(CombinedCredits combinedCredits) {
+  final Map<int, Map<String, List<String>>> _mediaToDeptJobsMap = {};
+
+  final Map<int, String> _mediaToDeptJobsStringMap = {};
+
+  final List<CombinedResult> _allResults = [];
+
+  final Map<String, Set<MediaGenre>> _allGenresMap = {};
+
+  final Set<String> _allDepartments = {};
+
+  final Set<String> _allMediaTypes = {};
+
+  Map<String, bool> availableGenreNames = {};
+
+  Map<String, bool> availableDepartments = {};
+
+  Map<String, bool> availableMediaTypes = {};
+
+  initialize(CombinedCredits combinedCredits, List<MediaGenre> combinedGenres) {
     this.combinedCredits = combinedCredits;
+    this.combinedGenres = combinedGenres;
+    _processCombinedCredits();
 
     /// A bit hacky but I don't know of another way of knowing when the first
     /// list is loaded in the build(), so that notifyListeners() is called only
     /// after that.
-    Future.delayed(const Duration(milliseconds: 500), () => compileResults());
+    // Future.delayed(
+    //   const Duration(milliseconds: 500),
+    //   () => processCombinedCredits(),
+    // );
   }
 
-  compileResults() async {
-    List<CombinedResult> newResults = [];
-    // newResults.addAll(combinedCredits.cast);
+  _processCombinedCredits() async {
+    // List<CombinedResult> newResults = [];
     for (var cast in combinedCredits.cast) {
-      var mapList = mediaDepartJobsMap[cast.id];
-      if (mapList == null) {
-        mediaDepartJobsMap[cast.id] = {
+      var deptMap = _mediaToDeptJobsMap[cast.id];
+      if (deptMap == null) {
+        _mediaToDeptJobsMap[cast.id] = {
           Department.acting.name: [cast.character]
         };
-        newResults.add(cast);
+        _allResults.add(cast);
       }
+      _deptToMediaMap
+          .putIfAbsent(Department.acting.name, () => {})
+          .add(cast.id);
     }
     for (var crew in combinedCredits.crew) {
-      var deptMap = mediaDepartJobsMap[crew.id];
+      var deptMap = _mediaToDeptJobsMap[crew.id];
       if (deptMap == null) {
-        mediaDepartJobsMap[crew.id] = {
+        _mediaToDeptJobsMap[crew.id] = {
           crew.department: [crew.job]
         };
-        newResults.add(crew);
+        _allResults.add(crew);
       } else {
         var jobsList = deptMap[crew.department];
         if (jobsList == null) {
           deptMap[crew.department] = [crew.job];
-          mediaDepartJobsMap[crew.id] = deptMap;
+          _mediaToDeptJobsMap[crew.id] = deptMap;
         } else {
           jobsList.add(crew.job);
           deptMap[crew.department] = jobsList;
-          mediaDepartJobsMap[crew.id] = deptMap;
+          _mediaToDeptJobsMap[crew.id] = deptMap;
         }
       }
+      _deptToMediaMap.putIfAbsent(crew.department, () => {}).add(crew.id);
     }
-    // newResults.addAll(combinedCredits.crew);
-    _results = newResults;
+    for (var key in _mediaToDeptJobsMap.keys) {
+      _mediaToDeptJobsStringMap[key] = _attachDeptWithJobs(key);
+    }
+    _results = _allResults;
+    await _prepareAllFilters();
+    await _prepareAvailableFilters(notify: false);
     notifyListeners();
   }
 
-  String getRolesWithJobs(int id) {
-    var deptMap = mediaDepartJobsMap[id];
+  _prepareAvailableFilters({bool notify = true}) async {
+    if (_results.isNotEmpty) {
+      var depts = <String, bool>{};
+      var types = <String, bool>{};
+      var genres = <String, bool>{};
+      for (var result in _results) {
+        for (var genreId in result.genreIds) {
+          var mediaGenre = combinedGenres.singleWhere((element) =>
+              element.mediaType.name == result.mediaType &&
+              element.id == genreId);
+          genres[mediaGenre.name] = /*availableGenreNames.length == 1 ? false :*/
+              availableGenreNames[mediaGenre.name] ?? false;
+        }
+
+        if (result.mediaType != null) {
+          types[result.mediaType!] = /*availableMediaTypes.length == 1 ? false :*/
+              availableMediaTypes[result.mediaType] ?? false;
+        }
+
+        var deptMap = _mediaToDeptJobsMap[result.id];
+        if (deptMap != null) {
+          for (var dept in deptMap.keys) {
+            depts[dept] = /*availableDepartments.length == 1
+                ? false
+                :*/ availableDepartments[dept] ?? false;
+          }
+        }
+
+        // if (result is CombinedOfCast) {
+        //   depts[Department.acting.name] =
+        //       availableDepartments[Department.acting.name] ?? false;
+        // } else if (result is CombinedOfCrew) {
+        //   depts[result.department] =
+        //       availableDepartments[result.department] ?? false;
+        // }
+      }
+      if (depts.length == 1) depts[depts.entries.first.key] = true;
+      if (types.length == 1) types[types.entries.first.key] = true;
+      if (genres.length == 1) {
+        genres[genres.entries.first.key] = true;
+      } else if (genres.length > 1) {
+        genres = Map.fromEntries(
+            genres.entries.toList()..sort((e1, e2) => e1.key.compareTo(e2.key)));
+      }
+      availableDepartments = depts;
+      availableMediaTypes = types;
+      availableGenreNames = genres;
+      logIfDebug('_prepareAvailableFilters=>depts:$availableDepartments'
+          'types:$availableMediaTypes'
+          'allGenres:$_allGenresMap'
+          'genreNames:$availableGenreNames');
+      if (notify) notifyListeners();
+    }
+  }
+
+  _prepareAllFilters() async {
+    if (combinedCredits.cast.isNotEmpty) {
+      _allDepartments.add(Department.acting.name);
+    }
+    for (var crew in combinedCredits.crew) {
+      _allDepartments.add(crew.department);
+    }
+
+    for (var credit in _allResults) {
+      for (var genreId in credit.genreIds) {
+        var mediaGenre = combinedGenres.singleWhere((element) =>
+            element.mediaType.name == credit.mediaType &&
+            element.id == genreId);
+        _allGenresMap.putIfAbsent(mediaGenre.name, () => {}).add(mediaGenre);
+      }
+
+      if (credit.mediaType != null) _allMediaTypes.add(credit.mediaType!);
+    }
+
+    logIfDebug('_prepareAllFilters=>depts:$_allDepartments'
+        'types:$_allMediaTypes'
+        'allGenres:$_allGenresMap');
+
+    // availableDepartments = {};
+    // for (var element in _allDepartments) {
+    //   availableDepartments[element] = false;
+    // }
+    //
+    // availableMediaTypes = {};
+    // for (var element in _allMediaTypes) {
+    //   availableMediaTypes[element] = false;
+    // }
+    //
+    // availableGenreNames = {};
+    // for (var element in _allGenresMap.keys) {
+    //   availableGenreNames[element] = false;
+    // }
+
+    // logIfDebug('_prepareAllFilters=>depts:$availableDepartments'
+    //     'types:$availableMediaTypes'
+    //     'allGenres:$_allGenresMap'
+    //     'genreNames:$availableGenreNames');
+  }
+
+  toggleDepartments(String name, bool isSelected) async {
+    // if (availableDepartments.length > 1) {
+      availableDepartments = Map<String, bool>.from(availableDepartments)
+        ..[name] = isSelected;
+      filterResults();
+    // }
+  }
+
+  toggleMediaTypes(String name, bool selected) async {
+    // if (availableMediaTypes.length > 1) {
+      availableMediaTypes = Map<String, bool>.from(availableMediaTypes)
+        ..[name] = selected;
+      filterResults();
+    // }
+  }
+
+  toggleGenres(String name, bool selected) async {
+    // if (availableGenreNames.length > 1) {
+      availableGenreNames = Map<String, bool>.from(availableGenreNames)
+        ..[name] = selected;
+      filterResults();
+    // }
+  }
+
+  filterResults() async {
+    // if (availableDepartments.length == 1) {
+    //   availableDepartments[availableDepartments.entries.first.key] = false;
+    // }
+    // if (availableMediaTypes.length == 1) {
+    //   availableMediaTypes[availableMediaTypes.entries.first.key] = false;
+    // }
+    // if (availableGenreNames.length == 1) {
+    //   availableGenreNames[availableGenreNames.entries.first.key] = false;
+    // }
+
+    var selectedDepts = availableDepartments.entries
+        .where((element) => element.value)
+        .toList()
+        .map((e) => e.key);
+    var selectedTypes = availableMediaTypes.entries
+        .where((element) => element.value)
+        .toList()
+        .map((e) => e.key);
+    var selectedGenreNames = availableGenreNames.entries
+        .where((element) => element.value)
+        .toList()
+        .map((e) => e.key);
+
+    var selectedMediaGenres = <MediaGenre>{};
+    for (var entry in _allGenresMap.entries) {
+      if (selectedGenreNames.contains(entry.key)) {
+        selectedMediaGenres.addAll(entry.value);
+      }
+    }
+    var selectedGenreIds = <int>{};
+    var selectedMovieGenreIds = <int>{};
+    var selectedTvGenreIds = <int>{};
+    for (var genre in selectedMediaGenres) {
+      selectedGenreIds.add(genre.id);
+      if (genre.mediaType == MediaType.movie) {
+        selectedMovieGenreIds.add(genre.id);
+      } else {
+        selectedTvGenreIds.add(genre.id);
+      }
+    }
+
+    if (selectedDepts.isEmpty &&
+        selectedTypes.isEmpty &&
+        selectedGenreNames.isEmpty) {
+      _results = [..._allResults];
+    } else {
+      var filtered = _allResults.where((element) {
+        // var dept = element is CombinedOfCrew
+        //     ? element.department
+        //     : Department.acting.name;
+
+        var mediaDepts = _mediaToDeptJobsMap[element.id]?.keys;
+        // var hasDept = mediaDepts?.any((element) => selectedDepts.contains(element)) ?? false;
+        var hasDept = mediaDepts?.toSet().containsAll(selectedDepts) ?? false;
+
+        var hasGenres = selectedGenreIds.isNotEmpty &&
+            element.genreIds.toSet().containsAll(selectedGenreIds);
+
+        // var hasGenres = false;
+        // if (element.mediaType == MediaType.movie.name) {
+        //   hasGenres = selectedMovieGenreIds.isNotEmpty &&
+        //       element.genreIds.toSet().containsAll(selectedMovieGenreIds);
+        // } else {
+        //   hasGenres = selectedTvGenreIds.isNotEmpty &&
+        //       element.genreIds.toSet().containsAll(selectedTvGenreIds);
+        // }
+
+        // selectedMediaGenres.where((mediaGenre) => element.mediaType == mediaGenre.mediaType.name && )
+        return (selectedDepts.isEmpty || hasDept) &&
+            (selectedTypes.isEmpty ||
+                selectedTypes.contains(element.mediaType)) &&
+            (selectedGenreNames.isEmpty || hasGenres);
+      });
+      _results = [...filtered];
+    }
+
+    _prepareAvailableFilters();
+
+    // if (selectedDepts.isEmpty) {
+    //   _results = [..._allResults];
+    // } else {
+    //   var filtered = _allResults.where((element) {
+    //     var dept = element is CombinedOfCrew
+    //         ? element.department
+    //         : Department.acting.name;
+    //     return selectedDepts.contains(dept);
+    //   });
+    //   _results = [...filtered];
+    // }
+    notifyListeners();
+  }
+
+  String getDeptJobString(int id) => _mediaToDeptJobsStringMap[id] ?? '';
+
+  String _attachDeptWithJobs(int id) {
+    var deptMap = _mediaToDeptJobsMap[id];
     if (deptMap != null) {
       return deptMap.entries
           .map((e) {
-            var jobs = getJobs(e.key, e.value);
+            var jobs = _getJobsStringByDept(e.key, e.value);
             return '${departmentToRole(e.key)}${jobs.isEmpty ? '' : ' ($jobs)'}';
           })
           .toList()
@@ -76,7 +327,7 @@ class FilmographyViewModel extends ChangeNotifier
     }
   }
 
-  String getJobs(String department, List<String> jobs) {
+  String _getJobsStringByDept(String department, List<String> jobs) {
     if (jobs.isEmpty) return '';
     if (jobs.length == 1 && jobs.first == departmentToRole(department)) {
       return '';

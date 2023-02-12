@@ -288,10 +288,10 @@ class PersonViewModel extends ApiViewModel with Utilities {
       if (knownFor.isNotEmpty) {
         departs.add(Constants.departMap[knownFor] ?? knownFor);
       }
-      if (person.movieCredits.cast.isNotEmpty && !departs.contains(actor)) {
+      if (person.combinedCredits.cast.isNotEmpty && !departs.contains(actor)) {
         departs.add(actor);
       }
-      for (var element in person.movieCredits.crew) {
+      for (var element in person.combinedCredits.crew) {
         departs.add(
           Constants.departMap[element.department] ?? element.department,
         );

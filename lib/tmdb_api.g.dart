@@ -761,8 +761,7 @@ class _TmdbApi implements TmdbApi {
   @override
   Future<Person> getPersonWithDetail(
     id, {
-    append =
-        'movie_credits,tv_credits,combined_credits,external_ids,images,tagged_images',
+    append = 'combined_credits,external_ids,images,tagged_images',
     language = 'en-US',
   }) async {
     const _extra = <String, dynamic>{};

@@ -13,8 +13,6 @@ Person _$PersonFromJson(Map<String, dynamic> json) => Person(
       json['known_for_department'] as String,
       (json['also_known_as'] as List<dynamic>).map((e) => e as String).toList(),
       json['biography'] as String,
-      MovieCredits.fromJson(json['movie_credits'] as Map<String, dynamic>),
-      TvCredits.fromJson(json['tv_credits'] as Map<String, dynamic>),
       CombinedCredits.fromJson(
           json['combined_credits'] as Map<String, dynamic>),
       json['external_ids'] == null
@@ -48,8 +46,6 @@ Map<String, dynamic> _$PersonToJson(Person instance) => <String, dynamic>{
       'homepage': instance.homepage,
       'imdb_id': instance.imdbId,
       'place_of_birth': instance.placeOfBirth,
-      'movie_credits': instance.movieCredits,
-      'tv_credits': instance.tvCredits,
       'combined_credits': instance.combinedCredits,
       'external_ids': instance.externalIds,
       'images': instance.images,

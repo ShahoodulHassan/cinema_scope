@@ -1,5 +1,3 @@
-import 'package:cinema_scope/constants.dart';
-import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:dio/dio.dart';
 import 'package:retrofit/http.dart' as http;
 
@@ -209,7 +207,7 @@ abstract class TmdbApi {
   Future<Person> getPersonWithDetail(
     @http.Path("id") int id, {
     @http.Query('append_to_response') String append =
-        'movie_credits,tv_credits,combined_credits,external_ids,images,tagged_images',
+        'combined_credits,external_ids,images,tagged_images',
     @http.Query('language') String language = 'en-US',
   });
 }

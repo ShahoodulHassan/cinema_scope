@@ -16,8 +16,8 @@ class Person extends BasePersonResult {
   String? homepage;
   String? imdbId;
   String? placeOfBirth;
-  MovieCredits movieCredits;
-  TvCredits tvCredits;
+  // MovieCredits movieCredits;
+  // TvCredits tvCredits;
   CombinedCredits combinedCredits;
   ExternalIds? externalIds;
   PersonImageResult images;
@@ -30,8 +30,8 @@ class Person extends BasePersonResult {
     super.knownForDepartment,
     this.alsoKnownAs,
     this.biography,
-    this.movieCredits,
-    this.tvCredits,
+    // this.movieCredits,
+    // this.tvCredits,
     this.combinedCredits,
     this.externalIds,
     this.images,
@@ -354,7 +354,6 @@ class PersonImageResult {
   factory PersonImageResult.fromJson(Map<String, dynamic> json) =>
       _$PersonImageResultFromJson(json);
 
-  @override
   Map<String, dynamic> toJson() => _$PersonImageResultToJson(this);
 }
 

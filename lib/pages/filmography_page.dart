@@ -5,6 +5,7 @@ import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tuple/tuple.dart';
 
 import '../architecture/config_view_model.dart';
 import '../architecture/filmography_view_model.dart';
@@ -47,10 +48,18 @@ class _FilmographyPageChild extends StatefulWidget {
 
 class _FilmographyPageChildState extends State<_FilmographyPageChild>
     with GenericFunctions, Utilities, CommonFunctions {
+  late final FilmographyViewModel fvm;
+
   @override
   void initState() {
     super.initState();
-    context.read<FilmographyViewModel>().initialize(widget.combinedCredits);
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => fvm = context.read<FilmographyViewModel>()
+        ..initialize(
+          widget.combinedCredits,
+          context.read<ConfigViewModel>().combinedGenres,
+        ),
+    );
   }
 
   @override
@@ -60,8 +69,8 @@ class _FilmographyPageChildState extends State<_FilmographyPageChild>
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            // floating: true,
-            pinned: true,
+            floating: true,
+            // pinned: true,
             // snap: true,
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,6 +84,146 @@ class _FilmographyPageChildState extends State<_FilmographyPageChild>
                   ),
                 ),
               ],
+            ),
+          ),
+          Selector<FilmographyViewModel,
+              Tuple3<Map<String, bool>, Map<String, bool>, Map<String, bool>>>(
+            builder: (_, tuple, __) {
+              var depts = tuple.item1;
+              var types = tuple.item2;
+              var genres = tuple.item3;
+              if (depts.isEmpty && types.isEmpty && genres.isEmpty) {
+                return const SliverToBoxAdapter(child: SizedBox.shrink());
+              } else {
+                return SliverToBoxAdapter(
+                  child: Column(
+                    children: [
+                      if (depts.isNotEmpty)
+                        SizedBox(
+                          height: 52.0,
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Text(
+                                  'Departments'.toUpperCase(),
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              Expanded(
+                                child: ListView.separated(
+                                  itemBuilder: (_, index) {
+                                    var item = depts.entries.elementAt(index);
+                                    var label = item.key;
+                                    var selected = item.value;
+                                    return buildFilterChip(
+                                      label,
+                                      context,
+                                      selected,
+                                      (isSelected) {
+                                        fvm.toggleDepartments(
+                                            label, isSelected);
+                                      },
+                                    );
+                                  },
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  separatorBuilder: (_, __) =>
+                                      const SizedBox(width: 4.0),
+                                  itemCount: depts.length,
+                                  scrollDirection: Axis.horizontal,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      if (genres.isNotEmpty)
+                        SizedBox(
+                          height: 52.0,
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Text(
+                                  'Genres'.toUpperCase(),
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              Expanded(
+                                child: ListView.separated(
+                                  itemBuilder: (_, index) {
+                                    var item = genres.entries.elementAt(index);
+                                    var label = item.key;
+                                    var selected = item.value;
+                                    return buildFilterChip(
+                                      label,
+                                      context,
+                                      selected,
+                                      (isSelected) {
+                                        fvm.toggleGenres(label, isSelected);
+                                      },
+                                    );
+                                  },
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  separatorBuilder: (_, __) =>
+                                      const SizedBox(width: 4.0),
+                                  itemCount: genres.length,
+                                  scrollDirection: Axis.horizontal,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      if (types.isNotEmpty)
+                        SizedBox(
+                          height: 52.0,
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Text(
+                                  'Media types'.toUpperCase(),
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              Expanded(
+                                child: ListView.separated(
+                                  itemBuilder: (_, index) {
+                                    var item = types.entries.elementAt(index);
+                                    var label = item.key == MediaType.tv.name
+                                        ? item.key.toUpperCase()
+                                        : item.key.toProperCase();
+                                    var selected = item.value;
+                                    return buildFilterChip(
+                                      label,
+                                      context,
+                                      selected,
+                                      (isSelected) {
+                                        fvm.toggleMediaTypes(item.key, isSelected);
+                                      },
+                                    );
+                                  },
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  separatorBuilder: (_, __) =>
+                                      const SizedBox(width: 4.0),
+                                  itemCount: types.length,
+                                  scrollDirection: Axis.horizontal,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              }
+            },
+            selector: (_, fvm) => Tuple3(
+              fvm.availableDepartments,
+              fvm.availableMediaTypes,
+              fvm.availableGenreNames,
             ),
           ),
           Selector<FilmographyViewModel, List<CombinedResult>>(
@@ -100,6 +249,49 @@ class _FilmographyPageChildState extends State<_FilmographyPageChild>
       ),
     );
   }
+
+  Widget buildFilterChip(
+    String label,
+    BuildContext context,
+    bool selected,
+    Function(bool) onSelected,
+  ) {
+    return AnimatedSize(
+      duration: Duration(milliseconds: 250),
+      child: FilterChip(
+        label: Text(
+          label,
+          style: TextStyle(
+            color: Theme.of(context).primaryColorDark,
+          ),
+        ),
+        side: /*selected ? null : */ BorderSide(
+          color: Theme.of(context).primaryColorDark,
+          width: 0.7,
+        ),
+        avatar: selected
+            ? Icon(
+                Icons.done,
+                size: 20.0,
+                color: Theme.of(context).primaryColorDark,
+              )
+            : null,
+        // avatarBorder: CircleBorder(
+        //   side: BorderSide.none,
+        // ),
+        // visualDensity: VisualDensity(horizontal: 0.0, vertical: -1,),
+        selected: selected,
+        selectedColor: Theme.of(context).primaryColorLight.withOpacity(0.4),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 0.0),
+        labelPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+        showCheckmark: false,
+        // checkmarkColor:
+        //     Theme.of(context).primaryColorDark,
+        onSelected: onSelected,
+      ),
+    );
+  }
 }
 
 class CombinedPosterTile extends StatelessWidget
@@ -112,6 +304,8 @@ class CombinedPosterTile extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
+    var deptJobsString =
+        context.read<FilmographyViewModel>().getDeptJobString(result.id);
     return PosterTile(
       onTap: () {
         if (isTv) {
@@ -213,11 +407,11 @@ class CombinedPosterTile extends StatelessWidget
           ],
         ),
       ),
-      description: result.overview.isNotEmpty
+      description: deptJobsString.isNotEmpty
           ? Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: Text(
-                context.read<FilmographyViewModel>().getRolesWithJobs(result.id),
+                deptJobsString,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
