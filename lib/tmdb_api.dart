@@ -55,8 +55,9 @@ abstract class TmdbApi {
   @http.GET("/movie/{id}")
   @http.Headers(headerMap)
   Future<Movie> getMovieWithDetail(@http.Path("id") int id,
-      {@http.Query('append_to_response') String append =
-          'videos,images,recommendations,similar,keywords,reviews,credits'});
+      {@http.Query('language') String language = 'en-US',
+      @http.Query('append_to_response') String append =
+          'videos,images,recommendations,keywords,reviews,credits'});
 
   /// https://api.themoviedb.org/3/search/movie?api_key=ec7b57c566e8af94115bb2c0d910f610&language=en-US&page=1&include_adult=true&region=US&query=Jack+Reacher
   @http.GET("/search/movie")
@@ -206,8 +207,8 @@ abstract class TmdbApi {
   @http.Headers(headerMap)
   Future<Person> getPersonWithDetail(
     @http.Path("id") int id, {
-    @http.Query('append_to_response') String append =
-        'combined_credits,external_ids,images,tagged_images',
+    @http.Query('append_to_response')
+        String append = 'combined_credits,external_ids,images,tagged_images',
     @http.Query('language') String language = 'en-US',
   });
 }

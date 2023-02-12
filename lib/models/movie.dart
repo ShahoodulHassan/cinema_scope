@@ -35,7 +35,7 @@ class Movie {
   double voteAverage;
   int voteCount;
   VideoResult videos;
-  MovieSearchResult similar;
+  // MovieSearchResult similar;
   MovieSearchResult recommendations;
   ImageResult images;
   KeywordResult keywords;
@@ -60,7 +60,7 @@ class Movie {
       this.voteAverage,
       this.voteCount,
       this.videos,
-      this.similar,
+      // this.similar,
       this.recommendations,
       this.images,
       this.keywords,

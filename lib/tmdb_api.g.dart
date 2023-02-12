@@ -204,10 +204,14 @@ class _TmdbApi implements TmdbApi {
   @override
   Future<Movie> getMovieWithDetail(
     id, {
-    append = 'videos,images,recommendations,similar,keywords,reviews,credits',
+    language = 'en-US',
+    append = 'videos,images,recommendations,keywords,reviews,credits',
   }) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'append_to_response': append};
+    final queryParameters = <String, dynamic>{
+      r'language': language,
+      r'append_to_response': append,
+    };
     final _headers = <String, dynamic>{
       r'Content-Type': 'application/json;charset=utf-8',
       r'Authorization':
