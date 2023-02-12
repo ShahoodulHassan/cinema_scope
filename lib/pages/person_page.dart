@@ -6,7 +6,7 @@ import 'package:cinema_scope/constants.dart';
 import 'package:cinema_scope/models/movie.dart';
 import 'package:cinema_scope/models/person.dart';
 import 'package:cinema_scope/pages/filmography_page.dart';
-import 'package:cinema_scope/pages/ImagePage.dart';
+import 'package:cinema_scope/pages/image_page.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:cinema_scope/widgets/expandable_synopsis.dart';
@@ -573,7 +573,8 @@ class _ImagesSection extends StatelessWidget with GenericFunctions {
         var profileImages = tuple.item1;
         var taggedImages = tuple.item2;
         // logIfDebug('tagged:$taggedImages');
-        if (profileImages == null && taggedImages == null) {
+        if ((profileImages == null && taggedImages == null) ||
+            (profileImages!.isEmpty && taggedImages!.isEmpty)) {
           return SliverToBoxAdapter(child: Container());
         } else {
           List<ImageDetail> allImages = [];
