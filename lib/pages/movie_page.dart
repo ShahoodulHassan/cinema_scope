@@ -1646,6 +1646,7 @@ class ImageDelegate extends SliverPersistentHeaderDelegate
             itemCount: thumbMap.length,
             indicatorLayout: PageIndicatorLayout.SCALE,
             autoplayDelay: delay,
+            loop: thumbMap.length > 1,
             /// Helps in precaching the page
             allowImplicitScrolling: true,
             // transformer: ScaleAndFadeTransformer(),
