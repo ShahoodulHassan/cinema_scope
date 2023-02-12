@@ -33,6 +33,7 @@ class ImagePage extends StatelessWidget {
         },
         index: initialPage,
         itemCount: images.length,
+        loop: images.length > 1,
         // autoplay: true,
         indicatorLayout: PageIndicatorLayout.SCALE,
         pagination: const SwiperPagination(),
