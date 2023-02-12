@@ -319,9 +319,19 @@ class _SearchAppbarState extends State<SearchAppbar> with GenericFunctions {
               prefixIcon: InkWell(
                 onTap: () => Navigator.pop(context),
                 borderRadius: BorderRadius.circular(30.0),
-                child: const Icon(Icons.arrow_back),
+                child: const Icon(
+                  Icons.arrow_back_rounded,
+                  // color: Theme.of(context).appBarTheme.iconTheme!.color!,
+                ),
               ),
-              suffixIcon: const Icon(Icons.search_sharp),
+              suffixIcon: InkWell(
+                onTap: () => _controller.clear(),
+                borderRadius: BorderRadius.circular(30.0),
+                child: const Icon(
+                  Icons.clear_rounded,
+                  // color: Theme.of(context).appBarTheme.iconTheme!.color!,
+                ),
+              ),
               hintText: 'Search movies, TV, people',
               filled: true,
               fillColor: Theme.of(context).primaryColorLight.withOpacity(0.5),
