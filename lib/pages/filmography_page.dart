@@ -299,29 +299,29 @@ class _FilmographyPageChildState extends State<_FilmographyPageChild>
               if (results.isEmpty) {
                 return const SliverToBoxAdapter(child: SizedBox.shrink());
               } else {
-                return SliverImplicitlyAnimatedList<CombinedResult>(
-                  items: results,
-                  itemBuilder: (context, animation, item, index) {
-                    return SizeFadeTransition(
-                      sizeFraction: 0.7,
-                      curve: Curves.easeInOut,
-                      animation: animation,
-                      child: CombinedPosterTile(result: item),
-                    );
-                  },
-                  insertDuration: const Duration(milliseconds: 300),
-                  removeDuration: const Duration(milliseconds: 300),
-                  areItemsTheSame: (a, b) => a.id == b.id,
-                );
-                // return SliverList(
-                //   delegate: SliverChildBuilderDelegate(
-                //     (_, index) {
-                //       var result = results[index];
-                //       return CombinedPosterTile(result: result);
-                //     },
-                //     childCount: results.length,
-                //   ),
+                // return ImplicitlyAnimatedList<CombinedResult>(
+                //   items: results,
+                //   itemBuilder: (context, animation, item, index) {
+                //     return SizeFadeTransition(
+                //       sizeFraction: 0.7,
+                //       curve: Curves.easeInOut,
+                //       animation: animation,
+                //       child: CombinedPosterTile(result: item),
+                //     );
+                //   },
+                //   insertDuration: const Duration(milliseconds: 300),
+                //   removeDuration: const Duration(milliseconds: 300),
+                //   areItemsTheSame: (a, b) => a.id == b.id,
                 // );
+                return SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (_, index) {
+                      var result = results[index];
+                      return CombinedPosterTile(result: result);
+                    },
+                    childCount: results.length,
+                  ),
+                );
               }
             },
           ),
