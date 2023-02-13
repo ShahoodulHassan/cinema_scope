@@ -184,31 +184,34 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
             },
           ),
           SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 16.0, bottom: 0.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text(
-                      widget.title,
-                      textAlign: TextAlign.start,
-                      // maxLines: 2,
-                      style: const TextStyle(
-                        fontSize: 24.0,
-                        fontWeight: FontWeight.bold,
-                        height: 1.1,
+            child: AnimatedSize(
+              duration: animDuration,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 16.0, bottom: 0.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text(
+                        widget.title,
+                        textAlign: TextAlign.start,
+                        // maxLines: 2,
+                        style: const TextStyle(
+                          fontSize: 24.0,
+                          fontWeight: FontWeight.bold,
+                          height: 1.1,
+                        ),
                       ),
                     ),
-                  ),
-                  buildYearRow(context),
-                  buildTagline(),
-                  ExpandableSynopsis(widget.overview),
-                  buildGenresAndLinks(),
-                ],
+                    buildYearRow(context),
+                    buildTagline(),
+                    ExpandableSynopsis(widget.overview),
+                    buildGenresAndLinks(),
+                  ],
+                ),
               ),
             ),
           ),
@@ -221,7 +224,7 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
     );
   }
 
-  AnimatedSize buildYearRow(BuildContext context) {
+  Widget buildYearRow(BuildContext context) {
     return AnimatedSize(
       duration: animDuration,
       child:
