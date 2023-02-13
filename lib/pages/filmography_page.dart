@@ -1,3 +1,5 @@
+import 'package:animated_list_plus/animated_list_plus.dart';
+import 'package:animated_list_plus/transitions.dart';
 import 'package:cinema_scope/models/person.dart';
 import 'package:cinema_scope/models/search.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
@@ -297,15 +299,29 @@ class _FilmographyPageChildState extends State<_FilmographyPageChild>
               if (results.isEmpty) {
                 return const SliverToBoxAdapter(child: SizedBox.shrink());
               } else {
-                return SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (_, index) {
-                      var result = results[index];
-                      return CombinedPosterTile(result: result);
-                    },
-                    childCount: results.length,
-                  ),
+                return SliverImplicitlyAnimatedList<CombinedResult>(
+                  items: results,
+                  itemBuilder: (context, animation, item, index) {
+                    return SizeFadeTransition(
+                      sizeFraction: 0.7,
+                      curve: Curves.easeInOut,
+                      animation: animation,
+                      child: CombinedPosterTile(result: item),
+                    );
+                  },
+                  insertDuration: const Duration(milliseconds: 300),
+                  removeDuration: const Duration(milliseconds: 300),
+                  areItemsTheSame: (a, b) => a.id == b.id,
                 );
+                // return SliverList(
+                //   delegate: SliverChildBuilderDelegate(
+                //     (_, index) {
+                //       var result = results[index];
+                //       return CombinedPosterTile(result: result);
+                //     },
+                //     childCount: results.length,
+                //   ),
+                // );
               }
             },
           ),
@@ -323,8 +339,10 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<FilmographyViewModel,
-        Tuple3<Map<String, FilterState>, Map<String, FilterState>, Map<String, FilterState>>>(
+    return Selector<
+        FilmographyViewModel,
+        Tuple3<Map<String, FilterState>, Map<String, FilterState>,
+            Map<String, FilterState>>>(
       builder: (_, tuple, __) {
         var depts = tuple.item1;
         var types = tuple.item2;
@@ -412,8 +430,11 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  Widget buildDepartmentsList(BuildContext context, Map<String, FilterState> depts,
-      FilmographyViewModel fvm, Map<String, FilterState> types) {
+  Widget buildDepartmentsList(
+      BuildContext context,
+      Map<String, FilterState> depts,
+      FilmographyViewModel fvm,
+      Map<String, FilterState> types) {
     return Expanded(
       child: buildListView(
         context,
@@ -441,8 +462,8 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  Widget buildMediaTypeList(BuildContext context, Map<String, FilterState> types,
-      FilmographyViewModel fvm) {
+  Widget buildMediaTypeList(BuildContext context,
+      Map<String, FilterState> types, FilmographyViewModel fvm) {
     return buildListView(
       context,
       itemBuilder: (_, index) {
