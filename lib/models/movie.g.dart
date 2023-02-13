@@ -549,6 +549,7 @@ Movie _$MovieFromJson(Map<String, dynamic> json) => Movie(
       KeywordResult.fromJson(json['keywords'] as Map<String, dynamic>),
       ReviewResult.fromJson(json['reviews'] as Map<String, dynamic>),
       Credits.fromJson(json['credits'] as Map<String, dynamic>),
+      ReleaseDates.fromJson(json['release_dates'] as Map<String, dynamic>),
       backdropPath: json['backdrop_path'] as String?,
       releaseDate: json['release_date'] as String?,
       belongsToCollection: json['belongs_to_collection'] == null
@@ -595,6 +596,7 @@ Map<String, dynamic> _$MovieToJson(Movie instance) => <String, dynamic>{
       'keywords': instance.keywords,
       'credits': instance.credits,
       'reviews': instance.reviews,
+      'release_dates': instance.releaseDates,
     };
 
 BaseCollection _$BaseCollectionFromJson(Map<String, dynamic> json) =>
@@ -924,3 +926,45 @@ const _$MediaTypeEnumMap = {
   MediaType.episode: 'episode',
   MediaType.person: 'person',
 };
+
+ReleaseDates _$ReleaseDatesFromJson(Map<String, dynamic> json) => ReleaseDates(
+      results: (json['results'] as List<dynamic>)
+          .map((e) => ReleaseDatesResult.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$ReleaseDatesToJson(ReleaseDates instance) =>
+    <String, dynamic>{
+      'results': instance.results,
+    };
+
+ReleaseDatesResult _$ReleaseDatesResultFromJson(Map<String, dynamic> json) =>
+    ReleaseDatesResult(
+      json['iso_3166_1'] as String,
+      (json['release_dates'] as List<dynamic>)
+          .map((e) => ReleaseDate.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$ReleaseDatesResultToJson(ReleaseDatesResult instance) =>
+    <String, dynamic>{
+      'iso_3166_1': instance.iso31661,
+      'release_dates': instance.releaseDates,
+    };
+
+ReleaseDate _$ReleaseDateFromJson(Map<String, dynamic> json) => ReleaseDate(
+      json['certification'] as String,
+      json['iso_639_1'] as String,
+      json['release_date'] as String,
+      json['type'] as int,
+      note: json['note'] as String?,
+    );
+
+Map<String, dynamic> _$ReleaseDateToJson(ReleaseDate instance) =>
+    <String, dynamic>{
+      'certification': instance.certification,
+      'iso_639_1': instance.iso6391,
+      'note': instance.note,
+      'release_date': instance.releaseDate,
+      'type': instance.type,
+    };

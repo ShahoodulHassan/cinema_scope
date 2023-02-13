@@ -253,16 +253,54 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
                             builder: (_, runtime, __) {
                               return runtime == null
                                   ? const SizedBox.shrink()
-                                  : Text(
-                                      runtimeToString(runtime),
-                                      style: const TextStyle(
-                                        fontSize: 16.0,
-                                        // fontWeight: FontWeight.bold,
-                                        // fontStyle: FontStyle.italic,
+                                  : Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 16.0),
+                                      child: Text(
+                                        runtimeToString(runtime),
+                                        style: const TextStyle(
+                                          fontSize: 16.0,
+                                          // fontWeight: FontWeight.bold,
+                                          // fontStyle: FontStyle.italic,
+                                        ),
                                       ),
                                     );
                             },
                             selector: (_, mvm) => mvm.movie?.runtime,
+                          ),
+                          Selector<MovieViewModel, String?>(
+                            builder: (_, certification, __) {
+                              return certification == null ||
+                                      certification.isEmpty
+                                  ? const SizedBox.shrink()
+                                  : Container(
+                                      decoration: BoxDecoration(
+                                        color: lighten2(
+                                          Theme.of(context).primaryColorLight,
+                                          30,
+                                        ),
+                                        border: Border.all(
+                                          color: Theme.of(context).primaryColor
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0,
+                                        vertical: 0.7,
+                                      ),
+                                      child: Text(
+                                        certification,
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 16.0,
+                                          // fontWeight: FontWeight.bold,
+                                          // fontStyle: FontStyle.italic,
+                                        ),
+                                      ),
+                                    );
+                            },
+                            selector: (_, mvm) => mvm.certification,
                           ),
                         ],
                       ),
@@ -436,8 +474,7 @@ class CastCrewSection extends StatelessWidget
     var labelDirector = Constants.departMap[Department.directing.name]!;
     var labelWriter = Constants.departMap[Department.writing.name]!;
     var directors = (crew
-            .where((element) =>
-                element.job == labelDirector)
+            .where((element) => element.job == labelDirector)
             .toList()
           ..sort(
               (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()))) +
@@ -1647,6 +1684,7 @@ class ImageDelegate extends SliverPersistentHeaderDelegate
             indicatorLayout: PageIndicatorLayout.SCALE,
             autoplayDelay: delay,
             loop: thumbMap.length > 1,
+
             /// Helps in precaching the page
             allowImplicitScrolling: true,
             // transformer: ScaleAndFadeTransformer(),

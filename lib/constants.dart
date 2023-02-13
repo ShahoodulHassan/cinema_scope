@@ -38,6 +38,11 @@ class Constants {
     Department.writing.name: 'Writer',
   };
 
+  // TODO Create user preferences for region
+  /// Later to be replaced with a value from shared_preferences as per user
+  /// preference
+  static const String region = 'US';
+
 }
 
 enum MediaType {

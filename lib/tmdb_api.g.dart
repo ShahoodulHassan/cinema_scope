@@ -205,7 +205,8 @@ class _TmdbApi implements TmdbApi {
   Future<Movie> getMovieWithDetail(
     id, {
     language = 'en-US',
-    append = 'videos,images,recommendations,keywords,reviews,credits',
+    append =
+        'videos,images,recommendations,keywords,reviews,credits,release_dates',
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{

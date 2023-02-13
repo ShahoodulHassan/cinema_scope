@@ -2,6 +2,7 @@ import 'package:async/async.dart';
 import 'package:cinema_scope/architecture/search_view_model.dart';
 import 'package:cinema_scope/models/search.dart';
 
+import '../constants.dart';
 import '../models/movie.dart';
 
 class MovieViewModel extends ApiViewModel {
@@ -12,6 +13,8 @@ class MovieViewModel extends ApiViewModel {
   int get recomPageIndex => _recomPageIndex;
 
   CancelableOperation? _operation;
+
+  String? certification;
 
   set recomPageIndex(int index) {
     _recomPageIndex = index;
@@ -83,8 +86,9 @@ class MovieViewModel extends ApiViewModel {
   getMovieWithDetail(int id) async {
     _operation = CancelableOperation<Movie>.fromFuture(
       api.getMovieWithDetail(id),
-    ).then((result) {
+    ).then((result) async {
       movie = result;
+      await compileCertification();
       notifyListeners();
       compileThumbnails();
     });
@@ -97,6 +101,15 @@ class MovieViewModel extends ApiViewModel {
   //   movie = await api.getMovie(id);
   //   notifyListeners();
   // }
+
+  compileCertification() async {
+    var usResults = movie!.releaseDates.results
+        .where((element) => element.iso31661 == Constants.region);
+    if (usResults.isNotEmpty) {
+      var theatrical = usResults.first.releaseDates;
+      if (theatrical.isNotEmpty) certification = theatrical.first.certification;
+    }
+  }
 
   compileThumbnails() async {
     logIfDebug('isPinned, compileThumbnails called with movie:$movie');

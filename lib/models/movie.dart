@@ -35,12 +35,14 @@ class Movie {
   double voteAverage;
   int voteCount;
   VideoResult videos;
+
   // MovieSearchResult similar;
   MovieSearchResult recommendations;
   ImageResult images;
   KeywordResult keywords;
   Credits credits;
   ReviewResult reviews;
+  ReleaseDates releaseDates;
 
   Movie(
       this.adult,
@@ -66,6 +68,7 @@ class Movie {
       this.keywords,
       this.reviews,
       this.credits,
+      this.releaseDates,
       {this.backdropPath,
       this.releaseDate,
       this.belongsToCollection,
@@ -440,4 +443,57 @@ class MediaGenre extends Genre {
           ..write('name: $name'))
         .toString();
   }
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class ReleaseDates {
+  List<ReleaseDatesResult> results;
+
+  ReleaseDates({required this.results});
+
+  factory ReleaseDates.fromJson(Map<String, dynamic> json) =>
+      _$ReleaseDatesFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ReleaseDatesToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class ReleaseDatesResult {
+  @JsonKey(name: 'iso_3166_1')
+  String iso31661;
+
+  List<ReleaseDate> releaseDates;
+
+  ReleaseDatesResult(this.iso31661, this.releaseDates);
+
+  factory ReleaseDatesResult.fromJson(Map<String, dynamic> json) =>
+      _$ReleaseDatesResultFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ReleaseDatesResultToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class ReleaseDate {
+  String certification;
+
+  @JsonKey(name: 'iso_639_1')
+  String iso6391;
+
+  String? note;
+
+  String releaseDate;
+  int type;
+
+  ReleaseDate(
+    this.certification,
+    this.iso6391,
+    this.releaseDate,
+    this.type, {
+    this.note,
+  });
+
+  factory ReleaseDate.fromJson(Map<String, dynamic> json) =>
+      _$ReleaseDateFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ReleaseDateToJson(this);
 }
