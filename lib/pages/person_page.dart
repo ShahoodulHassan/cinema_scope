@@ -652,66 +652,7 @@ class ImageCardListView extends StatelessWidget
                   image.aspectRatio > 1.0
               ? ImageQuality.high
               : ImageQuality.medium;
-          return Stack(
-            children: [
-              Card(
-                surfaceTintColor: Colors.white,
-                elevation: 4.0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(topRadius),
-                ),
-                margin: EdgeInsets.zero,
-                child: SizedBox(
-                  width: imageHeight * image.aspectRatio,
-                  // height: posterHeight,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      NetworkImageView(
-                        image.filePath,
-                        imageType: imageType,
-                        aspectRatio: image.aspectRatio,
-                        topRadius: topRadius,
-                        bottomRadius: bottomRadius,
-                        imageQuality: imageQuality,
-                        // heroImageTag: image.filePath,
-                        // fit: BoxFit.fitHeight,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned.fill(
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(topRadius),
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (_) {
-                          return ImagePage(
-                            images: images,
-                            initialPage: index,
-                            imageType: imageType,
-                            placeholderQuality: imageQuality,
-                          );
-                        },
-                      ));
-                      // goToMoviePage(
-                      //   context,
-                      //   id: image.id,
-                      //   title: title,
-                      //   overview: image.overview,
-                      //   releaseDate:
-                      //       image.mediaReleaseDate /*getReleaseDate(item)*/,
-                      //   voteAverage: image.voteAverage,
-                      // );
-                    },
-                  ),
-                ),
-              ),
-            ],
-          );
+          return buildImageCard(image, imageType, imageQuality, context, index);
         },
         separatorBuilder: (_, index) => SizedBox(width: separatorWidth),
         padding: EdgeInsets.symmetric(
@@ -721,6 +662,70 @@ class ImageCardListView extends StatelessWidget
         scrollDirection: Axis.horizontal,
         itemCount: images.length,
       ),
+    );
+  }
+
+  Stack buildImageCard(ImageDetail image, ImageType imageType,
+      ImageQuality imageQuality, BuildContext context, int index) {
+    return Stack(
+      children: [
+        Card(
+          surfaceTintColor: Colors.white,
+          elevation: 4.0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(topRadius),
+          ),
+          margin: EdgeInsets.zero,
+          child: SizedBox(
+            width: imageHeight * image.aspectRatio,
+            // height: posterHeight,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                NetworkImageView(
+                  image.filePath,
+                  imageType: imageType,
+                  aspectRatio: image.aspectRatio,
+                  topRadius: topRadius,
+                  bottomRadius: bottomRadius,
+                  imageQuality: imageQuality,
+                  // heroImageTag: image.filePath,
+                  // fit: BoxFit.fitHeight,
+                ),
+              ],
+            ),
+          ),
+        ),
+        Positioned.fill(
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(topRadius),
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) {
+                    return ImagePage(
+                      images: images,
+                      initialPage: index,
+                      imageType: imageType,
+                      placeholderQuality: imageQuality,
+                    );
+                  },
+                ));
+                // goToMoviePage(
+                //   context,
+                //   id: image.id,
+                //   title: title,
+                //   overview: image.overview,
+                //   releaseDate:
+                //       image.mediaReleaseDate /*getReleaseDate(item)*/,
+                //   voteAverage: image.voteAverage,
+                // );
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
