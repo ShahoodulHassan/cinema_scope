@@ -324,7 +324,7 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return Selector<FilmographyViewModel,
-        Tuple3<Map<String, bool?>, Map<String, bool?>, Map<String, bool?>>>(
+        Tuple3<Map<String, FilterState>, Map<String, FilterState>, Map<String, FilterState>>>(
       builder: (_, tuple, __) {
         var depts = tuple.item1;
         var types = tuple.item2;
@@ -379,7 +379,7 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  Widget buildGenresList(BuildContext context, Map<String, bool?> genres,
+  Widget buildGenresList(BuildContext context, Map<String, FilterState> genres,
       FilmographyViewModel fvm) {
     return SizedBox(
       height: rowHeight,
@@ -391,13 +391,15 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
               itemBuilder: (_, index) {
                 var item = genres.entries.elementAt(index);
                 var label = item.key;
-                var selected = item.value == null || item.value!;
+                var selected = item.value != FilterState.unselected;
                 return buildFilterChip(
                   label,
                   context,
                   selected,
                   (isSelected) {
-                    if (item.value != null) fvm.toggleGenres(item, isSelected);
+                    if (item.value != FilterState.forceSelected) {
+                      fvm.toggleGenres(item, isSelected);
+                    }
                   },
                 );
               },
@@ -410,21 +412,23 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  Widget buildDepartmentsList(BuildContext context, Map<String, bool?> depts,
-      FilmographyViewModel fvm, Map<String, bool?> types) {
+  Widget buildDepartmentsList(BuildContext context, Map<String, FilterState> depts,
+      FilmographyViewModel fvm, Map<String, FilterState> types) {
     return Expanded(
       child: buildListView(
         context,
         itemBuilder: (_, index) {
           var item = depts.entries.elementAt(index);
           var label = item.key;
-          var selected = item.value == null || item.value!;
+          var selected = item.value != FilterState.unselected;
           return buildFilterChip(
             label,
             context,
             selected,
             (isSelected) {
-              if (item.value != null) fvm.toggleDepartments(item, isSelected);
+              if (item.value != FilterState.forceSelected) {
+                fvm.toggleDepartments(item, isSelected);
+              }
             },
           );
         },
@@ -437,7 +441,7 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  Widget buildMediaTypeList(BuildContext context, Map<String, bool?> types,
+  Widget buildMediaTypeList(BuildContext context, Map<String, FilterState> types,
       FilmographyViewModel fvm) {
     return buildListView(
       context,
@@ -446,13 +450,15 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
         var label = item.key == MediaType.tv.name
             ? item.key.toUpperCase()
             : item.key.toProperCase();
-        var selected = item.value == null || item.value!;
+        var selected = item.value != FilterState.unselected;
         return buildFilterChip(
           label,
           context,
           selected,
           (isSelected) {
-            if (item.value != null) fvm.toggleMediaTypes(item, isSelected);
+            if (item.value != FilterState.forceSelected) {
+              fvm.toggleMediaTypes(item, isSelected);
+            }
           },
         );
       },

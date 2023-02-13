@@ -11,6 +11,8 @@ import '../models/search.dart';
 
 enum FilterType { department, mediaType, genre }
 
+enum FilterState { unselected, selected, forceSelected }
+
 class FilmographyViewModel extends ChangeNotifier
     with GenericFunctions, Utilities, CommonFunctions {
   late final CombinedCredits combinedCredits;
@@ -34,15 +36,9 @@ class FilmographyViewModel extends ChangeNotifier
 
   final Set<String> _allMediaTypes = {};
 
-  /// A nullable bool provides the luxury to assign up to three values,
-  /// true / false / null to a key.
-  /// We assume a key as selected if the value is true or null, where null means
-  /// that the selection was by force, not by tapping on the filter chip.
-  /// Selection by force is required when there is only one entry in the map
-  /// and the value of the key is false.
-  Map<String, bool?> availableGenreNames = {};
-  Map<String, bool?> availableDepartments = {};
-  Map<String, bool?> availableMediaTypes = {};
+  Map<String, FilterState> availableGenreNames = {};
+  Map<String, FilterState> availableDepartments = {};
+  Map<String, FilterState> availableMediaTypes = {};
 
   initialize(CombinedCredits combinedCredits, List<MediaGenre> combinedGenres) {
     this.combinedCredits = combinedCredits;
@@ -51,7 +47,6 @@ class FilmographyViewModel extends ChangeNotifier
   }
 
   _processCombinedCredits() async {
-    // List<CombinedResult> newResults = [];
     for (var cast in combinedCredits.cast) {
       var deptMap = _mediaToDeptJobsMap[cast.id];
       if (deptMap == null) {
@@ -95,104 +90,88 @@ class FilmographyViewModel extends ChangeNotifier
 
   _prepareAvailableFilters({
     bool notify = true,
-    Tuple2<FilterType, MapEntry<String, bool?>>? oldItem,
+    Tuple2<FilterType, MapEntry<String, FilterState>>? oldFilter,
   }) async {
     if (_results.isNotEmpty) {
-      var depts = <String, bool?>{};
-      var types = <String, bool?>{};
-      var genres = <String, bool?>{};
+      var depts = <String, FilterState>{};
+      var types = <String, FilterState>{};
+      var genres = <String, FilterState>{};
       for (var result in _results) {
         for (var genreId in result.genreIds) {
           var mediaGenre = combinedGenres.singleWhere((element) =>
               element.mediaType.name == result.mediaType &&
               element.id == genreId);
           genres[mediaGenre.name] =
-              availableGenreNames[mediaGenre.name] ?? false;
+              availableGenreNames[mediaGenre.name] ?? FilterState.unselected;
         }
 
         if (result.mediaType != null) {
           types[result.mediaType!] =
-              availableMediaTypes[result.mediaType] ?? false;
+              availableMediaTypes[result.mediaType] ?? FilterState.unselected;
         }
 
         var deptMap = _mediaToDeptJobsMap[result.id];
         if (deptMap != null) {
           for (var dept in deptMap.keys) {
-            depts[dept] = availableDepartments[dept] ?? false;
+            depts[dept] = availableDepartments[dept] ?? FilterState.unselected;
           }
         }
       }
 
-      logIfDebug('_prepareAvailableFilters=>oldItem:$oldItem, depts:$types');
+      logIfDebug('_prepareAvailableFilters=>oldItem:$oldFilter, types:$types');
 
-      /// If there is only one entry in a map and its value is false, we set
-      /// the value to null in order to set it as selected. This is called
-      /// [force selection] and is the exact reason why a nullable bool was
-      /// used in the map.
-      /// This force selection is reset to false in [filterResults]
       if (depts.length == 1) {
         var key = depts.entries.first.key;
-        if (oldItem != null &&
-            oldItem.item1 == FilterType.department &&
-            oldItem.item2.key == key &&
-            oldItem.item2.value == true) {
-          // Restore to the old value
-          depts[key] = true;
+        if (oldFilter != null &&
+            oldFilter.item1 == FilterType.department &&
+            oldFilter.item2.key == key &&
+            oldFilter.item2.value == FilterState.selected) {
+          /// If the filter whose state is being changed is the only filter in the
+          /// list and its old state was selected (which may mean, it is now being
+          /// unselected), we keep it at its old value, i.e., selected.
+          depts[key] = FilterState.selected;
         } else {
-          if (depts[key] == false) depts[key] = null;
+          /// If there is only one entry in a map and it's unselected, we set
+          /// it to forceSelected in order to show it as selected.
+          /// This force selection is reset to unselected in [filterResults]
+          if (depts[key] == FilterState.unselected) {
+            depts[key] = FilterState.forceSelected;
+          }
         }
-        // if ((oldItem == null ||
-        //         oldItem.item1 != FilterType.department ||
-        //         oldItem.item2 != key ||
-        //         oldItem.item3 != true) &&
-        //     depts[key] == false) {
-        //   depts[key] = null;
-        // }
-        // if (depts[key] == false) depts[key] = null;
       }
       if (types.length == 1) {
         var key = types.entries.first.key;
-        if (oldItem != null &&
-            oldItem.item1 == FilterType.mediaType &&
-            oldItem.item2.key == key &&
-            oldItem.item2.value == true) {
-          // Restore to the old value
-          types[key] = true;
+        if (oldFilter != null &&
+            oldFilter.item1 == FilterType.mediaType &&
+            oldFilter.item2.key == key &&
+            oldFilter.item2.value == FilterState.selected) {
+          /// Same comments as in above block
+          types[key] = FilterState.selected;
         } else {
-          if (types[key] == false) types[key] = null;
+          /// Same comments as in above block
+          if (types[key] == FilterState.unselected) {
+            types[key] = FilterState.forceSelected;
+          }
         }
-        logIfDebug('_prepareAvailableFilters=>oldItem:$oldItem, depts:$types');
-        // if ((oldItem == null ||
-        //         oldItem.item1 != FilterType.mediaType ||
-        //         oldItem.item2 != key ||
-        //         oldItem.item3 != true) &&
-        //     types[key] == false) {
-        //   types[key] = null;
-        // }
-        // if (types[key] == false) types[key] = null;
+        logIfDebug('_prepareAvailableFilters=>oldItem:$oldFilter, types:$types');
       }
       if (genres.length == 1) {
         var key = genres.entries.first.key;
-        if (oldItem != null &&
-            oldItem.item1 == FilterType.genre &&
-            oldItem.item2.key == key &&
-            oldItem.item2.value == true) {
-          // Restore to the old value
-          genres[key] = true;
+        if (oldFilter != null &&
+            oldFilter.item1 == FilterType.genre &&
+            oldFilter.item2.key == key &&
+            oldFilter.item2.value == FilterState.selected) {
+          /// Same comments as in above block
+          genres[key] = FilterState.selected;
         } else {
-          if (genres[key] == false) genres[key] = null;
+          /// Same comments as in above block
+          if (genres[key] == FilterState.unselected) {
+            genres[key] = FilterState.forceSelected;
+          }
         }
-        // if ((oldItem == null ||
-        //         oldItem.item1 != FilterType.genre ||
-        //         oldItem.item2 != key ||
-        //         oldItem.item3 != true) &&
-        //     genres[key] == false) {
-        //   genres[key] = null;
-        // }
-        // if (genres[key] == false) genres[key] = null;
       } else if (genres.length > 1) {
         /// Genres are sorted alphabetically
-        genres = Map<String, bool?>.fromEntries(genres.entries.toList()
+        genres = Map<String, FilterState>.fromEntries(genres.entries.toList()
           ..sort((e1, e2) => e1.key.compareTo(e2.key)));
       }
 
@@ -231,58 +210,64 @@ class FilmographyViewModel extends ChangeNotifier
         'allGenres:$_allGenresMap');
   }
 
-  toggleDepartments(MapEntry<String, bool?> item, bool isSelected) async {
-    availableDepartments = Map<String, bool?>.from(availableDepartments)
-      ..[item.key] = isSelected;
-    filterResults(Tuple2<FilterType, MapEntry<String, bool?>>(
+  toggleDepartments(MapEntry<String, FilterState> item, bool isSelected) async {
+    availableDepartments = Map<String, FilterState>.from(availableDepartments)
+      ..[item.key] = isSelected ? FilterState.selected : FilterState.unselected;
+    filterResults(Tuple2<FilterType, MapEntry<String, FilterState>>(
         FilterType.department, item));
   }
 
-  toggleMediaTypes(MapEntry<String, bool?> item, bool selected) async {
-    availableMediaTypes = Map<String, bool?>.from(availableMediaTypes)
-      ..[item.key] = selected;
-    filterResults(Tuple2<FilterType, MapEntry<String, bool?>>(
+  toggleMediaTypes(MapEntry<String, FilterState> item, bool isSelected) async {
+    availableMediaTypes = Map<String, FilterState>.from(availableMediaTypes)
+      ..[item.key] = isSelected ? FilterState.selected : FilterState.unselected;
+    filterResults(Tuple2<FilterType, MapEntry<String, FilterState>>(
         FilterType.mediaType, item));
   }
 
-  toggleGenres(MapEntry<String, bool?> item, bool selected) async {
-    availableGenreNames = Map<String, bool?>.from(availableGenreNames)
-      ..[item.key] = selected;
-    filterResults(Tuple2<FilterType, MapEntry<String, bool?>>(
+  toggleGenres(MapEntry<String, FilterState> item, bool isSelected) async {
+    availableGenreNames = Map<String, FilterState>.from(availableGenreNames)
+      ..[item.key] = isSelected ? FilterState.selected : FilterState.unselected;
+    filterResults(Tuple2<FilterType, MapEntry<String, FilterState>>(
         FilterType.genre, item));
   }
 
-  filterResults(Tuple2<FilterType, MapEntry<String, bool?>> oldItem) async {
-    /// Here, we reset the value to false if it was force selected (set to null)
+  filterResults(Tuple2<FilterType, MapEntry<String, FilterState>> oldFilter) async {
+    /// Here, we reset the value to unselected if it was forceSelected
     /// earlier.
     if (availableDepartments.length == 1) {
       var key = availableDepartments.entries.first.key;
       var value = availableDepartments[key];
-      if (value == null) availableDepartments[key] = false;
+      if (value == FilterState.forceSelected) {
+        availableDepartments[key] = FilterState.unselected;
+      }
     }
     if (availableMediaTypes.length == 1) {
       var key = availableMediaTypes.entries.first.key;
       var value = availableMediaTypes[key];
-      if (value == null) availableMediaTypes[key] = false;
+      if (value == FilterState.forceSelected) {
+        availableMediaTypes[key] = FilterState.unselected;
+      }
     }
     if (availableGenreNames.length == 1) {
       var key = availableGenreNames.entries.first.key;
       var value = availableGenreNames[key];
-      if (value == null) availableGenreNames[key] = false;
+      if (value == FilterState.forceSelected) {
+        availableGenreNames[key] = FilterState.unselected;
+      }
     }
 
     logIfDebug('filterResults=>Available:$availableDepartments');
 
     var selectedDepts = availableDepartments.entries
-        .where((element) => element.value == null || element.value!)
+        .where((element) => element.value != FilterState.unselected)
         .toList()
         .map((e) => e.key);
     var selectedTypes = availableMediaTypes.entries
-        .where((element) => element.value == null || element.value!)
+        .where((element) => element.value != FilterState.unselected)
         .toList()
         .map((e) => e.key);
     var selectedGenreNames = availableGenreNames.entries
-        .where((element) => element.value == null || element.value!)
+        .where((element) => element.value != FilterState.unselected)
         .toList()
         .map((e) => e.key);
     logIfDebug('filterResults=>Selected:$selectedDepts');
@@ -339,7 +324,7 @@ class FilmographyViewModel extends ChangeNotifier
       _results = [...filtered];
     }
 
-    _prepareAvailableFilters(oldItem: oldItem);
+    _prepareAvailableFilters(oldFilter: oldFilter);
 
     // if (selectedDepts.isEmpty) {
     //   _results = [..._allResults];
