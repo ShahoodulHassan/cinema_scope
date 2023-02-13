@@ -543,7 +543,6 @@ Movie _$MovieFromJson(Map<String, dynamic> json) => Movie(
       (json['vote_average'] as num).toDouble(),
       json['vote_count'] as int,
       VideoResult.fromJson(json['videos'] as Map<String, dynamic>),
-      MovieSearchResult.fromJson(json['similar'] as Map<String, dynamic>),
       MovieSearchResult.fromJson(
           json['recommendations'] as Map<String, dynamic>),
       ImageResult.fromJson(json['images'] as Map<String, dynamic>),
@@ -591,7 +590,6 @@ Map<String, dynamic> _$MovieToJson(Movie instance) => <String, dynamic>{
       'vote_average': instance.voteAverage,
       'vote_count': instance.voteCount,
       'videos': instance.videos,
-      'similar': instance.similar,
       'recommendations': instance.recommendations,
       'images': instance.images,
       'keywords': instance.keywords,
