@@ -4,9 +4,12 @@ import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:flutter/widgets.dart';
+import 'package:tuple/tuple.dart';
 
 import '../models/movie.dart';
 import '../models/search.dart';
+
+enum FilterType { department, mediaType, genre }
 
 class FilmographyViewModel extends ChangeNotifier
     with GenericFunctions, Utilities, CommonFunctions {
@@ -90,7 +93,10 @@ class FilmographyViewModel extends ChangeNotifier
     notifyListeners();
   }
 
-  _prepareAvailableFilters({bool notify = true}) async {
+  _prepareAvailableFilters({
+    bool notify = true,
+    Tuple2<FilterType, MapEntry<String, bool?>>? oldItem,
+  }) async {
     if (_results.isNotEmpty) {
       var depts = <String, bool?>{};
       var types = <String, bool?>{};
@@ -115,8 +121,9 @@ class FilmographyViewModel extends ChangeNotifier
             depts[dept] = availableDepartments[dept] ?? false;
           }
         }
-
       }
+
+      logIfDebug('_prepareAvailableFilters=>oldItem:$oldItem, depts:$types');
 
       /// If there is only one entry in a map and its value is false, we set
       /// the value to null in order to set it as selected. This is called
@@ -125,15 +132,64 @@ class FilmographyViewModel extends ChangeNotifier
       /// This force selection is reset to false in [filterResults]
       if (depts.length == 1) {
         var key = depts.entries.first.key;
-        if (depts[key] == false) depts[key] = null;
+        if (oldItem != null &&
+            oldItem.item1 == FilterType.department &&
+            oldItem.item2.key == key &&
+            oldItem.item2.value == true) {
+          // Restore to the old value
+          depts[key] = true;
+        } else {
+          if (depts[key] == false) depts[key] = null;
+        }
+        // if ((oldItem == null ||
+        //         oldItem.item1 != FilterType.department ||
+        //         oldItem.item2 != key ||
+        //         oldItem.item3 != true) &&
+        //     depts[key] == false) {
+        //   depts[key] = null;
+        // }
+        // if (depts[key] == false) depts[key] = null;
       }
       if (types.length == 1) {
         var key = types.entries.first.key;
-        if (types[key] == false) types[key] = null;
+        if (oldItem != null &&
+            oldItem.item1 == FilterType.mediaType &&
+            oldItem.item2.key == key &&
+            oldItem.item2.value == true) {
+          // Restore to the old value
+          types[key] = true;
+        } else {
+          if (types[key] == false) types[key] = null;
+        }
+        logIfDebug('_prepareAvailableFilters=>oldItem:$oldItem, depts:$types');
+        // if ((oldItem == null ||
+        //         oldItem.item1 != FilterType.mediaType ||
+        //         oldItem.item2 != key ||
+        //         oldItem.item3 != true) &&
+        //     types[key] == false) {
+        //   types[key] = null;
+        // }
+        // if (types[key] == false) types[key] = null;
       }
       if (genres.length == 1) {
         var key = genres.entries.first.key;
-        if (genres[key] == false) genres[key] = null;
+        if (oldItem != null &&
+            oldItem.item1 == FilterType.genre &&
+            oldItem.item2.key == key &&
+            oldItem.item2.value == true) {
+          // Restore to the old value
+          genres[key] = true;
+        } else {
+          if (genres[key] == false) genres[key] = null;
+        }
+        // if ((oldItem == null ||
+        //         oldItem.item1 != FilterType.genre ||
+        //         oldItem.item2 != key ||
+        //         oldItem.item3 != true) &&
+        //     genres[key] == false) {
+        //   genres[key] = null;
+        // }
+        // if (genres[key] == false) genres[key] = null;
       } else if (genres.length > 1) {
         /// Genres are sorted alphabetically
         genres = Map<String, bool?>.fromEntries(genres.entries.toList()
@@ -173,28 +229,30 @@ class FilmographyViewModel extends ChangeNotifier
     logIfDebug('_prepareAllFilters=>depts:$_allDepartments'
         'types:$_allMediaTypes'
         'allGenres:$_allGenresMap');
-
   }
 
-  toggleDepartments(String name, bool isSelected) async {
+  toggleDepartments(MapEntry<String, bool?> item, bool isSelected) async {
     availableDepartments = Map<String, bool?>.from(availableDepartments)
-      ..[name] = isSelected;
-    filterResults();
+      ..[item.key] = isSelected;
+    filterResults(Tuple2<FilterType, MapEntry<String, bool?>>(
+        FilterType.department, item));
   }
 
-  toggleMediaTypes(String name, bool selected) async {
+  toggleMediaTypes(MapEntry<String, bool?> item, bool selected) async {
     availableMediaTypes = Map<String, bool?>.from(availableMediaTypes)
-      ..[name] = selected;
-    filterResults();
+      ..[item.key] = selected;
+    filterResults(Tuple2<FilterType, MapEntry<String, bool?>>(
+        FilterType.mediaType, item));
   }
 
-  toggleGenres(String name, bool selected) async {
+  toggleGenres(MapEntry<String, bool?> item, bool selected) async {
     availableGenreNames = Map<String, bool?>.from(availableGenreNames)
-      ..[name] = selected;
-    filterResults();
+      ..[item.key] = selected;
+    filterResults(Tuple2<FilterType, MapEntry<String, bool?>>(
+        FilterType.genre, item));
   }
 
-  filterResults() async {
+  filterResults(Tuple2<FilterType, MapEntry<String, bool?>> oldItem) async {
     /// Here, we reset the value to false if it was force selected (set to null)
     /// earlier.
     if (availableDepartments.length == 1) {
@@ -281,7 +339,7 @@ class FilmographyViewModel extends ChangeNotifier
       _results = [...filtered];
     }
 
-    _prepareAvailableFilters();
+    _prepareAvailableFilters(oldItem: oldItem);
 
     // if (selectedDepts.isEmpty) {
     //   _results = [..._allResults];

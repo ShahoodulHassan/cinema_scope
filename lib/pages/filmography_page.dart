@@ -397,7 +397,7 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
                   context,
                   selected,
                   (isSelected) {
-                    fvm.toggleGenres(label, isSelected);
+                    if (item.value != null) fvm.toggleGenres(item, isSelected);
                   },
                 );
               },
@@ -424,7 +424,7 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
             context,
             selected,
             (isSelected) {
-              fvm.toggleDepartments(label, isSelected);
+              if (item.value != null) fvm.toggleDepartments(item, isSelected);
             },
           );
         },
@@ -452,7 +452,7 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
           context,
           selected,
           (isSelected) {
-            fvm.toggleMediaTypes(item.key, isSelected);
+            if (item.value != null) fvm.toggleMediaTypes(item, isSelected);
           },
         );
       },
