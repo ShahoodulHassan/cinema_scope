@@ -1,11 +1,12 @@
 import 'package:async/async.dart';
 import 'package:cinema_scope/architecture/search_view_model.dart';
 import 'package:cinema_scope/models/search.dart';
+import 'package:cinema_scope/utilities/utilities.dart';
 
 import '../constants.dart';
 import '../models/movie.dart';
 
-class MovieViewModel extends ApiViewModel {
+class MovieViewModel extends ApiViewModel with Utilities {
   Movie? movie;
 
   int _recomPageIndex = 0;
@@ -14,7 +15,20 @@ class MovieViewModel extends ApiViewModel {
 
   CancelableOperation? _operation;
 
+  String? year;
+
+  double? get voteAverage => movie?.voteAverage;
+
+  String? get runtime {
+    var runtime = movie?.runtime;
+    return runtime == null ? null : runtimeToString(runtime);
+  }
+
   String? certification;
+
+  String? get imdbId => movie?.imdbId;
+
+  String? get homepage => movie?.homepage;
 
   set recomPageIndex(int index) {
     _recomPageIndex = index;
@@ -88,6 +102,7 @@ class MovieViewModel extends ApiViewModel {
       api.getMovieWithDetail(id),
     ).then((result) async {
       movie = result;
+      year = getYearStringFromDate(movie!.releaseDate);
       await compileCertification();
       notifyListeners();
       compileThumbnails();
