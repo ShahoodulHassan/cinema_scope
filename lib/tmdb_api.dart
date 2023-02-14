@@ -54,10 +54,13 @@ abstract class TmdbApi {
 
   @http.GET("/movie/{id}")
   @http.Headers(headerMap)
-  Future<Movie> getMovieWithDetail(@http.Path("id") int id,
-      {@http.Query('language') String language = 'en-US',
-      @http.Query('append_to_response') String append =
-          'videos,images,recommendations,keywords,reviews,credits,release_dates'});
+  Future<Movie> getMovieWithDetail(
+    @http.Path("id") int id, {
+    @http.Query('language') String language = 'en-US',
+    @http.Query('append_to_response') String append =
+        'videos,images,recommendations,keywords,reviews,credits,release_dates',
+    @http.Query('include_image_language') String imageLanguage = 'en,null',
+  });
 
   /// https://api.themoviedb.org/3/search/movie?api_key=ec7b57c566e8af94115bb2c0d910f610&language=en-US&page=1&include_adult=true&region=US&query=Jack+Reacher
   @http.GET("/search/movie")

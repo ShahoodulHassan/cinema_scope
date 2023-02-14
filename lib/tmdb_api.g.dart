@@ -207,11 +207,13 @@ class _TmdbApi implements TmdbApi {
     language = 'en-US',
     append =
         'videos,images,recommendations,keywords,reviews,credits,release_dates',
+    imageLanguage = 'en,null',
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'language': language,
       r'append_to_response': append,
+      r'include_image_language': imageLanguage,
     };
     final _headers = <String, dynamic>{
       r'Content-Type': 'application/json;charset=utf-8',
