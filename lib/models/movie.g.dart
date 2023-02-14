@@ -6,6 +6,138 @@ part of 'movie.dart';
 // CopyWithGenerator
 // **************************************************************************
 
+abstract class _$ImageDetailCWProxy {
+  ImageDetail aspectRatio(double aspectRatio);
+
+  ImageDetail height(int height);
+
+  ImageDetail filePath(String filePath);
+
+  ImageDetail voteAverage(double voteAverage);
+
+  ImageDetail voteCount(int voteCount);
+
+  ImageDetail width(int width);
+
+  ImageDetail iso6391(String? iso6391);
+
+  ImageDetail imageType(String? imageType);
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `ImageDetail(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// ImageDetail(...).copyWith(id: 12, name: "My name")
+  /// ````
+  ImageDetail call({
+    double? aspectRatio,
+    int? height,
+    String? filePath,
+    double? voteAverage,
+    int? voteCount,
+    int? width,
+    String? iso6391,
+    String? imageType,
+  });
+}
+
+/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfImageDetail.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfImageDetail.copyWith.fieldName(...)`
+class _$ImageDetailCWProxyImpl implements _$ImageDetailCWProxy {
+  const _$ImageDetailCWProxyImpl(this._value);
+
+  final ImageDetail _value;
+
+  @override
+  ImageDetail aspectRatio(double aspectRatio) => this(aspectRatio: aspectRatio);
+
+  @override
+  ImageDetail height(int height) => this(height: height);
+
+  @override
+  ImageDetail filePath(String filePath) => this(filePath: filePath);
+
+  @override
+  ImageDetail voteAverage(double voteAverage) => this(voteAverage: voteAverage);
+
+  @override
+  ImageDetail voteCount(int voteCount) => this(voteCount: voteCount);
+
+  @override
+  ImageDetail width(int width) => this(width: width);
+
+  @override
+  ImageDetail iso6391(String? iso6391) => this(iso6391: iso6391);
+
+  @override
+  ImageDetail imageType(String? imageType) => this(imageType: imageType);
+
+  @override
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `ImageDetail(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// ImageDetail(...).copyWith(id: 12, name: "My name")
+  /// ````
+  ImageDetail call({
+    Object? aspectRatio = const $CopyWithPlaceholder(),
+    Object? height = const $CopyWithPlaceholder(),
+    Object? filePath = const $CopyWithPlaceholder(),
+    Object? voteAverage = const $CopyWithPlaceholder(),
+    Object? voteCount = const $CopyWithPlaceholder(),
+    Object? width = const $CopyWithPlaceholder(),
+    Object? iso6391 = const $CopyWithPlaceholder(),
+    Object? imageType = const $CopyWithPlaceholder(),
+  }) {
+    return ImageDetail(
+      aspectRatio == const $CopyWithPlaceholder() || aspectRatio == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.aspectRatio!
+          // ignore: cast_nullable_to_non_nullable
+          : aspectRatio as double,
+      height == const $CopyWithPlaceholder() || height == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.height!
+          // ignore: cast_nullable_to_non_nullable
+          : height as int,
+      filePath == const $CopyWithPlaceholder() || filePath == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.filePath!
+          // ignore: cast_nullable_to_non_nullable
+          : filePath as String,
+      voteAverage == const $CopyWithPlaceholder() || voteAverage == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.voteAverage!
+          // ignore: cast_nullable_to_non_nullable
+          : voteAverage as double,
+      voteCount == const $CopyWithPlaceholder() || voteCount == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.voteCount!
+          // ignore: cast_nullable_to_non_nullable
+          : voteCount as int,
+      width == const $CopyWithPlaceholder() || width == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.width!
+          // ignore: cast_nullable_to_non_nullable
+          : width as int,
+      iso6391: iso6391 == const $CopyWithPlaceholder()
+          ? _value.iso6391
+          // ignore: cast_nullable_to_non_nullable
+          : iso6391 as String?,
+      imageType: imageType == const $CopyWithPlaceholder()
+          ? _value.imageType
+          // ignore: cast_nullable_to_non_nullable
+          : imageType as String?,
+    );
+  }
+}
+
+extension $ImageDetailCopyWith on ImageDetail {
+  /// Returns a callable class that can be used as follows: `instanceOfImageDetail.copyWith(...)` or like so:`instanceOfImageDetail.copyWith.fieldName(...)`.
+  // ignore: library_private_types_in_public_api
+  _$ImageDetailCWProxy get copyWith => _$ImageDetailCWProxyImpl(this);
+}
+
 abstract class _$BaseCastCWProxy {
   BaseCast id(int id);
 
@@ -717,6 +849,7 @@ ImageDetail _$ImageDetailFromJson(Map<String, dynamic> json) => ImageDetail(
       json['vote_count'] as int,
       json['width'] as int,
       iso6391: json['iso_639_1'] as String?,
+      imageType: json['image_type'] as String?,
     );
 
 Map<String, dynamic> _$ImageDetailToJson(ImageDetail instance) =>
@@ -728,6 +861,7 @@ Map<String, dynamic> _$ImageDetailToJson(ImageDetail instance) =>
       'vote_average': instance.voteAverage,
       'vote_count': instance.voteCount,
       'width': instance.width,
+      'image_type': instance.imageType,
     };
 
 ReviewResult _$ReviewResultFromJson(Map<String, dynamic> json) => ReviewResult(

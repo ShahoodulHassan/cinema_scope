@@ -1,6 +1,7 @@
 import 'package:card_swiper/card_swiper.dart';
 import 'package:cinema_scope/architecture/movie_view_model.dart';
 import 'package:cinema_scope/models/search.dart';
+import 'package:cinema_scope/pages/person_page.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
@@ -218,6 +219,7 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
           const CastCrewSection(),
           const ReviewsSection(),
           const RecommendedMoviesSection(),
+          const _ImagesSection(),
           const KeywordsSection(),
         ],
       ),
@@ -1050,6 +1052,8 @@ class SliverPosterGrid extends StatelessWidget with Utilities, CommonFunctions {
                 : context.read<ConfigViewModel>().getImageUrl(
                     ImageType.backdrop, ImageQuality.high, movie.backdropPath!);
             return Card(
+              color: Colors.white,
+              surfaceTintColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: _borderRadius,
               ),
@@ -1100,6 +1104,39 @@ class SliverPosterGrid extends StatelessWidget with Utilities, CommonFunctions {
 
   List<MovieResult> getListForPage(List<MovieResult> list, int index) {
     return list.skip(itemsPerPage * index).take(itemsPerPage).toList();
+  }
+}
+
+
+class _ImagesSection extends StatelessWidget with GenericFunctions {
+  const _ImagesSection({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<MovieViewModel, List<ImageDetail>>(
+      selector: (_, mvm) => mvm.images ?? [],
+      builder: (_, images, __) {
+        // logIfDebug('tagged:$taggedImages');
+        if (images.isEmpty) {
+          return SliverToBoxAdapter(child: Container());
+        } else {
+          return BaseSectionSliver(
+            title: 'Images',
+            children: [
+              ImageCardListView(
+                images: images,
+                screenWidth: MediaQuery.of(context).size.width,
+              ),
+              // Container(
+              //   alignment: Alignment.center,
+              //   padding: const EdgeInsets.only(bottom: 8.0),
+              //   child: CompactTextButton('All images', onPressed: () {}),
+              // ),
+            ],
+          );
+        }
+      },
+    );
   }
 }
 

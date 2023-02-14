@@ -210,6 +210,7 @@ class ImageResult {
   Map<String, dynamic> toJson() => _$ImageResultToJson(this);
 }
 
+@CopyWith()
 @JsonSerializable(fieldRename: FieldRename.snake)
 class ImageDetail {
   double aspectRatio;
@@ -223,9 +224,11 @@ class ImageDetail {
   int voteCount;
   int width;
 
+  String? imageType;
+
   ImageDetail(this.aspectRatio, this.height, this.filePath, this.voteAverage,
       this.voteCount, this.width,
-      {this.iso6391});
+      {this.iso6391, this.imageType});
 
   factory ImageDetail.fromJson(Map<String, dynamic> json) =>
       _$ImageDetailFromJson(json);

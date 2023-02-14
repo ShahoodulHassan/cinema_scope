@@ -1,4 +1,5 @@
 import 'package:async/async.dart';
+import 'package:cinema_scope/architecture/config_view_model.dart';
 import 'package:cinema_scope/architecture/search_view_model.dart';
 import 'package:cinema_scope/models/search.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
@@ -29,6 +30,8 @@ class MovieViewModel extends ApiViewModel with Utilities {
   String? get imdbId => movie?.imdbId;
 
   String? get homepage => movie?.homepage;
+
+  List<ImageDetail>? images;
 
   set recomPageIndex(int index) {
     _recomPageIndex = index;
@@ -106,6 +109,7 @@ class MovieViewModel extends ApiViewModel with Utilities {
       await compileCertification();
       notifyListeners();
       compileThumbnails();
+      compileImages();
     });
     // movie = await api.getMovieWithDetail(id);
     // notifyListeners();
@@ -123,6 +127,21 @@ class MovieViewModel extends ApiViewModel with Utilities {
     if (usResults.isNotEmpty) {
       var theatrical = usResults.first.releaseDates;
       if (theatrical.isNotEmpty) certification = theatrical.first.certification;
+    }
+  }
+
+  compileImages() async {
+    if (movie != null) {
+      var imageResult = movie!.images;
+      List<ImageDetail> images = [];
+      images.addAll(imageResult.backdrops
+          .map((e) => e.copyWith.imageType(ImageType.backdrop.name)));
+      images.addAll(imageResult.posters
+          .map((e) => e.copyWith.imageType(ImageType.poster.name)));
+      images.addAll(imageResult.logos
+          .map((e) => e.copyWith.imageType(ImageType.logo.name)));
+      this.images = images;
+      notifyListeners();
     }
   }
 
