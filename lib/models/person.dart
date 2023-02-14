@@ -16,6 +16,7 @@ class Person extends BasePersonResult {
   String? homepage;
   String? imdbId;
   String? placeOfBirth;
+
   // MovieCredits movieCredits;
   // TvCredits tvCredits;
   CombinedCredits combinedCredits;
@@ -376,7 +377,7 @@ class TaggedImageResult extends BaseSearchResult {
 @JsonSerializable(fieldRename: FieldRename.snake)
 class TaggedImage extends ImageDetail {
   String id;
-  String imageType;
+
   String mediaType;
   BaseResult media;
 
@@ -388,10 +389,10 @@ class TaggedImage extends ImageDetail {
     super.voteCount,
     super.width,
     this.id,
-    this.imageType,
     this.mediaType,
     this.media, {
     super.iso6391,
+    super.imageType,
   });
 
   factory TaggedImage.fromJson(Map<String, dynamic> json) {
@@ -405,10 +406,10 @@ class TaggedImage extends ImageDetail {
       json['vote_count'] as int,
       json['width'] as int,
       json['id'] as String,
-      json['image_type'] as String,
       mediaType,
       _getMedia(mediaType, mediaMap),
       iso6391: json['iso_639_1'] as String?,
+      imageType: json['image_type'] as String?,
     );
   }
 
@@ -419,8 +420,7 @@ class TaggedImage extends ImageDetail {
       return TvSeason.fromJson(mediaMap);
     } else if (mediaType == MediaType.episode.name) {
       return TvEpisode.fromJson(mediaMap);
-    }
-    else {
+    } else {
       return MovieResult.fromJson(mediaMap);
     }
   }

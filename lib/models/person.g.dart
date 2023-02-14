@@ -442,10 +442,10 @@ TaggedImage _$TaggedImageFromJson(Map<String, dynamic> json) => TaggedImage(
       json['vote_count'] as int,
       json['width'] as int,
       json['id'] as String,
-      json['image_type'] as String,
       json['media_type'] as String,
       BaseResult.fromJson(json['media'] as Map<String, dynamic>),
       iso6391: json['iso_639_1'] as String?,
+      imageType: json['image_type'] as String?,
     );
 
 Map<String, dynamic> _$TaggedImageToJson(TaggedImage instance) =>
@@ -457,8 +457,8 @@ Map<String, dynamic> _$TaggedImageToJson(TaggedImage instance) =>
       'vote_average': instance.voteAverage,
       'vote_count': instance.voteCount,
       'width': instance.width,
-      'id': instance.id,
       'image_type': instance.imageType,
+      'id': instance.id,
       'media_type': instance.mediaType,
       'media': instance.media,
     };

@@ -570,16 +570,15 @@ class _ImagesSection extends StatelessWidget with GenericFunctions {
         return Tuple2(person?.images.profiles, person?.taggedImages.results);
       },
       builder: (_, tuple, __) {
-        var profileImages = tuple.item1;
-        var taggedImages = tuple.item2;
+        var profileImages = tuple.item1 ?? [];
+        var taggedImages = tuple.item2 ?? [];
         // logIfDebug('tagged:$taggedImages');
-        if ((profileImages == null && taggedImages == null) ||
-            (profileImages!.isEmpty && taggedImages!.isEmpty)) {
+        if (profileImages.isEmpty && taggedImages.isEmpty) {
           return SliverToBoxAdapter(child: Container());
         } else {
           List<ImageDetail> allImages = [];
-          if (taggedImages != null) allImages.addAll(taggedImages);
-          if (profileImages != null) allImages.addAll(profileImages);
+          allImages.addAll(taggedImages);
+          allImages.addAll(profileImages);
           return BaseSectionSliver(
             title: 'Images',
             children: [
@@ -643,12 +642,11 @@ class ImageCardListView extends StatelessWidget
       child: ListView.separated(
         itemBuilder: (_, index) {
           var image = images[index];
-          var imageType = image is TaggedImage
+          var imageType = image.imageType != null
               ? ImageType.values
                   .firstWhere((element) => element.name == image.imageType)
               : ImageType.profile;
-          var imageQuality = image is TaggedImage &&
-                  image.imageType == ImageType.still.name &&
+          var imageQuality = image.imageType == ImageType.still.name &&
                   image.aspectRatio > 1.0
               ? ImageQuality.high
               : ImageQuality.medium;
@@ -707,7 +705,7 @@ class ImageCardListView extends StatelessWidget
                     return ImagePage(
                       images: images,
                       initialPage: index,
-                      imageType: imageType,
+                      placeholderImageType: imageType,
                       placeholderQuality: imageQuality,
                     );
                   },
