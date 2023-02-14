@@ -4,13 +4,14 @@ import 'dart:ui';
 
 import 'package:cinema_scope/architecture/search_view_model.dart';
 import 'package:cinema_scope/constants.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/configuration.dart';
 import '../models/movie.dart';
 import '../utilities/utilities.dart';
 
 class ConfigViewModel extends ApiViewModel {
-  final int interval = 2; // In prod, it would be 30 days
+  final int interval = kDebugMode ? 2 : 15; /// In prod, it is 15 days
 
   AppLifecycleState _appState = AppLifecycleState.detached;
 
@@ -62,6 +63,9 @@ class ConfigViewModel extends ApiViewModel {
         break;
       case ImageType.still:
         sizes = imageConfig.stillSizes;
+        break;
+      case ImageType.logo:
+        sizes = imageConfig.logoSizes;
         break;
     }
     return sizes[max(sizes.length - imageQuality.quality, 0)];
@@ -232,5 +236,5 @@ enum ImageType {
   backdrop,
   profile,
   still,
-  // logo,
+  logo,
 }
