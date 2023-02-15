@@ -55,9 +55,10 @@ class _FilmographyPageChildState extends State<_FilmographyPageChild>
   @override
   void initState() {
     super.initState();
+    fvm = context.read<FilmographyViewModel>();
     WidgetsBinding.instance.addPostFrameCallback(
-      (_) => fvm = context.read<FilmographyViewModel>()
-        ..initialize(
+      (_) =>
+        fvm.initialize(
           widget.combinedCredits,
           context.read<ConfigViewModel>().combinedGenres,
         ),
