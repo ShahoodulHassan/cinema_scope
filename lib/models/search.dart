@@ -243,6 +243,15 @@ class CombinedResult extends MediaResult {
 
   @override
   Map<String, dynamic> toJson() => _$CombinedResultToJson(this);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CombinedResult &&
+          id == other.id;
+
+  @override
+  int get hashCode => title.hashCode;
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)

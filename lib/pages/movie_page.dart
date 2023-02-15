@@ -90,7 +90,11 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
   @override
   void initState() {
     super.initState();
-    mvm = context.read<MovieViewModel>()..getMovieWithDetail(widget.id);
+    mvm = context.read<MovieViewModel>()
+      ..getMovieWithDetail(
+        widget.id,
+        context.read<ConfigViewModel>().combinedGenres,
+      );
     final cvm = context.read<ConfigViewModel>();
     String base = cvm.apiConfig!.images.secureBaseUrl;
     String size = cvm.apiConfig!.images.backdropSizes[1];
@@ -219,6 +223,10 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
           const CastCrewSection(),
           const ReviewsSection(),
           const RecommendedMoviesSection(),
+          const _MoreByDirectorSection(),
+          // const _MoreByLeadSection(),
+          const _MoreByLeadActorSection(),
+          const _MoreByGenresSection(),
           const _ImagesSection(),
           const KeywordsSection(),
         ],
@@ -471,6 +479,300 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
       ),
     );
   }
+}
+
+class _MoreByLeadSection extends StatelessWidget
+    with GenericFunctions, Utilities, CommonFunctions {
+  final int _maxCount = 20;
+
+  const _MoreByLeadSection({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<MovieViewModel, List<CombinedResult>>(
+      selector: (_, mvm) => mvm.moreByLead ?? [],
+      builder: (_, moreByLead, __) {
+        logIfDebug('moreByLead:$moreByLead');
+        if (moreByLead.isEmpty) {
+          return SliverToBoxAdapter(child: Container());
+        }
+        return BaseSectionSliver(
+          title: 'More by lead actors',
+          children: [
+            PosterCardListView(
+              items: moreByLead.take(_maxCount).toList(),
+              screenWidth: MediaQuery.of(context).size.width,
+              aspectRatio: Constants.arPoster,
+              onTap: (item) {
+                goToMoviePage(
+                  context,
+                  id: item.id,
+                  title: item.mediaTitle,
+                  overview: item.overview,
+                  releaseDate: item.mediaReleaseDate /*getReleaseDate(item)*/,
+                  voteAverage: item.voteAverage,
+                );
+              },
+            ),
+            // Container(
+            //   alignment: Alignment.center,
+            //   padding: const EdgeInsets.only(bottom: 8.0),
+            //   child: CompactTextButton('All filmography', onPressed: () {
+            //     var pvm = context.read<PersonViewModel>();
+            //     var person = pvm.personWithKnownFor.person;
+            //     goToFilmographyPage(
+            //         context, person!.id, person.name, person.combinedCredits);
+            //   }),
+            // ),
+          ],
+        );
+      },
+    );
+  }
+
+// goToFilmographyPage(
+//     BuildContext context,
+//     int id,
+//     String name,
+//     CombinedCredits combinedCredits,
+//     ) {
+//   Navigator.push(
+//     context,
+//     MaterialPageRoute(
+//         builder: (_) => FilmographyPage(
+//           id: id,
+//           name: name,
+//           combinedCredits: combinedCredits,
+//         )),
+//   );
+// }
+}
+
+class _MoreByLeadActorSection extends StatelessWidget
+    with GenericFunctions, Utilities, CommonFunctions {
+  final int _maxCount = 20;
+
+  const _MoreByLeadActorSection({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<MovieViewModel, Tuple2<Cast, List<CombinedResult>>?>(
+      selector: (_, mvm) => mvm.moreByActor,
+      builder: (_, moreByActor, __) {
+        logIfDebug('moreByActor:$moreByActor');
+        if (moreByActor == null) {
+          return SliverToBoxAdapter(child: Container());
+        }
+        return BaseSectionSliver(
+          title: 'More by ${moreByActor.item1.name}',
+          children: [
+            PosterCardListView(
+              items: moreByActor.item2.take(_maxCount).toList(),
+              screenWidth: MediaQuery.of(context).size.width,
+              aspectRatio: Constants.arPoster,
+              onTap: (item) {
+                if (item.mediaType == MediaType.movie.name) {
+                  goToMoviePage(
+                    context,
+                    id: item.id,
+                    title: item.mediaTitle,
+                    overview: item.overview,
+                    releaseDate: item.mediaReleaseDate /*getReleaseDate(item)*/,
+                    voteAverage: item.voteAverage,
+                  );
+                }
+              },
+            ),
+            // Container(
+            //   alignment: Alignment.center,
+            //   padding: const EdgeInsets.only(bottom: 8.0),
+            //   child: CompactTextButton('All filmography', onPressed: () {
+            //     var pvm = context.read<PersonViewModel>();
+            //     var person = pvm.personWithKnownFor.person;
+            //     goToFilmographyPage(
+            //         context, person!.id, person.name, person.combinedCredits);
+            //   }),
+            // ),
+          ],
+        );
+      },
+    );
+  }
+
+// goToFilmographyPage(
+//     BuildContext context,
+//     int id,
+//     String name,
+//     CombinedCredits combinedCredits,
+//     ) {
+//   Navigator.push(
+//     context,
+//     MaterialPageRoute(
+//         builder: (_) => FilmographyPage(
+//           id: id,
+//           name: name,
+//           combinedCredits: combinedCredits,
+//         )),
+//   );
+// }
+}
+
+class _MoreByGenresSection extends StatelessWidget
+    with GenericFunctions, Utilities, CommonFunctions {
+  final int _maxCount = 20;
+
+  const _MoreByGenresSection({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<MovieViewModel, List<CombinedResult>>(
+      selector: (_, mvm) => mvm.moreByGenres ?? [],
+      builder: (_, list, __) {
+        logIfDebug('moreByGenres:$list');
+        if (list.isEmpty) {
+          return SliverToBoxAdapter(child: Container());
+        }
+        return BaseSectionSliver(
+          title: 'More from similar genres',
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'A carefully curated list of top rated movies of '
+                    'the same era '
+                'having most of the similar genres',
+                style: TextStyle(
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+            PosterCardListView(
+              items: list.take(_maxCount).toList(),
+              screenWidth: MediaQuery.of(context).size.width,
+              aspectRatio: Constants.arPoster,
+              onTap: (item) {
+                goToMoviePage(
+                  context,
+                  id: item.id,
+                  title: item.mediaTitle,
+                  overview: item.overview,
+                  releaseDate: item.mediaReleaseDate /*getReleaseDate(item)*/,
+                  voteAverage: item.voteAverage,
+                );
+              },
+            ),
+            Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: CompactTextButton('Explore all', onPressed: () {
+                // var pvm = context.read<PersonViewModel>();
+                // var person = pvm.personWithKnownFor.person;
+                // goToFilmographyPage(
+                //     context, person!.id, person.name, person.combinedCredits);
+              }),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+// goToFilmographyPage(
+//     BuildContext context,
+//     int id,
+//     String name,
+//     CombinedCredits combinedCredits,
+//     ) {
+//   Navigator.push(
+//     context,
+//     MaterialPageRoute(
+//         builder: (_) => FilmographyPage(
+//           id: id,
+//           name: name,
+//           combinedCredits: combinedCredits,
+//         )),
+//   );
+// }
+}
+
+class _MoreByDirectorSection extends StatelessWidget
+    with GenericFunctions, Utilities, CommonFunctions {
+  final int _maxCount = 20;
+
+  const _MoreByDirectorSection({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<MovieViewModel, Tuple2<Crew, List<CombinedResult>>?>(
+      selector: (_, mvm) => mvm.moreByDirector,
+      builder: (_, tuple, __) {
+        // logIfDebug('moreByDirector:$list');
+        if (tuple == null) {
+          return SliverToBoxAdapter(child: Container());
+        }
+        return BaseSectionSliver(
+          title: 'More by ${tuple.item1.name}',
+          children: [
+            // const Padding(
+            //   padding: EdgeInsets.symmetric(horizontal: 16.0),
+            //   child: Text(
+            //     'A carefully curated list of top rated movies of '
+            //         'the same era '
+            //         'having most of the similar genres',
+            //     style: TextStyle(
+            //       color: Colors.black87,
+            //     ),
+            //   ),
+            // ),
+            PosterCardListView(
+              items: tuple.item2/*.take(_maxCount).toList()*/,
+              screenWidth: MediaQuery.of(context).size.width,
+              aspectRatio: Constants.arPoster,
+              onTap: (item) {
+                if (item.mediaType == MediaType.movie.name) {
+                  goToMoviePage(
+                    context,
+                    id: item.id,
+                    title: item.mediaTitle,
+                    overview: item.overview,
+                    releaseDate: item.mediaReleaseDate /*getReleaseDate(item)*/,
+                    voteAverage: item.voteAverage,
+                  );
+                }
+              },
+            ),
+            // Container(
+            //   alignment: Alignment.center,
+            //   padding: const EdgeInsets.only(bottom: 8.0),
+            //   child: CompactTextButton('Explore all', onPressed: () {
+            //     // var pvm = context.read<PersonViewModel>();
+            //     // var person = pvm.personWithKnownFor.person;
+            //     // goToFilmographyPage(
+            //     //     context, person!.id, person.name, person.combinedCredits);
+            //   }),
+            // ),
+          ],
+        );
+      },
+    );
+  }
+
+// goToFilmographyPage(
+//     BuildContext context,
+//     int id,
+//     String name,
+//     CombinedCredits combinedCredits,
+//     ) {
+//   Navigator.push(
+//     context,
+//     MaterialPageRoute(
+//         builder: (_) => FilmographyPage(
+//           id: id,
+//           name: name,
+//           combinedCredits: combinedCredits,
+//         )),
+//   );
+// }
 }
 
 class CastCrewSection extends StatelessWidget
@@ -1106,7 +1408,6 @@ class SliverPosterGrid extends StatelessWidget with Utilities, CommonFunctions {
     return list.skip(itemsPerPage * index).take(itemsPerPage).toList();
   }
 }
-
 
 class _ImagesSection extends StatelessWidget with GenericFunctions {
   const _ImagesSection({Key? key}) : super(key: key);

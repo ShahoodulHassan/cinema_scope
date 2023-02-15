@@ -237,6 +237,18 @@ class ImageDetail {
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)
+class CombinedResults extends BaseSearchResult {
+  List<CombinedResult> results;
+
+  CombinedResults(super.page, super.totalPages, super.totalResults, this.results);
+
+  factory CombinedResults.fromJson(Map<String, dynamic> json) =>
+      _$CombinedResultsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CombinedResultsToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
 class ReviewResult {
   int page;
   List<Review> results;

@@ -72,9 +72,11 @@ class _PersonPageChildState extends State<_PersonPageChild>
     with Utilities, CommonFunctions {
   @override
   void initState() {
-    context
-        .read<PersonViewModel>()
-        .fetchPersonWithDetail(widget.id, widget.name, widget.knownFor);
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => context
+          .read<PersonViewModel>()
+          .fetchPersonWithDetail(widget.id, widget.name, widget.knownFor),
+    );
     super.initState();
   }
 
@@ -567,7 +569,7 @@ class _ImagesSection extends StatelessWidget with GenericFunctions {
         Tuple2<List<ImageDetail>?, List<TaggedImage>?>>(
       selector: (_, pvm) {
         var person = pvm.personWithKnownFor.person;
-        return Tuple2(person?.images.profiles, person?.taggedImages.results);
+        return Tuple2(person?.images?.profiles, person?.taggedImages?.results);
       },
       builder: (_, tuple, __) {
         var profileImages = tuple.item1 ?? [];
@@ -648,10 +650,10 @@ class ImageCardListView extends StatelessWidget
               ? ImageType.values
                   .firstWhere((element) => element.name == image.imageType)
               : ImageType.profile;
-          var imageQuality = image.imageType == ImageType.still.name &&
-                  image.aspectRatio > 1.0
-              ? ImageQuality.high
-              : ImageQuality.medium;
+          var imageQuality =
+              image.imageType == ImageType.still.name && image.aspectRatio > 1.0
+                  ? ImageQuality.high
+                  : ImageQuality.medium;
           return buildImageCard(image, imageType, imageQuality, context, index);
         },
         separatorBuilder: (_, index) => SizedBox(width: separatorWidth),
@@ -730,7 +732,8 @@ class ImageCardListView extends StatelessWidget
   }
 }
 
-class _FilmographySection extends StatelessWidget with GenericFunctions {
+class _FilmographySection extends StatelessWidget
+    with GenericFunctions, Utilities, CommonFunctions {
   final int _maxCount = 10;
 
   _FilmographySection({Key? key}) : super(key: key);
@@ -751,6 +754,19 @@ class _FilmographySection extends StatelessWidget with GenericFunctions {
               items: knownFor.values.take(_maxCount).toList(),
               screenWidth: MediaQuery.of(context).size.width,
               aspectRatio: Constants.arPoster,
+              subtitle: (item) => getJob(item),
+              onTap: (item) {
+                if (item.mediaType == MediaType.movie.name) {
+                  goToMoviePage(
+                    context,
+                    id: item.id,
+                    title: item.mediaTitle,
+                    overview: item.overview,
+                    releaseDate: item.mediaReleaseDate /*getReleaseDate(item)*/,
+                    voteAverage: item.voteAverage,
+                  );
+                } else {}
+              },
             ),
             Container(
               alignment: Alignment.center,
@@ -766,6 +782,13 @@ class _FilmographySection extends StatelessWidget with GenericFunctions {
         );
       },
     );
+  }
+
+  String getJob(CombinedResult item) {
+    // logIfDebug('getJob=>id:${item.id}, title:${getMediaTitle(item)}, type:${item.mediaType}');
+    if (item is CombinedOfCast) return item.character;
+    if (item is CombinedOfCrew) return item.job;
+    return '';
   }
 
   goToFilmographyPage(
@@ -792,10 +815,15 @@ class PosterCardListView extends StatelessWidget
   final double screenWidth;
   final double aspectRatio;
 
+  final String Function(CombinedResult item)? subtitle;
+  final Function(CombinedResult item) onTap;
+
   PosterCardListView({
     required this.items,
     required this.screenWidth,
     required this.aspectRatio,
+    required this.onTap,
+    this.subtitle,
     Key? key,
   }) : super(key: key);
 
@@ -849,22 +877,23 @@ class PosterCardListView extends StatelessWidget
 
   late final nameHeight = nameStyle.height! * nameStyle.fontSize! * maxLines;
 
-  late final subtitleHeight = yearStyle.height! * yearStyle.fontSize! * maxLines;
+  late final subtitleHeight =
+      yearStyle.height! * yearStyle.fontSize! * maxLines;
 
   late final yearHeight = yearStyle.height! * yearStyle.fontSize!;
 
   late final nameContainerHeight =
       nameHeight + nameTopPadding + nameBottomPadding;
 
-  late final subtitleContainerHeight = subtitleHeight + subtitleTopPadding
-      + subtitleBottomPadding;
+  late final subtitleContainerHeight =
+      subtitleHeight + subtitleTopPadding + subtitleBottomPadding;
 
   late final yearContainerHeight =
       max(iconSize, yearHeight) + yearTopPadding + yearBottomPadding;
 
   late final cardHeight = posterHeight +
       nameContainerHeight +
-      subtitleContainerHeight +
+      (subtitle != null ? subtitleContainerHeight : 0.0) +
       yearContainerHeight;
 
   /// This 0.8 is being to escape the "A RenderFlex overflowed by 0.800
@@ -888,7 +917,7 @@ class PosterCardListView extends StatelessWidget
           var title = item.mediaTitle /*getMediaTitle(item)*/;
           var year =
               getYearStringFromDate(item.mediaReleaseDate) /*getYear(item)*/;
-          var job = getJob(item);
+          var job = /*getJob(item)*/ subtitle?.call(item) ?? '';
           return Stack(
             children: [
               Card(
@@ -1007,19 +1036,7 @@ class PosterCardListView extends StatelessWidget
                   color: Colors.transparent,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(topRadius),
-                    onTap: () {
-                      if (item.mediaType == MediaType.movie.name) {
-                        goToMoviePage(
-                          context,
-                          id: item.id,
-                          title: title,
-                          overview: item.overview,
-                          releaseDate:
-                              item.mediaReleaseDate /*getReleaseDate(item)*/,
-                          voteAverage: item.voteAverage,
-                        );
-                      } else {}
-                    },
+                    onTap: () => onTap(item),
                   ),
                 ),
               ),

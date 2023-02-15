@@ -21,8 +21,8 @@ class Person extends BasePersonResult {
   // TvCredits tvCredits;
   CombinedCredits combinedCredits;
   ExternalIds? externalIds;
-  PersonImageResult images;
-  TaggedImageResult taggedImages;
+  PersonImageResult? images;
+  TaggedImageResult? taggedImages;
 
   Person(
     super.id,

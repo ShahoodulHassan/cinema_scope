@@ -864,6 +864,24 @@ Map<String, dynamic> _$ImageDetailToJson(ImageDetail instance) =>
       'image_type': instance.imageType,
     };
 
+CombinedResults _$CombinedResultsFromJson(Map<String, dynamic> json) =>
+    CombinedResults(
+      json['page'] as int,
+      json['total_pages'] as int,
+      json['total_results'] as int,
+      (json['results'] as List<dynamic>)
+          .map((e) => CombinedResult.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$CombinedResultsToJson(CombinedResults instance) =>
+    <String, dynamic>{
+      'page': instance.page,
+      'total_pages': instance.totalPages,
+      'total_results': instance.totalResults,
+      'results': instance.results,
+    };
+
 ReviewResult _$ReviewResultFromJson(Map<String, dynamic> json) => ReviewResult(
       json['page'] as int,
       (json['results'] as List<dynamic>)

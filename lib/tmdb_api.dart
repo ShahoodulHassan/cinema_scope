@@ -62,7 +62,52 @@ abstract class TmdbApi {
     @http.Query('include_image_language') String imageLanguage = 'en,null',
   });
 
-  /// https://api.themoviedb.org/3/search/movie?api_key=ec7b57c566e8af94115bb2c0d910f610&language=en-US&page=1&include_adult=true&region=US&query=Jack+Reacher
+  /// https://api.themoviedb.org/3/discover/movie?
+  /// api_key=ec7b57c566e8af94115bb2c0d910f610&language=en-US&region=US
+  /// &with_people=65731|4888&sort_by=vote_average.desc&include_adult=false
+  /// &page=1&vote_average.gte=6.1&vote_count.gte=100
+  @http.GET("/discover/movie")
+  @http.Headers(headerMap)
+  Future<CombinedResults> getMoreMoviesByLeadActors(
+      @http.Query('with_people') String withPeople, {
+        @http.Query('language') String language = 'en-US',
+        @http.Query('region') String region = 'US',
+        @http.Query('sort_by') String sortBy = 'vote_average.desc',
+        @http.Query('include_adult') String includeAdult = 'false',
+        @http.Query("page") int page = 1,
+        @http.Query("vote_average.gte") double voteAverage = 6.1,
+        @http.Query("vote_count.gte") int voteCount = 100,
+      });
+
+  /// https://api.themoviedb.org/3/discover/movie?
+  /// api_key=ec7b57c566e8af94115bb2c0d910f610&language=en-US&region=US
+  /// &sort_by=vote_average.desc&include_adult=false&include_video=false
+  /// &page=1&with_genres=878,12|878,28|12,28&vote_average.gte=6.1
+  /// &vote_count.gte=100&primary_release_year=2022
+  @http.GET("/discover/movie")
+  @http.Headers(headerMap)
+  Future<CombinedResults> getMoreMoviesByGenres(
+      @http.Query('with_genres') String withGenres,
+      @http.Query('primary_release_date.gte') String releaseDateGte,
+      @http.Query('primary_release_date.lte') String releaseDateLte,
+      // @http.Query('without_genres') String withoutGenres,
+      /*@http.Query("with_keywords") String withKeywords,*/
+      /*@http.Query('primary_release_year') String primaryReleaseYear,*/ {
+        @http.Query('language') String language = 'en-US',
+        @http.Query('with_original_language') String originalLanguage = 'en',
+        @http.Query('region') String region = 'US',
+        @http.Query('sort_by') String sortBy = 'vote_average.desc',
+
+        @http.Query('include_adult') String includeAdult = 'false',
+        @http.Query("page") int page = 1,
+
+        @http.Query("vote_average.gte") double voteAverage = 6.1,
+        @http.Query("vote_count.gte") int voteCount = 100,
+      });
+
+  /// https://api.themoviedb.org/3/search/movie?
+  /// api_key=ec7b57c566e8af94115bb2c0d910f610&language=en-US&page=1
+  /// &include_adult=true&region=US&query=Jack+Reacher
   @http.GET("/search/movie")
   @http.Headers(headerMap)
   Future<MovieSearchResult> searchMovies(
@@ -214,4 +259,13 @@ abstract class TmdbApi {
         String append = 'combined_credits,external_ids,images,tagged_images',
     @http.Query('language') String language = 'en-US',
   });
+
+  // @http.GET("/person/{id}")
+  // @http.Headers(headerMap)
+  // Future<Person> getPersonWithCredits(
+  //     @http.Path("id") int id, {
+  //       @http.Query('append_to_response')
+  //       String append = 'combined_credits',
+  //       @http.Query('language') String language = 'en-US',
+  //     });
 }

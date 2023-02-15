@@ -148,145 +148,14 @@ class PersonViewModel extends ApiViewModel with Utilities {
     }
   }
 
-  // _compileKnownForOld() async {
-  //   var person = personWithKnownFor.person;
-  //   if (person != null) {
-  //     _knownForMediaResults = {};
-  //     for (var item in knownFor) {
-  //       if (item.mediaType != null) {
-  //         if (item.mediaType == MediaType.movie.name) {
-  //           for (var mCast in person.movieCredits.cast) {
-  //             if (item.id == mCast.id) {
-  //               _knownForMediaResults![item.id] = mCast
-  //                 ..mediaType = item.mediaType;
-  //               break;
-  //             }
-  //           }
-  //           if (!_knownForMediaResults!.containsKey(item.id)) {
-  //             for (var mCrew in person.movieCredits.crew) {
-  //               if (item.id == mCrew.id) {
-  //                 _knownForMediaResults![item.id] = mCrew
-  //                   ..mediaType = item.mediaType;
-  //                 break;
-  //               }
-  //             }
-  //           }
-  //         } else {
-  //           for (var tCast in person.tvCredits.cast) {
-  //             if (item.id == tCast.id) {
-  //               _knownForMediaResults![item.id] = tCast
-  //                 ..mediaType = item.mediaType;
-  //               break;
-  //             }
-  //           }
-  //           if (!_knownForMediaResults!.containsKey(item.id)) {
-  //             for (var tCrew in person.tvCredits.crew) {
-  //               if (item.id == tCrew.id) {
-  //                 _knownForMediaResults![item.id] = tCrew
-  //                   ..mediaType = item.mediaType;
-  //                 break;
-  //               }
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //     var popMap = <int, MediaResult>{};
-  //     if (person.knownForDepartment == Department.acting.name) {
-  //       for (var movie in person.movieCredits.cast) {
-  //         // logIfDebug('getJob=>id:${movie.id}, title:${movie.title}, type:${MediaType.movie.name}');
-  //         if (!movie.character.toLowerCase().contains('voice')) {
-  //           popMap.putIfAbsent(
-  //               movie.id, () => movie..mediaType = MediaType.movie.name);
-  //         }
-  //       }
-  //       for (var tv in person.tvCredits.cast) {
-  //         // logIfDebug('getJob=>id:${tv.id}, title:${tv.name}, type:${MediaType.tv.name}');
-  //         if (!tv.character.toLowerCase().contains('voice') &&
-  //             !tv.character.toLowerCase().contains('self')) {
-  //           popMap.putIfAbsent(tv.id, () => tv..mediaType = MediaType.tv.name);
-  //         }
-  //       }
-  //     } else {
-  //       for (var movie in person.movieCredits.crew) {
-  //         if (person.knownForDepartment == movie.department) {
-  //           popMap.putIfAbsent(
-  //               movie.id, () => movie..mediaType = MediaType.movie.name);
-  //         }
-  //       }
-  //       for (var tv in person.tvCredits.crew) {
-  //         if (person.knownForDepartment == tv.department) {
-  //           popMap.putIfAbsent(tv.id, () => tv..mediaType = MediaType.tv.name);
-  //         }
-  //       }
-  //     }
-  //
-  //     /// Sorting is primarily on the basis of vote count and average but if the
-  //     /// media type is TV, we multiply above with the episode count and then
-  //     /// compare, because a popularity of 100 with 1 episode should be
-  //     /// considered as less than a popularity of 40 with 3 episodes.
-  //     /// However, that still doesn't provide results as provided by the
-  //     /// website.
-  //     var sortedMap = Map.fromEntries(popMap.entries.toList()
-  //       ..sort((e1, e2) {
-  //         var value1 = e1.value;
-  //         var value2 = e2.value;
-  //         var currentYear = DateTime.now().year;
-  //         var year1 = (getYearFromDate(value1 is MovieResult
-  //                 ? value1.releaseDate
-  //                 : (value1 as TvResult).firstAirDate)) ??
-  //             currentYear;
-  //         var year2 = (getYearFromDate(value2 is MovieResult
-  //                 ? value2.releaseDate
-  //                 : (value2 as TvResult).firstAirDate)) ??
-  //             currentYear;
-  //         var yearCount1 = currentYear - year1 + 1;
-  //         var yearCount2 = currentYear - year2 + 1;
-  //         // logIfDebug('id:${value1.id}, year:$year1, years:$yearCount1');
-  //         var pop1 = value1.voteCount * value1.voteAverage /* / yearCount1*/;
-  //         var pop2 = value2.voteCount * value2.voteAverage /* / yearCount2*/;
-  //         var epCount1 = (value1 is TvOfCast)
-  //             ? value1.episodeCount ?? 1
-  //             : ((value1 is TvOfCrew) ? value1.episodeCount ?? 1 : 1);
-  //         var epCount2 = (value2 is TvOfCast)
-  //             ? value2.episodeCount ?? 1
-  //             : ((value2 is TvOfCrew) ? value2.episodeCount ?? 1 : 1);
-  //         return ((pop2) * epCount2).compareTo((pop1) * epCount1);
-  //       }));
-  //
-  //     for (var media in sortedMap.values) {
-  //       if (_knownForMediaResults!.length < 10) {
-  //         if (!_knownForMediaResults!.containsKey(media.id)) {
-  //           _knownForMediaResults![media.id] = media;
-  //         }
-  //       } else {
-  //         break;
-  //       }
-  //     }
-  //
-  //     logIfDebug('knownForMediaResults:$knownForMediaResults');
-  //     if (knownForMediaResults.isNotEmpty) notifyListeners();
-  //   }
-  // }
-
-  // fetchPersonWithDetailOld(int id) {
-  //   _operation = CancelableOperation<Person>.fromFuture(
-  //     api.getPersonWithDetail(id),
-  //   ).then((value) {
-  //     person = value;
-  //     notifyListeners();
-  //     _compilePersonJobs();
-  //   });
-  // }
-
   _compilePersonJobs() async {
     var person = personWithKnownFor.person;
     if (person != null) {
-      var knownFor = person.knownForDepartment;
+      var knownForDept = person.knownForDepartment;
       var actor = Constants.departMap[Department.acting.name]!;
       Set<String> departs = {};
-      if (knownFor.isNotEmpty) {
-        departs.add(Constants.departMap[knownFor] ?? knownFor);
+      if (knownForDept.isNotEmpty) {
+        departs.add(Constants.departMap[knownForDept] ?? knownForDept);
       }
       if (person.combinedCredits.cast.isNotEmpty && !departs.contains(actor)) {
         departs.add(actor);

@@ -18,8 +18,13 @@ Person _$PersonFromJson(Map<String, dynamic> json) => Person(
       json['external_ids'] == null
           ? null
           : ExternalIds.fromJson(json['external_ids'] as Map<String, dynamic>),
-      PersonImageResult.fromJson(json['images'] as Map<String, dynamic>),
-      TaggedImageResult.fromJson(json['tagged_images'] as Map<String, dynamic>),
+      json['images'] == null
+          ? null
+          : PersonImageResult.fromJson(json['images'] as Map<String, dynamic>),
+      json['tagged_images'] == null
+          ? null
+          : TaggedImageResult.fromJson(
+              json['tagged_images'] as Map<String, dynamic>),
       popularity: (json['popularity'] as num?)?.toDouble(),
       gender: json['gender'] as int?,
       birthday: json['birthday'] as String?,
