@@ -116,52 +116,6 @@ Map<String, dynamic> _$MediaResultToJson(MediaResult instance) =>
       'adult': instance.adult,
     };
 
-KnownFor _$KnownForFromJson(Map<String, dynamic> json) => KnownFor(
-      json['id'] as int,
-      json['overview'] as String,
-      (json['genre_ids'] as List<dynamic>).map((e) => e as int).toList(),
-      json['vote_count'] as int,
-      (json['vote_average'] as num).toDouble(),
-      json['original_language'] as String,
-      json['title'] as String?,
-      json['name'] as String?,
-      json['first_air_date'] as String?,
-      json['release_date'] as String?,
-      (json['origin_country'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-      json['original_name'] as String?,
-      json['original_title'] as String?,
-      mediaType: json['media_type'] as String?,
-      popularity: (json['popularity'] as num?)?.toDouble(),
-      posterPath: json['poster_path'] as String?,
-      backdropPath: json['backdrop_path'] as String?,
-      adult: json['adult'] as bool?,
-      video: json['video'] as bool?,
-    );
-
-Map<String, dynamic> _$KnownForToJson(KnownFor instance) => <String, dynamic>{
-      'id': instance.id,
-      'media_type': instance.mediaType,
-      'popularity': instance.popularity,
-      'poster_path': instance.posterPath,
-      'backdrop_path': instance.backdropPath,
-      'overview': instance.overview,
-      'genre_ids': instance.genreIds,
-      'vote_count': instance.voteCount,
-      'vote_average': instance.voteAverage,
-      'original_language': instance.originalLanguage,
-      'adult': instance.adult,
-      'video': instance.video,
-      'release_date': instance._releaseDate,
-      'original_title': instance._originalTitle,
-      'title': instance._title,
-      'first_air_date': instance._firstAirDate,
-      'origin_country': instance._originCountry,
-      'name': instance._name,
-      'original_name': instance._originalName,
-    };
-
 CombinedResult _$CombinedResultFromJson(Map<String, dynamic> json) =>
     CombinedResult(
       json['id'] as int,
@@ -312,7 +266,7 @@ PersonResult _$PersonResultFromJson(Map<String, dynamic> json) => PersonResult(
       json['name'] as String,
       json['known_for_department'] as String,
       (json['known_for'] as List<dynamic>)
-          .map((e) => KnownFor.fromJson(e as Map<String, dynamic>))
+          .map((e) => CombinedResult.fromJson(e as Map<String, dynamic>))
           .toList(),
       popularity: (json['popularity'] as num?)?.toDouble(),
       profilePath: json['profile_path'] as String?,

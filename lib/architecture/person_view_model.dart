@@ -13,7 +13,7 @@ class PersonViewModel extends ApiViewModel with Utilities {
 
   String? jobs;
 
-  List<KnownFor> get knownFor => personWithKnownFor.knownFor ?? [];
+  List<CombinedResult> get knownFor => personWithKnownFor.knownFor ?? [];
 
   Map<int, CombinedResult>? _knownForMediaResults;
 
@@ -22,7 +22,7 @@ class PersonViewModel extends ApiViewModel with Utilities {
 
   CancelableOperation? _operation;
 
-  fetchPersonWithDetail(int id, String name, List<KnownFor>? knownFor) {
+  fetchPersonWithDetail(int id, String name, List<CombinedResult>? knownFor) {
     personWithKnownFor.knownFor = knownFor;
     _operation = CancelableOperation<List<dynamic>>.fromFuture(
       Future.wait([

@@ -30,7 +30,7 @@ class PersonPage extends MultiProvider {
     required String? profilePath,
     required int? gender,
     required String knownForDepartment,
-    List<KnownFor>? knownFor,
+    List<CombinedResult>? knownFor,
   }) : super(
             providers: [
               ChangeNotifierProvider(create: (_) => PersonViewModel()),
@@ -52,7 +52,7 @@ class _PersonPageChild extends StatefulWidget {
   final String? profilePath;
   final int? gender;
   final String knownForDepartment;
-  final List<KnownFor>? knownFor;
+  final List<CombinedResult>? knownFor;
 
   const _PersonPageChild({
     Key? key,
@@ -607,6 +607,8 @@ class ImageCardListView extends StatelessWidget
   ImageCardListView({
     required this.images,
     required this.screenWidth,
+    this.topRadius = 4.0,
+    this.bottomRadius = 4.0,
     Key? key,
   }) : super(key: key);
 
@@ -626,9 +628,9 @@ class ImageCardListView extends StatelessWidget
   /// baseline.
   late final imageHeight = backdropWidth / Constants.arBackdrop;
 
-  final topRadius = 4.0;
+  final double topRadius;
 
-  final bottomRadius = 0.0;
+  final double bottomRadius;
 
   late final cardHeight = imageHeight;
 
@@ -824,9 +826,9 @@ class PosterCardListView extends StatelessWidget
 
   final yearBottomPadding = 8.0;
 
-  final jobTopPadding = 0.0;
+  final subtitleTopPadding = 0.0;
 
-  final jobBottomPadding = 8.0;
+  final subtitleBottomPadding = 8.0;
 
   final iconSize = 18.0;
 
@@ -836,7 +838,7 @@ class PosterCardListView extends StatelessWidget
     height: 1.2,
   );
 
-  final jobStyle = const TextStyle(
+  final yearStyle = const TextStyle(
     fontSize: 14.0,
     height: 1.2,
   );
@@ -847,21 +849,22 @@ class PosterCardListView extends StatelessWidget
 
   late final nameHeight = nameStyle.height! * nameStyle.fontSize! * maxLines;
 
-  late final jobHeight = jobStyle.height! * jobStyle.fontSize! * maxLines;
+  late final subtitleHeight = yearStyle.height! * yearStyle.fontSize! * maxLines;
 
-  late final yearHeight = jobStyle.height! * jobStyle.fontSize!;
+  late final yearHeight = yearStyle.height! * yearStyle.fontSize!;
 
   late final nameContainerHeight =
       nameHeight + nameTopPadding + nameBottomPadding;
 
-  late final jobContainerHeight = jobHeight + jobTopPadding + jobBottomPadding;
+  late final subtitleContainerHeight = subtitleHeight + subtitleTopPadding
+      + subtitleBottomPadding;
 
   late final yearContainerHeight =
       max(iconSize, yearHeight) + yearTopPadding + yearBottomPadding;
 
   late final cardHeight = posterHeight +
       nameContainerHeight +
-      jobContainerHeight +
+      subtitleContainerHeight +
       yearContainerHeight;
 
   /// This 0.8 is being to escape the "A RenderFlex overflowed by 0.800
@@ -939,7 +942,7 @@ class PosterCardListView extends StatelessWidget
                                   child: Text(
                                     year,
                                     textAlign: TextAlign.start,
-                                    style: jobStyle,
+                                    style: yearStyle,
                                   ),
                                 ),
                               ),
@@ -961,7 +964,7 @@ class PosterCardListView extends StatelessWidget
                                           false,
                                           true,
                                         )}',
-                                        style: jobStyle,
+                                        style: yearStyle,
                                       ),
                                     ],
                                   ),
@@ -971,7 +974,7 @@ class PosterCardListView extends StatelessWidget
                                 visible: item.mediaType == MediaType.tv.name,
                                 child: Text(
                                   'TV',
-                                  style: jobStyle,
+                                  style: yearStyle,
                                 ),
                               ),
                             ],
@@ -982,16 +985,16 @@ class PosterCardListView extends StatelessWidget
                         child: Container(
                           padding: EdgeInsets.fromLTRB(
                             textHorizPadding,
-                            jobTopPadding,
+                            subtitleTopPadding,
                             textHorizPadding,
-                            jobBottomPadding,
+                            subtitleBottomPadding,
                           ),
                           // height: characterContainerHeight,
                           child: Text(
                             job,
                             maxLines: maxLines,
                             overflow: TextOverflow.ellipsis,
-                            style: jobStyle,
+                            style: yearStyle,
                           ),
                         ),
                       ),
@@ -1033,32 +1036,6 @@ class PosterCardListView extends StatelessWidget
       ),
     );
   }
-
-  // String getMediaTitle(MediaResult item) {
-  //   if (item is MovieResult) return item.movieTitle;
-  //   return (item as TvResult).name;
-  // }
-  //
-  // String? getReleaseDate(MediaResult item) {
-  //   return item is MovieResult
-  //       ? item.releaseDate
-  //       : (item as TvResult).firstAirDate;
-  // }
-  //
-  // String getYear(MediaResult item) =>
-  //     getYearStringFromDate(getReleaseDate(item));
-
-  // String getJob(MediaResult item) {
-  //   // logIfDebug('getJob=>id:${item.id}, title:${getMediaTitle(item)}, type:${item.mediaType}');
-  //   if (item.mediaType == MediaType.movie.name) {
-  //     if (item is MovieOfCast) return item.character;
-  //     return (item as MovieOfCrew).job;
-  //   } else if (item.mediaType == MediaType.tv.name) {
-  //     if (item is TvOfCast) return item.character;
-  //     return (item as TvOfCrew).job;
-  //   }
-  //   return '';
-  // }
 
   String getJob(CombinedResult item) {
     // logIfDebug('getJob=>id:${item.id}, title:${getMediaTitle(item)}, type:${item.mediaType}');

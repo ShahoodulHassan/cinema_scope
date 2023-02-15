@@ -85,7 +85,7 @@ class ExternalIds {
 
 class PersonWithKnownFor {
   Person? person;
-  List<KnownFor>? knownFor;
+  List<CombinedResult>? knownFor;
 
   PersonWithKnownFor({this.person, this.knownFor});
 

@@ -133,74 +133,74 @@ class MediaResult extends BaseResult {
 /// just for the sake of less objects to choose from.
 /// For ease, getters have been implemented to provide the value according to
 /// the mediaType the instance belongs to.
-@JsonSerializable(fieldRename: FieldRename.snake)
-class KnownFor extends MediaResult {
-  /// Movie related fields
-  bool? video;
-
-  @JsonKey(name: 'release_date', includeFromJson: true, includeToJson: true)
-  String? _releaseDate;
-
-  @JsonKey(name: 'original_title', includeFromJson: true, includeToJson: true)
-  String? _originalTitle;
-
-  @JsonKey(name: 'title', includeFromJson: true, includeToJson: true)
-  String? _title;
-
-  /// TV related fields
-  @JsonKey(name: 'first_air_date', includeFromJson: true, includeToJson: true)
-  String? _firstAirDate;
-
-  @JsonKey(name: 'origin_country', includeFromJson: true, includeToJson: true)
-  List<String>? _originCountry;
-
-  @JsonKey(name: 'name', includeFromJson: true, includeToJson: true)
-  String? _name;
-
-  @JsonKey(name: 'original_name', includeFromJson: true, includeToJson: true)
-  String? _originalName;
-
-  KnownFor(
-    super.id,
-    super.overview,
-    super.genreIds,
-    super.voteCount,
-    super.voteAverage,
-    super.originalLanguage,
-    this._title,
-    this._name,
-    this._firstAirDate,
-    this._releaseDate,
-    this._originCountry,
-    this._originalName,
-    this._originalTitle, {
-    super.mediaType,
-    super.popularity,
-    super.posterPath,
-    super.backdropPath,
-    super.adult,
-    String? originalTitle,
-    String? title,
-    String? firstAirDate,
-    this.video,
-    String? releaseDate,
-    List<String>? originCountry,
-    String? name,
-    String? originalName,
-  });
-
-  String get mediaTitle =>
-      (mediaType == MediaType.movie.name ? _title : _name) ?? '-';
-
-  String? get mediaReleaseDate =>
-      mediaType == MediaType.movie.name ? _releaseDate : _firstAirDate;
-
-  factory KnownFor.fromJson(Map<String, dynamic> json) =>
-      _$KnownForFromJson(json);
-
-  @override
-  Map<String, dynamic> toJson() => _$KnownForToJson(this);
-}
+// @JsonSerializable(fieldRename: FieldRename.snake)
+// class KnownFor extends MediaResult {
+//   /// Movie related fields
+//   bool? video;
+//
+//   @JsonKey(name: 'release_date', includeFromJson: true, includeToJson: true)
+//   String? _releaseDate;
+//
+//   @JsonKey(name: 'original_title', includeFromJson: true, includeToJson: true)
+//   String? _originalTitle;
+//
+//   @JsonKey(name: 'title', includeFromJson: true, includeToJson: true)
+//   String? _title;
+//
+//   /// TV related fields
+//   @JsonKey(name: 'first_air_date', includeFromJson: true, includeToJson: true)
+//   String? _firstAirDate;
+//
+//   @JsonKey(name: 'origin_country', includeFromJson: true, includeToJson: true)
+//   List<String>? _originCountry;
+//
+//   @JsonKey(name: 'name', includeFromJson: true, includeToJson: true)
+//   String? _name;
+//
+//   @JsonKey(name: 'original_name', includeFromJson: true, includeToJson: true)
+//   String? _originalName;
+//
+//   KnownFor(
+//     super.id,
+//     super.overview,
+//     super.genreIds,
+//     super.voteCount,
+//     super.voteAverage,
+//     super.originalLanguage,
+//     this._title,
+//     this._name,
+//     this._firstAirDate,
+//     this._releaseDate,
+//     this._originCountry,
+//     this._originalName,
+//     this._originalTitle, {
+//     super.mediaType,
+//     super.popularity,
+//     super.posterPath,
+//     super.backdropPath,
+//     super.adult,
+//     String? originalTitle,
+//     String? title,
+//     String? firstAirDate,
+//     this.video,
+//     String? releaseDate,
+//     List<String>? originCountry,
+//     String? name,
+//     String? originalName,
+//   });
+//
+//   String get mediaTitle =>
+//       (mediaType == MediaType.movie.name ? _title : _name) ?? '-';
+//
+//   String? get mediaReleaseDate =>
+//       mediaType == MediaType.movie.name ? _releaseDate : _firstAirDate;
+//
+//   factory KnownFor.fromJson(Map<String, dynamic> json) =>
+//       _$KnownForFromJson(json);
+//
+//   @override
+//   Map<String, dynamic> toJson() => _$KnownForToJson(this);
+// }
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class CombinedResult extends MediaResult {
@@ -342,7 +342,7 @@ class BasePersonResult extends BaseResult {
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class PersonResult extends BasePersonResult {
-  List<KnownFor> knownFor;
+  List<CombinedResult> knownFor;
 
   PersonResult(
     super.id,

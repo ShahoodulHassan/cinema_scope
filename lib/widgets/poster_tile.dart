@@ -377,7 +377,7 @@ class PersonPosterTile extends StatelessWidget
     );
   }
 
-  Widget getRichText(BuildContext context, List<KnownFor> results) {
+  Widget getRichText(BuildContext context, List<CombinedResult> results) {
     // logIfDebug('titles:${results.join(', ')}');
     List<InlineSpan> spans = [];
     for (var result in results) {
