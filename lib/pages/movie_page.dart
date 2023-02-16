@@ -402,17 +402,24 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       if (imdbId.isNotEmpty)
                         getIconButton(
-                          FontAwesomeIcons.imdb,
+                          const Icon(FontAwesomeIcons.imdb),
                           () => openUrlString(
                             '${Constants.imdbTitleUrl}$imdbId',
                           ),
                         ),
                       if (homepage.isNotEmpty)
                         getIconButton(
-                            Icons.link, () => openUrlString(homepage)),
+                            (homepage.contains('netflix')
+                                ? Image.asset(
+                                    'assets/icons/icons8_netflix_24.png',
+                                    color: Theme.of(context).primaryColorDark,
+                                  )
+                                : const Icon(Icons.link)),
+                            () => openUrlString(homepage)),
                     ],
                   ),
                 ),
@@ -423,9 +430,9 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
     );
   }
 
-  Widget getIconButton(IconData icon, Function() onPressed) => IconButton(
+  Widget getIconButton(Widget icon, Function() onPressed) => IconButton(
         onPressed: onPressed,
-        icon: Icon(icon),
+        icon: icon,
         iconSize: 24.0,
         color: Theme.of(context).primaryColorDark,
         // padding: EdgeInsets.zero,
@@ -635,11 +642,11 @@ class _MoreByGenresSection extends StatelessWidget
         return BaseSectionSliver(
           title: 'More from similar genres',
           children: [
-            Padding(
+            const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 'A carefully curated list of top rated movies of '
-                    'the same era '
+                'the same era '
                 'having most of the similar genres',
                 style: TextStyle(
                   color: Colors.black87,
@@ -725,7 +732,7 @@ class _MoreByDirectorSection extends StatelessWidget
             //   ),
             // ),
             PosterCardListView(
-              items: tuple.item2/*.take(_maxCount).toList()*/,
+              items: tuple.item2 /*.take(_maxCount).toList()*/,
               screenWidth: MediaQuery.of(context).size.width,
               aspectRatio: Constants.arPoster,
               onTap: (item) {

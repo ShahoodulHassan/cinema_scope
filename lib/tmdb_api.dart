@@ -97,10 +97,8 @@ abstract class TmdbApi {
         @http.Query('with_original_language') String originalLanguage = 'en',
         @http.Query('region') String region = 'US',
         @http.Query('sort_by') String sortBy = 'vote_average.desc',
-
         @http.Query('include_adult') String includeAdult = 'false',
         @http.Query("page") int page = 1,
-
         @http.Query("vote_average.gte") double voteAverage = 6.1,
         @http.Query("vote_count.gte") int voteCount = 100,
       });
