@@ -87,7 +87,7 @@ class HomeViewModel extends ApiViewModel {
     logIfDebug('$dateGte, $dateLte');
     var result = await api
         .discoverUpcomingMovies(mediaType.name, dateGte, dateLte, page: page);
-    logIfDebug(result.results.first.movieTitle);
+    // logIfDebug(result.results.first.movieTitle);
     if (page == 1) {
       upcomingMoviesResult = result
         ..results.removeWhere((element) => element.posterPath == null);

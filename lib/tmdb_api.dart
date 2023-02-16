@@ -145,9 +145,9 @@ abstract class TmdbApi {
   @http.GET("/discover/movie")
   @http.Headers(headerMap)
   Future<MovieSearchResult> getLatestMovies(
-      @http.Query('release_date.gte') String dateGte,
-      @http.Query('release_date.lte') String dateLte,
-      {@http.Query("page") int page = 1,
+      @http.Query('primary_release_date.gte') String dateGte,
+      @http.Query('primary_release_date.lte') String dateLte,
+      {@http.Query('page') int page = 1,
       @http.Query('language') String language = 'en-US',
       @http.Query('sort_by') String sortBy = 'release_date.desc',
       @http.Query('include_adult') String includeAdult = 'false',
@@ -185,8 +185,8 @@ abstract class TmdbApi {
   @http.Headers(headerMap)
   Future<MovieSearchResult> discoverUpcomingMovies(
     @http.Path("media_type") String mediaType,
-    @http.Query('release_date.gte') String dateGte,
-    @http.Query('release_date.lte') String dateLte, {
+    @http.Query('primary_release_date.gte') String dateGte,
+    @http.Query('primary_release_date.lte') String dateLte, {
     @http.Query("page") int page = 1,
     @http.Query('language') String language = 'en-US',
     @http.Query('region') String region = 'US',

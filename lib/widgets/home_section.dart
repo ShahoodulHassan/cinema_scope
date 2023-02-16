@@ -13,7 +13,7 @@ import '../utilities/utilities.dart';
 
 enum SectionTitle {
   nowPlaying('NOW PLAYING'),
-  dailyTrending('DAILY TRENDING'),
+  dailyTrending('TRENDING TODAY'),
   latest('LATEST'),
   popular('POPULAR'),
   topRated('TOP RATED'),

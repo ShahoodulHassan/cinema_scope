@@ -475,8 +475,8 @@ class _TmdbApi implements TmdbApi {
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
-      r'release_date.gte': dateGte,
-      r'release_date.lte': dateLte,
+      r'primary_release_date.gte': dateGte,
+      r'primary_release_date.lte': dateLte,
       r'page': page,
       r'language': language,
       r'sort_by': sortBy,
@@ -630,8 +630,8 @@ class _TmdbApi implements TmdbApi {
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
-      r'release_date.gte': dateGte,
-      r'release_date.lte': dateLte,
+      r'primary_release_date.gte': dateGte,
+      r'primary_release_date.lte': dateLte,
       r'page': page,
       r'language': language,
       r'region': region,
