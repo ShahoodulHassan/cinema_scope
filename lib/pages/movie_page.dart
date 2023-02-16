@@ -221,6 +221,7 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
             ),
           ),
           const CastCrewSection(),
+          const _MediaInfoSection(),
           const ReviewsSection(),
           const RecommendedMoviesSection(),
           const _MoreByDirectorSection(),
@@ -1413,6 +1414,113 @@ class SliverPosterGrid extends StatelessWidget with Utilities, CommonFunctions {
 
   List<MovieResult> getListForPage(List<MovieResult> list, int index) {
     return list.skip(itemsPerPage * index).take(itemsPerPage).toList();
+  }
+}
+
+class _MediaInfoSection extends StatelessWidget
+    with GenericFunctions, Utilities, CommonFunctions {
+  const _MediaInfoSection({Key? key}) : super(key: key);
+
+  final _separator = const SizedBox(height: 16.0);
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<MovieViewModel, Movie?>(
+      builder: (_, movie, __) {
+        if (movie == null) {
+          return SliverToBoxAdapter(child: Container());
+        } else {
+          var releaseDate = getReadableDate(movie.releaseDate);
+          var status = movie.status;
+          var language = context
+              .read<ConfigViewModel>()
+              .cfgLanguages
+              .firstWhere(
+                  (element) => element.iso6391 == movie.originalLanguage)
+              .englishName;
+          var budget = movie.budget == 0
+              ? '-'
+              : '\$${applyCommaAndRoundNoZeroes(movie.budget.toDouble(), 0, true)}';
+          var revenue = movie.revenue == 0
+              ? '-'
+              : '\$${applyCommaAndRoundNoZeroes(movie.revenue.toDouble(), 0, true)}';
+          return BaseSectionSliver(
+            title: 'Movie details',
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 8.0,
+                  bottom: 16.0,
+                ),
+                child: Column(
+                  children: [
+                    getSubSection(
+                        'Release date', releaseDate.isEmpty ? '-' : releaseDate,
+                        onTap:
+                            movie.releaseDates.results.isEmpty ? null : () {}),
+                    getSubSection('Status', status.isEmpty ? '-' : status),
+                    getSubSection(
+                        'Original language', language.isEmpty ? '-' : language,
+                        onTap: movie.spokenLanguages.isEmpty ? null : () {}),
+                    getSubSection('Budget', budget),
+                    getSubSection('Revenue', revenue),
+                  ],
+                ),
+              )
+            ],
+          );
+        }
+      },
+      selector: (_, mvm) => mvm.movie,
+    );
+  }
+
+  // Widget getCountriesSection(Movie movie) {
+  //
+  // }
+
+  Widget getSubSection(String label, String content, {Function()? onTap}) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // _separator,
+              getLabelView(label),
+              getContentView(content),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget getLabelView(String text) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 14.0,
+        // height: 1.1,
+        color: Colors.black54,
+      ),
+    );
+  }
+
+  Widget getContentView(String? text) {
+    return Text(
+      (text == null || text.isEmpty) ? '-' : text,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+      style: const TextStyle(
+        fontSize: 16.0,
+        // fontWeight: FontWeight.bold,
+        // height: 1.1,
+      ),
+    );
   }
 }
 
