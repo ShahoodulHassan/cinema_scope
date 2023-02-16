@@ -46,11 +46,9 @@ mixin GenericFunctions {
     }
   }
 
-  Future<void> initShare(
-    String title,
-    String message,
-    String subject,
-  ) async {
+  Future<void> initShare(String title,
+      String message,
+      String subject,) async {
     Share.share(message, subject: subject);
   }
 
@@ -101,7 +99,7 @@ mixin GenericFunctions {
     String subjectUri = subject != null ? Uri.encodeComponent(subject) : '';
     String bodyUri = body != null ? Uri.encodeComponent(body) : '';
     Uri mail =
-        Uri.parse("mailto:$addressUri?subject=$subjectUri&body=$bodyUri");
+    Uri.parse("mailto:$addressUri?subject=$subjectUri&body=$bodyUri");
     logIfDebug('Uri:$mail');
     openUrl(mail).catchError((err) {
       logIfDebug('Error:$err');
@@ -109,7 +107,8 @@ mixin GenericFunctions {
     });
   }
 
-  Future<bool> openUrl(Uri url) async => launchUrl(
+  Future<bool> openUrl(Uri url) async =>
+      launchUrl(
         url,
         mode: LaunchMode.externalApplication,
       );
@@ -130,25 +129,25 @@ mixin GenericFunctions {
   Color getColorFromHexCode(String hexCode) =>
       Color(int.parse(hexCode.replaceFirst('#', '0xFF')));
 
-  Future<bool?> showBooleanDialog(
-    BuildContext context,
-    String title,
-    String message, {
-    bool dismissable = false,
-    String? positiveButtonTitle,
-    String? negativeButtonTitle,
-    IconData? icon,
-  }) {
+  Future<bool?> showBooleanDialog(BuildContext context,
+      String title,
+      String message, {
+        bool dismissable = false,
+        String? positiveButtonTitle,
+        String? negativeButtonTitle,
+        IconData? icon,
+      }) {
     return showDialog<bool>(
       barrierDismissible: dismissable,
       context: context,
-      builder: (context) => BooleanDialog(
-        message,
-        title: title,
-        positiveButtonTitle: positiveButtonTitle,
-        negativeButtonTitle: negativeButtonTitle,
-        icon: icon,
-      ),
+      builder: (context) =>
+          BooleanDialog(
+            message,
+            title: title,
+            positiveButtonTitle: positiveButtonTitle,
+            negativeButtonTitle: negativeButtonTitle,
+            icon: icon,
+          ),
     );
   }
 
@@ -161,8 +160,8 @@ mixin GenericFunctions {
     );
   }
 
-  Future<B?> showBottomDialog<B>(
-      BuildContext context, List<BottomDialogOption> options,
+  Future<B?> showBottomDialog<B>(BuildContext context,
+      List<BottomDialogOption> options,
       {String? title}) {
     const BorderRadius borderRadius = BorderRadius.vertical(
       top: Radius.circular(24.0),
@@ -221,8 +220,8 @@ mixin GenericFunctions {
           leading: option.icon == null
               ? null
               : Icon(
-                  option.icon,
-                ),
+            option.icon,
+          ),
           title: Text(
             option.title,
             style: TextStyle(
@@ -252,26 +251,32 @@ mixin GenericFunctions {
 
   Color? get titleColor => Colors.blueGrey[700];
 
-  TextStyle get appbarTitleStyle => TextStyle(
+  TextStyle get appbarTitleStyle =>
+      TextStyle(
         color: titleColor,
         // fontSize: titleSize,
         // fontFamily: baseFontFamily,
         // fontWeight: weightBold,
       );
 
-  Widget getAppbarSubtitle(String subtitle) => Text(
+  Widget getAppbarSubtitle(String subtitle) =>
+      Text(
         subtitle,
         style: appbarSubtitleStyle,
       );
 
-  TextStyle get appbarSubtitleStyle => TextStyle(
+  TextStyle get appbarSubtitleStyle =>
+      TextStyle(
         color: titleColor,
         // fontSize: subtitleSize,
         // fontFamily: baseFontFamily,
         // fontWeight: weightSemiBold,
       );
 
-  int currentTimeMillis() => DateTime.now().millisecondsSinceEpoch;
+  int currentTimeMillis() =>
+      DateTime
+          .now()
+          .millisecondsSinceEpoch;
 
   @Deprecated('Only placed here for help')
   String getFormattedDate(int millis, {bool seconds = false}) {
@@ -284,14 +289,15 @@ mixin GenericFunctions {
   String getFormattedFutureDate(int days) =>
       DateFormat('yyyy-MM-dd').format(DateTime.now().add(Duration(days: days)));
 
-  String getFormattedPastDate(int days) => DateFormat('yyyy-MM-dd')
-      .format(DateTime.now().subtract(Duration(days: days)));
+  String getFormattedPastDate(int days) =>
+      DateFormat('yyyy-MM-dd')
+          .format(DateTime.now().subtract(Duration(days: days)));
 
   String getReadableDate(String? formattedDate) {
     return formattedDate == null
         ? ''
         : DateFormat('dd-MM-yyyy')
-            .format(DateFormat('yyyy-MM-dd').parse(formattedDate));
+        .format(DateFormat('yyyy-MM-dd').parse(formattedDate));
   }
 
   double roundDouble(double value, int places) {
@@ -300,8 +306,8 @@ mixin GenericFunctions {
   }
 
   // Generic method for all needs
-  String applyCommaAndRound(
-      double value, int places, bool applyComma, bool trailingZeroes) {
+  String applyCommaAndRound(double value, int places, bool applyComma,
+      bool trailingZeroes) {
     String formatter = applyComma ? '#,##0' : '##0';
     String trail = trailingZeroes ? '0' : '#';
 
@@ -323,7 +329,9 @@ mixin GenericFunctions {
     int hours = dur.inHours;
     int min = minutes - hours * 60;
     String separator = hours > 0 && min > 0 ? ' ' : '';
-    return '${hours == 0 ? '' : '${hours}h'}$separator${min == 0 ? '' : '${min}m'}';
+    return '${hours == 0 ? '' : '${hours}h'}$separator${min == 0
+        ? ''
+        : '${min}m'}';
   }
 
   String durationToMinSec(Duration dur) {
@@ -333,9 +341,11 @@ mixin GenericFunctions {
     return '$minutes:$seconds';
   }
 
-  // No trailing zeroes
-  String applyCommaAndRoundNoZeroes(double value, int places, bool applyComma) {
-    return applyCommaAndRound(value, places, applyComma, false);
+  // No zero values or trailing decimal zeroes
+  String applyCommaAndRoundNoZeroes(double value, int places, bool applyComma,
+      {String? replacement}) {
+    var result = applyCommaAndRound(value, places, applyComma, false);
+    return result == '0' ? replacement ?? '-' : result;
   }
 }
 
@@ -343,8 +353,9 @@ extension StringCasingExtension on String {
   String toProperCase() =>
       length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
 
-  String toTitleCase() => replaceAll(RegExp(' +'), ' ')
-      .split(' ')
-      .map((str) => str.toProperCase())
-      .join(' ');
+  String toTitleCase() =>
+      replaceAll(RegExp(' +'), ' ')
+          .split(' ')
+          .map((str) => str.toProperCase())
+          .join(' ');
 }
