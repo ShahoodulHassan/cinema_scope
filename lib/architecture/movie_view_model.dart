@@ -24,7 +24,7 @@ class MovieViewModel extends ApiViewModel with Utilities {
   CancelableOperation? _operation,
       _moreByLeadOperation,
       _moreByGenresOperation,
-      _morebyDirectorOperation;
+      _moreByDirectorOperation;
 
   String? year;
 
@@ -264,7 +264,7 @@ class MovieViewModel extends ApiViewModel with Utilities {
     if (directors.isNotEmpty) {
       var director = directors.first;
       // logIfDebug('directorId:${director.id}');
-      _morebyDirectorOperation = CancelableOperation<Person>.fromFuture(
+      _moreByDirectorOperation = CancelableOperation<Person>.fromFuture(
               api.getPersonWithDetail(director.id, append: 'combined_credits'))
           .then((person) {
         var moreByDirector = person.combinedCredits.crew
@@ -348,7 +348,7 @@ class MovieViewModel extends ApiViewModel with Utilities {
     _operation?.cancel();
     _moreByLeadOperation?.cancel();
     _moreByGenresOperation?.cancel();
-    _morebyDirectorOperation?.cancel();
+    _moreByDirectorOperation?.cancel();
     super.dispose();
   }
 }

@@ -2,6 +2,7 @@ import 'package:card_swiper/card_swiper.dart';
 import 'package:cinema_scope/architecture/movie_view_model.dart';
 import 'package:cinema_scope/models/configuration.dart';
 import 'package:cinema_scope/models/search.dart';
+import 'package:cinema_scope/pages/credits_page.dart';
 import 'package:cinema_scope/pages/movie_details_page.dart';
 import 'package:cinema_scope/pages/person_page.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
@@ -891,7 +892,9 @@ class CastCrewSection extends StatelessWidget
         children: [
           getCrewTile(context, directors, labelDirector),
           getCrewTile(context, combinedWriters, labelWriter),
-          CompactTextButton('All cast & crew', onPressed: () {}),
+          CompactTextButton('All cast & crew', onPressed: () {
+            goToCreditsPage(context);
+          }),
         ],
       ),
     );
@@ -900,6 +903,7 @@ class CastCrewSection extends StatelessWidget
   Widget getCrewTile(BuildContext context, List<Crew> crew, String label) {
     if (crew.isEmpty) return const SizedBox.shrink();
     var names = crew.map((e) => '${e.name}${e.jobs ?? ''}').join(', ');
+    label = '$label${crew.length > 1 ? 's' : ''}';
     // var names = crew.map((e) => e.name).toSet().join(', ');
 
     return Material(
@@ -908,6 +912,12 @@ class CastCrewSection extends StatelessWidget
         onTap: () {
           if (crew.length == 1) {
             goToPersonPage(context, crew.first);
+          } else {
+            goToCreditsPage(
+              context,
+              title: label,
+              credits: Credits([], crew),
+            );
           }
         },
         child: Padding(
@@ -915,8 +925,7 @@ class CastCrewSection extends StatelessWidget
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                '$label${crew.length > 1 ? 's' : ''}',
+              Text(label,
                 style: const TextStyle(
                   fontSize: 15.0,
                   fontWeight: FontWeight.bold,
@@ -938,6 +947,22 @@ class CastCrewSection extends StatelessWidget
     );
   }
 
+  void goToCreditsPage(
+    BuildContext context, {
+    Credits? credits,
+    String? title,
+  }) {
+    var mvm = context.read<MovieViewModel>();
+    Navigator.push(context, MaterialPageRoute(builder: (_) {
+      return CreditsPage(
+        title: title,
+        credits: credits ?? mvm.movie!.credits,
+        id: mvm.movie!.id,
+        name: mvm.movie!.movieTitle,
+      );
+    }));
+  }
+
   Widget getSliverSeparator(BuildContext context) => Container(
         height: 1.0,
         color: Theme.of(context).primaryColorLight,
@@ -947,8 +972,8 @@ class CastCrewSection extends StatelessWidget
         padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
+          children: const [
+            Text(
               'Top billed cast' /*.toUpperCase()*/,
               style: TextStyle(
                 fontSize: 18.0,
@@ -957,7 +982,7 @@ class CastCrewSection extends StatelessWidget
                 // height: 1.1,
               ),
             ),
-            if (showSeeAll) CompactTextButton('All cast', onPressed: onPressed),
+            // if (showSeeAll) CompactTextButton('All cast', onPressed: onPressed),
           ],
         ),
       );

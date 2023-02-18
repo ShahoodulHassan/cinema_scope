@@ -2,6 +2,7 @@ import 'package:cinema_scope/architecture/search_view_model.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
@@ -137,16 +138,43 @@ class _SearchPageChildState extends State<_SearchPageChild>
           PagedSliverList(
             pagingController: svm.pagingController,
             builderDelegate: PagedChildBuilderDelegate<BaseResult>(
-              itemBuilder: (_, result, index) {
-                logIfDebug('itemBuilder called with index:$index, $result');
-                var mediaType = result.mediaType;
+              itemBuilder: (_, person, index) {
+                logIfDebug('itemBuilder called with index:$index, $person');
+                var mediaType = person.mediaType;
                 logIfDebug('mediaType:${mediaType}');
                 if (mediaType == MediaType.movie.name) {
-                  return MoviePosterTile(movie: result as MovieResult);
+                  return MoviePosterTile(movie: person as MovieResult);
                 } else if (mediaType == MediaType.person.name) {
-                  return PersonPosterTile(person: result as PersonResult);
+                  return PersonPosterTile(
+                    person: person as PersonResult,
+                    subtitle: person.knownForDepartment.isNotEmpty ||
+                        (person.gender != null && person.gender! > 0)
+                        ? Row(
+                          children: [
+                            if (person.knownForDepartment.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: Text(
+                                  person.knownForDepartment,
+                                  // textAlign: TextAlign.start,
+                                  style: const TextStyle(fontSize: 15.0),
+                                ),
+                              ),
+                            if (person.gender != null && person.gender! > 0)
+                              Text(
+                                '(${getGenderText(person.gender)})',
+                                // textAlign: TextAlign.start,
+                                style: const TextStyle(fontSize: 15.0),
+                              ),
+                          ],
+                        )
+                        : null,
+                    description: person.knownFor.isNotEmpty
+                        ? getRichText(context, person.knownFor)
+                        : null,
+                  );
                 } else if (mediaType == MediaType.tv.name) {
-                  return TvPosterTile(tv: result as TvResult);
+                  return TvPosterTile(tv: person as TvResult);
                 }
                 return const SizedBox.shrink();
               },
@@ -174,6 +202,47 @@ class _SearchPageChildState extends State<_SearchPageChild>
           ),
         ],
       ),
+    );
+  }
+
+  Widget getRichText(BuildContext context, List<CombinedResult> results) {
+    // logIfDebug('titles:${results.join(', ')}');
+    List<InlineSpan> spans = [];
+    for (var result in results) {
+      spans.add(TextSpan(
+        text: result.mediaTitle,
+        style: const TextStyle(
+          decoration: TextDecoration.underline,
+          decorationColor: Colors.black87,
+          // decorationStyle: TextDecorationStyle.dotted,
+          // height: 1.1,
+          // decorationColor: Colors.blue,
+        ),
+        recognizer: TapGestureRecognizer()
+          ..onTap = () {
+            goToMoviePage(
+              context,
+              id: result.id,
+              title: result.mediaTitle,
+              overview: result.overview,
+              releaseDate: result.mediaReleaseDate,
+              voteAverage: result.voteAverage,
+            );
+          },
+      ));
+      if (result != results.last) spans.add(const TextSpan(text: ', '));
+    }
+    return RichText(
+      text: TextSpan(
+        children: spans,
+        style: const TextStyle(
+          fontSize: 14.5,
+          height: 1.3,
+          color: Colors.black87,
+        ),
+      ),
+      maxLines: 3,
+      overflow: TextOverflow.ellipsis,
     );
   }
 

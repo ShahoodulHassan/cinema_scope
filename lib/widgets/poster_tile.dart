@@ -313,9 +313,13 @@ class TvPosterTile extends StatelessWidget
 
 class PersonPosterTile extends StatelessWidget
     with Utilities, CommonFunctions, GenericFunctions {
-  final PersonResult person;
+  final BasePersonResult person;
+  final Widget? subtitle;
+  final Widget? description;
 
-  const PersonPosterTile({required this.person, Key? key}) : super(key: key);
+  const PersonPosterTile(
+      {required this.person, this.subtitle, this.description, Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -330,92 +334,18 @@ class PersonPosterTile extends StatelessWidget
         bottomRadius: 4.0,
         heroImageTag: '${person.id}',
       ),
-      subtitle: person.knownForDepartment.isNotEmpty || person.gender != null
+      subtitle: subtitle != null
           ? Padding(
               padding: const EdgeInsets.only(top: 1.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      if (person.knownForDepartment.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: Text(
-                            person.knownForDepartment,
-                            // textAlign: TextAlign.start,
-                            style: const TextStyle(fontSize: 15.0),
-                          ),
-                        ),
-                      if (person.gender != null && person.gender! > 0)
-                        Text(
-                          '(${getGenderText(person.gender)})',
-                          // textAlign: TextAlign.start,
-                          style: const TextStyle(fontSize: 15.0),
-                        ),
-                    ],
-                  ),
-                ],
-              ),
+              child: subtitle,
             )
           : null,
-      description: person.knownFor.isNotEmpty
+      description: description != null
           ? Padding(
               padding: const EdgeInsets.only(top: 8.0),
-              child: getRichText(context, person.knownFor),
-              // Text(
-              //   person.knownFor.map((result) => result.title).join(', '),
-              //   maxLines: 3,
-              //   overflow: TextOverflow.ellipsis,
-              //   style: const TextStyle(
-              //     fontSize: 14.0,
-              //     height: 1.2,
-              //   ),
-              // ),
+              child: description,
             )
           : null,
-    );
-  }
-
-  Widget getRichText(BuildContext context, List<CombinedResult> results) {
-    // logIfDebug('titles:${results.join(', ')}');
-    List<InlineSpan> spans = [];
-    for (var result in results) {
-      spans.add(
-        TextSpan(
-          text: result.mediaTitle,
-          style: const TextStyle(
-            decoration: TextDecoration.underline,
-            decorationColor: Colors.black87,
-            // decorationStyle: TextDecorationStyle.dotted,
-            // height: 1.1,
-            // decorationColor: Colors.blue,
-          ),
-          recognizer: TapGestureRecognizer()..onTap = () {
-            goToMoviePage(
-              context,
-              id: result.id,
-              title: result.mediaTitle,
-              overview: result.overview,
-              releaseDate: result.mediaReleaseDate,
-              voteAverage: result.voteAverage,
-            );
-          },
-        )
-      );
-      if (result != results.last) spans.add(const TextSpan(text: ', '));
-    }
-    return RichText(
-      text: TextSpan(
-        children: spans,
-        style: const TextStyle(
-          fontSize: 14.5,
-          height: 1.3,
-          color: Colors.black87,
-        ),
-      ),
-      maxLines: 3,
-      overflow: TextOverflow.ellipsis,
     );
   }
 }

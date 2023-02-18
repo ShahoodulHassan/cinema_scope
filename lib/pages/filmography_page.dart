@@ -66,7 +66,7 @@ class _FilmographyPageChildState extends State<_FilmographyPageChild>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: lighten2(Theme.of(context).primaryColorLight, 78),
+      // backgroundColor: lighten2(Theme.of(context).primaryColorLight, 78),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
