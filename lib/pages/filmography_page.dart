@@ -1,5 +1,3 @@
-import 'package:animated_list_plus/animated_list_plus.dart';
-import 'package:animated_list_plus/transitions.dart';
 import 'package:cinema_scope/models/person.dart';
 import 'package:cinema_scope/models/search.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
