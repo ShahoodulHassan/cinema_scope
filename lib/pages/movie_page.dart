@@ -1430,20 +1430,6 @@ class _MediaInfoSection extends StatelessWidget
         if (movie == null) {
           return SliverToBoxAdapter(child: Container());
         } else {
-          var releaseDate = getReadableDate(movie.releaseDate);
-          var status = movie.status;
-          var language = context
-              .read<ConfigViewModel>()
-              .cfgLanguages
-              .firstWhere(
-                  (element) => element.iso6391 == movie.originalLanguage)
-              .englishName;
-          var budget = movie.budget == 0
-              ? '-'
-              : '\$${applyCommaAndRoundNoZeroes(movie.budget.toDouble(), 0, true)}';
-          var revenue = movie.revenue == 0
-              ? '-'
-              : '\$${applyCommaAndRoundNoZeroes(movie.revenue.toDouble(), 0, true)}';
           return BaseSectionSliver(
             title: 'Movie details',
             children: [
@@ -1453,83 +1439,7 @@ class _MediaInfoSection extends StatelessWidget
                   bottom: 16.0,
                 ),
                 child: Column(
-                  children: [
-                    getSubSection(
-                        'Release date', releaseDate.isEmpty ? '-' : releaseDate,
-                        onTap: movie.releaseDates.results.length <= 1
-                            ? null
-                            : () {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (_) {
-                                  return MovieSubDetailsPage<
-                                          ReleaseDatesResult>(
-                                      list: movie.releaseDates.results
-                                        ..sort((a, b) {
-                                          var countries = context
-                                              .read<ConfigViewModel>()
-                                              .cfgCountries;
-                                          var countryA = countries.firstWhere(
-                                              (element) =>
-                                                  element.iso31661 ==
-                                                  a.iso31661);
-                                          var countryB = countries.firstWhere(
-                                              (element) =>
-                                                  element.iso31661 ==
-                                                  b.iso31661);
-                                          return countryA.englishName
-                                              .compareTo(countryB.englishName);
-                                        }),
-                                      title: 'Release dates',
-                                      name: movie.movieTitle);
-                                }));
-                              }),
-                    getSubSection('Status', status.isEmpty ? '-' : status),
-                    getSubSection(
-                        'Original language', language.isEmpty ? '-' : language,
-                        onTap: movie.spokenLanguages.length <= 1
-                            ? null
-                            : () {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (_) {
-                                  return MovieSubDetailsPage<LanguageConfig>(
-                                      list: movie.spokenLanguages,
-                                      title: 'Spoken languages',
-                                      name: movie.movieTitle);
-                                }));
-                              }),
-                    getSubSection('Budget', budget),
-                    getSubSection('Revenue', revenue),
-                    if (movie.productionCountries.isNotEmpty)
-                      getSubSection(
-                          'Produced in', movie.productionCountries.first.name,
-                          onTap: movie.productionCountries.length <= 1
-                              ? null
-                              : () {
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (_) {
-                                    return MovieSubDetailsPage<
-                                            ProductionCountry>(
-                                        list: movie.productionCountries,
-                                        title: 'Production countries',
-                                        name: movie.movieTitle);
-                                  }));
-                                }),
-                    if (movie.productionCompanies.isNotEmpty)
-                      getSubSection(
-                          'Production by', movie.productionCompanies.first.name,
-                          onTap: movie.productionCompanies.length <= 1
-                              ? null
-                              : () {
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (_) {
-                                    return MovieSubDetailsPage<
-                                            ProductionCompany>(
-                                        list: movie.productionCompanies,
-                                        title: 'Production companies',
-                                        name: movie.movieTitle);
-                                  }));
-                                }),
-                  ],
+                  children: getMovieDetailSections(movie, context),
                 ),
               )
             ],
@@ -1538,6 +1448,83 @@ class _MediaInfoSection extends StatelessWidget
       },
       selector: (_, mvm) => mvm.movie,
     );
+  }
+
+  List<Widget> getMovieDetailSections(Movie movie, BuildContext context) {
+    var releaseDate = getReadableDate(movie.releaseDate);
+    var status = movie.status;
+    var language = context
+        .read<ConfigViewModel>()
+        .cfgLanguages
+        .firstWhere((element) => element.iso6391 == movie.originalLanguage)
+        .englishName;
+    var budget = movie.budget == 0
+        ? '-'
+        : '\$${applyCommaAndRoundNoZeroes(movie.budget.toDouble(), 0, true)}';
+    var revenue = movie.revenue == 0
+        ? '-'
+        : '\$${applyCommaAndRoundNoZeroes(movie.revenue.toDouble(), 0, true)}';
+    return [
+      getSubSection('Release date', releaseDate.isEmpty ? '-' : releaseDate,
+          onTap: movie.releaseDates.results.length <= 1
+              ? null
+              : () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) {
+                    return MovieSubDetailsPage<ReleaseDatesResult>(
+                        list: movie.releaseDates.results
+                          ..sort((a, b) {
+                            var countries =
+                                context.read<ConfigViewModel>().cfgCountries;
+                            var countryA = countries.firstWhere(
+                                (element) => element.iso31661 == a.iso31661);
+                            var countryB = countries.firstWhere(
+                                (element) => element.iso31661 == b.iso31661);
+                            return countryA.englishName
+                                .compareTo(countryB.englishName);
+                          }),
+                        title: 'Release dates',
+                        name: movie.movieTitle);
+                  }));
+                }),
+      getSubSection('Status', status.isEmpty ? '-' : status),
+      getSubSection('Original language', language.isEmpty ? '-' : language,
+          onTap: movie.spokenLanguages.length <= 1
+              ? null
+              : () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) {
+                    return MovieSubDetailsPage<LanguageConfig>(
+                        list: movie.spokenLanguages,
+                        title: 'Spoken languages',
+                        name: movie.movieTitle);
+                  }));
+                }),
+      getSubSection('Budget', budget),
+      getSubSection('Revenue', revenue),
+      if (movie.productionCountries.isNotEmpty)
+        getSubSection('Produced in', movie.productionCountries.first.name,
+            onTap: movie.productionCountries.length <= 1
+                ? null
+                : () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) {
+                      return MovieSubDetailsPage<ProductionCountry>(
+                          list: movie.productionCountries,
+                          title: 'Production countries',
+                          name: movie.movieTitle);
+                    }));
+                  }),
+      if (movie.productionCompanies.isNotEmpty)
+        getSubSection('Production by', movie.productionCompanies.first.name,
+            onTap: movie.productionCompanies.length <= 1
+                ? null
+                : () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) {
+                      return MovieSubDetailsPage<ProductionCompany>(
+                          list: movie.productionCompanies,
+                          title: 'Production companies',
+                          name: movie.movieTitle);
+                    }));
+                  }),
+    ];
   }
 
   // Widget getCountriesSection(Movie movie) {
