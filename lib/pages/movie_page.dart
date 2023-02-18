@@ -1,6 +1,8 @@
 import 'package:card_swiper/card_swiper.dart';
 import 'package:cinema_scope/architecture/movie_view_model.dart';
+import 'package:cinema_scope/models/configuration.dart';
 import 'package:cinema_scope/models/search.dart';
+import 'package:cinema_scope/pages/movie_details_page.dart';
 import 'package:cinema_scope/pages/person_page.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
@@ -221,15 +223,15 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
             ),
           ),
           const CastCrewSection(),
+          const _ImagesSection(),
           const _MediaInfoSection(),
-          const ReviewsSection(),
           const RecommendedMoviesSection(),
+          const ReviewsSection(),
           const _MoreByDirectorSection(),
-          // const _MoreByLeadSection(),
           const _MoreByLeadActorSection(),
           const _MoreByGenresSection(),
-          const _ImagesSection(),
           const KeywordsSection(),
+          const SliverToBoxAdapter(child: SizedBox(height: 16)),
         ],
       ),
     );
@@ -1421,8 +1423,6 @@ class _MediaInfoSection extends StatelessWidget
     with GenericFunctions, Utilities, CommonFunctions {
   const _MediaInfoSection({Key? key}) : super(key: key);
 
-  final _separator = const SizedBox(height: 16.0);
-
   @override
   Widget build(BuildContext context) {
     return Selector<MovieViewModel, Movie?>(
@@ -1456,14 +1456,79 @@ class _MediaInfoSection extends StatelessWidget
                   children: [
                     getSubSection(
                         'Release date', releaseDate.isEmpty ? '-' : releaseDate,
-                        onTap:
-                            movie.releaseDates.results.isEmpty ? null : () {}),
+                        onTap: movie.releaseDates.results.length <= 1
+                            ? null
+                            : () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (_) {
+                                  return MovieSubDetailsPage<
+                                          ReleaseDatesResult>(
+                                      list: movie.releaseDates.results
+                                        ..sort((a, b) {
+                                          var countries = context
+                                              .read<ConfigViewModel>()
+                                              .cfgCountries;
+                                          var countryA = countries.firstWhere(
+                                              (element) =>
+                                                  element.iso31661 ==
+                                                  a.iso31661);
+                                          var countryB = countries.firstWhere(
+                                              (element) =>
+                                                  element.iso31661 ==
+                                                  b.iso31661);
+                                          return countryA.englishName
+                                              .compareTo(countryB.englishName);
+                                        }),
+                                      title: 'Release dates',
+                                      name: movie.movieTitle);
+                                }));
+                              }),
                     getSubSection('Status', status.isEmpty ? '-' : status),
                     getSubSection(
                         'Original language', language.isEmpty ? '-' : language,
-                        onTap: movie.spokenLanguages.isEmpty ? null : () {}),
+                        onTap: movie.spokenLanguages.length <= 1
+                            ? null
+                            : () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (_) {
+                                  return MovieSubDetailsPage<LanguageConfig>(
+                                      list: movie.spokenLanguages,
+                                      title: 'Spoken languages',
+                                      name: movie.movieTitle);
+                                }));
+                              }),
                     getSubSection('Budget', budget),
                     getSubSection('Revenue', revenue),
+                    if (movie.productionCountries.isNotEmpty)
+                      getSubSection(
+                          'Produced in', movie.productionCountries.first.name,
+                          onTap: movie.productionCountries.length <= 1
+                              ? null
+                              : () {
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (_) {
+                                    return MovieSubDetailsPage<
+                                            ProductionCountry>(
+                                        list: movie.productionCountries,
+                                        title: 'Production countries',
+                                        name: movie.movieTitle);
+                                  }));
+                                }),
+                    if (movie.productionCompanies.isNotEmpty)
+                      getSubSection(
+                          'Production by', movie.productionCompanies.first.name,
+                          onTap: movie.productionCompanies.length <= 1
+                              ? null
+                              : () {
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (_) {
+                                    return MovieSubDetailsPage<
+                                            ProductionCompany>(
+                                        list: movie.productionCompanies,
+                                        title: 'Production companies',
+                                        name: movie.movieTitle);
+                                  }));
+                                }),
                   ],
                 ),
               )
@@ -1486,12 +1551,24 @@ class _MediaInfoSection extends StatelessWidget
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: Row(
             children: [
-              // _separator,
-              getLabelView(label),
-              getContentView(content),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // _separator,
+                    getLabelView(label),
+                    getContentView(content),
+                  ],
+                ),
+              ),
+              if (onTap != null)
+                const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 14.0,
+                  color: Colors.black38,
+                ),
             ],
           ),
         ),
