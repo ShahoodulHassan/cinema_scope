@@ -238,3 +238,17 @@ enum ImageType {
   still,
   logo,
 }
+
+enum ReleaseType {
+  premiere(1, 'Premiere'),
+  theatricalLimited(2, 'Theatrical (limited)'),
+  theatrical(3, 'Theatrical'),
+  digital(4, 'Digital'),
+  physical(5, 'Physical'),
+  tv(6, 'TV');
+
+  final int id;
+  final String name;
+
+  const ReleaseType(this.id, this.name);
+}

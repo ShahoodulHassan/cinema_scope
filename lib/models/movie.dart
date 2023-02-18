@@ -79,7 +79,7 @@ class Movie {
       this.runtime,
       this.tagline});
 
-  String? get movieTitle => title;
+  String get movieTitle => title;
 
   factory Movie.fromJson(Map<String, dynamic> json) => _$MovieFromJson(json);
 

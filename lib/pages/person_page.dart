@@ -170,7 +170,7 @@ class _PersonPageChildState extends State<_PersonPageChild>
           const _BiographySection(),
           _FilmographySection(),
           const _ImagesSection(),
-          const SliverToBoxAdapter(child: SizedBox(height: 36)),
+          const SliverToBoxAdapter(child: SizedBox(height: 16)),
         ],
       ),
     );

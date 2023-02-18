@@ -215,8 +215,7 @@ class MovieViewModel extends ApiViewModel with Utilities {
           }
 
           var keywords = movie!.keywords.keywords.map((e) => e.id).join(',');
-          logIfDebug('genrePairs:$pairs, /*excluded:$excludedGenreIds, '
-              'keywords:$keywords, primaryYear:$primaryYear*/');
+          logIfDebug('genrePairs:$pairs');
 
           if (pairs.isNotEmpty) {
             List<Future<CombinedResults>> futures = pairs.map((pair) {
@@ -256,15 +255,15 @@ class MovieViewModel extends ApiViewModel with Utilities {
   }
 
   _fetchMoreByDirector() async {
-    logIfDebug('crew:$crew');
+    // logIfDebug('crew:$crew');
     var directors = crew.where((element) {
-      logIfDebug('job:${element.job}');
+      // logIfDebug('job:${element.job}');
       return element.job == Constants.departMap[Department.directing.name];
     });
-    logIfDebug('directors:$directors');
+    // logIfDebug('directors:$directors');
     if (directors.isNotEmpty) {
       var director = directors.first;
-      logIfDebug('directorId:${director.id}');
+      // logIfDebug('directorId:${director.id}');
       _morebyDirectorOperation = CancelableOperation<Person>.fromFuture(
               api.getPersonWithDetail(director.id, append: 'combined_credits'))
           .then((person) {
@@ -275,7 +274,7 @@ class MovieViewModel extends ApiViewModel with Utilities {
                 media.posterPath != null)
             .toList()
           ..sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
-        logIfDebug('moreByDirector:$moreByDirector');
+        // logIfDebug('moreByDirector:$moreByDirector');
         if (moreByDirector.isNotEmpty) {
           this.moreByDirector = Tuple2<Crew, List<CombinedResult>>(
             director,
@@ -289,10 +288,10 @@ class MovieViewModel extends ApiViewModel with Utilities {
 
   _fetchMoreByLeadActor() async {
     var actors = casts.take(3).toList();
-    logIfDebug('actors:$actors');
+    // logIfDebug('actors:$actors');
     if (actors.isNotEmpty) {
       var actor = actors[Random().nextInt(actors.length)];
-      logIfDebug('directorId:${actor.id}');
+      // logIfDebug('directorId:${actor.id}');
       _moreByLeadOperation = CancelableOperation<Person>.fromFuture(
               api.getPersonWithDetail(actor.id, append: 'combined_credits'))
           .then((person) {
@@ -303,7 +302,7 @@ class MovieViewModel extends ApiViewModel with Utilities {
                 media.posterPath != null)
             .toList()
           ..sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
-        logIfDebug('moreByActor:$moreByActor');
+        // logIfDebug('moreByActor:$moreByActor');
         if (moreByActor.isNotEmpty) {
           this.moreByActor = Tuple2(actor, moreByActor);
           notifyListeners();
