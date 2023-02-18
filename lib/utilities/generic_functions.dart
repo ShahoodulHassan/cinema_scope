@@ -294,7 +294,7 @@ mixin GenericFunctions {
           .format(DateTime.now().subtract(Duration(days: days)));
 
   String getReadableDate(String? formattedDate) {
-    return formattedDate == null
+    return formattedDate == null || formattedDate.isEmpty
         ? ''
         : DateFormat('dd-MM-yyyy')
         .format(DateFormat('yyyy-MM-dd').parse(formattedDate));
