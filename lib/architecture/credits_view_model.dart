@@ -20,10 +20,10 @@ class CreditsViewModel extends ChangeNotifier
 
   Map<String, FilterState> availableDepartments = {};
 
-  List<BaseCast> _results = [];
-  final List<BaseCast> _allResults = [];
+  List<BaseCredit> _results = [];
+  final List<BaseCredit> _allResults = [];
 
-  List<BaseCast> get results => _results;
+  List<BaseCredit> get results => _results;
 
   List<Cast> get cast => results.whereType<Cast>().toList();
 

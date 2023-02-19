@@ -7,6 +7,7 @@ import 'configuration.dart';
 
 part 'movie.g.dart';
 
+/// TODO Use [RecommendationResult] here instead of [MovieSearchResult]
 @JsonSerializable(fieldRename: FieldRename.snake)
 class Movie {
   bool adult;
@@ -43,6 +44,7 @@ class Movie {
   Credits credits;
   ReviewResult reviews;
   ReleaseDates releaseDates;
+  MovieAltTitleResult alternativeTitles;
 
   Movie(
       this.adult,
@@ -69,6 +71,7 @@ class Movie {
       this.reviews,
       this.credits,
       this.releaseDates,
+      this.alternativeTitles,
       {this.backdropPath,
       this.releaseDate,
       this.belongsToCollection,
@@ -245,6 +248,7 @@ class CombinedResults extends BaseSearchResult {
   factory CombinedResults.fromJson(Map<String, dynamic> json) =>
       _$CombinedResultsFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$CombinedResultsToJson(this);
 }
 
@@ -336,11 +340,11 @@ class Credits {
 
 @CopyWith()
 @JsonSerializable(fieldRename: FieldRename.snake)
-class BaseCast extends BasePersonResult {
+class BaseCredit extends BasePersonResult {
   String originalName;
   String creditId;
 
-  BaseCast(
+  BaseCredit(
     super.id,
     super.adult,
     super.name,
@@ -353,16 +357,16 @@ class BaseCast extends BasePersonResult {
     super.gender,
   });
 
-  factory BaseCast.fromJson(Map<String, dynamic> json) =>
-      _$BaseCastFromJson(json);
+  factory BaseCredit.fromJson(Map<String, dynamic> json) =>
+      _$BaseCreditFromJson(json);
 
   @override
-  Map<String, dynamic> toJson() => _$BaseCastToJson(this);
+  Map<String, dynamic> toJson() => _$BaseCreditToJson(this);
 }
 
 @CopyWith()
 @JsonSerializable(fieldRename: FieldRename.snake)
-class Cast extends BaseCast {
+class Cast extends BaseCredit {
   int castId;
   String character;
   int order;
@@ -390,7 +394,7 @@ class Cast extends BaseCast {
 
 @CopyWith()
 @JsonSerializable(fieldRename: FieldRename.snake)
-class Crew extends BaseCast {
+class Crew extends BaseCredit {
   String department;
   String job;
 
@@ -511,4 +515,46 @@ class ReleaseDate {
       _$ReleaseDateFromJson(json);
 
   Map<String, dynamic> toJson() => _$ReleaseDateToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class MovieAltTitleResult {
+  List<AlternativeTitle> titles;
+
+  MovieAltTitleResult(this.titles);
+
+  factory MovieAltTitleResult.fromJson(Map<String, dynamic> json) =>
+      _$MovieAltTitleResultFromJson(json);
+
+  Map<String, dynamic> toJson() => _$MovieAltTitleResultToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class AlternativeTitle {
+  @JsonKey(name: 'iso_3166_1')
+  String iso31661;
+
+  String title;
+  String type;
+
+  AlternativeTitle(this.iso31661, this.title, this.type);
+
+  factory AlternativeTitle.fromJson(Map<String, dynamic> json) =>
+      _$AlternativeTitleFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AlternativeTitleToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class RecommendationResult extends BaseSearchResult {
+  List<CombinedResult> results;
+
+  RecommendationResult(
+      super.page, super.totalPages, super.totalResults, this.results);
+
+  factory RecommendationResult.fromJson(Map<String, dynamic> json) =>
+      _$RecommendationResultFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$RecommendationResultToJson(this);
 }

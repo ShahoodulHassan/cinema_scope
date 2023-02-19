@@ -138,32 +138,32 @@ extension $ImageDetailCopyWith on ImageDetail {
   _$ImageDetailCWProxy get copyWith => _$ImageDetailCWProxyImpl(this);
 }
 
-abstract class _$BaseCastCWProxy {
-  BaseCast id(int id);
+abstract class _$BaseCreditCWProxy {
+  BaseCredit id(int id);
 
-  BaseCast adult(bool adult);
+  BaseCredit adult(bool adult);
 
-  BaseCast name(String name);
+  BaseCredit name(String name);
 
-  BaseCast knownForDepartment(String knownForDepartment);
+  BaseCredit knownForDepartment(String knownForDepartment);
 
-  BaseCast originalName(String originalName);
+  BaseCredit originalName(String originalName);
 
-  BaseCast creditId(String creditId);
+  BaseCredit creditId(String creditId);
 
-  BaseCast popularity(double? popularity);
+  BaseCredit popularity(double? popularity);
 
-  BaseCast profilePath(String? profilePath);
+  BaseCredit profilePath(String? profilePath);
 
-  BaseCast gender(int? gender);
+  BaseCredit gender(int? gender);
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `BaseCast(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `BaseCredit(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
   /// Usage
   /// ```dart
-  /// BaseCast(...).copyWith(id: 12, name: "My name")
+  /// BaseCredit(...).copyWith(id: 12, name: "My name")
   /// ````
-  BaseCast call({
+  BaseCredit call({
     int? id,
     bool? adult,
     String? name,
@@ -176,50 +176,50 @@ abstract class _$BaseCastCWProxy {
   });
 }
 
-/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfBaseCast.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfBaseCast.copyWith.fieldName(...)`
-class _$BaseCastCWProxyImpl implements _$BaseCastCWProxy {
-  const _$BaseCastCWProxyImpl(this._value);
+/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfBaseCredit.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfBaseCredit.copyWith.fieldName(...)`
+class _$BaseCreditCWProxyImpl implements _$BaseCreditCWProxy {
+  const _$BaseCreditCWProxyImpl(this._value);
 
-  final BaseCast _value;
-
-  @override
-  BaseCast id(int id) => this(id: id);
+  final BaseCredit _value;
 
   @override
-  BaseCast adult(bool adult) => this(adult: adult);
+  BaseCredit id(int id) => this(id: id);
 
   @override
-  BaseCast name(String name) => this(name: name);
+  BaseCredit adult(bool adult) => this(adult: adult);
 
   @override
-  BaseCast knownForDepartment(String knownForDepartment) =>
+  BaseCredit name(String name) => this(name: name);
+
+  @override
+  BaseCredit knownForDepartment(String knownForDepartment) =>
       this(knownForDepartment: knownForDepartment);
 
   @override
-  BaseCast originalName(String originalName) =>
+  BaseCredit originalName(String originalName) =>
       this(originalName: originalName);
 
   @override
-  BaseCast creditId(String creditId) => this(creditId: creditId);
+  BaseCredit creditId(String creditId) => this(creditId: creditId);
 
   @override
-  BaseCast popularity(double? popularity) => this(popularity: popularity);
+  BaseCredit popularity(double? popularity) => this(popularity: popularity);
 
   @override
-  BaseCast profilePath(String? profilePath) => this(profilePath: profilePath);
+  BaseCredit profilePath(String? profilePath) => this(profilePath: profilePath);
 
   @override
-  BaseCast gender(int? gender) => this(gender: gender);
+  BaseCredit gender(int? gender) => this(gender: gender);
 
   @override
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `BaseCast(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `BaseCredit(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
   /// Usage
   /// ```dart
-  /// BaseCast(...).copyWith(id: 12, name: "My name")
+  /// BaseCredit(...).copyWith(id: 12, name: "My name")
   /// ````
-  BaseCast call({
+  BaseCredit call({
     Object? id = const $CopyWithPlaceholder(),
     Object? adult = const $CopyWithPlaceholder(),
     Object? name = const $CopyWithPlaceholder(),
@@ -230,7 +230,7 @@ class _$BaseCastCWProxyImpl implements _$BaseCastCWProxy {
     Object? profilePath = const $CopyWithPlaceholder(),
     Object? gender = const $CopyWithPlaceholder(),
   }) {
-    return BaseCast(
+    return BaseCredit(
       id == const $CopyWithPlaceholder() || id == null
           // ignore: unnecessary_non_null_assertion
           ? _value.id!
@@ -278,10 +278,10 @@ class _$BaseCastCWProxyImpl implements _$BaseCastCWProxy {
   }
 }
 
-extension $BaseCastCopyWith on BaseCast {
-  /// Returns a callable class that can be used as follows: `instanceOfBaseCast.copyWith(...)` or like so:`instanceOfBaseCast.copyWith.fieldName(...)`.
+extension $BaseCreditCopyWith on BaseCredit {
+  /// Returns a callable class that can be used as follows: `instanceOfBaseCredit.copyWith(...)` or like so:`instanceOfBaseCredit.copyWith.fieldName(...)`.
   // ignore: library_private_types_in_public_api
-  _$BaseCastCWProxy get copyWith => _$BaseCastCWProxyImpl(this);
+  _$BaseCreditCWProxy get copyWith => _$BaseCreditCWProxyImpl(this);
 }
 
 abstract class _$CastCWProxy {
@@ -682,6 +682,8 @@ Movie _$MovieFromJson(Map<String, dynamic> json) => Movie(
       ReviewResult.fromJson(json['reviews'] as Map<String, dynamic>),
       Credits.fromJson(json['credits'] as Map<String, dynamic>),
       ReleaseDates.fromJson(json['release_dates'] as Map<String, dynamic>),
+      MovieAltTitleResult.fromJson(
+          json['alternative_titles'] as Map<String, dynamic>),
       backdropPath: json['backdrop_path'] as String?,
       releaseDate: json['release_date'] as String?,
       belongsToCollection: json['belongs_to_collection'] == null
@@ -729,6 +731,7 @@ Map<String, dynamic> _$MovieToJson(Movie instance) => <String, dynamic>{
       'credits': instance.credits,
       'reviews': instance.reviews,
       'release_dates': instance.releaseDates,
+      'alternative_titles': instance.alternativeTitles,
     };
 
 BaseCollection _$BaseCollectionFromJson(Map<String, dynamic> json) =>
@@ -970,7 +973,7 @@ Map<String, dynamic> _$CreditsToJson(Credits instance) => <String, dynamic>{
       'crew': instance.crew,
     };
 
-BaseCast _$BaseCastFromJson(Map<String, dynamic> json) => BaseCast(
+BaseCredit _$BaseCreditFromJson(Map<String, dynamic> json) => BaseCredit(
       json['id'] as int,
       json['adult'] as bool,
       json['name'] as String,
@@ -982,7 +985,8 @@ BaseCast _$BaseCastFromJson(Map<String, dynamic> json) => BaseCast(
       gender: json['gender'] as int?,
     )..mediaType = json['media_type'] as String?;
 
-Map<String, dynamic> _$BaseCastToJson(BaseCast instance) => <String, dynamic>{
+Map<String, dynamic> _$BaseCreditToJson(BaseCredit instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'media_type': instance.mediaType,
       'popularity': instance.popularity,
@@ -1119,4 +1123,51 @@ Map<String, dynamic> _$ReleaseDateToJson(ReleaseDate instance) =>
       'note': instance.note,
       'release_date': instance.releaseDate,
       'type': instance.type,
+    };
+
+MovieAltTitleResult _$MovieAltTitleResultFromJson(Map<String, dynamic> json) =>
+    MovieAltTitleResult(
+      (json['titles'] as List<dynamic>)
+          .map((e) => AlternativeTitle.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$MovieAltTitleResultToJson(
+        MovieAltTitleResult instance) =>
+    <String, dynamic>{
+      'titles': instance.titles,
+    };
+
+AlternativeTitle _$AlternativeTitleFromJson(Map<String, dynamic> json) =>
+    AlternativeTitle(
+      json['iso_3166_1'] as String,
+      json['title'] as String,
+      json['type'] as String,
+    );
+
+Map<String, dynamic> _$AlternativeTitleToJson(AlternativeTitle instance) =>
+    <String, dynamic>{
+      'iso_3166_1': instance.iso31661,
+      'title': instance.title,
+      'type': instance.type,
+    };
+
+RecommendationResult _$RecommendationResultFromJson(
+        Map<String, dynamic> json) =>
+    RecommendationResult(
+      json['page'] as int,
+      json['total_pages'] as int,
+      json['total_results'] as int,
+      (json['results'] as List<dynamic>)
+          .map((e) => CombinedResult.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$RecommendationResultToJson(
+        RecommendationResult instance) =>
+    <String, dynamic>{
+      'page': instance.page,
+      'total_pages': instance.totalPages,
+      'total_results': instance.totalResults,
+      'results': instance.results,
     };

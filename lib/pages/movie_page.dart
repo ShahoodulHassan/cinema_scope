@@ -988,7 +988,7 @@ class CastCrewSection extends StatelessWidget
       );
 }
 
-class CastListView<T extends BaseCast> extends StatelessWidget
+class CastListView<T extends BaseCredit> extends StatelessWidget
     with Utilities, CommonFunctions {
   final List<T> casts;
   final double screenWidth;

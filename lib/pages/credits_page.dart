@@ -161,7 +161,7 @@ class _CreditsPageChildState extends State<_CreditsPageChild>
     );
   }
 
-  Selector<CreditsViewModel, List<T>> getSliverTabData<T extends BaseCast>(
+  Selector<CreditsViewModel, List<T>> getSliverTabData<T extends BaseCredit>(
       BuildContext context) {
     return Selector<CreditsViewModel, List<T>>(
       selector: (_, cvm) {
