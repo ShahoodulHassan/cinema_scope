@@ -206,7 +206,8 @@ class _TmdbApi implements TmdbApi {
     id, {
     language = 'en-US',
     append =
-        'videos,images,recommendations,keywords,reviews,credits,release_dates',
+        'videos,images,recommendations,keywords,reviews,credits,release_dates'
+            ',alternative_titles',
     imageLanguage = 'en,null',
   }) async {
     const _extra = <String, dynamic>{};
@@ -898,6 +899,45 @@ class _TmdbApi implements TmdbApi {
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = Person.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<Tv> getTvWithDetail(
+    id, {
+    language = 'en-US',
+    append = 'videos,images,recommendations,keywords,reviews,aggregate_credits,'
+        'external_ids,alternative_titles',
+    imageLanguage = 'en,null',
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'language': language,
+      r'append_to_response': append,
+      r'include_image_language': imageLanguage,
+    };
+    final _headers = <String, dynamic>{
+      r'Content-Type': 'application/json;charset=utf-8',
+      r'Authorization':
+          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYzdiNTdjNTY2ZThhZjk0MTE1YmIyYzBkOTEwZjYxMCIsInN1YiI6IjVhMGE3MDk5YzNhMzY4MjE4YTAxMTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.uyDhjXOvRNfjg_gJFPkSfAuT-F-MFmWVwPoEUftgq1g',
+    };
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result =
+        await _dio.fetch<Map<String, dynamic>>(_setStreamType<Tv>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/json;charset=utf-8',
+    )
+            .compose(
+              _dio.options,
+              '/tv/${id}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = Tv.fromJson(_result.data!);
     return value;
   }
 

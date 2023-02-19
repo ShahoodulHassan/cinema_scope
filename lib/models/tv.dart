@@ -1,7 +1,266 @@
+import 'package:cinema_scope/models/person.dart';
 import 'package:cinema_scope/models/search.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import 'configuration.dart';
+import 'movie.dart';
+
 part 'tv.g.dart';
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class Tv {
+  bool adult;
+  String? backdropPath;
+  List<CreatedBy> createdBy;
+  List<int> episodeRunTime;
+  String firstAirDate;
+  List<Genre> genres;
+  String? homepage;
+  int id;
+  bool inProduction;
+  List<String> languages;
+  String lastAirDate;
+  TvEpisode lastEpisodeToAir;
+  String name;
+  TvEpisode? nextEpisodeToAir;
+  List<Network> networks;
+  int numberOfEpisodes;
+  int numberOfSeasons;
+  List<String> originCountry;
+  String originalLanguage;
+  String originalName;
+  String? overview;
+  double popularity;
+  String? posterPath;
+  List<ProductionCompany> productionCompanies;
+  List<ProductionCountry> productionCountries;
+  List<TvSeason> seasons;
+  List<LanguageConfig> spokenLanguages;
+  String status;
+  String? tagline;
+  String type;
+  double voteAverage;
+  int voteCount;
+
+  AggregateCredits aggregateCredits;
+  VideoResult videos;
+  RecommendationResult recommendations;
+  ImageResult images;
+  KeywordResult keywords;
+  ReviewResult reviews;
+  ExternalIds? externalIds;
+  TvAltTitleResult alternativeTitles;
+
+  Tv(
+    this.adult,
+    this.createdBy,
+    this.episodeRunTime,
+    this.firstAirDate,
+    this.genres,
+    this.id,
+    this.inProduction,
+    this.languages,
+    this.lastAirDate,
+    this.lastEpisodeToAir,
+    this.name,
+    this.networks,
+    this.numberOfEpisodes,
+    this.numberOfSeasons,
+    this.originCountry,
+    this.originalLanguage,
+    this.originalName,
+    this.popularity,
+    this.productionCompanies,
+    this.productionCountries,
+    this.seasons,
+    this.spokenLanguages,
+    this.status,
+    this.type,
+    this.voteAverage,
+    this.voteCount,
+    this.aggregateCredits,
+    this.externalIds,
+    this.reviews,
+    this.images,
+    this.videos,
+    this.keywords,
+    this.alternativeTitles,
+    this.recommendations, {
+    this.backdropPath,
+    this.homepage,
+    this.nextEpisodeToAir,
+    this.overview,
+    this.posterPath,
+    this.tagline,
+  });
+
+  factory Tv.fromJson(Map<String, dynamic> json) => _$TvFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TvToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class CreatedBy {
+  int id;
+  String creditId;
+  String name;
+  int gender;
+  String? profilePath;
+
+  CreatedBy(
+    this.id,
+    this.creditId,
+    this.name,
+    this.gender, {
+    this.profilePath,
+  });
+
+  factory CreatedBy.fromJson(Map<String, dynamic> json) =>
+      _$CreatedByFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CreatedByToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class Network {
+  int id;
+  String name;
+  String? logoPath;
+  String originCountry;
+
+  Network(
+    this.id,
+    this.name,
+    this.originCountry, {
+    this.logoPath,
+  });
+
+  factory Network.fromJson(Map<String, dynamic> json) =>
+      _$NetworkFromJson(json);
+
+  Map<String, dynamic> toJson() => _$NetworkToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class BaseTvCredit extends BasePersonResult {
+  int totalEpisodeCount;
+
+  BaseTvCredit(
+    super.id,
+    super.adult,
+    super.name,
+    super.knownForDepartment,
+    this.totalEpisodeCount, {
+    super.popularity,
+    super.profilePath,
+    super.gender,
+  });
+
+  factory BaseTvCredit.fromJson(Map<String, dynamic> json) =>
+      _$BaseTvCreditFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$BaseTvCreditToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class AggregateCredits {
+  List<TvCast> cast;
+  List<TvCrew> crew;
+
+  AggregateCredits(this.cast, this.crew);
+
+  factory AggregateCredits.fromJson(Map<String, dynamic> json) =>
+      _$AggregateCreditsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AggregateCreditsToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class TvCast extends BaseTvCredit {
+  int order;
+  List<Role> roles;
+
+  TvCast(
+    super.id,
+    super.adult,
+    super.name,
+    super.knownForDepartment,
+    super.totalEpisodeCount,
+    this.order,
+    this.roles, {
+    super.popularity,
+    super.profilePath,
+    super.gender,
+  });
+
+  factory TvCast.fromJson(Map<String, dynamic> json) => _$TvCastFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$TvCastToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class TvCrew extends BaseTvCredit {
+  int order;
+  List<Role> roles;
+
+  TvCrew(
+    super.id,
+    super.adult,
+    super.name,
+    super.knownForDepartment,
+    super.totalEpisodeCount,
+    this.order,
+    this.roles, {
+    super.popularity,
+    super.profilePath,
+    super.gender,
+  });
+
+  factory TvCrew.fromJson(Map<String, dynamic> json) => _$TvCrewFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$TvCrewToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class Role {
+  String creditId;
+  String character;
+  int episodeCount;
+
+  Role(this.creditId, this.character, this.episodeCount);
+
+  factory Role.fromJson(Map<String, dynamic> json) => _$RoleFromJson(json);
+
+  Map<String, dynamic> toJson() => _$RoleToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class Job {
+  String creditId;
+  String job;
+  int episodeCount;
+
+  Job(this.creditId, this.job, this.episodeCount);
+
+  factory Job.fromJson(Map<String, dynamic> json) => _$JobFromJson(json);
+
+  Map<String, dynamic> toJson() => _$JobToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class TvAltTitleResult {
+  List<AlternativeTitle> results;
+
+  TvAltTitleResult(this.results);
+
+  factory TvAltTitleResult.fromJson(Map<String, dynamic> json) =>
+      _$TvAltTitleResultFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TvAltTitleResultToJson(this);
+}
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class TvBaseResult extends BaseResult {
@@ -9,15 +268,15 @@ class TvBaseResult extends BaseResult {
   String overview;
   String? airDate;
   int seasonNumber;
-  int showId;
+  int? showId;
 
   TvBaseResult(
     super.id,
     this.name,
     this.overview,
-    this.seasonNumber,
-    this.showId, {
+    this.seasonNumber, {
     super.mediaType,
+    this.showId,
     this.airDate,
   });
 
@@ -37,10 +296,10 @@ class TvSeason extends TvBaseResult {
     super.id,
     super.name,
     super.overview,
-    super.seasonNumber,
-    super.showId, {
+    super.seasonNumber, {
     super.mediaType,
     super.airDate,
+    super.showId,
     this.episodeCount,
     this.posterPath,
   });
@@ -66,12 +325,12 @@ class TvEpisode extends TvBaseResult {
     super.name,
     super.overview,
     super.seasonNumber,
-    super.showId,
     this.voteAverage,
     this.voteCount,
     this.episodeNumber, {
     super.mediaType,
     super.airDate,
+    super.showId,
     this.productionCode,
     this.runtime,
     this.stillPath,

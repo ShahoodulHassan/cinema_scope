@@ -5,6 +5,7 @@ import 'models/configuration.dart';
 import 'models/movie.dart';
 import 'models/person.dart';
 import 'models/search.dart';
+import 'models/tv.dart';
 
 part 'tmdb_api.g.dart';
 
@@ -58,7 +59,8 @@ abstract class TmdbApi {
     @http.Path("id") int id, {
     @http.Query('language') String language = 'en-US',
     @http.Query('append_to_response') String append =
-        'videos,images,recommendations,keywords,reviews,credits,release_dates',
+        'videos,images,recommendations,keywords,reviews,credits,release_dates'
+            ',alternative_titles',
     @http.Query('include_image_language') String imageLanguage = 'en,null',
   });
 
@@ -116,7 +118,9 @@ abstract class TmdbApi {
     @http.Query('region') String region = 'US',
   });
 
-  /// https://api.themoviedb.org/3/search/person?api_key=ec7b57c566e8af94115bb2c0d910f610&language=en-US&page=1&include_adult=true&region=US&query=Jack
+  /// https://api.themoviedb.org/3/search/person?
+  /// api_key=ec7b57c566e8af94115bb2c0d910f610&language=en-US&page=1
+  /// &include_adult=false&region=US&query=Jack
   @http.GET("/search/person")
   @http.Headers(headerMap)
   Future<PersonSearchResult> searchPersons(
@@ -127,7 +131,9 @@ abstract class TmdbApi {
     @http.Query('region') String region = 'US',
   });
 
-  /// https://api.themoviedb.org/3/search/multi?api_key=ec7b57c566e8af94115bb2c0d910f610&language=en-US&query=jack&page=10&include_adult=true&region=US
+  /// https://api.themoviedb.org/3/search/multi?
+  /// api_key=ec7b57c566e8af94115bb2c0d910f610&language=en-US&query=jack
+  /// &page=1&include_adult=false&region=US
   @http.GET("/search/multi")
   @http.Headers(headerMap)
   Future<MultiSearchResult> performMultiSearch(
@@ -266,4 +272,23 @@ abstract class TmdbApi {
   //       String append = 'combined_credits',
   //       @http.Query('language') String language = 'en-US',
   //     });
+
+
+
+
+  /// TV related methods
+
+  @http.GET("/tv/{id}")
+  @http.Headers(headerMap)
+  Future<Tv> getTvWithDetail(
+      @http.Path("id") int id, {
+        @http.Query('language') String language = 'en-US',
+        @http.Query('append_to_response') String append =
+        'videos,images,recommendations,keywords,reviews,aggregate_credits,'
+            'external_ids,alternative_titles',
+        @http.Query('include_image_language') String imageLanguage = 'en,null',
+      });
+
+
+
 }
