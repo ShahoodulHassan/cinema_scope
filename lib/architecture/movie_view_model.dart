@@ -2,9 +2,8 @@ import 'dart:math';
 
 import 'package:async/async.dart';
 import 'package:cinema_scope/architecture/config_view_model.dart';
-import 'package:cinema_scope/architecture/search_view_model.dart';
+import 'package:cinema_scope/architecture/person_view_model.dart';
 import 'package:cinema_scope/models/search.dart';
-import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:intl/intl.dart';
 import 'package:tuple/tuple.dart';
 
@@ -12,7 +11,7 @@ import '../constants.dart';
 import '../models/movie.dart';
 import '../models/person.dart';
 
-class MovieViewModel extends ApiViewModel with Utilities {
+class MovieViewModel extends MediaViewModel {
   late final List<MediaGenre> allGenres;
 
   Movie? movie;
@@ -40,8 +39,6 @@ class MovieViewModel extends ApiViewModel with Utilities {
   String? get imdbId => movie?.imdbId;
 
   String? get homepage => movie?.homepage;
-
-  List<ImageDetail>? images;
 
   List<CombinedResult>? moreByLead, moreByGenres;
 

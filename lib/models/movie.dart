@@ -558,3 +558,16 @@ class RecommendationResult extends BaseSearchResult {
   @override
   Map<String, dynamic> toJson() => _$RecommendationResultToJson(this);
 }
+
+/// That's a custom object unrelated to what objects the API has to offer
+class TvRecommendationData {
+  final int mediaId;
+  final RecommendationResult result;
+
+  TvRecommendationData(this.mediaId, this.result);
+
+  List<CombinedResult> get recommendations =>
+      (result.results..removeWhere((element) => element.posterPath == null));
+
+  int get totalResults => result.totalResults;
+}

@@ -57,7 +57,7 @@ Tv _$TvFromJson(Map<String, dynamic> json) => Tv(
       ReviewResult.fromJson(json['reviews'] as Map<String, dynamic>),
       ImageResult.fromJson(json['images'] as Map<String, dynamic>),
       VideoResult.fromJson(json['videos'] as Map<String, dynamic>),
-      KeywordResult.fromJson(json['keywords'] as Map<String, dynamic>),
+      TvKeywordResult.fromJson(json['keywords'] as Map<String, dynamic>),
       TvAltTitleResult.fromJson(
           json['alternative_titles'] as Map<String, dynamic>),
       RecommendationResult.fromJson(
@@ -221,9 +221,9 @@ TvCrew _$TvCrewFromJson(Map<String, dynamic> json) => TvCrew(
       json['name'] as String,
       json['known_for_department'] as String,
       json['total_episode_count'] as int,
-      json['order'] as int,
-      (json['roles'] as List<dynamic>)
-          .map((e) => Role.fromJson(e as Map<String, dynamic>))
+      json['department'] as String,
+      (json['jobs'] as List<dynamic>)
+          .map((e) => Job.fromJson(e as Map<String, dynamic>))
           .toList(),
       popularity: (json['popularity'] as num?)?.toDouble(),
       profilePath: json['profile_path'] as String?,
@@ -240,8 +240,8 @@ Map<String, dynamic> _$TvCrewToJson(TvCrew instance) => <String, dynamic>{
       'name': instance.name,
       'gender': instance.gender,
       'total_episode_count': instance.totalEpisodeCount,
-      'order': instance.order,
-      'roles': instance.roles,
+      'department': instance.department,
+      'jobs': instance.jobs,
     };
 
 Role _$RoleFromJson(Map<String, dynamic> json) => Role(
@@ -358,4 +358,16 @@ Map<String, dynamic> _$TvEpisodeToJson(TvEpisode instance) => <String, dynamic>{
       'production_code': instance.productionCode,
       'runtime': instance.runtime,
       'still_path': instance.stillPath,
+    };
+
+TvKeywordResult _$TvKeywordResultFromJson(Map<String, dynamic> json) =>
+    TvKeywordResult(
+      (json['results'] as List<dynamic>)
+          .map((e) => Keyword.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$TvKeywordResultToJson(TvKeywordResult instance) =>
+    <String, dynamic>{
+      'results': instance.results,
     };

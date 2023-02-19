@@ -169,7 +169,7 @@ class _PersonPageChildState extends State<_PersonPageChild>
           const _PersonalInfoSection(),
           const _BiographySection(),
           _FilmographySection(),
-          const _ImagesSection(),
+          const ImagesSection<PersonViewModel>(),
           const SliverToBoxAdapter(child: SizedBox(height: 16)),
         ],
       ),
@@ -560,39 +560,25 @@ class _BiographySection extends StatelessWidget {
   }
 }
 
-class _ImagesSection extends StatelessWidget with GenericFunctions {
-  const _ImagesSection({Key? key}) : super(key: key);
+class ImagesSection<T extends MediaViewModel> extends StatelessWidget
+    with GenericFunctions {
+  const ImagesSection({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Selector<PersonViewModel,
-        Tuple2<List<ImageDetail>?, List<TaggedImage>?>>(
-      selector: (_, pvm) {
-        var person = pvm.personWithKnownFor.person;
-        return Tuple2(person?.images?.profiles, person?.taggedImages?.results);
-      },
-      builder: (_, tuple, __) {
-        var profileImages = tuple.item1 ?? [];
-        var taggedImages = tuple.item2 ?? [];
-        // logIfDebug('tagged:$taggedImages');
-        if (profileImages.isEmpty && taggedImages.isEmpty) {
+    return Selector<T, List<ImageDetail>>(
+      selector: (_, pvm) => pvm.images ?? [],
+      builder: (_, images, __) {
+        if (images.isEmpty) {
           return SliverToBoxAdapter(child: Container());
         } else {
-          List<ImageDetail> allImages = [];
-          allImages.addAll(taggedImages);
-          allImages.addAll(profileImages);
           return BaseSectionSliver(
             title: 'Images',
             children: [
               ImageCardListView(
-                images: allImages,
+                images,
                 screenWidth: MediaQuery.of(context).size.width,
               ),
-              // Container(
-              //   alignment: Alignment.center,
-              //   padding: const EdgeInsets.only(bottom: 8.0),
-              //   child: CompactTextButton('All images', onPressed: () {}),
-              // ),
             ],
           );
         }
@@ -603,11 +589,15 @@ class _ImagesSection extends StatelessWidget with GenericFunctions {
 
 class ImageCardListView extends StatelessWidget
     with GenericFunctions, Utilities, CommonFunctions {
-  final List<ImageDetail> images;
+  final List<ImageDetail> _images;
   final double screenWidth;
 
-  ImageCardListView({
-    required this.images,
+  List<ImageDetail> get images => _images
+      .where((element) => element.imageType != ImageType.logo.name)
+      .toList();
+
+  ImageCardListView(
+    this._images, {
     required this.screenWidth,
     this.topRadius = 4.0,
     this.bottomRadius = 4.0,
@@ -707,7 +697,7 @@ class ImageCardListView extends StatelessWidget
                 Navigator.of(context).push(MaterialPageRoute(
                   builder: (_) {
                     return ImagePage(
-                      images: images,
+                      images: _images,
                       initialPage: index,
                       placeholderImageType: imageType,
                       placeholderQuality: imageQuality,
@@ -765,7 +755,16 @@ class _FilmographySection extends StatelessWidget
                     releaseDate: item.mediaReleaseDate /*getReleaseDate(item)*/,
                     voteAverage: item.voteAverage,
                   );
-                } else {}
+                } else if (item.mediaType == MediaType.tv.name) {
+                  goToTvPage(
+                    context,
+                    id: item.id,
+                    title: item.mediaTitle,
+                    overview: item.overview,
+                    releaseDate: item.mediaReleaseDate /*getReleaseDate(item)*/,
+                    voteAverage: item.voteAverage,
+                  );
+                }
               },
             ),
             Container(

@@ -3,13 +3,12 @@ import 'package:cinema_scope/architecture/movie_view_model.dart';
 import 'package:cinema_scope/models/configuration.dart';
 import 'package:cinema_scope/models/search.dart';
 import 'package:cinema_scope/pages/credits_page.dart';
-import 'package:cinema_scope/pages/movie_details_page.dart';
+import 'package:cinema_scope/pages/media_details_page.dart';
 import 'package:cinema_scope/pages/person_page.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:cinema_scope/widgets/image_view.dart';
-import 'package:cinema_scope/widgets/route_aware_state.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -76,7 +75,7 @@ class _MoviePageChild extends StatefulWidget {
   State<_MoviePageChild> createState() => _MoviePageChildState();
 }
 
-class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
+class _MoviePageChildState extends State<_MoviePageChild>
     with GenericFunctions, Utilities, CommonFunctions {
   late final String? sourceUrl = widget.sourceUrl;
   late final String? destUrl = widget.destUrl;
@@ -102,42 +101,6 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
     String base = cvm.apiConfig!.images.secureBaseUrl;
     String size = cvm.apiConfig!.images.backdropSizes[1];
     backdropBaseUrl = '$base$size';
-  }
-
-  @override
-  void deactivate() {
-    logIfDebug('deactivate called for ${widget.title}');
-    super.deactivate();
-  }
-
-  @override
-  void dispose() {
-    logIfDebug('dispose called for ${widget.title}');
-    super.dispose();
-  }
-
-  @override
-  void didPush() {
-    logIfDebug('didPush called for ${widget.title}');
-    super.didPush();
-  }
-
-  @override
-  void didPushNext() {
-    logIfDebug('didPushNext called for ${widget.title}');
-    super.didPushNext();
-  }
-
-  @override
-  void didPop() {
-    logIfDebug('didPop called for ${widget.title}');
-    super.didPop();
-  }
-
-  @override
-  void didPopNext() {
-    logIfDebug('didPopNext called for ${widget.title}');
-    super.didPopNext();
   }
 
   @override
@@ -224,7 +187,7 @@ class _MoviePageChildState extends RouteAwareState<_MoviePageChild>
             ),
           ),
           const CastCrewSection(),
-          const _ImagesSection(),
+          const ImagesSection<MovieViewModel>(),
           const _MediaInfoSection(),
           const RecommendedMoviesSection(),
           const ReviewsSection(),
@@ -591,6 +554,15 @@ class _MoreByLeadActorSection extends StatelessWidget
                     releaseDate: item.mediaReleaseDate /*getReleaseDate(item)*/,
                     voteAverage: item.voteAverage,
                   );
+                } else if (item.mediaType == MediaType.tv.name) {
+                  goToTvPage(
+                    context,
+                    id: item.id,
+                    title: item.mediaTitle,
+                    overview: item.overview,
+                    releaseDate: item.mediaReleaseDate /*getReleaseDate(item)*/,
+                    voteAverage: item.voteAverage,
+                  );
                 }
               },
             ),
@@ -748,6 +720,15 @@ class _MoreByDirectorSection extends StatelessWidget
                     overview: item.overview,
                     releaseDate: item.mediaReleaseDate /*getReleaseDate(item)*/,
                     voteAverage: item.voteAverage,
+                  );
+                } else if (item.mediaType == MediaType.tv.name) {
+                  goToTvPage(
+                    context,
+                    id: item.id,
+                    title: item.mediaTitle,
+                    releaseDate: item.mediaReleaseDate,
+                    voteAverage: item.voteAverage,
+                    overview: item.overview,
                   );
                 }
               },
@@ -925,7 +906,8 @@ class CastCrewSection extends StatelessWidget
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(label,
+              Text(
+                label,
                 style: const TextStyle(
                   fontSize: 15.0,
                   fontWeight: FontWeight.bold,
@@ -1495,7 +1477,7 @@ class _MediaInfoSection extends StatelessWidget
               ? null
               : () {
                   Navigator.push(context, MaterialPageRoute(builder: (_) {
-                    return MovieSubDetailsPage<ReleaseDatesResult>(
+                    return MediaSubDetailsPage<ReleaseDatesResult>(
                         list: movie.releaseDates.results
                           ..sort((a, b) {
                             var countries =
@@ -1517,7 +1499,7 @@ class _MediaInfoSection extends StatelessWidget
               ? null
               : () {
                   Navigator.push(context, MaterialPageRoute(builder: (_) {
-                    return MovieSubDetailsPage<LanguageConfig>(
+                    return MediaSubDetailsPage<LanguageConfig>(
                         list: movie.spokenLanguages,
                         title: 'Spoken languages',
                         name: movie.movieTitle);
@@ -1531,7 +1513,7 @@ class _MediaInfoSection extends StatelessWidget
                 ? null
                 : () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) {
-                      return MovieSubDetailsPage<ProductionCountry>(
+                      return MediaSubDetailsPage<ProductionCountry>(
                           list: movie.productionCountries,
                           title: 'Production countries',
                           name: movie.movieTitle);
@@ -1543,7 +1525,7 @@ class _MediaInfoSection extends StatelessWidget
                 ? null
                 : () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) {
-                      return MovieSubDetailsPage<ProductionCompany>(
+                      return MediaSubDetailsPage<ProductionCompany>(
                           list: movie.productionCompanies,
                           title: 'Production companies',
                           name: movie.movieTitle);
@@ -1613,6 +1595,9 @@ class _MediaInfoSection extends StatelessWidget
   }
 }
 
+
+/// Deprecated in favour of [ImagesSection]
+@Deprecated('Deprecated in favour of ImagesSection')
 class _ImagesSection extends StatelessWidget with GenericFunctions {
   const _ImagesSection({Key? key}) : super(key: key);
 
@@ -1629,7 +1614,7 @@ class _ImagesSection extends StatelessWidget with GenericFunctions {
             title: 'Images',
             children: [
               ImageCardListView(
-                images: images,
+               images,
                 screenWidth: MediaQuery.of(context).size.width,
               ),
               // Container(
@@ -2401,7 +2386,7 @@ class TrailerDelegate extends SliverPersistentHeaderDelegate
     required this.youtubeKeys,
   });
 
-  late final child = TrailerViewProvider(
+  late final child = TrailerView(
     youtubeKeys: youtubeKeys,
     initialVideoId: initialVideoId,
   );

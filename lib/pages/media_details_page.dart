@@ -10,12 +10,12 @@ import '../models/movie.dart';
 /// This page is meant to show the sub details of movie details
 /// T can be any model object which means that all possible objects would have
 /// to be dealt with in the code that links the models with the UI.
-class MovieSubDetailsPage<T> extends StatelessWidget {
+class MediaSubDetailsPage<T> extends StatelessWidget {
   final String title; // Page title
   final String name; // Movie name
   final List<T> list;
 
-  const MovieSubDetailsPage({
+  const MediaSubDetailsPage({
     required this.title,
     required this.name,
     required this.list,

@@ -1,15 +1,23 @@
 import 'package:async/async.dart';
 import 'package:cinema_scope/architecture/search_view_model.dart';
+import 'package:cinema_scope/models/movie.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 
 import '../constants.dart';
 import '../models/person.dart';
 import '../models/search.dart';
 
-class PersonViewModel extends ApiViewModel with Utilities {
+abstract class MediaViewModel extends ApiViewModel with Utilities {
+  List<ImageDetail>? images;
+
+}
+
+class PersonViewModel extends MediaViewModel {
   // Person? person;
 
   PersonWithKnownFor personWithKnownFor = PersonWithKnownFor();
+
+  Person? get person => personWithKnownFor.person;
 
   String? jobs;
 
@@ -43,9 +51,22 @@ class PersonViewModel extends ApiViewModel with Utilities {
         }
       }
       notifyListeners();
+      _compileImages();
       _compileKnownFor();
       _compilePersonJobs();
     });
+  }
+
+  _compileImages() async {
+    if (person != null) {
+      List<ImageDetail> allImages = [];
+      var profileImages = person?.images?.profiles ?? [];
+      var taggedImages = person?.taggedImages?.results ?? [];
+      allImages.addAll(taggedImages);
+      allImages.addAll(profileImages);
+      images = allImages;
+      notifyListeners();
+    }
   }
 
   _compileKnownFor() async {

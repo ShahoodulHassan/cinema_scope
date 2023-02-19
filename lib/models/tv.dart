@@ -46,7 +46,7 @@ class Tv {
   VideoResult videos;
   RecommendationResult recommendations;
   ImageResult images;
-  KeywordResult keywords;
+  TvKeywordResult keywords;
   ReviewResult reviews;
   ExternalIds? externalIds;
   TvAltTitleResult alternativeTitles;
@@ -202,8 +202,8 @@ class TvCast extends BaseTvCredit {
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class TvCrew extends BaseTvCredit {
-  int order;
-  List<Role> roles;
+  String department;
+  List<Job> jobs;
 
   TvCrew(
     super.id,
@@ -211,8 +211,8 @@ class TvCrew extends BaseTvCredit {
     super.name,
     super.knownForDepartment,
     super.totalEpisodeCount,
-    this.order,
-    this.roles, {
+    this.department,
+    this.jobs, {
     super.popularity,
     super.profilePath,
     super.gender,
@@ -342,3 +342,16 @@ class TvEpisode extends TvBaseResult {
   @override
   Map<String, dynamic> toJson() => _$TvEpisodeToJson(this);
 }
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class TvKeywordResult {
+  List<Keyword> results;
+
+  TvKeywordResult(this.results);
+
+  factory TvKeywordResult.fromJson(Map<String, dynamic> json) =>
+      _$TvKeywordResultFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TvKeywordResultToJson(this);
+}
+

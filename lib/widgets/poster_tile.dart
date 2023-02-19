@@ -2,7 +2,6 @@ import 'package:cinema_scope/models/search.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -177,7 +176,14 @@ class TvPosterTile extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     return PosterTile(
-      onTap: () /*=> goToMoviePage(context, tv)*/ {},
+      onTap: () => goToTvPage(
+        context,
+        id: tv.id,
+        title: tv.name,
+        overview: tv.overview,
+        releaseDate: tv.firstAirDate,
+        voteAverage: tv.voteAverage,
+      ),
       title: tv.name,
       poster: NetworkImageView(
         tv.posterPath,

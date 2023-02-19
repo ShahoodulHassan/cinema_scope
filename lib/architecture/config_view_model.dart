@@ -11,7 +11,9 @@ import '../models/movie.dart';
 import '../utilities/utilities.dart';
 
 class ConfigViewModel extends ApiViewModel {
-  final int interval = kDebugMode ? 2 : 15; /// In prod, it is 15 days
+  final int interval = kDebugMode ? 2 : 15;
+
+  /// In prod, it is 15 days
 
   AppLifecycleState _appState = AppLifecycleState.detached;
 
@@ -27,10 +29,10 @@ class ConfigViewModel extends ApiViewModel {
 
   bool get isConfigComplete =>
       apiConfig != null &&
-          cfgCountries.isNotEmpty &&
-          cfgLanguages.isNotEmpty &&
-          cfgTranslations.isNotEmpty &&
-          combinedGenres.isNotEmpty;
+      cfgCountries.isNotEmpty &&
+      cfgLanguages.isNotEmpty &&
+      cfgTranslations.isNotEmpty &&
+      combinedGenres.isNotEmpty;
 
   AppLifecycleState get appState => _appState;
 
@@ -39,9 +41,11 @@ class ConfigViewModel extends ApiViewModel {
     notifyListeners();
   }
 
-  String getImageUrl(ImageType imageType,
-      ImageQuality imageQuality,
-      String imagePath,) {
+  String getImageUrl(
+    ImageType imageType,
+    ImageQuality imageQuality,
+    String imagePath,
+  ) {
     return '${imageConfig.secureBaseUrl}'
         '${_getImageSize(imageType, imageQuality)}'
         '$imagePath';
@@ -97,9 +101,9 @@ class ConfigViewModel extends ApiViewModel {
     var movieGenres = await api.getGenres(MediaType.movie.name);
     var tvGenres = await api.getGenres(MediaType.tv.name);
     List<MediaGenre> combinedGenres = movieGenres.genres
-        .map((e) =>
-        MediaGenre.fromGenre(genre: e, mediaType: MediaType.movie))
-        .toList() +
+            .map((e) =>
+                MediaGenre.fromGenre(genre: e, mediaType: MediaType.movie))
+            .toList() +
         tvGenres.genres
             .map((e) => MediaGenre.fromGenre(genre: e, mediaType: MediaType.tv))
             .toList();
@@ -119,8 +123,8 @@ class ConfigViewModel extends ApiViewModel {
     return json.isEmpty
         ? []
         : (jsonDecode(json) as List)
-        .map((json) => MediaGenre.fromJson(json))
-        .toList();
+            .map((json) => MediaGenre.fromJson(json))
+            .toList();
   }
 
   void setPrefCombinedGenres(List<MediaGenre> genres) {
@@ -135,10 +139,12 @@ class ConfigViewModel extends ApiViewModel {
         'getGenreNamesFromIds=>mediaType:$mediaType, genreIds:$genreIds');
 
     return (genreIds.map((id) {
-      var genres = combinedGenres.where((genre) =>
-      genre.mediaType == mediaType && genre.id == id);
+      var genres = combinedGenres
+          .where((genre) => genre.mediaType == mediaType && genre.id == id);
       if (genres.isNotEmpty) return genres.first.name;
-    }).toList()..removeWhere((element) => element == null)).join(', ');
+    }).toList()
+          ..removeWhere((element) => element == null))
+        .join(', ');
 
     // return genreIds
     //     .map((id) =>
@@ -165,8 +171,8 @@ class ConfigViewModel extends ApiViewModel {
     return json.isEmpty
         ? []
         : (jsonDecode(json) as List)
-        .map((e) => CountryConfig.fromJson(e))
-        .toList();
+            .map((e) => CountryConfig.fromJson(e))
+            .toList();
   }
 
   void setPrefCountryConfig(List<CountryConfig> config) {
@@ -178,8 +184,8 @@ class ConfigViewModel extends ApiViewModel {
     return json.isEmpty
         ? []
         : (jsonDecode(json) as List)
-        .map((e) => LanguageConfig.fromJson(e))
-        .toList();
+            .map((e) => LanguageConfig.fromJson(e))
+            .toList();
   }
 
   void setPrefLanguageConfig(List<LanguageConfig> config) {
@@ -190,9 +196,7 @@ class ConfigViewModel extends ApiViewModel {
     var json = PrefUtil.getValue(Constants.pkTranslationConfig, '');
     return json.isEmpty
         ? []
-        : (jsonDecode(json) as List)
-        .map((e) => e as String)
-        .toList();
+        : (jsonDecode(json) as List).map((e) => e as String).toList();
   }
 
   void setPrefTranslationConfig(List<String> config) {
@@ -204,10 +208,7 @@ class ConfigViewModel extends ApiViewModel {
   bool get isNewConfigRequired {
     var lastDate = getPrefConfigStoreDate();
     return lastDate == null ||
-        DateTime
-            .now()
-            .difference(lastDate)
-            .inDays > interval;
+        DateTime.now().difference(lastDate).inDays > interval;
   }
 
   DateTime? getPrefConfigStoreDate() {
@@ -251,4 +252,18 @@ enum ReleaseType {
   final String name;
 
   const ReleaseType(this.id, this.name);
+}
+
+enum TvStatus {
+  returningSeries(0, 'Returning Series'),
+  planned(1, 'Planned'),
+  inProduction(2, 'In Production'),
+  ended(3, 'Ended'),
+  cancelled(4, 'Cancelled'),
+  pilot(5, 'Pilot');
+
+  final int id;
+  final String name;
+
+  const TvStatus(this.id, this.name);
 }

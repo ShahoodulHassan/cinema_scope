@@ -148,26 +148,26 @@ class _SearchPageChildState extends State<_SearchPageChild>
                   return PersonPosterTile(
                     person: person as PersonResult,
                     subtitle: person.knownForDepartment.isNotEmpty ||
-                        (person.gender != null && person.gender! > 0)
+                            (person.gender != null && person.gender! > 0)
                         ? Row(
-                          children: [
-                            if (person.knownForDepartment.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(right: 8.0),
-                                child: Text(
-                                  person.knownForDepartment,
+                            children: [
+                              if (person.knownForDepartment.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: Text(
+                                    person.knownForDepartment,
+                                    // textAlign: TextAlign.start,
+                                    style: const TextStyle(fontSize: 15.0),
+                                  ),
+                                ),
+                              if (person.gender != null && person.gender! > 0)
+                                Text(
+                                  '(${getGenderText(person.gender)})',
                                   // textAlign: TextAlign.start,
                                   style: const TextStyle(fontSize: 15.0),
                                 ),
-                              ),
-                            if (person.gender != null && person.gender! > 0)
-                              Text(
-                                '(${getGenderText(person.gender)})',
-                                // textAlign: TextAlign.start,
-                                style: const TextStyle(fontSize: 15.0),
-                              ),
-                          ],
-                        )
+                            ],
+                          )
                         : null,
                     description: person.knownFor.isNotEmpty
                         ? getRichText(context, person.knownFor)
@@ -220,14 +220,25 @@ class _SearchPageChildState extends State<_SearchPageChild>
         ),
         recognizer: TapGestureRecognizer()
           ..onTap = () {
-            goToMoviePage(
-              context,
-              id: result.id,
-              title: result.mediaTitle,
-              overview: result.overview,
-              releaseDate: result.mediaReleaseDate,
-              voteAverage: result.voteAverage,
-            );
+            if (result.mediaType == MediaType.movie.name) {
+              goToMoviePage(
+                context,
+                id: result.id,
+                title: result.mediaTitle,
+                overview: result.overview,
+                releaseDate: result.mediaReleaseDate,
+                voteAverage: result.voteAverage,
+              );
+            } else if (result.mediaType == MediaType.tv.name) {
+              goToTvPage(
+                context,
+                id: result.id,
+                title: result.mediaTitle,
+                overview: result.overview,
+                releaseDate: result.mediaReleaseDate,
+                voteAverage: result.voteAverage,
+              );
+            }
           },
       ));
       if (result != results.last) spans.add(const TextSpan(text: ', '));

@@ -7,6 +7,7 @@ import '../models/search.dart';
 import '../pages/movie_page.dart';
 import '../pages/movies_list_page.dart';
 import '../pages/person_page.dart';
+import '../pages/tv_page.dart';
 
 mixin CommonFunctions on Utilities {
 
@@ -44,6 +45,28 @@ mixin CommonFunctions on Utilities {
             overview: overview,
             sourceUrl: null,
             destUrl: destUrl,
+            heroImageTag: ''),
+      ),
+    ).then((value) {});
+  }
+
+  goToTvPage(
+      BuildContext context, {
+        required int id,
+        required String title,
+        required String? releaseDate,
+        required double voteAverage,
+        required String? overview,
+      }) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TvPage(
+            id: id,
+            title: title,
+            year: getYearStringFromDate(releaseDate),
+            voteAverage: voteAverage,
+            overview: overview,
             heroImageTag: ''),
       ),
     ).then((value) {});

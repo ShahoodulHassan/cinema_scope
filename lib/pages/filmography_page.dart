@@ -570,6 +570,14 @@ class CombinedPosterTile extends StatelessWidget
     return PosterTile(
       onTap: () {
         if (isTv) {
+          goToTvPage(
+            context,
+            id: result.id,
+            title: result.mediaTitle,
+            releaseDate: result.mediaReleaseDate,
+            voteAverage: result.voteAverage,
+            overview: result.overview,
+          );
         } else {
           goToMoviePage(
             context,

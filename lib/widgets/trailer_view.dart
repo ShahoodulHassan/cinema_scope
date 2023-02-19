@@ -11,13 +11,13 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../architecture/config_view_model.dart';
 
 
-class TrailerViewProvider extends MultiProvider {
+class TrailerView extends MultiProvider {
   /// It should always be non-empty
   final List<String> youtubeKeys;
 
   final String initialVideoId;
 
-  TrailerViewProvider({
+  TrailerView({
     required this.youtubeKeys,
     required this.initialVideoId,
     super.key,
@@ -29,18 +29,18 @@ class TrailerViewProvider extends MultiProvider {
                 ..initialize(youtubeKeys),
             ),
           ],
-          child: const TrailerView(),
+          child: const _TrailerViewChild(),
         );
 }
 
-class TrailerView extends StatefulWidget {
-  const TrailerView({Key? key}) : super(key: key);
+class _TrailerViewChild extends StatefulWidget {
+  const _TrailerViewChild({Key? key}) : super(key: key);
 
   @override
-  State<TrailerView> createState() => _TrailerViewState();
+  State<_TrailerViewChild> createState() => _TrailerViewChildState();
 }
 
-class _TrailerViewState extends RouteAwareState<TrailerView>
+class _TrailerViewChildState extends RouteAwareState<_TrailerViewChild>
     with GenericFunctions {
   late final ConfigViewModel cvm;
   late final YoutubeViewModel yvm;
