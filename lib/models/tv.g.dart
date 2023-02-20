@@ -120,7 +120,7 @@ CreatedBy _$CreatedByFromJson(Map<String, dynamic> json) => CreatedBy(
       json['id'] as int,
       json['credit_id'] as String,
       json['name'] as String,
-      json['gender'] as int,
+      gender: json['gender'] as int?,
       profilePath: json['profile_path'] as String?,
     );
 

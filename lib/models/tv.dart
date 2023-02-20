@@ -86,14 +86,17 @@ class CreatedBy {
   int id;
   String creditId;
   String name;
-  int gender;
+
+  /// In case of Slugterra: 46994, gender is missing altogether, hence the null
+  /// int
+  int? gender;
   String? profilePath;
 
   CreatedBy(
     this.id,
     this.creditId,
-    this.name,
-    this.gender, {
+    this.name, {
+    this.gender,
     this.profilePath,
   });
 
