@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:async/async.dart';
 import 'package:tuple/tuple.dart';
 
+import '../constants.dart';
 import '../models/movie.dart';
 import '../models/search.dart';
 import '../models/tv.dart';
@@ -8,7 +11,6 @@ import 'config_view_model.dart';
 import 'movie_view_model.dart';
 
 class TvViewModel extends MediaViewModel<Tv> {
-
   // Tv? tv;
 
   String? year;
@@ -21,18 +23,11 @@ class TvViewModel extends MediaViewModel<Tv> {
 
   // String? get homepage => tv?.homepage;
 
-  Tuple2<TvCrew, List<CombinedResult>>? moreByDirector;
-
-  Tuple2<TvCast, List<CombinedResult>>? moreByActor;
-
-
-
-
-  List<TvCast> get casts => media?.aggregateCredits.cast ?? [];
+  List<TvCast> get cast => media?.aggregateCredits.cast ?? [];
 
   List<TvCrew> get crew => media?.aggregateCredits.crew ?? [];
 
-  int get totalCastCount => casts.length;
+  int get totalCastCount => cast.length;
 
   List<Keyword> get keywords => media?.keywords.results ?? [];
 
@@ -95,19 +90,39 @@ class TvViewModel extends MediaViewModel<Tv> {
 
   void _fetchMoreData() async {
     // _fetchMoreByLead();
-    // _fetchMoreByLeadActor();
-    // _fetchMoreByGenres();
-    // _fetchMoreByDirector();
+    _fetchMoreByLeadActor();
+    fetchMoreByGenres();
+    _fetchMoreByDirector();
     _compileThumbnails();
     _compileImages();
+  }
+
+  _fetchMoreByDirector() async {
+    var directors = crew.where((element) {
+      var list = element.jobs.where(
+          (job) => job.job == Constants.departMap[Department.directing.name]);
+      return list.isNotEmpty;
+    });
+    if (directors.isNotEmpty) {
+      var director = directors.first;
+      fetchMoreByDirector<TvCrew>(director, director.department);
+    }
+  }
+
+  _fetchMoreByLeadActor() async {
+    var actors = cast.take(3).toList();
+    if (actors.isNotEmpty) {
+      var actor = actors[Random().nextInt(actors.length)];
+      fetchMoreByLeadActor<TvCast>(actor, actor.order);
+    }
   }
 
   _compileYears() async {
     var years = '';
     var y1 = getYearStringFromDate(media?.firstAirDate);
     var status = media?.status;
-    var continued = status != TvStatus.cancelled.name &&
-        status != TvStatus.ended.name;
+    var continued =
+        status != TvStatus.cancelled.name && status != TvStatus.ended.name;
     if (continued) {
       if (y1.isNotEmpty) years = '$y1-';
     } else {
@@ -148,6 +163,4 @@ class TvViewModel extends MediaViewModel<Tv> {
       notifyListeners();
     }
   }
-
-
 }

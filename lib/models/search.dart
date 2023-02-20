@@ -233,10 +233,10 @@ class CombinedResult extends MediaResult {
     this.firstAirDate,
   });
 
-  String get mediaTitle => mediaType == MediaType.tv.name ? name! : title!;
+  String get mediaTitle => name ?? title ?? ''/*mediaType == MediaType.tv.name ? name! : title!*/;
 
-  String? get mediaReleaseDate =>
-      mediaType == MediaType.tv.name ? firstAirDate : releaseDate;
+  String? get mediaReleaseDate => firstAirDate ?? releaseDate;
+      /*mediaType == MediaType.tv.name ? firstAirDate : releaseDate;*/
 
   factory CombinedResult.fromJson(Map<String, dynamic> json) =>
       _$CombinedResultFromJson(json);

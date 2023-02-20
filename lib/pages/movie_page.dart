@@ -193,9 +193,9 @@ class _MoviePageChildState extends State<_MoviePageChild>
           const _MediaInfoSection(),
           const RecommendationsSection<Movie, MovieViewModel>(),
           const ReviewsSection(),
-          const _MoreByDirectorSection(),
-          const _MoreByLeadActorSection(),
-          const _MoreByGenresSection(),
+          const MoreByDirectorSection<Movie, MovieViewModel>(),
+          const MoreByLeadActorSection<Movie, MovieViewModel>(),
+          const MoreByGenresSection<Movie, MovieViewModel>(),
           const KeywordsSection(),
           const SliverToBoxAdapter(child: SizedBox(height: 16)),
         ],
@@ -524,18 +524,18 @@ class _MoreByLeadSection extends StatelessWidget
 // }
 }
 
-class _MoreByLeadActorSection extends StatelessWidget
-    with GenericFunctions, Utilities, CommonFunctions {
+class MoreByLeadActorSection<M extends Media, T extends MediaViewModel<M>>
+    extends StatelessWidget with GenericFunctions, Utilities, CommonFunctions {
   final int _maxCount = 20;
 
-  const _MoreByLeadActorSection({Key? key}) : super(key: key);
+  const MoreByLeadActorSection({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Selector<MovieViewModel, Tuple2<Cast, List<CombinedResult>>?>(
+    return Selector<T, Tuple2<BasePersonResult, List<CombinedResult>>?>(
       selector: (_, mvm) => mvm.moreByActor,
       builder: (_, moreByActor, __) {
-        logIfDebug('moreByActor:$moreByActor');
+        // logIfDebug('moreByActor:$moreByActor');
         if (moreByActor == null) {
           return SliverToBoxAdapter(child: Container());
         }
@@ -602,15 +602,15 @@ class _MoreByLeadActorSection extends StatelessWidget
 // }
 }
 
-class _MoreByGenresSection extends StatelessWidget
-    with GenericFunctions, Utilities, CommonFunctions {
+class MoreByGenresSection<M extends Media, T extends MediaViewModel<M>>
+    extends StatelessWidget with GenericFunctions, Utilities, CommonFunctions {
   final int _maxCount = 20;
 
-  const _MoreByGenresSection({Key? key}) : super(key: key);
+  const MoreByGenresSection({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Selector<MovieViewModel, List<CombinedResult>>(
+    return Selector<T, List<CombinedResult>>(
       selector: (_, mvm) => mvm.moreByGenres ?? [],
       builder: (_, list, __) {
         logIfDebug('moreByGenres:$list');
@@ -623,7 +623,7 @@ class _MoreByGenresSection extends StatelessWidget
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                'A carefully curated list of top rated movies of '
+                'A carefully curated list of top rated titles of '
                 'the same era '
                 'having most of the similar genres',
                 style: TextStyle(
@@ -636,14 +636,25 @@ class _MoreByGenresSection extends StatelessWidget
               screenWidth: MediaQuery.of(context).size.width,
               aspectRatio: Constants.arPoster,
               onTap: (item) {
-                goToMoviePage(
-                  context,
-                  id: item.id,
-                  title: item.mediaTitle,
-                  overview: item.overview,
-                  releaseDate: item.mediaReleaseDate /*getReleaseDate(item)*/,
-                  voteAverage: item.voteAverage,
-                );
+                item.mediaType == MediaType.movie.name
+                    ? goToMoviePage(
+                        context,
+                        id: item.id,
+                        title: item.mediaTitle,
+                        overview: item.overview,
+                        releaseDate:
+                            item.mediaReleaseDate /*getReleaseDate(item)*/,
+                        voteAverage: item.voteAverage,
+                      )
+                    : goToTvPage(
+                        context,
+                        id: item.id,
+                        title: item.mediaTitle,
+                        overview: item.overview,
+                        releaseDate:
+                            item.mediaReleaseDate /*getReleaseDate(item)*/,
+                        voteAverage: item.voteAverage,
+                      );
               },
             ),
             Container(
@@ -680,15 +691,15 @@ class _MoreByGenresSection extends StatelessWidget
 // }
 }
 
-class _MoreByDirectorSection extends StatelessWidget
-    with GenericFunctions, Utilities, CommonFunctions {
+class MoreByDirectorSection<M extends Media, T extends MediaViewModel<M>>
+    extends StatelessWidget with GenericFunctions, Utilities, CommonFunctions {
   final int _maxCount = 20;
 
-  const _MoreByDirectorSection({Key? key}) : super(key: key);
+  const MoreByDirectorSection({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Selector<MovieViewModel, Tuple2<Crew, List<CombinedResult>>?>(
+    return Selector<T, Tuple2<BasePersonResult, List<CombinedResult>>?>(
       selector: (_, mvm) => mvm.moreByDirector,
       builder: (_, tuple, __) {
         // logIfDebug('moreByDirector:$list');
@@ -778,7 +789,7 @@ class CastCrewSection extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     return Selector<MovieViewModel, Tuple2<List<Cast>, List<Crew>>>(
-      selector: (_, mvm) => Tuple2(mvm.casts, mvm.crew),
+      selector: (_, mvm) => Tuple2(mvm.cast, mvm.crew),
       builder: (_, tuple, __) {
         if (tuple.item1.isEmpty && tuple.item2.isEmpty) {
           return SliverToBoxAdapter(child: Container());

@@ -10,6 +10,7 @@ import 'package:tuple/tuple.dart';
 import '../constants.dart';
 import '../models/movie.dart';
 import '../models/person.dart';
+import '../models/tv.dart';
 
 abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
   late final List<MediaGenre> allGenres;
@@ -35,10 +36,11 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
   List<Genre> get genres => media?.genres ?? [];
 
   TvRecommendationData? get recommendationData =>
-      media == null ? null : TvRecommendationData(media!.id, media!.recommendations);
+      media == null
+          ? null
+          : TvRecommendationData(media!.id, media!.recommendations);
 
   int get totalRecomCount => media?.recommendations.totalResults ?? 0;
-
 
   CancelableOperation? _operation;
   CancelableOperation? _moreByLeadOperation;
@@ -46,6 +48,8 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
   CancelableOperation? _moreByDirectorOperation;
 
   List<CombinedResult>? moreByLead, moreByGenres;
+  Tuple2<BasePersonResult, List<CombinedResult>>? moreByDirector;
+  Tuple2<BasePersonResult, List<CombinedResult>>? moreByActor;
 
   set recomPageIndex(int index) {
     _recomPageIndex = index;
@@ -54,6 +58,155 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
 
   set operation(CancelableOperation value) {
     _operation = value;
+  }
+
+  fetchMoreByDirector<C extends BasePersonResult>(C director,
+      String department) async {
+    moreByDirectorOperation = CancelableOperation<Person>.fromFuture(
+        api.getPersonWithDetail(director.id, append: 'combined_credits'))
+        .then((person) {
+      var moreByDirector = person.combinedCredits.crew
+          .where((media) =>
+      media.department == department &&
+          media.id != this.media?.id &&
+          media.posterPath != null)
+          .toList()
+        ..sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
+      if (moreByDirector.isNotEmpty) {
+        this.moreByDirector = Tuple2(director, moreByDirector);
+        notifyListeners();
+      }
+    });
+  }
+
+  fetchMoreByLeadActor<C extends BasePersonResult>(C actor, int order) async {
+    moreByLeadOperation = CancelableOperation<Person>.fromFuture(
+        api.getPersonWithDetail(actor.id, append: 'combined_credits'))
+        .then((person) {
+      var moreByActor = person.combinedCredits.cast
+          .where((media) =>
+      (media.order ?? 3) <= order &&
+          media.id != this.media?.id &&
+          media.posterPath != null)
+          .toList()
+        ..sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
+      // logIfDebug('moreByActor:$moreByActor');
+      if (moreByActor.isNotEmpty) {
+        this.moreByActor = Tuple2(actor, moreByActor);
+        notifyListeners();
+      }
+    });
+  }
+
+  /// Movies having at least two genres from the movie in review, having primary
+  /// release date falling in a period of 10 years spread around the movie in
+  /// question.
+  /// Ideal situation would be to have 5 years ahead and 5 behind. However, if
+  /// the days ahead are less then 5 years (in case of more recent movies), days
+  /// behind are extended beyond 5 years such that the era always spans to 10
+  /// years in total
+  fetchMoreByGenres() async {
+    if (media != null) {
+      var releaseDate = (media is Movie
+          ? (media as Movie).releaseDate
+          : (media as Tv).firstAirDate) ??
+          '';
+      if (releaseDate.isNotEmpty) {
+        var date = DateTime.parse(releaseDate);
+        var diffFromNow = DateTime
+            .now()
+            .difference(date)
+            .inDays;
+        var totalDays = 365 * 10; // 10 years
+        var daysForward = min(diffFromNow, (365 * 5));
+        var daysBackward = totalDays - daysForward;
+        var dateLte = DateFormat('yyyy-MM-dd')
+            .format(date.add(Duration(days: daysForward)));
+        var dateGte = DateFormat('yyyy-MM-dd')
+            .format(date.subtract(Duration(days: daysBackward)));
+
+        var year = getYearFromDate(releaseDate);
+        if (year != null) {
+          String primaryYear = '$year';
+          if (DateTime
+              .now()
+              .difference(DateTime.parse('$year-01-01'))
+              .inDays <
+              (30 * 6)) {
+            primaryYear = '$year|${year - 1}';
+          }
+
+          Set<String> pairs = {};
+          var genreIds = media!.genres.map((e) => e.id).toList();
+          Set<int> excludedGenreIds = allGenres
+              .where((element) => !genreIds.contains(element.id))
+              .map((e) => e.id)
+              .toSet();
+          if (genreIds.length > 2) {
+            /// In case of more than two genres, the pairs will be joined by ,
+            for (int i = 0; i < genreIds.length; i++) {
+              var genre = genreIds[i];
+              var isLast = genre == genreIds.last;
+              if (!isLast) {
+                var nextGenres = genreIds.sublist(i + 1);
+                for (int i = 0; i < nextGenres.length; i++) {
+                  pairs.add('$genre,${nextGenres[i]}');
+                }
+              }
+            }
+          } else if (genreIds.isNotEmpty) {
+            /// In case of two genres, both will be joined by ,
+            /// In case of one genre, it alone will be added to the pairs.
+            pairs.add(genreIds.join(','));
+          }
+
+          // var keywords = media!.keywords.keywords.map((e) => e.id).join(',');
+          logIfDebug('genrePairs:$pairs');
+
+          if (pairs.isNotEmpty) {
+            List<Future<CombinedResults>> futures = pairs.map((pair) {
+              return media is Movie
+                  ? api.getMoreMoviesByGenres(
+                pair,
+                dateGte,
+                dateLte,
+              )
+                  : api.getMoreTvSeriesByGenres(
+                pair,
+                dateGte,
+                dateLte,
+              );
+            }).toList();
+
+            moreByGenresOperation =
+                CancelableOperation<List<CombinedResults>>.fromFuture(
+                  Future.wait(futures),
+                ).then((results) {
+                  /// Combine all results into one set
+                  /// (set would automatically remove duplicates)
+                  Set<CombinedResult> combinedResults = {};
+                  for (var result in results) {
+                    combinedResults.addAll(result.results);
+                  }
+
+                  /// Sort the combined results by vote average, remove the
+                  /// currently displayed movie from the list and notify
+                  /// listeners
+                  moreByGenres = combinedResults.map((e) {
+                    e.mediaType ??=
+                    media is Movie ? MediaType.movie.name : MediaType.tv.name;
+                    return e;
+                  }).toList()..removeWhere((element) => element.id == media?.id)
+                    ..sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
+                  // moreByGenres = combinedResults.toList()
+                  //   ..removeWhere((element) => element.id == media?.id)
+                  //   ..sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
+                  notifyListeners();
+                });
+          }
+        }
+      }
+    }
   }
 
   @override
@@ -83,22 +236,14 @@ class MovieViewModel extends MediaViewModel<Movie> {
 
   String? year;
 
-
-
   String? get runtime {
     var runtime = media?.runtime;
     return runtime == null ? null : runtimeToString(runtime);
   }
 
-  Tuple2<Crew, List<CombinedResult>>? moreByDirector;
-
-  Tuple2<Cast, List<CombinedResult>>? moreByActor;
-
   String? certification;
 
   String? get imdbId => media?.imdbId;
-
-
 
   // RecommendationData? get recommendationData => movie == null
   //     ? null
@@ -109,13 +254,11 @@ class MovieViewModel extends MediaViewModel<Movie> {
   //       ?..removeWhere((element) => element.posterPath == null)) ??
   //     [];
 
-
-
-  List<Cast> get casts => media?.credits.cast ?? [];
+  List<Cast> get cast => media?.credits.cast ?? [];
 
   List<Crew> get crew => media?.credits.crew ?? [];
 
-  int get totalCastCount => casts.length;
+  int get totalCastCount => cast.length;
 
   List<Keyword> get keywords => media?.keywords.keywords ?? [];
 
@@ -141,18 +284,19 @@ class MovieViewModel extends MediaViewModel<Movie> {
 
   String? get initialVideoId => _initialVideoId;
 
-  List<String> get youtubeKeys => ((media?.videos.results
-                  .where((video) => video.type == 'Trailer')
-                  .map((vid) => vid.key)
-                  .toList() ??
-              <String>[]) +
+  List<String> get youtubeKeys =>
+      ((media?.videos.results
+          .where((video) => video.type == 'Trailer')
+          .map((vid) => vid.key)
+          .toList() ??
+          <String>[]) +
           (media?.videos.results
-                  .where((video) => video.type == 'Teaser')
-                  .map((vid) => vid.key)
-                  .toList() ??
+              .where((video) => video.type == 'Teaser')
+              .map((vid) => vid.key)
+              .toList() ??
               <String>[]))
-      .take(3)
-      .toList();
+          .take(3)
+          .toList();
 
   MovieViewModel() : super();
 
@@ -173,7 +317,7 @@ class MovieViewModel extends MediaViewModel<Movie> {
   void _fetchMoreData() async {
     _fetchMoreByLead();
     _fetchMoreByLeadActor();
-    _fetchMoreByGenres();
+    fetchMoreByGenres();
     _fetchMoreByDirector();
     _compileThumbnails();
     _compileImages();
@@ -201,6 +345,24 @@ class MovieViewModel extends MediaViewModel<Movie> {
     }
   }
 
+  _fetchMoreByDirector() async {
+    var directors = crew.where((element) {
+      return element.job == Constants.departMap[Department.directing.name];
+    });
+    if (directors.isNotEmpty) {
+      var director = directors.first;
+      fetchMoreByDirector<Crew>(director, director.department);
+    }
+  }
+
+  _fetchMoreByLeadActor() async {
+    var actors = cast.take(3).toList();
+    if (actors.isNotEmpty) {
+      var actor = actors[Random().nextInt(actors.length)];
+      fetchMoreByLeadActor<Cast>(actor, actor.order);
+    }
+  }
+
   /// Movies having at least two genres from the movie in review, having primary
   /// release date falling in a period of 10 years spread around the movie in
   /// question.
@@ -213,7 +375,10 @@ class MovieViewModel extends MediaViewModel<Movie> {
       var releaseDate = media!.releaseDate ?? '';
       if (releaseDate.isNotEmpty) {
         var date = DateTime.parse(releaseDate);
-        var diffFromNow = DateTime.now().difference(date).inDays;
+        var diffFromNow = DateTime
+            .now()
+            .difference(date)
+            .inDays;
         var totalDays = 365 * 10; // 10 years
         var daysForward = min(diffFromNow, (365 * 5));
         var daysBackward = totalDays - daysForward;
@@ -225,7 +390,10 @@ class MovieViewModel extends MediaViewModel<Movie> {
         var year = getYearFromDate(releaseDate);
         if (year != null) {
           String primaryYear = '$year';
-          if (DateTime.now().difference(DateTime.parse('$year-01-01')).inDays <
+          if (DateTime
+              .now()
+              .difference(DateTime.parse('$year-01-01'))
+              .inDays <
               (30 * 6)) {
             primaryYear = '$year|${year - 1}';
           }
@@ -271,83 +439,26 @@ class MovieViewModel extends MediaViewModel<Movie> {
 
             moreByGenresOperation =
                 CancelableOperation<List<CombinedResults>>.fromFuture(
-              Future.wait(futures),
-            ).then((results) {
-              /// Combine all results into one set
-              /// (set would automatically remove duplicates)
-              Set<CombinedResult> combinedResults = {};
-              for (var result in results) {
-                combinedResults.addAll(result.results);
-              }
+                  Future.wait(futures),
+                ).then((results) {
+                  /// Combine all results into one set
+                  /// (set would automatically remove duplicates)
+                  Set<CombinedResult> combinedResults = {};
+                  for (var result in results) {
+                    combinedResults.addAll(result.results);
+                  }
 
-              /// Sort the combined results by vote average, remove the
-              /// currently displayed movie from the list and notify
-              /// listeners
-              moreByGenres = combinedResults.toList()
-                ..removeWhere((element) => element.id == media?.id)
-                ..sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
-              notifyListeners();
-            });
+                  /// Sort the combined results by vote average, remove the
+                  /// currently displayed movie from the list and notify
+                  /// listeners
+                  moreByGenres = combinedResults.toList()
+                    ..removeWhere((element) => element.id == media?.id)
+                    ..sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
+                  notifyListeners();
+                });
           }
         }
       }
-    }
-  }
-
-  _fetchMoreByDirector() async {
-    // logIfDebug('crew:$crew');
-    var directors = crew.where((element) {
-      // logIfDebug('job:${element.job}');
-      return element.job == Constants.departMap[Department.directing.name];
-    });
-    // logIfDebug('directors:$directors');
-    if (directors.isNotEmpty) {
-      var director = directors.first;
-      // logIfDebug('directorId:${director.id}');
-      moreByDirectorOperation = CancelableOperation<Person>.fromFuture(
-              api.getPersonWithDetail(director.id, append: 'combined_credits'))
-          .then((person) {
-        var moreByDirector = person.combinedCredits.crew
-            .where((media) =>
-                media.department == director.department &&
-                media.id != media?.id &&
-                media.posterPath != null)
-            .toList()
-          ..sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
-        // logIfDebug('moreByDirector:$moreByDirector');
-        if (moreByDirector.isNotEmpty) {
-          this.moreByDirector = Tuple2<Crew, List<CombinedResult>>(
-            director,
-            moreByDirector,
-          );
-          notifyListeners();
-        }
-      });
-    }
-  }
-
-  _fetchMoreByLeadActor() async {
-    var actors = casts.take(3).toList();
-    // logIfDebug('actors:$actors');
-    if (actors.isNotEmpty) {
-      var actor = actors[Random().nextInt(actors.length)];
-      // logIfDebug('directorId:${actor.id}');
-      moreByLeadOperation = CancelableOperation<Person>.fromFuture(
-              api.getPersonWithDetail(actor.id, append: 'combined_credits'))
-          .then((person) {
-        var moreByActor = person.combinedCredits.cast
-            .where((media) =>
-                (media.order ?? 3) <= actor.order &&
-                media.id != media!.id &&
-                media.posterPath != null)
-            .toList()
-          ..sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
-        // logIfDebug('moreByActor:$moreByActor');
-        if (moreByActor.isNotEmpty) {
-          this.moreByActor = Tuple2(actor, moreByActor);
-          notifyListeners();
-        }
-      });
     }
   }
 

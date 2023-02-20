@@ -913,6 +913,7 @@ class PosterCardListView extends StatelessWidget
         // primary: false,
         itemBuilder: (_, index) {
           var item = items[index];
+          logIfDebug('item:${item.id}, mediaType:${item.mediaType}');
           var title = item.mediaTitle /*getMediaTitle(item)*/;
           var year =
               getYearStringFromDate(item.mediaReleaseDate) /*getYear(item)*/;

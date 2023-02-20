@@ -267,3 +267,18 @@ enum TvStatus {
 
   const TvStatus(this.id, this.name);
 }
+
+enum TvType {
+  documentary(0, 'Documentary'),
+  news(1, 'News'),
+  miniSeries(2, 'Miniseries'),
+  reality(3, 'Reality'),
+  scripted(4, 'Scripted'),
+  talkShow(5, 'Talk Show'),
+  video(6, 'Video');
+
+  final int id;
+  final String name;
+
+  const TvType(this.id, this.name);
+}

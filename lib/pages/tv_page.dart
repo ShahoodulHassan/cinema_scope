@@ -1,5 +1,3 @@
-import 'package:cinema_scope/architecture/person_view_model.dart';
-import 'package:cinema_scope/models/search.dart';
 import 'package:cinema_scope/pages/person_page.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -9,7 +7,6 @@ import 'package:sliver_tools/sliver_tools.dart';
 import 'package:tuple/tuple.dart';
 
 import '../architecture/config_view_model.dart';
-import '../architecture/movie_view_model.dart';
 import '../architecture/tv_view_model.dart';
 import '../constants.dart';
 import '../models/configuration.dart';
@@ -20,10 +17,10 @@ import '../utilities/generic_functions.dart';
 import '../utilities/utilities.dart';
 import '../widgets/compact_text_button.dart';
 import '../widgets/expandable_synopsis.dart';
-import '../widgets/image_view.dart';
 import '../widgets/ink_well_overlay.dart';
 import '../widgets/recommendations_section.dart';
 import 'media_details_page.dart';
+import 'movie_page.dart';
 
 class TvPage extends MultiProvider {
   TvPage({
@@ -139,6 +136,10 @@ class _TvPageChildState extends State<_TvPageChild>
           const ImagesSection<TvViewModel>(),
           const _MediaInfoSection(),
           const RecommendationsSection<Tv, TvViewModel>(),
+          // const ReviewsSection(),
+          const MoreByDirectorSection<Tv, TvViewModel>(),
+          const MoreByLeadActorSection<Tv, TvViewModel>(),
+          const MoreByGenresSection<Tv, TvViewModel>(),
           const KeywordsSection(),
         ],
       ),

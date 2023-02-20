@@ -300,6 +300,23 @@ abstract class TmdbApi {
         @http.Query('include_image_language') String imageLanguage = 'en,null',
       });
 
-
+  @http.GET("/discover/tv")
+  @http.Headers(headerMap)
+  Future<CombinedResults> getMoreTvSeriesByGenres(
+      @http.Query('with_genres') String withGenres,
+      @http.Query('first_air_date.gte') String releaseDateGte,
+      @http.Query('first_air_date.lte') String releaseDateLte,
+      // @http.Query('without_genres') String withoutGenres,
+      /*@http.Query("with_keywords") String withKeywords,*/
+      /*@http.Query('primary_release_year') String primaryReleaseYear,*/ {
+        @http.Query('language') String language = 'en-US',
+        @http.Query('with_original_language') String originalLanguage = 'en',
+        @http.Query('watch_region') String region = 'US',
+        @http.Query('sort_by') String sortBy = 'vote_average.desc',
+        @http.Query('include_adult') String includeAdult = 'false',
+        @http.Query("page") int page = 1,
+        @http.Query("vote_average.gte") double voteAverage = 6.1,
+        @http.Query("vote_count.gte") int voteCount = 100,
+      });
 
 }
