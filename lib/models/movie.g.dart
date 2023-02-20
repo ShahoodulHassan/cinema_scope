@@ -649,15 +649,13 @@ extension $CrewCopyWith on Crew {
 // JsonSerializableGenerator
 // **************************************************************************
 
-Movie _$MovieFromJson(Map<String, dynamic> json) => Movie(
+Media _$MediaFromJson(Map<String, dynamic> json) => Media(
       json['adult'] as bool,
-      json['budget'] as int,
       (json['genres'] as List<dynamic>)
           .map((e) => Genre.fromJson(e as Map<String, dynamic>))
           .toList(),
       json['id'] as int,
       json['original_language'] as String,
-      json['original_title'] as String,
       (json['popularity'] as num).toDouble(),
       (json['production_companies'] as List<dynamic>)
           .map((e) => ProductionCompany.fromJson(e as Map<String, dynamic>))
@@ -665,73 +663,126 @@ Movie _$MovieFromJson(Map<String, dynamic> json) => Movie(
       (json['production_countries'] as List<dynamic>)
           .map((e) => ProductionCountry.fromJson(e as Map<String, dynamic>))
           .toList(),
-      json['revenue'] as int,
-      (json['spoken_languages'] as List<dynamic>)
-          .map((e) => LanguageConfig.fromJson(e as Map<String, dynamic>))
-          .toList(),
       json['status'] as String,
-      json['title'] as String,
-      json['video'] as bool,
       (json['vote_average'] as num).toDouble(),
       json['vote_count'] as int,
       VideoResult.fromJson(json['videos'] as Map<String, dynamic>),
-      MovieSearchResult.fromJson(
+      RecommendationResult.fromJson(
           json['recommendations'] as Map<String, dynamic>),
       ImageResult.fromJson(json['images'] as Map<String, dynamic>),
-      KeywordResult.fromJson(json['keywords'] as Map<String, dynamic>),
       ReviewResult.fromJson(json['reviews'] as Map<String, dynamic>),
-      Credits.fromJson(json['credits'] as Map<String, dynamic>),
-      ReleaseDates.fromJson(json['release_dates'] as Map<String, dynamic>),
-      MovieAltTitleResult.fromJson(
-          json['alternative_titles'] as Map<String, dynamic>),
       backdropPath: json['backdrop_path'] as String?,
-      releaseDate: json['release_date'] as String?,
-      belongsToCollection: json['belongs_to_collection'] == null
-          ? null
-          : BaseCollection.fromJson(
-              json['belongs_to_collection'] as Map<String, dynamic>),
       homepage: json['homepage'] as String?,
-      imdbId: json['imdb_id'] as String?,
       overview: json['overview'] as String?,
       posterPath: json['poster_path'] as String?,
-      runtime: json['runtime'] as int?,
       tagline: json['tagline'] as String?,
     );
 
-Map<String, dynamic> _$MovieToJson(Movie instance) => <String, dynamic>{
+Map<String, dynamic> _$MediaToJson(Media instance) => <String, dynamic>{
       'adult': instance.adult,
       'backdrop_path': instance.backdropPath,
-      'belongs_to_collection': instance.belongsToCollection,
-      'budget': instance.budget,
       'genres': instance.genres,
       'homepage': instance.homepage,
       'id': instance.id,
-      'imdb_id': instance.imdbId,
       'original_language': instance.originalLanguage,
-      'original_title': instance.originalTitle,
       'overview': instance.overview,
       'popularity': instance.popularity,
       'poster_path': instance.posterPath,
       'production_companies': instance.productionCompanies,
       'production_countries': instance.productionCountries,
+      'status': instance.status,
+      'tagline': instance.tagline,
+      'vote_average': instance.voteAverage,
+      'vote_count': instance.voteCount,
+      'videos': instance.videos,
+      'images': instance.images,
+      'recommendations': instance.recommendations,
+      'reviews': instance.reviews,
+    };
+
+Movie _$MovieFromJson(Map<String, dynamic> json) => Movie(
+      json['adult'] as bool,
+      (json['genres'] as List<dynamic>)
+          .map((e) => Genre.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      json['id'] as int,
+      json['original_language'] as String,
+      (json['popularity'] as num).toDouble(),
+      (json['production_companies'] as List<dynamic>)
+          .map((e) => ProductionCompany.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      (json['production_countries'] as List<dynamic>)
+          .map((e) => ProductionCountry.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      json['status'] as String,
+      (json['vote_average'] as num).toDouble(),
+      json['vote_count'] as int,
+      VideoResult.fromJson(json['videos'] as Map<String, dynamic>),
+      RecommendationResult.fromJson(
+          json['recommendations'] as Map<String, dynamic>),
+      ImageResult.fromJson(json['images'] as Map<String, dynamic>),
+      ReviewResult.fromJson(json['reviews'] as Map<String, dynamic>),
+      json['original_title'] as String,
+      json['budget'] as int,
+      json['revenue'] as int,
+      (json['spoken_languages'] as List<dynamic>)
+          .map((e) => LanguageConfig.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      json['title'] as String,
+      json['video'] as bool,
+      Credits.fromJson(json['credits'] as Map<String, dynamic>),
+      KeywordResult.fromJson(json['keywords'] as Map<String, dynamic>),
+      ReleaseDates.fromJson(json['release_dates'] as Map<String, dynamic>),
+      MovieAltTitleResult.fromJson(
+          json['alternative_titles'] as Map<String, dynamic>),
+      backdropPath: json['backdrop_path'] as String?,
+      homepage: json['homepage'] as String?,
+      overview: json['overview'] as String?,
+      posterPath: json['poster_path'] as String?,
+      tagline: json['tagline'] as String?,
+      releaseDate: json['release_date'] as String?,
+      belongsToCollection: json['belongs_to_collection'] == null
+          ? null
+          : BaseCollection.fromJson(
+              json['belongs_to_collection'] as Map<String, dynamic>),
+      runtime: json['runtime'] as int?,
+      imdbId: json['imdb_id'] as String?,
+    );
+
+Map<String, dynamic> _$MovieToJson(Movie instance) => <String, dynamic>{
+      'adult': instance.adult,
+      'backdrop_path': instance.backdropPath,
+      'genres': instance.genres,
+      'homepage': instance.homepage,
+      'id': instance.id,
+      'original_language': instance.originalLanguage,
+      'overview': instance.overview,
+      'popularity': instance.popularity,
+      'poster_path': instance.posterPath,
+      'production_companies': instance.productionCompanies,
+      'production_countries': instance.productionCountries,
+      'status': instance.status,
+      'tagline': instance.tagline,
+      'vote_average': instance.voteAverage,
+      'vote_count': instance.voteCount,
+      'videos': instance.videos,
+      'images': instance.images,
+      'recommendations': instance.recommendations,
+      'reviews': instance.reviews,
+      'belongs_to_collection': instance.belongsToCollection,
+      'budget': instance.budget,
+      'video': instance.video,
+      'imdb_id': instance.imdbId,
+      'original_title': instance.originalTitle,
       'release_date': instance.releaseDate,
       'revenue': instance.revenue,
       'runtime': instance.runtime,
       'spoken_languages': instance.spokenLanguages,
-      'status': instance.status,
-      'tagline': instance.tagline,
-      'title': instance.title,
-      'video': instance.video,
-      'vote_average': instance.voteAverage,
-      'vote_count': instance.voteCount,
-      'videos': instance.videos,
-      'recommendations': instance.recommendations,
-      'images': instance.images,
       'keywords': instance.keywords,
-      'credits': instance.credits,
-      'reviews': instance.reviews,
-      'release_dates': instance.releaseDates,
       'alternative_titles': instance.alternativeTitles,
+      'title': instance.title,
+      'credits': instance.credits,
+      'release_dates': instance.releaseDates,
     };
 
 BaseCollection _$BaseCollectionFromJson(Map<String, dynamic> json) =>

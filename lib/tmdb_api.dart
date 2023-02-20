@@ -248,12 +248,23 @@ abstract class TmdbApi {
 
   @http.GET("/{media_type}/{media_id}/recommendations")
   @http.Headers(headerMap)
-  Future<MovieSearchResult> getRecommendations(
+  Future<MovieSearchResult> getMovieRecommendations(
     @http.Path("media_type") String mediaType,
     @http.Path("media_id") int mediaId, {
     @http.Query("page") int page = 1,
     @http.Query('language') String language = 'en-US',
   });
+
+
+  @http.GET("/{media_type}/{media_id}/recommendations")
+  @http.Headers(headerMap)
+  Future<RecommendationResult> getRecommendations(
+      @http.Path("media_type") String mediaType,
+      @http.Path("media_id") int mediaId, {
+        @http.Query("page") int page = 1,
+        @http.Query('language') String language = 'en-US',
+      });
+
 
   @http.GET("/person/{id}")
   @http.Headers(headerMap)

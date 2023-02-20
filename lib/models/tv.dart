@@ -8,15 +8,10 @@ import 'movie.dart';
 part 'tv.g.dart';
 
 @JsonSerializable(fieldRename: FieldRename.snake)
-class Tv {
-  bool adult;
-  String? backdropPath;
+class Tv extends Media {
   List<CreatedBy> createdBy;
   List<int> episodeRunTime;
   String firstAirDate;
-  List<Genre> genres;
-  String? homepage;
-  int id;
   bool inProduction;
   List<String> languages;
   String lastAirDate;
@@ -27,37 +22,34 @@ class Tv {
   int numberOfEpisodes;
   int numberOfSeasons;
   List<String> originCountry;
-  String originalLanguage;
   String originalName;
-  String? overview;
-  double popularity;
-  String? posterPath;
-  List<ProductionCompany> productionCompanies;
-  List<ProductionCountry> productionCountries;
   List<TvSeason> seasons;
   List<LanguageConfig> spokenLanguages;
-  String status;
-  String? tagline;
   String type;
-  double voteAverage;
-  int voteCount;
 
-  AggregateCredits aggregateCredits;
-  VideoResult videos;
-  RecommendationResult recommendations;
-  ImageResult images;
-  TvKeywordResult keywords;
-  ReviewResult reviews;
-  ExternalIds? externalIds;
   TvAltTitleResult alternativeTitles;
+  TvKeywordResult keywords;
+  AggregateCredits aggregateCredits;
+  ExternalIds? externalIds;
 
   Tv(
-    this.adult,
+    super.adult,
+    super.genres,
+    super.id,
+    super.originalLanguage,
+    super.popularity,
+    super.productionCompanies,
+    super.productionCountries,
+    super.status,
+    super.voteAverage,
+    super.voteCount,
+    super.videos,
+    super.recommendations,
+    super.images,
+    super.reviews,
     this.createdBy,
     this.episodeRunTime,
     this.firstAirDate,
-    this.genres,
-    this.id,
     this.inProduction,
     this.languages,
     this.lastAirDate,
@@ -67,35 +59,25 @@ class Tv {
     this.numberOfEpisodes,
     this.numberOfSeasons,
     this.originCountry,
-    this.originalLanguage,
     this.originalName,
-    this.popularity,
-    this.productionCompanies,
-    this.productionCountries,
     this.seasons,
     this.spokenLanguages,
-    this.status,
     this.type,
-    this.voteAverage,
-    this.voteCount,
+    this.keywords,
     this.aggregateCredits,
     this.externalIds,
-    this.reviews,
-    this.images,
-    this.videos,
-    this.keywords,
-    this.alternativeTitles,
-    this.recommendations, {
-    this.backdropPath,
-    this.homepage,
+    this.alternativeTitles, {
+    super.backdropPath,
+    super.homepage,
+    super.overview,
+    super.posterPath,
+    super.tagline,
     this.nextEpisodeToAir,
-    this.overview,
-    this.posterPath,
-    this.tagline,
   });
 
   factory Tv.fromJson(Map<String, dynamic> json) => _$TvFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$TvToJson(this);
 }
 
@@ -354,4 +336,3 @@ class TvKeywordResult {
 
   Map<String, dynamic> toJson() => _$TvKeywordResultToJson(this);
 }
-

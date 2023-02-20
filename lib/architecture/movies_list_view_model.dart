@@ -6,6 +6,9 @@ import '../constants.dart';
 import '../models/movie.dart';
 import '../models/search.dart';
 
+
+
+// TODO Make it generic for both Movie and TV
 class MoviesListViewModel extends ApiViewModel {
   MovieSearchResult? searchResult;
 
@@ -72,7 +75,7 @@ class MoviesListViewModel extends ApiViewModel {
   }) async {
     logIfDebug('id:$mediaId');
     _operation = CancelableOperation<MovieSearchResult>.fromFuture(
-      api.getRecommendations(mediaType.name, mediaId, page: page),
+      api.getMovieRecommendations(mediaType.name, mediaId, page: page),
     ).then((result) => _appendPageAndNotify(result, page));
   }
 

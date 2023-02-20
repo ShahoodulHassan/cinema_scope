@@ -1,7 +1,4 @@
 import 'package:async/async.dart';
-import 'package:cinema_scope/architecture/person_view_model.dart';
-import 'package:cinema_scope/architecture/search_view_model.dart';
-import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:tuple/tuple.dart';
 
 import '../models/movie.dart';
@@ -10,62 +7,37 @@ import '../models/tv.dart';
 import 'config_view_model.dart';
 import 'movie_view_model.dart';
 
-class TvViewModel extends MediaViewModel {
-  late final List<MediaGenre> allGenres;
+class TvViewModel extends MediaViewModel<Tv> {
 
-  Tv? tv;
-
-  int _recomPageIndex = 0;
-
-  int get recomPageIndex => _recomPageIndex;
-
-  CancelableOperation? _operation,
-      _moreByLeadOperation,
-      _moreByGenresOperation,
-      _moreByDirectorOperation;
+  // Tv? tv;
 
   String? year;
 
-  double? get voteAverage => tv?.voteAverage;
+  // double? get voteAverage => tv?.voteAverage;
 
   String? certification;
 
-  String? get imdbId => tv?.externalIds?.imdbId;
+  String? get imdbId => media?.externalIds?.imdbId;
 
-  String? get homepage => tv?.homepage;
-
-  List<CombinedResult>? moreByLead, moreByGenres;
+  // String? get homepage => tv?.homepage;
 
   Tuple2<TvCrew, List<CombinedResult>>? moreByDirector;
 
   Tuple2<TvCast, List<CombinedResult>>? moreByActor;
 
-  set recomPageIndex(int index) {
-    _recomPageIndex = index;
-    notifyListeners();
-  }
 
-  TvRecommendationData? get recommendationData =>
-      tv == null ? null : TvRecommendationData(tv!.id, tv!.recommendations);
 
-  int get totalRecomCount => tv?.recommendations.totalResults ?? 0;
 
-  List<TvCast> get casts => tv?.aggregateCredits.cast ?? [];
+  List<TvCast> get casts => media?.aggregateCredits.cast ?? [];
 
-  List<TvCrew> get crew => tv?.aggregateCredits.crew ?? [];
+  List<TvCrew> get crew => media?.aggregateCredits.crew ?? [];
 
   int get totalCastCount => casts.length;
 
-  List<Review> get reviews => tv?.reviews.results ?? [];
-
-  int get totalReviewsCount => tv?.reviews.totalResults ?? 0;
-
-  List<Keyword> get keywords => tv?.keywords.results ?? [];
-
-  String get synopsis => tv?.overview ?? '';
+  List<Keyword> get keywords => media?.keywords.results ?? [];
 
   String? get runtime {
-    var runtime = tv?.episodeRunTime ?? [];
+    var runtime = media?.episodeRunTime ?? [];
     return runtime.isEmpty ? null : runtimeToString(runtime.first);
   }
 
@@ -93,12 +65,12 @@ class TvViewModel extends MediaViewModel {
 
   String? get initialVideoId => _initialVideoId;
 
-  List<String> get youtubeKeys => ((tv?.videos.results
+  List<String> get youtubeKeys => ((media?.videos.results
                   .where((video) => video.type == 'Trailer')
                   .map((vid) => vid.key)
                   .toList() ??
               <String>[]) +
-          (tv?.videos.results
+          (media?.videos.results
                   .where((video) => video.type == 'Teaser')
                   .map((vid) => vid.key)
                   .toList() ??
@@ -109,11 +81,11 @@ class TvViewModel extends MediaViewModel {
   getTvWithDetail(int id, List<MediaGenre> allGenres,
       {String? leadActors}) async {
     this.allGenres = allGenres;
-    _operation = CancelableOperation<Tv>.fromFuture(
+    operation = CancelableOperation<Tv>.fromFuture(
       api.getTvWithDetail(id),
     ).then((result) async {
-      tv = result;
-      year = getYearStringFromDate(tv!.firstAirDate);
+      media = result;
+      year = getYearStringFromDate(media!.firstAirDate);
       await _compileYears();
       // await _compileCertification();
       notifyListeners();
@@ -132,27 +104,27 @@ class TvViewModel extends MediaViewModel {
 
   _compileYears() async {
     var years = '';
-    var y1 = getYearStringFromDate(tv?.firstAirDate);
-    var status = tv?.status;
+    var y1 = getYearStringFromDate(media?.firstAirDate);
+    var status = media?.status;
     var continued = status != TvStatus.cancelled.name &&
         status != TvStatus.ended.name;
     if (continued) {
       if (y1.isNotEmpty) years = '$y1-';
     } else {
-      var y2 = getYearStringFromDate(tv?.lastAirDate);
+      var y2 = getYearStringFromDate(media?.lastAirDate);
       if (y1.isNotEmpty && y2.isNotEmpty) years = '$y1-$y2';
     }
     this.years = years;
   }
 
   _compileThumbnails() async {
-    logIfDebug('isPinned, compileThumbnails called with tv:$tv');
-    if (tv != null) {
+    logIfDebug('isPinned, compileThumbnails called with tv:$media');
+    if (media != null) {
       Map<String, ThumbnailType> thumbs = {};
       for (var key in youtubeKeys) {
         thumbs[key] = ThumbnailType.video;
       }
-      for (var imagePath in tv!.images.backdrops.take(2)) {
+      for (var imagePath in media!.images.backdrops.take(2)) {
         thumbs[imagePath.filePath] = ThumbnailType.image;
       }
       logIfDebug('isPinned, thumb:$thumbs');
@@ -163,8 +135,8 @@ class TvViewModel extends MediaViewModel {
   }
 
   _compileImages() async {
-    if (tv != null) {
-      var imageResult = tv!.images;
+    if (media != null) {
+      var imageResult = media!.images;
       List<ImageDetail> images = [];
       images.addAll(imageResult.backdrops
           .map((e) => e.copyWith.imageType(ImageType.backdrop.name)));
@@ -177,12 +149,5 @@ class TvViewModel extends MediaViewModel {
     }
   }
 
-  @override
-  void dispose() {
-    _operation?.cancel();
-    _moreByLeadOperation?.cancel();
-    _moreByGenresOperation?.cancel();
-    _moreByDirectorOperation?.cancel();
-    super.dispose();
-  }
+
 }

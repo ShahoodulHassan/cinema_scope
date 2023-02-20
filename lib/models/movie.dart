@@ -7,85 +7,120 @@ import 'configuration.dart';
 
 part 'movie.g.dart';
 
-/// TODO Use [RecommendationResult] here instead of [MovieSearchResult]
 @JsonSerializable(fieldRename: FieldRename.snake)
-class Movie {
+class Media {
   bool adult;
   String? backdropPath;
-  BaseCollection? belongsToCollection;
-  int budget;
   List<Genre> genres;
   String? homepage;
   int id;
-  String? imdbId;
   String originalLanguage;
-  String originalTitle;
   String? overview;
   double popularity;
   String? posterPath;
   List<ProductionCompany> productionCompanies;
   List<ProductionCountry> productionCountries;
+  String status;
+  String? tagline;
+  double voteAverage;
+  int voteCount;
+
+  VideoResult videos;
+  ImageResult images;
+  RecommendationResult recommendations;
+  ReviewResult reviews;
+
+  Media(
+      this.adult,
+      this.genres,
+      this.id,
+      this.originalLanguage,
+      this.popularity,
+      this.productionCompanies,
+      this.productionCountries,
+      this.status,
+      this.voteAverage,
+      this.voteCount,
+      this.videos,
+      this.recommendations,
+      this.images,
+      this.reviews,
+      {this.backdropPath,
+      this.homepage,
+      this.overview,
+      this.posterPath,
+      this.tagline});
+
+  factory Media.fromJson(Map<String, dynamic> json) => _$MediaFromJson(json);
+
+  Map<String, dynamic> toJson() => _$MediaToJson(this);
+}
+
+/// TODO Use [RecommendationResult] here instead of [MovieSearchResult]
+@JsonSerializable(fieldRename: FieldRename.snake)
+class Movie extends Media {
+  BaseCollection? belongsToCollection;
+  int budget;
+  bool video;
+  String? imdbId;
+  String originalTitle;
   String? releaseDate;
   int revenue;
   int? runtime;
   List<LanguageConfig> spokenLanguages;
-  String status;
-  String? tagline;
-  String title;
-  bool video;
-  double voteAverage;
-  int voteCount;
-  VideoResult videos;
-
-  // MovieSearchResult similar;
-  MovieSearchResult recommendations;
-  ImageResult images;
   KeywordResult keywords;
-  Credits credits;
-  ReviewResult reviews;
-  ReleaseDates releaseDates;
   MovieAltTitleResult alternativeTitles;
 
+  String title;
+
+  // // MovieSearchResult similar;
+  // MovieSearchResult recommendations;
+
+  Credits credits;
+
+  ReleaseDates releaseDates;
+
   Movie(
-      this.adult,
-      this.budget,
-      this.genres,
-      this.id,
-      this.originalLanguage,
-      this.originalTitle,
-      this.popularity,
-      this.productionCompanies,
-      this.productionCountries,
-      this.revenue,
-      this.spokenLanguages,
-      this.status,
-      this.title,
-      this.video,
-      this.voteAverage,
-      this.voteCount,
-      this.videos,
-      // this.similar,
-      this.recommendations,
-      this.images,
-      this.keywords,
-      this.reviews,
-      this.credits,
-      this.releaseDates,
-      this.alternativeTitles,
-      {this.backdropPath,
-      this.releaseDate,
-      this.belongsToCollection,
-      this.homepage,
-      this.imdbId,
-      this.overview,
-      this.posterPath,
-      this.runtime,
-      this.tagline});
+    super.adult,
+    super.genres,
+    super.id,
+    super.originalLanguage,
+    super.popularity,
+    super.productionCompanies,
+    super.productionCountries,
+    super.status,
+    super.voteAverage,
+    super.voteCount,
+    super.videos,
+    super.recommendations,
+    super.images,
+    super.reviews,
+    this.originalTitle,
+    this.budget,
+    this.revenue,
+    this.spokenLanguages,
+    this.title,
+    this.video,
+    this.credits,
+    this.keywords,
+    this.releaseDates,
+    this.alternativeTitles, {
+    super.backdropPath,
+    super.homepage,
+    super.overview,
+    super.posterPath,
+    super.tagline,
+    this.releaseDate,
+    this.belongsToCollection,
+    this.runtime,
+    this.imdbId,
+  });
 
   String get movieTitle => title;
 
   factory Movie.fromJson(Map<String, dynamic> json) => _$MovieFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$MovieToJson(this);
 
   @override
@@ -243,7 +278,8 @@ class ImageDetail {
 class CombinedResults extends BaseSearchResult {
   List<CombinedResult> results;
 
-  CombinedResults(super.page, super.totalPages, super.totalResults, this.results);
+  CombinedResults(
+      super.page, super.totalPages, super.totalResults, this.results);
 
   factory CombinedResults.fromJson(Map<String, dynamic> json) =>
       _$CombinedResultsFromJson(json);

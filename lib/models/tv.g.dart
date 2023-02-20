@@ -8,15 +8,31 @@ part of 'tv.dart';
 
 Tv _$TvFromJson(Map<String, dynamic> json) => Tv(
       json['adult'] as bool,
+      (json['genres'] as List<dynamic>)
+          .map((e) => Genre.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      json['id'] as int,
+      json['original_language'] as String,
+      (json['popularity'] as num).toDouble(),
+      (json['production_companies'] as List<dynamic>)
+          .map((e) => ProductionCompany.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      (json['production_countries'] as List<dynamic>)
+          .map((e) => ProductionCountry.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      json['status'] as String,
+      (json['vote_average'] as num).toDouble(),
+      json['vote_count'] as int,
+      VideoResult.fromJson(json['videos'] as Map<String, dynamic>),
+      RecommendationResult.fromJson(
+          json['recommendations'] as Map<String, dynamic>),
+      ImageResult.fromJson(json['images'] as Map<String, dynamic>),
+      ReviewResult.fromJson(json['reviews'] as Map<String, dynamic>),
       (json['created_by'] as List<dynamic>)
           .map((e) => CreatedBy.fromJson(e as Map<String, dynamic>))
           .toList(),
       (json['episode_run_time'] as List<dynamic>).map((e) => e as int).toList(),
       json['first_air_date'] as String,
-      (json['genres'] as List<dynamic>)
-          .map((e) => Genre.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      json['id'] as int,
       json['in_production'] as bool,
       (json['languages'] as List<dynamic>).map((e) => e as String).toList(),
       json['last_air_date'] as String,
@@ -30,58 +46,56 @@ Tv _$TvFromJson(Map<String, dynamic> json) => Tv(
       (json['origin_country'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
-      json['original_language'] as String,
       json['original_name'] as String,
-      (json['popularity'] as num).toDouble(),
-      (json['production_companies'] as List<dynamic>)
-          .map((e) => ProductionCompany.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      (json['production_countries'] as List<dynamic>)
-          .map((e) => ProductionCountry.fromJson(e as Map<String, dynamic>))
-          .toList(),
       (json['seasons'] as List<dynamic>)
           .map((e) => TvSeason.fromJson(e as Map<String, dynamic>))
           .toList(),
       (json['spoken_languages'] as List<dynamic>)
           .map((e) => LanguageConfig.fromJson(e as Map<String, dynamic>))
           .toList(),
-      json['status'] as String,
       json['type'] as String,
-      (json['vote_average'] as num).toDouble(),
-      json['vote_count'] as int,
+      TvKeywordResult.fromJson(json['keywords'] as Map<String, dynamic>),
       AggregateCredits.fromJson(
           json['aggregate_credits'] as Map<String, dynamic>),
       json['external_ids'] == null
           ? null
           : ExternalIds.fromJson(json['external_ids'] as Map<String, dynamic>),
-      ReviewResult.fromJson(json['reviews'] as Map<String, dynamic>),
-      ImageResult.fromJson(json['images'] as Map<String, dynamic>),
-      VideoResult.fromJson(json['videos'] as Map<String, dynamic>),
-      TvKeywordResult.fromJson(json['keywords'] as Map<String, dynamic>),
       TvAltTitleResult.fromJson(
           json['alternative_titles'] as Map<String, dynamic>),
-      RecommendationResult.fromJson(
-          json['recommendations'] as Map<String, dynamic>),
       backdropPath: json['backdrop_path'] as String?,
       homepage: json['homepage'] as String?,
+      overview: json['overview'] as String?,
+      posterPath: json['poster_path'] as String?,
+      tagline: json['tagline'] as String?,
       nextEpisodeToAir: json['next_episode_to_air'] == null
           ? null
           : TvEpisode.fromJson(
               json['next_episode_to_air'] as Map<String, dynamic>),
-      overview: json['overview'] as String?,
-      posterPath: json['poster_path'] as String?,
-      tagline: json['tagline'] as String?,
     );
 
 Map<String, dynamic> _$TvToJson(Tv instance) => <String, dynamic>{
       'adult': instance.adult,
       'backdrop_path': instance.backdropPath,
-      'created_by': instance.createdBy,
-      'episode_run_time': instance.episodeRunTime,
-      'first_air_date': instance.firstAirDate,
       'genres': instance.genres,
       'homepage': instance.homepage,
       'id': instance.id,
+      'original_language': instance.originalLanguage,
+      'overview': instance.overview,
+      'popularity': instance.popularity,
+      'poster_path': instance.posterPath,
+      'production_companies': instance.productionCompanies,
+      'production_countries': instance.productionCountries,
+      'status': instance.status,
+      'tagline': instance.tagline,
+      'vote_average': instance.voteAverage,
+      'vote_count': instance.voteCount,
+      'videos': instance.videos,
+      'images': instance.images,
+      'recommendations': instance.recommendations,
+      'reviews': instance.reviews,
+      'created_by': instance.createdBy,
+      'episode_run_time': instance.episodeRunTime,
+      'first_air_date': instance.firstAirDate,
       'in_production': instance.inProduction,
       'languages': instance.languages,
       'last_air_date': instance.lastAirDate,
@@ -92,28 +106,14 @@ Map<String, dynamic> _$TvToJson(Tv instance) => <String, dynamic>{
       'number_of_episodes': instance.numberOfEpisodes,
       'number_of_seasons': instance.numberOfSeasons,
       'origin_country': instance.originCountry,
-      'original_language': instance.originalLanguage,
       'original_name': instance.originalName,
-      'overview': instance.overview,
-      'popularity': instance.popularity,
-      'poster_path': instance.posterPath,
-      'production_companies': instance.productionCompanies,
-      'production_countries': instance.productionCountries,
       'seasons': instance.seasons,
       'spoken_languages': instance.spokenLanguages,
-      'status': instance.status,
-      'tagline': instance.tagline,
       'type': instance.type,
-      'vote_average': instance.voteAverage,
-      'vote_count': instance.voteCount,
-      'aggregate_credits': instance.aggregateCredits,
-      'videos': instance.videos,
-      'recommendations': instance.recommendations,
-      'images': instance.images,
-      'keywords': instance.keywords,
-      'reviews': instance.reviews,
-      'external_ids': instance.externalIds,
       'alternative_titles': instance.alternativeTitles,
+      'keywords': instance.keywords,
+      'aggregate_credits': instance.aggregateCredits,
+      'external_ids': instance.externalIds,
     };
 
 CreatedBy _$CreatedByFromJson(Map<String, dynamic> json) => CreatedBy(

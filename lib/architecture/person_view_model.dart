@@ -7,12 +7,12 @@ import '../constants.dart';
 import '../models/person.dart';
 import '../models/search.dart';
 
-abstract class MediaViewModel extends ApiViewModel with Utilities {
+abstract class BaseMediaViewModel extends ApiViewModel with Utilities {
   List<ImageDetail>? images;
 
 }
 
-class PersonViewModel extends MediaViewModel {
+class PersonViewModel extends BaseMediaViewModel {
   // Person? person;
 
   PersonWithKnownFor personWithKnownFor = PersonWithKnownFor();

@@ -1,3 +1,5 @@
+import 'package:cinema_scope/architecture/person_view_model.dart';
+import 'package:cinema_scope/models/search.dart';
 import 'package:cinema_scope/pages/person_page.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -7,6 +9,7 @@ import 'package:sliver_tools/sliver_tools.dart';
 import 'package:tuple/tuple.dart';
 
 import '../architecture/config_view_model.dart';
+import '../architecture/movie_view_model.dart';
 import '../architecture/tv_view_model.dart';
 import '../constants.dart';
 import '../models/configuration.dart';
@@ -17,7 +20,9 @@ import '../utilities/generic_functions.dart';
 import '../utilities/utilities.dart';
 import '../widgets/compact_text_button.dart';
 import '../widgets/expandable_synopsis.dart';
+import '../widgets/image_view.dart';
 import '../widgets/ink_well_overlay.dart';
+import '../widgets/recommendations_section.dart';
 import 'media_details_page.dart';
 
 class TvPage extends MultiProvider {
@@ -30,18 +35,18 @@ class TvPage extends MultiProvider {
     required String? overview,
     required String heroImageTag,
   }) : super(
-      providers: [
-        ChangeNotifierProvider(create: (_) => TvViewModel()),
-        // ChangeNotifierProvider(create: (_) => YoutubeViewModel()),
-      ],
-      child: _TvPageChild(
-        id,
-        title,
-        year,
-        voteAverage,
-        overview,
-        heroImageTag,
-      ));
+            providers: [
+              ChangeNotifierProvider(create: (_) => TvViewModel()),
+              // ChangeNotifierProvider(create: (_) => YoutubeViewModel()),
+            ],
+            child: _TvPageChild(
+              id,
+              title,
+              year,
+              voteAverage,
+              overview,
+              heroImageTag,
+            ));
 }
 
 class _TvPageChild extends StatefulWidget {
@@ -52,22 +57,21 @@ class _TvPageChild extends StatefulWidget {
   final double voteAverage;
 
   const _TvPageChild(
-      this.id,
-      this.title,
-      this.year,
-      this.voteAverage,
-      this.overview,
-      this.heroImageTag, {
-        Key? key,
-      }) : super(key: key);
+    this.id,
+    this.title,
+    this.year,
+    this.voteAverage,
+    this.overview,
+    this.heroImageTag, {
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<_TvPageChild> createState() => _TvPageChildState();
 }
 
-class _TvPageChildState extends State<_TvPageChild> with GenericFunctions,
-    Utilities, CommonFunctions {
-
+class _TvPageChildState extends State<_TvPageChild>
+    with GenericFunctions, Utilities, CommonFunctions {
   late final TvViewModel tvm;
 
   final animDuration = const Duration(milliseconds: 250);
@@ -81,7 +85,6 @@ class _TvPageChildState extends State<_TvPageChild> with GenericFunctions,
         context.read<ConfigViewModel>().combinedGenres,
       );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +103,6 @@ class _TvPageChildState extends State<_TvPageChild> with GenericFunctions,
               ],
             ),
           ),
-
           SliverToBoxAdapter(
             child: AnimatedSize(
               duration: animDuration,
@@ -129,7 +131,6 @@ class _TvPageChildState extends State<_TvPageChild> with GenericFunctions,
                     buildTagline(),
                     ExpandableSynopsis(widget.overview),
                     buildGenresAndLinks(),
-
                   ],
                 ),
               ),
@@ -137,6 +138,7 @@ class _TvPageChildState extends State<_TvPageChild> with GenericFunctions,
           ),
           const ImagesSection<TvViewModel>(),
           const _MediaInfoSection(),
+          const RecommendationsSection<Tv, TvViewModel>(),
           const KeywordsSection(),
         ],
       ),
@@ -146,13 +148,11 @@ class _TvPageChildState extends State<_TvPageChild> with GenericFunctions,
   Widget buildYearRow() {
     return AnimatedSize(
       duration: animDuration,
-      child:
-      Selector<TvViewModel, Tuple2<String?, double?>>(
+      child: Selector<TvViewModel, Tuple2<String?, double?>>(
         builder: (_, tuple, __) {
           var year = tuple.item1 ?? '';
           var voteAverage = tuple.item2 ?? 0.0;
-          if (year.isEmpty &&
-              voteAverage == 0.0) {
+          if (year.isEmpty && voteAverage == 0.0) {
             return const SizedBox.shrink();
           } else {
             return SingleChildScrollView(
@@ -178,8 +178,7 @@ class _TvPageChildState extends State<_TvPageChild> with GenericFunctions,
   Widget buildEpisodesRow(BuildContext context) {
     return AnimatedSize(
       duration: animDuration,
-      child:
-      Selector<TvViewModel, Tuple2<int?, int?>>(
+      child: Selector<TvViewModel, Tuple2<int?, int?>>(
         builder: (_, tuple, __) {
           var seasonCount = tuple.item1 ?? 0;
           var epiCount = tuple.item2 ?? 0;
@@ -201,8 +200,8 @@ class _TvPageChildState extends State<_TvPageChild> with GenericFunctions,
           }
         },
         selector: (_, tvm) => Tuple2<int?, int?>(
-          tvm.tv?.numberOfSeasons,
-          tvm.tv?.numberOfEpisodes,
+          tvm.media?.numberOfSeasons,
+          tvm.media?.numberOfEpisodes,
         ),
       ),
     );
@@ -234,7 +233,7 @@ class _TvPageChildState extends State<_TvPageChild> with GenericFunctions,
           Text(
             ' ${applyCommaAndRound(voteAverage, 1, false, true)}'
             // '   (${applyCommaAndRoundNoZeroes(movie.voteCount * 1.0, 0, true)})'
-                '',
+            '',
             style: const TextStyle(
               // fontWeight: FontWeight.normal,
               fontSize: 16.0,
@@ -293,21 +292,21 @@ class _TvPageChildState extends State<_TvPageChild> with GenericFunctions,
           return tagline == null || tagline.isEmpty
               ? const SizedBox.shrink()
               : Padding(
-            padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
-            child: Text(
-              '"$tagline"',
-              textAlign: TextAlign.start,
-              style: GoogleFonts.literata(
-                textStyle: const TextStyle(
-                  fontSize: 18.0,
-                  // fontWeight: FontWeight.bold,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ),
-          );
+                  padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
+                  child: Text(
+                    '"$tagline"',
+                    textAlign: TextAlign.start,
+                    style: GoogleFonts.literata(
+                      textStyle: const TextStyle(
+                        fontSize: 18.0,
+                        // fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ),
+                );
         },
-        selector: (_, tvm) => tvm.tv?.tagline,
+        selector: (_, tvm) => tvm.tagline,
       ),
     );
   }
@@ -316,10 +315,10 @@ class _TvPageChildState extends State<_TvPageChild> with GenericFunctions,
     return AnimatedSize(
       duration: animDuration,
       child: Selector<TvViewModel, Tuple3<String?, String?, List<Genre>?>>(
-        selector: (_, tvm) => Tuple3<String?, String?, List<Genre>?>(
+        selector: (_, tvm) => Tuple3<String?, String?, List<Genre>>(
           tvm.imdbId,
-          tvm.tv?.homepage,
-          tvm.tv?.genres,
+          tvm.homepage,
+          tvm.genres,
         ),
         builder: (_, tuple, __) {
           logIfDebug('builder called with tv:$tuple');
@@ -340,7 +339,7 @@ class _TvPageChildState extends State<_TvPageChild> with GenericFunctions,
                       if (imdbId.isNotEmpty)
                         getIconButton(
                           const Icon(FontAwesomeIcons.imdb),
-                              () => openUrlString(
+                          () => openUrlString(
                             '${Constants.imdbTitleUrl}$imdbId',
                           ),
                         ),
@@ -348,11 +347,11 @@ class _TvPageChildState extends State<_TvPageChild> with GenericFunctions,
                         getIconButton(
                             (homepage.contains('netflix')
                                 ? Image.asset(
-                              'assets/icons/icons8_netflix_24.png',
-                              color: Theme.of(context).primaryColorDark,
-                            )
+                                    'assets/icons/icons8_netflix_24.png',
+                                    color: Theme.of(context).primaryColorDark,
+                                  )
                                 : const Icon(Icons.link)),
-                                () => openUrlString(homepage)),
+                            () => openUrlString(homepage)),
                     ],
                   ),
                 ),
@@ -364,13 +363,13 @@ class _TvPageChildState extends State<_TvPageChild> with GenericFunctions,
   }
 
   Widget getIconButton(Widget icon, Function() onPressed) => IconButton(
-    onPressed: onPressed,
-    icon: icon,
-    iconSize: 24.0,
-    color: Theme.of(context).primaryColorDark,
-    // padding: EdgeInsets.zero,
-    // visualDensity: VisualDensity(horizontal: -2.0, vertical: -2.0),
-  );
+        onPressed: onPressed,
+        icon: icon,
+        iconSize: 24.0,
+        color: Theme.of(context).primaryColorDark,
+        // padding: EdgeInsets.zero,
+        // visualDensity: VisualDensity(horizontal: -2.0, vertical: -2.0),
+      );
 
   /// This method expects a non-empty list of genres
   Widget getGenreView(List<Genre> genres) {
@@ -394,7 +393,7 @@ class _TvPageChildState extends State<_TvPageChild> with GenericFunctions,
               borderRadius: BorderRadius.circular(6.0),
               child: Chip(
                 backgroundColor:
-                Theme.of(context).primaryColorLight.withOpacity(0.17),
+                    Theme.of(context).primaryColorLight.withOpacity(0.17),
                 padding: EdgeInsets.zero,
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 label: Text(
@@ -419,6 +418,8 @@ class _TvPageChildState extends State<_TvPageChild> with GenericFunctions,
     );
   }
 }
+
+
 
 class _MediaInfoSection extends StatelessWidget
     with GenericFunctions, Utilities, CommonFunctions {
@@ -447,7 +448,7 @@ class _MediaInfoSection extends StatelessWidget
           );
         }
       },
-      selector: (_, tvm) => tvm.tv,
+      selector: (_, tvm) => tvm.media,
     );
   }
 
@@ -469,37 +470,37 @@ class _MediaInfoSection extends StatelessWidget
           onTap: tv.spokenLanguages.length <= 1
               ? null
               : () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) {
-              return MediaSubDetailsPage<LanguageConfig>(
-                  list: tv.spokenLanguages,
-                  title: 'Spoken languages',
-                  name: tv.name);
-            }));
-          }),
+                  Navigator.push(context, MaterialPageRoute(builder: (_) {
+                    return MediaSubDetailsPage<LanguageConfig>(
+                        list: tv.spokenLanguages,
+                        title: 'Spoken languages',
+                        name: tv.name);
+                  }));
+                }),
       if (tv.productionCountries.isNotEmpty)
         getSubSection('Produced in', tv.productionCountries.first.name,
             onTap: tv.productionCountries.length <= 1
                 ? null
                 : () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) {
-                return MediaSubDetailsPage<ProductionCountry>(
-                    list: tv.productionCountries,
-                    title: 'Production countries',
-                    name: tv.name);
-              }));
-            }),
+                    Navigator.push(context, MaterialPageRoute(builder: (_) {
+                      return MediaSubDetailsPage<ProductionCountry>(
+                          list: tv.productionCountries,
+                          title: 'Production countries',
+                          name: tv.name);
+                    }));
+                  }),
       if (tv.productionCompanies.isNotEmpty)
         getSubSection('Production by', tv.productionCompanies.first.name,
             onTap: tv.productionCompanies.length <= 1
                 ? null
                 : () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) {
-                return MediaSubDetailsPage<ProductionCompany>(
-                    list: tv.productionCompanies,
-                    title: 'Production companies',
-                    name: tv.name);
-              }));
-            }),
+                    Navigator.push(context, MaterialPageRoute(builder: (_) {
+                      return MediaSubDetailsPage<ProductionCompany>(
+                          list: tv.productionCompanies,
+                          title: 'Production companies',
+                          name: tv.name);
+                    }));
+                  }),
     ];
   }
 
@@ -633,7 +634,7 @@ class KeywordsSection extends StatelessWidget
                                   .withOpacity(0.17),
                               padding: EdgeInsets.zero,
                               materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
+                                  MaterialTapTargetSize.shrinkWrap,
                               label: Text(
                                 e.name.toProperCase(),
                                 overflow: TextOverflow.ellipsis,
@@ -665,26 +666,26 @@ class KeywordsSection extends StatelessWidget
   }
 
   Widget getSliverSeparator(BuildContext context) => Container(
-    height: 1.0,
-    color: Theme.of(context).primaryColorLight,
-  );
+        height: 1.0,
+        color: Theme.of(context).primaryColorLight,
+      );
 
   Widget getSectionTitleRow(bool showSeeAll, Function()? onPressed) => Padding(
-    padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        const Text(
-          'Keywords' /*.toUpperCase()*/,
-          style: TextStyle(
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.5,
-            // height: 1.1,
-          ),
+        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Keywords' /*.toUpperCase()*/,
+              style: TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.5,
+                // height: 1.1,
+              ),
+            ),
+            if (showSeeAll) CompactTextButton('See all', onPressed: onPressed),
+          ],
         ),
-        if (showSeeAll) CompactTextButton('See all', onPressed: onPressed),
-      ],
-    ),
-  );
+      );
 }

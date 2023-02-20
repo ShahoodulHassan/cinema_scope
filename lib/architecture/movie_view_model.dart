@@ -11,70 +11,113 @@ import '../constants.dart';
 import '../models/movie.dart';
 import '../models/person.dart';
 
-class MovieViewModel extends MediaViewModel {
+abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
   late final List<MediaGenre> allGenres;
 
-  Movie? movie;
+  T? media;
 
   int _recomPageIndex = 0;
 
   int get recomPageIndex => _recomPageIndex;
 
-  CancelableOperation? _operation,
-      _moreByLeadOperation,
-      _moreByGenresOperation,
-      _moreByDirectorOperation;
+  double? get voteAverage => media?.voteAverage;
 
-  String? year;
+  List<Review> get reviews => media?.reviews.results ?? [];
 
-  double? get voteAverage => movie?.voteAverage;
+  int get totalReviewsCount => media?.reviews.totalResults ?? 0;
 
-  String? get runtime {
-    var runtime = movie?.runtime;
-    return runtime == null ? null : runtimeToString(runtime);
-  }
+  String get synopsis => media?.overview ?? '';
 
-  String? certification;
+  String? get homepage => media?.homepage;
 
-  String? get imdbId => movie?.imdbId;
+  String? get tagline => media?.tagline;
 
-  String? get homepage => movie?.homepage;
+  List<Genre> get genres => media?.genres ?? [];
+
+  TvRecommendationData? get recommendationData =>
+      media == null ? null : TvRecommendationData(media!.id, media!.recommendations);
+
+  int get totalRecomCount => media?.recommendations.totalResults ?? 0;
+
+
+  CancelableOperation? _operation;
+  CancelableOperation? _moreByLeadOperation;
+  CancelableOperation? _moreByGenresOperation;
+  CancelableOperation? _moreByDirectorOperation;
 
   List<CombinedResult>? moreByLead, moreByGenres;
-
-  Tuple2<Crew, List<CombinedResult>>? moreByDirector;
-
-  Tuple2<Cast, List<CombinedResult>>? moreByActor;
 
   set recomPageIndex(int index) {
     _recomPageIndex = index;
     notifyListeners();
   }
 
-  RecommendationData? get recommendationData => movie == null
-      ? null
-      : RecommendationData(movie!.id, movie!.recommendations);
+  set operation(CancelableOperation value) {
+    _operation = value;
+  }
 
-  List<MovieResult> get recommendations =>
-      (movie?.recommendations.results
-        ?..removeWhere((element) => element.posterPath == null)) ??
-      [];
+  @override
+  void dispose() {
+    _operation?.cancel();
+    _moreByLeadOperation?.cancel();
+    _moreByGenresOperation?.cancel();
+    _moreByDirectorOperation?.cancel();
+    super.dispose();
+  }
 
-  int get totalRecomCount => movie?.recommendations.totalResults ?? 0;
+  set moreByLeadOperation(CancelableOperation value) {
+    _moreByLeadOperation = value;
+  }
 
-  List<Cast> get casts => movie?.credits.cast ?? [];
+  set moreByGenresOperation(CancelableOperation value) {
+    _moreByGenresOperation = value;
+  }
 
-  List<Crew> get crew => movie?.credits.crew ?? [];
+  set moreByDirectorOperation(CancelableOperation value) {
+    _moreByDirectorOperation = value;
+  }
+}
+
+class MovieViewModel extends MediaViewModel<Movie> {
+  // Movie? movie;
+
+  String? year;
+
+
+
+  String? get runtime {
+    var runtime = media?.runtime;
+    return runtime == null ? null : runtimeToString(runtime);
+  }
+
+  Tuple2<Crew, List<CombinedResult>>? moreByDirector;
+
+  Tuple2<Cast, List<CombinedResult>>? moreByActor;
+
+  String? certification;
+
+  String? get imdbId => media?.imdbId;
+
+
+
+  // RecommendationData? get recommendationData => movie == null
+  //     ? null
+  //     : RecommendationData(movie!.id, movie!.recommendations);
+
+  // List<MovieResult> get recommendations =>
+  //     (movie?.recommendations.results
+  //       ?..removeWhere((element) => element.posterPath == null)) ??
+  //     [];
+
+
+
+  List<Cast> get casts => media?.credits.cast ?? [];
+
+  List<Crew> get crew => media?.credits.crew ?? [];
 
   int get totalCastCount => casts.length;
 
-  List<Review> get reviews => movie?.reviews.results ?? [];
-
-  int get totalReviewsCount => movie?.reviews.totalResults ?? 0;
-
-  List<Keyword> get keywords => movie?.keywords.keywords ?? [];
-
-  String get synopsis => movie?.overview ?? '';
+  List<Keyword> get keywords => media?.keywords.keywords ?? [];
 
   bool _isTrailerPinned = false;
 
@@ -98,12 +141,12 @@ class MovieViewModel extends MediaViewModel {
 
   String? get initialVideoId => _initialVideoId;
 
-  List<String> get youtubeKeys => ((movie?.videos.results
+  List<String> get youtubeKeys => ((media?.videos.results
                   .where((video) => video.type == 'Trailer')
                   .map((vid) => vid.key)
                   .toList() ??
               <String>[]) +
-          (movie?.videos.results
+          (media?.videos.results
                   .where((video) => video.type == 'Teaser')
                   .map((vid) => vid.key)
                   .toList() ??
@@ -116,11 +159,11 @@ class MovieViewModel extends MediaViewModel {
   getMovieWithDetail(int id, List<MediaGenre> allGenres,
       {String? leadActors}) async {
     this.allGenres = allGenres;
-    _operation = CancelableOperation<Movie>.fromFuture(
+    operation = CancelableOperation<Movie>.fromFuture(
       api.getMovieWithDetail(id),
     ).then((result) async {
-      movie = result;
-      year = getYearStringFromDate(movie!.releaseDate);
+      media = result;
+      year = getYearStringFromDate(media!.releaseDate);
       await _compileCertification();
       notifyListeners();
       _fetchMoreData();
@@ -137,7 +180,7 @@ class MovieViewModel extends MediaViewModel {
   }
 
   _compileCertification() async {
-    var usResults = movie!.releaseDates.results
+    var usResults = media!.releaseDates.results
         .where((element) => element.iso31661 == Constants.region);
     if (usResults.isNotEmpty) {
       var theatrical = usResults.first.releaseDates;
@@ -146,13 +189,13 @@ class MovieViewModel extends MediaViewModel {
   }
 
   _fetchMoreByLead() async {
-    if (movie != null) {
-      var leadActors = movie!.credits.cast.take(2).map((e) => e.id).join('|');
-      _moreByLeadOperation = CancelableOperation<CombinedResults>.fromFuture(
+    if (media != null) {
+      var leadActors = media!.credits.cast.take(2).map((e) => e.id).join('|');
+      moreByLeadOperation = CancelableOperation<CombinedResults>.fromFuture(
         api.getMoreMoviesByLeadActors(leadActors),
       ).then((results) {
         moreByLead = results.results
-          ..removeWhere((element) => element.id == movie?.id);
+          ..removeWhere((element) => element.id == media?.id);
         notifyListeners();
       });
     }
@@ -166,8 +209,8 @@ class MovieViewModel extends MediaViewModel {
   /// behind are extended beyond 5 years such that the era always spans to 10
   /// years in total
   _fetchMoreByGenres() async {
-    if (movie != null) {
-      var releaseDate = movie!.releaseDate ?? '';
+    if (media != null) {
+      var releaseDate = media!.releaseDate ?? '';
       if (releaseDate.isNotEmpty) {
         var date = DateTime.parse(releaseDate);
         var diffFromNow = DateTime.now().difference(date).inDays;
@@ -188,7 +231,7 @@ class MovieViewModel extends MediaViewModel {
           }
 
           Set<String> pairs = {};
-          var genreIds = movie!.genres.map((e) => e.id).toList();
+          var genreIds = media!.genres.map((e) => e.id).toList();
           Set<int> excludedGenreIds = allGenres
               .where((element) => !genreIds.contains(element.id))
               .map((e) => e.id)
@@ -211,7 +254,7 @@ class MovieViewModel extends MediaViewModel {
             pairs.add(genreIds.join(','));
           }
 
-          var keywords = movie!.keywords.keywords.map((e) => e.id).join(',');
+          var keywords = media!.keywords.keywords.map((e) => e.id).join(',');
           logIfDebug('genrePairs:$pairs');
 
           if (pairs.isNotEmpty) {
@@ -226,7 +269,7 @@ class MovieViewModel extends MediaViewModel {
               );
             }).toList();
 
-            _moreByGenresOperation =
+            moreByGenresOperation =
                 CancelableOperation<List<CombinedResults>>.fromFuture(
               Future.wait(futures),
             ).then((results) {
@@ -241,7 +284,7 @@ class MovieViewModel extends MediaViewModel {
               /// currently displayed movie from the list and notify
               /// listeners
               moreByGenres = combinedResults.toList()
-                ..removeWhere((element) => element.id == movie?.id)
+                ..removeWhere((element) => element.id == media?.id)
                 ..sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
               notifyListeners();
             });
@@ -261,13 +304,13 @@ class MovieViewModel extends MediaViewModel {
     if (directors.isNotEmpty) {
       var director = directors.first;
       // logIfDebug('directorId:${director.id}');
-      _moreByDirectorOperation = CancelableOperation<Person>.fromFuture(
+      moreByDirectorOperation = CancelableOperation<Person>.fromFuture(
               api.getPersonWithDetail(director.id, append: 'combined_credits'))
           .then((person) {
         var moreByDirector = person.combinedCredits.crew
             .where((media) =>
                 media.department == director.department &&
-                media.id != movie?.id &&
+                media.id != media?.id &&
                 media.posterPath != null)
             .toList()
           ..sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
@@ -289,13 +332,13 @@ class MovieViewModel extends MediaViewModel {
     if (actors.isNotEmpty) {
       var actor = actors[Random().nextInt(actors.length)];
       // logIfDebug('directorId:${actor.id}');
-      _moreByLeadOperation = CancelableOperation<Person>.fromFuture(
+      moreByLeadOperation = CancelableOperation<Person>.fromFuture(
               api.getPersonWithDetail(actor.id, append: 'combined_credits'))
           .then((person) {
         var moreByActor = person.combinedCredits.cast
             .where((media) =>
                 (media.order ?? 3) <= actor.order &&
-                media.id != movie!.id &&
+                media.id != media!.id &&
                 media.posterPath != null)
             .toList()
           ..sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
@@ -309,8 +352,8 @@ class MovieViewModel extends MediaViewModel {
   }
 
   _compileImages() async {
-    if (movie != null) {
-      var imageResult = movie!.images;
+    if (media != null) {
+      var imageResult = media!.images;
       List<ImageDetail> images = [];
       images.addAll(imageResult.backdrops
           .map((e) => e.copyWith.imageType(ImageType.backdrop.name)));
@@ -324,13 +367,13 @@ class MovieViewModel extends MediaViewModel {
   }
 
   _compileThumbnails() async {
-    logIfDebug('isPinned, compileThumbnails called with movie:$movie');
-    if (movie != null) {
+    logIfDebug('isPinned, compileThumbnails called with movie:$media');
+    if (media != null) {
       Map<String, ThumbnailType> thumbs = {};
       for (var key in youtubeKeys) {
         thumbs[key] = ThumbnailType.video;
       }
-      for (var imagePath in movie!.images.backdrops.take(2)) {
+      for (var imagePath in media!.images.backdrops.take(2)) {
         thumbs[imagePath.filePath] = ThumbnailType.image;
       }
       logIfDebug('isPinned, thumb:$thumbs');
@@ -338,15 +381,6 @@ class MovieViewModel extends MediaViewModel {
       logIfDebug('isPinned, thumbMap:$thumbMap');
       notifyListeners();
     }
-  }
-
-  @override
-  void dispose() {
-    _operation?.cancel();
-    _moreByLeadOperation?.cancel();
-    _moreByGenresOperation?.cancel();
-    _moreByDirectorOperation?.cancel();
-    super.dispose();
   }
 }
 

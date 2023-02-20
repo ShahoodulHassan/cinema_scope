@@ -11,6 +11,7 @@ import '../pages/tv_page.dart';
 
 mixin CommonFunctions on Utilities {
 
+  @Deprecated('No need for a new slightly different method')
   goToMoviePageByMovieResult(
     BuildContext context,
     MovieResult movie, {

@@ -82,7 +82,16 @@ class MoviePosterTile extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     return PosterTile(
-      onTap: () => goToMoviePageByMovieResult(context, movie),
+      onTap: () {
+        return goToMoviePage(
+          context,
+          id: movie.id,
+          title: movie.movieTitle,
+          releaseDate: movie.releaseDate,
+          overview: movie.overview,
+          voteAverage: movie.voteAverage,
+        );;
+      },
       title: movie.title,
       poster: NetworkImageView(
         movie.posterPath,

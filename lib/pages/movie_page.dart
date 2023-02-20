@@ -5,6 +5,7 @@ import 'package:cinema_scope/models/search.dart';
 import 'package:cinema_scope/pages/credits_page.dart';
 import 'package:cinema_scope/pages/media_details_page.dart';
 import 'package:cinema_scope/pages/person_page.dart';
+import 'package:cinema_scope/pages/tv_page.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
@@ -22,6 +23,7 @@ import '../models/movie.dart';
 import '../widgets/compact_text_button.dart';
 import '../widgets/expandable_synopsis.dart';
 import '../widgets/ink_well_overlay.dart';
+import '../widgets/recommendations_section.dart';
 import '../widgets/trailer_view.dart';
 
 class MoviePage extends MultiProvider {
@@ -189,7 +191,7 @@ class _MoviePageChildState extends State<_MoviePageChild>
           const CastCrewSection(),
           const ImagesSection<MovieViewModel>(),
           const _MediaInfoSection(),
-          const RecommendedMoviesSection(),
+          const RecommendationsSection<Movie, MovieViewModel>(),
           const ReviewsSection(),
           const _MoreByDirectorSection(),
           const _MoreByLeadActorSection(),
@@ -341,7 +343,7 @@ class _MoviePageChildState extends State<_MoviePageChild>
                   ),
                 );
         },
-        selector: (_, mvm) => mvm.movie?.tagline,
+        selector: (_, mvm) => mvm.tagline,
       ),
     );
   }
@@ -350,10 +352,10 @@ class _MoviePageChildState extends State<_MoviePageChild>
     return AnimatedSize(
       duration: animDuration,
       child: Selector<MovieViewModel, Tuple3<String?, String?, List<Genre>?>>(
-        selector: (_, mvm) => Tuple3<String?, String?, List<Genre>?>(
-          mvm.movie?.imdbId,
-          mvm.movie?.homepage,
-          mvm.movie?.genres,
+        selector: (_, mvm) => Tuple3<String?, String?, List<Genre>>(
+          mvm.imdbId,
+          mvm.homepage,
+          mvm.genres,
         ),
         builder: (_, tuple, __) {
           logIfDebug('builder called with movie:$tuple');
@@ -938,9 +940,9 @@ class CastCrewSection extends StatelessWidget
     Navigator.push(context, MaterialPageRoute(builder: (_) {
       return CreditsPage(
         title: title,
-        credits: credits ?? mvm.movie!.credits,
-        id: mvm.movie!.id,
-        name: mvm.movie!.movieTitle,
+        credits: credits ?? mvm.media!.credits,
+        id: mvm.media!.id,
+        name: mvm.media!.movieTitle,
       );
     }));
   }
@@ -1135,297 +1137,6 @@ class CastListView<T extends BaseCredit> extends StatelessWidget
   }
 }
 
-class RecommendedMoviesSection extends StatelessWidget
-    with Utilities, GenericFunctions {
-  const RecommendedMoviesSection({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Selector<MovieViewModel, RecommendationData?>(
-      selector: (_, mvm) => mvm.recommendationData,
-      builder: (_, data, __) {
-        if (data == null || data.totalResults == 0) {
-          return SliverToBoxAdapter(child: Container());
-        } else {
-          return SliverPadding(
-            padding: const EdgeInsets.symmetric(vertical: 12.0),
-            sliver: SliverStack(
-              insetOnOverlap: false,
-              children: [
-                /// This serves as the base card on which the content card is
-                /// stacked. The fill constructor helps match its height with
-                /// the height of the content card.
-                const SliverPositioned.fill(
-                  child: Card(
-                    elevation: 5.0,
-                    color: Colors.white,
-                    surfaceTintColor: Colors.white,
-                    margin: EdgeInsets.zero,
-                    shape: ContinuousRectangleBorder(),
-                  ),
-                ),
-                RecommendedMoviesView(
-                  data.mediaId,
-                  data.recommendations,
-                  data.totalResults,
-                ),
-              ],
-            ),
-          );
-        }
-      },
-    );
-  }
-}
-
-class RecommendedMoviesView extends StatelessWidget
-    with Utilities, CommonFunctions {
-  final int movieId;
-  final List<MovieResult> recommendations;
-  final int totalRecomCount;
-  final int _itemsPerRow = 3;
-  final int _rowCount = 2;
-
-  int get _itemsPerPage => _itemsPerRow * _rowCount;
-
-  /// Below variables make sure that if more than one page worth of
-  /// recommendations are available, a page is shown only if its has two rows of
-  /// movies. That's because in case there are less movies on a page such that
-  /// only one row can be shown, the GridView squeezes to one row for that page
-  /// and that's not a good user XP.
-  /// However, if there are only one page worth of recommendations, they will
-  /// be shown no matter if shown on only one row. We are not worried about a
-  /// squeezing GridView because the user gets to see only one page.
-  late final _totalCount = recommendations.length;
-  late final _remainder = _totalCount % _itemsPerPage;
-  late final _itemCount = _totalCount < _itemsPerPage
-      ? _totalCount
-      : _totalCount ~/ _itemsPerPage * _itemsPerPage +
-          (_remainder > _itemsPerRow ? _remainder : 0);
-  late final _pageCount = recommendations.length ~/ _itemsPerPage +
-      (_remainder > _itemsPerRow ? 1 : 0);
-
-  RecommendedMoviesView(
-    this.movieId,
-    this.recommendations,
-    this.totalRecomCount, {
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MultiSliver(
-      children: [
-        getSectionTitleRow(context, _itemCount, totalRecomCount),
-        SliverPosterGrid(
-          recommendations,
-          itemsPerRow: _itemsPerRow,
-          itemsPerPage: _itemsPerPage,
-          pageCount: _pageCount,
-        ),
-        // SliverPosterGridSwiper`(recommendations),
-      ],
-    );
-  }
-
-  SliverToBoxAdapter getSectionTitleRow(
-    BuildContext context,
-    int itemCount,
-    int totalRecomCount,
-  ) {
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Recommendations' /*.toUpperCase()*/,
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.5,
-                // height: 1.1,
-              ),
-            ),
-            if (totalRecomCount > itemCount)
-              CompactTextButton('See all', onPressed: () {
-                goToMovieListPage(context, mediaId: movieId);
-              }),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class SliverPosterGrid extends StatelessWidget with Utilities, CommonFunctions {
-  final int itemsPerRow;
-  final int itemsPerPage;
-  final double _topRadius = 12.0;
-  final double _bottomRadius = 12.0;
-  final double _aspectRatio = Constants.arPoster;
-
-  late final BorderRadius _borderRadius = (_topRadius > 0 || _bottomRadius > 0)
-      ? BorderRadius.only(
-          topRight: Radius.circular(_topRadius),
-          topLeft: Radius.circular(_topRadius),
-          bottomRight: Radius.circular(_bottomRadius),
-          bottomLeft: Radius.circular(_bottomRadius),
-        )
-      : BorderRadius.zero;
-
-  final List<MovieResult> _recommendations;
-  final int pageCount;
-
-  late final _remainder = _recommendations.length % itemsPerPage;
-
-  late final _pageCount = _recommendations.length ~/ itemsPerPage +
-      (_remainder > itemsPerRow ? 1 : 0);
-
-  final _topPadding = 16.0;
-  final _bottomPadding = 16.0;
-  final _leftPadding = 16.0;
-
-  final _mainAxisSpacing = 5.0;
-  final _crossAxisSpacing = 5.0;
-
-  SliverPosterGrid(
-    this._recommendations, {
-    required this.itemsPerRow,
-    required this.itemsPerPage,
-    required this.pageCount,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Selector<MovieViewModel, int>(
-      selector: (_, mvm) => mvm.recomPageIndex,
-      builder: (_, index, __) {
-        return MultiSliver(
-          children: [
-            getGridView(getListForPage(_recommendations, index)),
-            if (_pageCount > 1) getPageNavigationView(index, context),
-          ],
-        );
-      },
-    );
-  }
-
-  SliverToBoxAdapter getPageNavigationView(int index, BuildContext context) {
-    final mvm = context.read<MovieViewModel>();
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: CompactTextButton('PREV',
-                  onPressed: (index > 0
-                      ? () => mvm.recomPageIndex = index - 1
-                      : null)),
-            ),
-            Text(
-              '${index + 1} / $_pageCount',
-              style: const TextStyle(
-                // fontWeight: FontWeight.bold,
-                fontSize: 16.0,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: CompactTextButton('NEXT',
-                  onPressed: (index < (_pageCount - 1)
-                      ? () => mvm.recomPageIndex = index + 1
-                      : null)),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget getGridView(List<MovieResult> titles) {
-    return SliverPadding(
-      padding: EdgeInsets.only(
-        left: _leftPadding,
-        right: _leftPadding,
-        top: _topPadding,
-        bottom: _bottomPadding,
-      ),
-      sliver: SliverGrid(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: itemsPerRow,
-          childAspectRatio: _aspectRatio,
-          mainAxisSpacing: _mainAxisSpacing,
-          crossAxisSpacing: _crossAxisSpacing,
-        ),
-        delegate: SliverChildBuilderDelegate(
-          (context, index) {
-            final movie = titles[index];
-            final destUrl = movie.backdropPath == null
-                ? null
-                : context.read<ConfigViewModel>().getImageUrl(
-                    ImageType.backdrop, ImageQuality.high, movie.backdropPath!);
-            return Card(
-              color: Colors.white,
-              surfaceTintColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: _borderRadius,
-              ),
-              elevation: 6.0,
-              // Margins had to be tweaked a bit in order to
-              // remove the whitespace around the image.
-              margin: const EdgeInsets.fromLTRB(1.5, 2.5, 1.8, 2.5),
-              child:
-                  // Column(
-                  //   children: [
-                  getImageView(titles, index, context, movie, destUrl),
-              // Text(getYearStringFromDate(movie.releaseDate), style: textStyle,),
-              //   ],
-              // ),
-            );
-          },
-          childCount: titles.length,
-        ),
-      ),
-    );
-  }
-
-  Widget getImageView(List<MovieResult> similarTitles, int index,
-      BuildContext context, MovieResult movie, String? destUrl) {
-    return Stack(
-      children: [
-        NetworkImageView(
-          similarTitles[index].posterPath,
-          imageType: ImageType.poster,
-          topRadius: _topRadius,
-          bottomRadius: _bottomRadius,
-          aspectRatio: _aspectRatio,
-        ),
-        Positioned.fill(
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: _borderRadius,
-              onTap: () {
-                goToMoviePageByMovieResult(context, movie, destUrl: destUrl);
-              },
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  List<MovieResult> getListForPage(List<MovieResult> list, int index) {
-    return list.skip(itemsPerPage * index).take(itemsPerPage).toList();
-  }
-}
-
 class _MediaInfoSection extends StatelessWidget
     with GenericFunctions, Utilities, CommonFunctions {
   const _MediaInfoSection({Key? key}) : super(key: key);
@@ -1453,7 +1164,7 @@ class _MediaInfoSection extends StatelessWidget
           );
         }
       },
-      selector: (_, mvm) => mvm.movie,
+      selector: (_, mvm) => mvm.media,
     );
   }
 
@@ -1595,7 +1306,6 @@ class _MediaInfoSection extends StatelessWidget
   }
 }
 
-
 /// Deprecated in favour of [ImagesSection]
 @Deprecated('Deprecated in favour of ImagesSection')
 class _ImagesSection extends StatelessWidget with GenericFunctions {
@@ -1614,7 +1324,7 @@ class _ImagesSection extends StatelessWidget with GenericFunctions {
             title: 'Images',
             children: [
               ImageCardListView(
-               images,
+                images,
                 screenWidth: MediaQuery.of(context).size.width,
               ),
               // Container(
@@ -1680,7 +1390,7 @@ class KeywordsSection extends StatelessWidget
                                 keywords: [e],
                                 genres: context
                                     .read<MovieViewModel>()
-                                    .movie
+                                    .media
                                     ?.genres,
                               );
                             },

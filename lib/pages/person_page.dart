@@ -560,7 +560,7 @@ class _BiographySection extends StatelessWidget {
   }
 }
 
-class ImagesSection<T extends MediaViewModel> extends StatelessWidget
+class ImagesSection<T extends BaseMediaViewModel> extends StatelessWidget
     with GenericFunctions {
   const ImagesSection({Key? key}) : super(key: key);
 
