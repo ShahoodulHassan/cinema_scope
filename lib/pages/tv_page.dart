@@ -17,6 +17,7 @@ import '../utilities/generic_functions.dart';
 import '../utilities/utilities.dart';
 import '../widgets/compact_text_button.dart';
 import '../widgets/expandable_synopsis.dart';
+import '../widgets/image_view.dart';
 import '../widgets/ink_well_overlay.dart';
 import '../widgets/recommendations_section.dart';
 import 'media_details_page.dart';
@@ -133,6 +134,7 @@ class _TvPageChildState extends State<_TvPageChild>
               ),
             ),
           ),
+          const _CastCrewSection(),
           const ImagesSection<TvViewModel>(),
           const _MediaInfoSection(),
           const RecommendationsSection<Tv, TvViewModel>(),
@@ -420,7 +422,349 @@ class _TvPageChildState extends State<_TvPageChild>
   }
 }
 
+class _CastCrewSection extends StatelessWidget
+    with GenericFunctions, Utilities, CommonFunctions {
+  final int _maxCount = 10;
 
+  const _CastCrewSection({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<TvViewModel, Tuple2<List<TvCast>, List<TvCrew>>>(
+      selector: (_, tvm) => Tuple2(tvm.cast, tvm.creators ?? []),
+      builder: (_, tuple, __) {
+        if (tuple.item1.isEmpty && tuple.item2.isEmpty) {
+          return SliverToBoxAdapter(child: Container());
+        }
+        return SliverPadding(
+          padding: const EdgeInsets.symmetric(vertical: 12.0),
+          sliver: SliverStack(
+            children: [
+              /// This serves as the base card on which the content card is
+              /// stacked. The fill constructor helps match its height with
+              /// the height of the content card.
+              SliverPositioned.fill(
+                child: Container(
+                  color: Colors.white,
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Column(
+                  children: [
+                    getSliverSeparator(context),
+                    if (tuple.item1.isNotEmpty)
+                      getSectionTitleRow(tuple.item1.length > _maxCount, () {}),
+                    if (tuple.item1.isNotEmpty)
+                      _CastListView<TvCast>(
+                        tuple.item1.take(_maxCount).toList(),
+                        MediaQuery.of(context).size.width,
+                      ),
+                    // if (tuple.item2.isNotEmpty)
+                    //   CastListView<Crew>(
+                    //     tuple.item2,
+                    //     MediaQuery.of(context).size.width,
+                    //   ),
+                    if (tuple.item2.isNotEmpty)
+                      getCrewSection(context, tuple.item2,
+                          'Creator${tuple.item2.length > 1 ? 's' : ''}'),
+                    // getCrewSection(context, tuple.item2),
+                    getSliverSeparator(context),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget getCrewSection(BuildContext context, List<TvCrew> creators, String label) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Column(
+        children: [
+          getCreatorsTile(context, creators, label),
+          CompactTextButton('All cast & crew', onPressed: () {
+            goToCreditsPage(context);
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget getCreatorsTile(
+      BuildContext context, List<TvCrew> creators, String label) {
+    if (creators.isEmpty) return const SizedBox.shrink();
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          if (creators.length == 1) {
+            goToPersonPage(context, creators.first);
+          } else {
+            // goToCreditsPage(
+            //   context,
+            //   title: label,
+            //   credits: Credits([], crew),
+            // );
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.5,
+                ),
+              ),
+              Text(
+                creators.map((e) => e.name).join(', '),
+                // maxLines: 2,
+                style: const TextStyle(
+                  fontSize: 15.0,
+                  height: 1.2,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void goToCreditsPage(
+    BuildContext context, {
+    AggregateCredits? credits,
+    String? title,
+  }) {
+    // var tvm = context.read<TvViewModel>();
+    // Navigator.push(context, MaterialPageRoute(builder: (_) {
+    //   return CreditsPage(
+    //     title: title,
+    //     credits: credits ?? tvm.media!.aggregateCredits,
+    //     id: tvm.media!.id,
+    //     name: tvm.media!.name,
+    //   );
+    // }));
+  }
+
+  Widget getSliverSeparator(BuildContext context) => Container(
+        height: 1.0,
+        color: Theme.of(context).primaryColorLight,
+      );
+
+  Widget getSectionTitleRow(bool showSeeAll, Function()? onPressed) => Padding(
+        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: const [
+            Text(
+              'Top billed cast' /*.toUpperCase()*/,
+              style: TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.5,
+                // height: 1.1,
+              ),
+            ),
+            // if (showSeeAll) CompactTextButton('All cast', onPressed: onPressed),
+          ],
+        ),
+      );
+}
+
+class _CastListView<T extends BaseTvCredit> extends StatelessWidget
+    with Utilities, CommonFunctions {
+  final List<T> credits;
+  final double screenWidth;
+
+  _CastListView(this.credits, this.screenWidth, {Key? key}) : super(key: key);
+
+  final separatorWidth = 10.0;
+
+  final listViewHorizontalPadding = 16.0;
+
+  final listViewVerticalPadding = 16.0;
+
+  final cardCount = 2.5;
+
+  late final deductibleWidth =
+      listViewHorizontalPadding + separatorWidth * cardCount.toInt();
+
+  late final posterWidth = (screenWidth - deductibleWidth) / cardCount;
+
+  final aspectRatio = Constants.arProfile / 0.87;
+
+  late final posterHeight = posterWidth / aspectRatio;
+
+  final maxLines = 2;
+
+  final episodeMaxLines = 1;
+
+  final textHorizPadding = 8.0;
+
+  // final nameTopPadding = 8.0;
+  //
+  // final nameBottomPadding = 0.0;
+  //
+  // final characterTopPadding = 0.0;
+  //
+  // final characterBottomPadding = 8.0;
+
+  final descriptionVertPadding = 8.0;
+
+  final nameStyle = const TextStyle(
+    fontSize: 14.0,
+    fontWeight: FontWeight.bold,
+    height: 1.2,
+  );
+
+  final characterStyle = const TextStyle(
+    fontSize: 14.0,
+    height: 1.2,
+  );
+
+  final episodeStyle = const TextStyle(
+    fontSize: 14.0,
+    height: 1.8,
+    color: Colors.black54,
+  );
+
+  final topRadius = 4.0;
+
+  final bottomRadius = 0.0;
+
+  /// This offset is being added to escape the "A RenderFlex overflowed by 0.200
+  /// pixels on the bottom." error. Seems like every line has this height offset
+  /// of 0.2.
+  final lineOffset = 0.2;
+
+  late final nameHeight = nameStyle.height! * nameStyle.fontSize! * maxLines +
+      (maxLines * lineOffset);
+
+  late final characterHeight =
+      characterStyle.height! * characterStyle.fontSize! * maxLines +
+          (maxLines * lineOffset);
+
+  late final episodeHeight =
+      episodeStyle.height! * episodeStyle.fontSize! * episodeMaxLines +
+          (episodeMaxLines * lineOffset);
+
+  // late final nameContainerHeight =
+  //     nameHeight + nameTopPadding + nameBottomPadding;
+  //
+  // late final characterContainerHeight =
+  //     characterHeight + characterTopPadding + characterBottomPadding;
+
+  late final descriptionContainerHeight =
+      nameHeight + characterHeight + episodeHeight + descriptionVertPadding * 2;
+
+  late final cardHeight =
+      posterHeight + /*nameContainerHeight + characterContainerHeight*/
+          descriptionContainerHeight;
+
+  late final viewHeight = cardHeight + listViewVerticalPadding * 2;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: screenWidth,
+      height: viewHeight,
+      child: ListView.separated(
+        // primary: false,
+        itemBuilder: (_, index) {
+          var person = credits[index];
+          return Stack(
+            children: [
+              Card(
+                surfaceTintColor: Colors.white,
+                elevation: 4.0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(topRadius),
+                ),
+                margin: EdgeInsets.zero,
+                child: SizedBox(
+                  width: posterWidth,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      NetworkImageView(
+                        person.profilePath,
+                        imageType: ImageType.profile,
+                        aspectRatio: aspectRatio,
+                        topRadius: topRadius,
+                        bottomRadius: bottomRadius,
+                        fit: BoxFit.fitWidth,
+                        heroImageTag: '${person.id}',
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(descriptionVertPadding),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              person.name,
+                              maxLines: maxLines,
+                              overflow: TextOverflow.ellipsis,
+                              style: nameStyle,
+                            ),
+                            Text(
+                              (person is TvCast
+                                  ? person.roles
+                                      .map((e) => e.character)
+                                      .join(', ')
+                                  : (person as TvCrew)
+                                      .jobs
+                                      .map((e) => e.job)
+                                      .join(', ')),
+                              maxLines: maxLines,
+                              overflow: TextOverflow.ellipsis,
+                              style: characterStyle,
+                            ),
+                            Text(
+                              '${person.totalEpisodeCount} episode${person.totalEpisodeCount > 1 ? 's' : ''}',
+                              maxLines: episodeMaxLines,
+                              overflow: TextOverflow.ellipsis,
+                              style: episodeStyle,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned.fill(
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(topRadius),
+                    onTap: () {
+                      goToPersonPage(context, person);
+                    },
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+        separatorBuilder: (_, index) => SizedBox(width: separatorWidth),
+        padding: EdgeInsets.symmetric(
+          horizontal: listViewHorizontalPadding,
+          vertical: listViewVerticalPadding,
+        ),
+        scrollDirection: Axis.horizontal,
+        itemCount: credits.length,
+      ),
+    );
+  }
+}
 
 class _MediaInfoSection extends StatelessWidget
     with GenericFunctions, Utilities, CommonFunctions {

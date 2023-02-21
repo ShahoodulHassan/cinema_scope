@@ -35,8 +35,6 @@ Tv _$TvFromJson(Map<String, dynamic> json) => Tv(
       json['first_air_date'] as String,
       json['in_production'] as bool,
       (json['languages'] as List<dynamic>).map((e) => e as String).toList(),
-      json['last_air_date'] as String,
-      TvEpisode.fromJson(json['last_episode_to_air'] as Map<String, dynamic>),
       json['name'] as String,
       (json['networks'] as List<dynamic>)
           .map((e) => Network.fromJson(e as Map<String, dynamic>))
@@ -67,6 +65,11 @@ Tv _$TvFromJson(Map<String, dynamic> json) => Tv(
       overview: json['overview'] as String?,
       posterPath: json['poster_path'] as String?,
       tagline: json['tagline'] as String?,
+      lastAirDate: json['last_air_date'] as String?,
+      lastEpisodeToAir: json['last_episode_to_air'] == null
+          ? null
+          : TvEpisode.fromJson(
+              json['last_episode_to_air'] as Map<String, dynamic>),
       nextEpisodeToAir: json['next_episode_to_air'] == null
           ? null
           : TvEpisode.fromJson(

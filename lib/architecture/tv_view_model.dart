@@ -27,6 +27,8 @@ class TvViewModel extends MediaViewModel<Tv> {
 
   List<TvCrew> get crew => media?.aggregateCredits.crew ?? [];
 
+  List<TvCrew>? creators;
+
   int get totalCastCount => cast.length;
 
   List<Keyword> get keywords => media?.keywords.results ?? [];
@@ -80,10 +82,26 @@ class TvViewModel extends MediaViewModel<Tv> {
       media = result;
       // year = getYearStringFromDate(media!.firstAirDate);
       await _compileYears();
+      await _compileCreators();
       // await _compileCertification();
       notifyListeners();
       _fetchMoreData();
     });
+  }
+
+  _compileCreators() async {
+    if (media != null && media!.createdBy.isNotEmpty) {
+      var creators = <TvCrew>[];
+      for (var creator in media!.createdBy) {
+        var persons = crew.where((crew) {
+          return creator.id == crew.id &&
+              crew.department == Department.writing.name;
+        });
+        if (persons.isNotEmpty) creators.add(persons.first);
+      }
+      this.creators = creators;
+      notifyListeners();
+    }
   }
 
   void _fetchMoreData() async {

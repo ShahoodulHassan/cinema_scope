@@ -14,8 +14,8 @@ class Tv extends Media {
   String firstAirDate;
   bool inProduction;
   List<String> languages;
-  String lastAirDate;
-  TvEpisode lastEpisodeToAir;
+  String? lastAirDate;
+  TvEpisode? lastEpisodeToAir;
   String name;
   TvEpisode? nextEpisodeToAir;
   List<Network> networks;
@@ -52,8 +52,6 @@ class Tv extends Media {
     this.firstAirDate,
     this.inProduction,
     this.languages,
-    this.lastAirDate,
-    this.lastEpisodeToAir,
     this.name,
     this.networks,
     this.numberOfEpisodes,
@@ -72,6 +70,8 @@ class Tv extends Media {
     super.overview,
     super.posterPath,
     super.tagline,
+    this.lastAirDate,
+    this.lastEpisodeToAir,
     this.nextEpisodeToAir,
   });
 

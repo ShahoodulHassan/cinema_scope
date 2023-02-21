@@ -188,7 +188,7 @@ class _MoviePageChildState extends State<_MoviePageChild>
               ),
             ),
           ),
-          const CastCrewSection(),
+          const _CastCrewSection(),
           const ImagesSection<MovieViewModel>(),
           const _MediaInfoSection(),
           const RecommendationsSection<Movie, MovieViewModel>(),
@@ -780,11 +780,11 @@ class MoreByDirectorSection<M extends Media, T extends MediaViewModel<M>>
 // }
 }
 
-class CastCrewSection extends StatelessWidget
+class _CastCrewSection extends StatelessWidget
     with GenericFunctions, Utilities, CommonFunctions {
   final int _maxCount = 10;
 
-  const CastCrewSection({Key? key}) : super(key: key);
+  const _CastCrewSection({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
