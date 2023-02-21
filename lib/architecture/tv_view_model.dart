@@ -36,8 +36,6 @@ class TvViewModel extends MediaViewModel<Tv> {
     return runtime.isEmpty ? null : runtimeToString(runtime.first);
   }
 
-  String? years;
-
   bool _isTrailerPinned = false;
 
   bool get isTrailerPinned => _isTrailerPinned;
@@ -80,7 +78,7 @@ class TvViewModel extends MediaViewModel<Tv> {
       api.getTvWithDetail(id),
     ).then((result) async {
       media = result;
-      year = getYearStringFromDate(media!.firstAirDate);
+      // year = getYearStringFromDate(media!.firstAirDate);
       await _compileYears();
       // await _compileCertification();
       notifyListeners();
@@ -122,14 +120,14 @@ class TvViewModel extends MediaViewModel<Tv> {
     var y1 = getYearStringFromDate(media?.firstAirDate);
     var status = media?.status;
     var continued =
-        status != TvStatus.cancelled.name && status != TvStatus.ended.name;
+        status != TvStatus.canceled.name && status != TvStatus.ended.name;
     if (continued) {
       if (y1.isNotEmpty) years = '$y1-';
     } else {
       var y2 = getYearStringFromDate(media?.lastAirDate);
       if (y1.isNotEmpty && y2.isNotEmpty) years = '$y1-$y2';
     }
-    this.years = years;
+    year = years;
   }
 
   _compileThumbnails() async {

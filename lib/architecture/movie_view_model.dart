@@ -33,6 +33,8 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
 
   String? get tagline => media?.tagline;
 
+  String? year;
+
   List<Genre> get genres => media?.genres ?? [];
 
   TvRecommendationData? get recommendationData =>
@@ -234,7 +236,7 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
 class MovieViewModel extends MediaViewModel<Movie> {
   // Movie? movie;
 
-  String? year;
+
 
   String? get runtime {
     var runtime = media?.runtime;
