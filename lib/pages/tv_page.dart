@@ -169,7 +169,7 @@ class _TvPageChildState extends State<_TvPageChild>
           }
         },
         selector: (_, tvm) => Tuple2<String?, double?>(
-          tvm.years,
+          tvm.year,
           tvm.voteAverage,
         ),
       ),
