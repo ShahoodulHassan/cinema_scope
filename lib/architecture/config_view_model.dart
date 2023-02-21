@@ -259,7 +259,7 @@ enum TvStatus {
   planned(1, 'Planned'),
   inProduction(2, 'In Production'),
   ended(3, 'Ended'),
-  cancelled(4, 'Cancelled'),
+  canceled(4, 'Canceled'),
   pilot(5, 'Pilot');
 
   final int id;
