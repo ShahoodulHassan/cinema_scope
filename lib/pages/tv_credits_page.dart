@@ -7,21 +7,25 @@ import 'package:provider/provider.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
 import '../architecture/filmography_view_model.dart';
+import '../architecture/tv_credits_view_model.dart';
+import '../constants.dart';
 import '../models/movie.dart';
+import '../models/tv.dart';
 import '../widgets/poster_tile.dart';
 
-class CreditsPage extends MultiProvider {
-  CreditsPage({
+class TvCreditsPage extends MultiProvider {
+  TvCreditsPage({
     super.key,
-    required Credits credits,
+    required AggregateCredits credits,
     required int id,
     required String name,
     String? title,
   }) : super(
             providers: [
-              ChangeNotifierProvider(create: (_) => CreditsViewModel(credits)),
+              ChangeNotifierProvider(
+                  create: (_) => TvCreditsViewModel(credits)),
             ],
-            child: _CreditsPageChild(
+            child: _TvCreditsPageChild(
               id: id,
               name: name,
               credits: credits,
@@ -29,13 +33,13 @@ class CreditsPage extends MultiProvider {
             ));
 }
 
-class _CreditsPageChild extends StatefulWidget {
+class _TvCreditsPageChild extends StatefulWidget {
   final int id;
   final String name;
-  final Credits credits;
+  final AggregateCredits credits;
   final String title;
 
-  const _CreditsPageChild({
+  const _TvCreditsPageChild({
     required this.id,
     required this.name,
     required this.credits,
@@ -44,10 +48,10 @@ class _CreditsPageChild extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<_CreditsPageChild> createState() => _CreditsPageChildState();
+  State<_TvCreditsPageChild> createState() => _TvCreditsPageChildState();
 }
 
-class _CreditsPageChildState extends State<_CreditsPageChild>
+class _TvCreditsPageChildState extends State<_TvCreditsPageChild>
     with GenericFunctions, Utilities, CommonFunctions {
   late final cast = widget.credits.cast;
   late final crew = widget.credits.crew;
@@ -67,7 +71,7 @@ class _CreditsPageChildState extends State<_CreditsPageChild>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(
-        (_) => context.read<CreditsViewModel>().initialize());
+        (_) => context.read<TvCreditsViewModel>().initialize());
   }
 
   @override
@@ -82,7 +86,7 @@ class _CreditsPageChildState extends State<_CreditsPageChild>
               SliverAppBar(
                 floating: true,
                 pinned: true,
-                // snap: true,
+                snap: true,
                 title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -117,7 +121,7 @@ class _CreditsPageChildState extends State<_CreditsPageChild>
             if (cast.isNotEmpty)
               CustomScrollView(
                 slivers: [
-                  getSliverTabData<Cast>(context),
+                  getSliverTabData<TvCast>(context),
                 ],
               ),
             if (crew.isNotEmpty)
@@ -137,8 +141,8 @@ class _CreditsPageChildState extends State<_CreditsPageChild>
                   //   },
                   // ),
                   SliverPinnedHeader(
-                    child: Selector<CreditsViewModel,
-                        Map<String, FilterState>>(
+                    child:
+                        Selector<TvCreditsViewModel, Map<String, FilterState>>(
                       selector: (_, cvm) => cvm.availableDepartments,
                       builder: (_, filters, __) {
                         return (filters.length <= 1)
@@ -147,7 +151,7 @@ class _CreditsPageChildState extends State<_CreditsPageChild>
                       },
                     ),
                   ),
-                  getSliverTabData<Crew>(context),
+                  getSliverTabData<TvCrew>(context),
                 ],
               ),
           ]),
@@ -156,19 +160,23 @@ class _CreditsPageChildState extends State<_CreditsPageChild>
     );
   }
 
-  Selector<CreditsViewModel, List<T>> getSliverTabData<T extends BaseCredit>(
-      BuildContext context) {
-    return Selector<CreditsViewModel, List<T>>(
+  Selector<TvCreditsViewModel, List<T>>
+      getSliverTabData<T extends BaseTvCredit>(BuildContext context) {
+    var controller = ScrollController();
+    return Selector<TvCreditsViewModel, List<T>>(
       selector: (_, cvm) {
-        return T.toString() == (Cast).toString()
-            ? (cvm.cast as List<T>)
-            : (cvm.crew as List<T>);
+        logIfDebug('selector called for ${T.toString()}');
+        return T.toString() == (TvCast).toString()
+            ? ((cvm.cast ?? []) as List<T>)
+            : ((cvm.crew ?? []) as List<T>);
       },
       builder: (_, credits, __) {
+        logIfDebug('builder called for ${T.toString()}');
         if (credits.isEmpty) {
           return const SliverToBoxAdapter(child: SizedBox.shrink());
         } else {
           return SliverList(
+            key: PageStorageKey<String>(T.toString()),
             delegate: SliverChildBuilderDelegate(
               (_, index) {
                 var person = credits[index];
@@ -186,18 +194,18 @@ class _CreditsPageChildState extends State<_CreditsPageChild>
                         )
                       : null,
                   description: Text(
-                    person is Cast
-                        ? person.character
-                        : context
-                            .read<CreditsViewModel>()
-                            .getDeptJobString(person.id),
+                    context.read<TvCreditsViewModel>().getDeptJobString(
+                            person.id,
+                            (person is TvCrew
+                                ? person.department
+                                : Department.acting.name)),
                     style: const TextStyle(
                       fontSize: 14.5,
                       height: 1.3,
                       color: Colors.black87,
                     ),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
+                    // maxLines: 8,
+                    // overflow: TextOverflow.ellipsis,
                   ),
                 );
               },
@@ -277,7 +285,7 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
               var currentlySelected = item.value == FilterState.selected;
               if (isSelected != currentlySelected) {
                 context
-                    .read<CreditsViewModel>()
+                    .read<TvCreditsViewModel>()
                     .toggleDepartments(item, isSelected);
               }
             },

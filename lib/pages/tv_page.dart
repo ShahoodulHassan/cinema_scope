@@ -1,4 +1,5 @@
 import 'package:cinema_scope/pages/person_page.dart';
+import 'package:cinema_scope/pages/tv_credits_page.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -503,11 +504,11 @@ class _CastCrewSection extends StatelessWidget
           if (creators.length == 1) {
             goToPersonPage(context, creators.first);
           } else {
-            // goToCreditsPage(
-            //   context,
-            //   title: label,
-            //   credits: Credits([], crew),
-            // );
+            goToCreditsPage(
+              context,
+              title: label,
+              credits: AggregateCredits([], creators),
+            );
           }
         },
         child: Padding(
@@ -543,15 +544,15 @@ class _CastCrewSection extends StatelessWidget
     AggregateCredits? credits,
     String? title,
   }) {
-    // var tvm = context.read<TvViewModel>();
-    // Navigator.push(context, MaterialPageRoute(builder: (_) {
-    //   return CreditsPage(
-    //     title: title,
-    //     credits: credits ?? tvm.media!.aggregateCredits,
-    //     id: tvm.media!.id,
-    //     name: tvm.media!.name,
-    //   );
-    // }));
+    var tvm = context.read<TvViewModel>();
+    Navigator.push(context, MaterialPageRoute(builder: (_) {
+      return TvCreditsPage(
+        title: title,
+        credits: credits ?? tvm.media!.aggregateCredits,
+        id: tvm.media!.id,
+        name: tvm.media!.name,
+      );
+    }));
   }
 
   Widget getSliverSeparator(BuildContext context) => Container(
