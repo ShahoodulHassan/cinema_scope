@@ -861,31 +861,12 @@ class CastCrewSection extends StatelessWidget
 
     if (directors.isEmpty && writers.isEmpty) return const SizedBox.shrink();
 
-    Map<int, Set<Crew>> crewMap = {};
-    for (var writer in writers) {
-      crewMap.putIfAbsent(writer.id, () => {}).add(writer);
-    }
-
-    /// We join the jobs of a crew member and append those with his name.
-    /// However, if there is only one job and that is 'Writer', we don't append
-    /// it because, the label of this section already tells us that writers are
-    /// shown therein.
-    var combinedWriters = <Crew>[];
-    for (var id in crewMap.keys) {
-      var writer = crewMap[id]!.first;
-      var jobs = crewMap[id]!.map((e) => e.job).toList();
-      var jobString = jobs.length == 1 && jobs.first == labelWriter
-          ? ''
-          : ' (${jobs.join(', ')})';
-      combinedWriters.add(writer.copyWith(jobs: jobString));
-    }
-
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Column(
         children: [
           getCrewTile(context, directors, labelDirector),
-          getCrewTile(context, combinedWriters, labelWriter),
+          getCrewTile(context, writers, labelWriter),
           CompactTextButton('All cast & crew', onPressed: () {
             goToCreditsPage(context);
           }),
@@ -896,16 +877,37 @@ class CastCrewSection extends StatelessWidget
 
   Widget getCrewTile(BuildContext context, List<Crew> crew, String label) {
     if (crew.isEmpty) return const SizedBox.shrink();
-    var names = crew.map((e) => '${e.name}${e.jobs ?? ''}').join(', ');
-    label = '$label${crew.length > 1 ? 's' : ''}';
+
+    Map<int, Set<Crew>> crewMap = {};
+    for (var c in crew) {
+      crewMap.putIfAbsent(c.id, () => {}).add(c);
+    }
+
+    /// We join the jobs of a crew member and append those with his name.
+    /// However, if there is only one job and that is 'Writer', we don't append
+    /// it because, the label of this section already tells us that writers are
+    /// shown therein.
+    var combinedCrew = <Crew>[];
+    for (var id in crewMap.keys) {
+      var writer = crewMap[id]!.first;
+      var jobs = crewMap[id]!.map((e) => e.job).toList();
+      var jobString = jobs.length == 1 && jobs.first == label
+          ? ''
+          : ' (${jobs.join(', ')})';
+      combinedCrew.add(writer.copyWith(jobs: jobString));
+    }
+
+
+    var names = combinedCrew.map((e) => '${e.name}${e.jobs ?? ''}').join(', ');
+    label = '$label${combinedCrew.length > 1 ? 's' : ''}';
     // var names = crew.map((e) => e.name).toSet().join(', ');
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: () {
-          if (crew.length == 1) {
-            goToPersonPage(context, crew.first);
+          if (combinedCrew.length == 1) {
+            goToPersonPage(context, combinedCrew.first);
           } else {
             goToCreditsPage(
               context,
