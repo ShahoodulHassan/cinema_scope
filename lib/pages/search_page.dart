@@ -45,7 +45,10 @@ class _SearchPageChildState extends State<_SearchPageChild>
   void initState() {
     logIfDebug('initState called');
     cvm = context.read<ConfigViewModel>();
-    svm = context.read<SearchViewModel>()..initializePaging();
+    svm = context.read<SearchViewModel>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      svm.initializePaging();
+    });
     super.initState();
   }
 
@@ -138,43 +141,43 @@ class _SearchPageChildState extends State<_SearchPageChild>
           PagedSliverList(
             pagingController: svm.pagingController,
             builderDelegate: PagedChildBuilderDelegate<BaseResult>(
-              itemBuilder: (_, person, index) {
-                logIfDebug('itemBuilder called with index:$index, $person');
-                var mediaType = person.mediaType;
-                logIfDebug('mediaType:${mediaType}');
+              itemBuilder: (_, media, index) {
+                logIfDebug('itemBuilder called with index:$index, $media');
+                var mediaType = media.mediaType;
+                logIfDebug('mediaType:$mediaType');
                 if (mediaType == MediaType.movie.name) {
-                  return MoviePosterTile(movie: person as MovieResult);
+                  return MoviePosterTile(movie: media as CombinedResult);
                 } else if (mediaType == MediaType.person.name) {
                   return PersonPosterTile(
-                    person: person as PersonResult,
-                    subtitle: person.knownForDepartment.isNotEmpty ||
-                            (person.gender != null && person.gender! > 0)
+                    person: media as PersonResult,
+                    subtitle: media.knownForDepartment.isNotEmpty ||
+                            (media.gender != null && media.gender! > 0)
                         ? Row(
                             children: [
-                              if (person.knownForDepartment.isNotEmpty)
+                              if (media.knownForDepartment.isNotEmpty)
                                 Padding(
                                   padding: const EdgeInsets.only(right: 8.0),
                                   child: Text(
-                                    person.knownForDepartment,
+                                    media.knownForDepartment,
                                     // textAlign: TextAlign.start,
                                     style: const TextStyle(fontSize: 15.0),
                                   ),
                                 ),
-                              if (person.gender != null && person.gender! > 0)
+                              if (media.gender != null && media.gender! > 0)
                                 Text(
-                                  '(${getGenderText(person.gender)})',
+                                  '(${getGenderText(media.gender)})',
                                   // textAlign: TextAlign.start,
                                   style: const TextStyle(fontSize: 15.0),
                                 ),
                             ],
                           )
                         : null,
-                    description: person.knownFor.isNotEmpty
-                        ? getRichText(context, person.knownFor)
+                    description: media.knownFor.isNotEmpty
+                        ? getRichText(context, media.knownFor)
                         : null,
                   );
                 } else if (mediaType == MediaType.tv.name) {
-                  return TvPosterTile(tv: person as TvResult);
+                  return TvPosterTile(tv: media as CombinedResult);
                 }
                 return const SizedBox.shrink();
               },
@@ -340,6 +343,14 @@ class _SearchAppbarState extends State<SearchAppbar> with GenericFunctions {
 
   final focusNode = FocusNode();
 
+  onChanged(String query) {
+    logIfDebug('query:{$query}');
+    if (query != lastQuery) {
+      lastQuery = query;
+      context.read<SearchViewModel>().searchPagedMovies(query);
+    }
+  }
+
   @override
   void initState() {
     // focusNode.addListener(() =>
@@ -359,13 +370,7 @@ class _SearchAppbarState extends State<SearchAppbar> with GenericFunctions {
           child: TextField(
             focusNode: focusNode,
             controller: _controller,
-            onChanged: (query) {
-              logIfDebug('query:{$query}');
-              if (query != lastQuery) {
-                lastQuery = query;
-                context.read<SearchViewModel>().searchPagedMovies(query);
-              }
-            },
+            onChanged: onChanged,
             decoration: InputDecoration(
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(30.0),
@@ -405,7 +410,10 @@ class _SearchAppbarState extends State<SearchAppbar> with GenericFunctions {
                 ),
               ),
               suffixIcon: InkWell(
-                onTap: () => _controller.clear(),
+                onTap: () {
+                  _controller.clear();
+                  onChanged(_controller.text);
+                },
                 borderRadius: BorderRadius.circular(30.0),
                 child: const Icon(
                   Icons.clear_rounded,
