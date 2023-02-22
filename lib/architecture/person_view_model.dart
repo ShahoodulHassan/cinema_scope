@@ -62,8 +62,8 @@ class PersonViewModel extends BaseMediaViewModel {
       List<ImageDetail> allImages = [];
       var profileImages = person?.images?.profiles ?? [];
       var taggedImages = person?.taggedImages?.results ?? [];
-      allImages.addAll(taggedImages);
       allImages.addAll(profileImages);
+      allImages.addAll(taggedImages);
       images = allImages;
       notifyListeners();
     }

@@ -389,10 +389,11 @@ class _TvPageChildState extends State<_TvPageChild>
             final genre = genres[index];
             return InkWellOverlay(
               onTap: () {
-                // goToMovieListPage(
-                //   context,
-                //   genres: [genre],
-                // );
+                goToMovieListPage(
+                  context,
+                  mediaType: MediaType.tv,
+                  genres: [genre],
+                );
               },
               borderRadius: BorderRadius.circular(6.0),
               child: Chip(
@@ -964,14 +965,15 @@ class KeywordsSection extends StatelessWidget
                         children: tuple.item1.map((e) {
                           return InkWellOverlay(
                             onTap: () {
-                              // goToMovieListPage(
-                              //   context,
-                              //   keywords: [e],
-                              //   genres: context
-                              //       .read<MovieViewModel>()
-                              //       .movie
-                              //       ?.genres,
-                              // );
+                              goToMovieListPage(
+                                context,
+                                mediaType: MediaType.tv,
+                                keywords: [e],
+                                genres: context
+                                    .read<TvViewModel>()
+                                    .media
+                                    ?.genres,
+                              );
                             },
                             borderRadius: BorderRadius.circular(6.0),
                             child: Chip(

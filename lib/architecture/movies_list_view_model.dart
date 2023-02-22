@@ -8,19 +8,18 @@ import '../models/search.dart';
 
 
 
-// TODO Make it generic for both Movie and TV
-class MoviesListViewModel extends ApiViewModel {
-  MovieSearchResult? searchResult;
+class MediaListViewModel extends ApiViewModel {
+  CombinedResults? searchResult;
 
-  final PagingController<int, MovieResult> _pagingController;
+  final PagingController<int, CombinedResult> _pagingController;
 
-  PagingController<int, MovieResult> get pagingController => _pagingController;
+  PagingController<int, CombinedResult> get pagingController => _pagingController;
 
   Function(int)? _listener;
 
   CancelableOperation? _operation;
 
-  MoviesListViewModel() : _pagingController = PagingController(firstPageKey: 1);
+  MediaListViewModel() : _pagingController = PagingController(firstPageKey: 1);
 
   initializePaging({
     required MediaType mediaType,
@@ -54,10 +53,10 @@ class MoviesListViewModel extends ApiViewModel {
     _pagingController.addPageRequestListener(_listener!);
   }
 
-  void _appendPageAndNotify(MovieSearchResult result, int page) {
+  void _appendPageAndNotify(CombinedResults result, int page) {
     searchResult = result;
     final isLastPage = (result.totalPages ?? 1) == page;
-    if (page == 1) _pagingController.itemList = <MovieResult>[];
+    if (page == 1) _pagingController.itemList = <CombinedResult>[];
     var results = result.results;
     if (isLastPage) {
       _pagingController.appendLastPage(results);
@@ -74,8 +73,8 @@ class MoviesListViewModel extends ApiViewModel {
     int page = 1,
   }) async {
     logIfDebug('id:$mediaId');
-    _operation = CancelableOperation<MovieSearchResult>.fromFuture(
-      api.getMovieRecommendations(mediaType.name, mediaId, page: page),
+    _operation = CancelableOperation<CombinedResults>.fromFuture(
+      api.getMediaRecommendations(mediaType.name, mediaId, page: page),
     ).then((result) => _appendPageAndNotify(result, page));
   }
 
@@ -86,8 +85,8 @@ class MoviesListViewModel extends ApiViewModel {
   }) async {
     String gIds = genreIds.join('|');
     logIfDebug('gIds:$gIds');
-    _operation = CancelableOperation<MovieSearchResult>.fromFuture(
-      api.discoverMoviesByGenre(mediaType.name, gIds, page: page),
+    _operation = CancelableOperation<CombinedResults>.fromFuture(
+      api.discoverMediaByGenre(mediaType.name, gIds, page: page),
     ).then((result) => _appendPageAndNotify(result, page));
   }
 
@@ -100,8 +99,8 @@ class MoviesListViewModel extends ApiViewModel {
     String gIds = genreIds.join('|');
     String kIds = keywords.map((e) => e.id).join(',');
     logIfDebug('gIds:$gIds, kIds:$kIds');
-    _operation = CancelableOperation<MovieSearchResult>.fromFuture(
-      api.discoverMoviesByKeyword(mediaType.name, kIds, gIds, page: page),
+    _operation = CancelableOperation<CombinedResults>.fromFuture(
+      api.discoverMediaByKeyword(mediaType.name, kIds, gIds, page: page),
     ).then((result) => _appendPageAndNotify(result, page));
   }
 

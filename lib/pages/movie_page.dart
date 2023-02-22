@@ -5,7 +5,6 @@ import 'package:cinema_scope/models/search.dart';
 import 'package:cinema_scope/pages/credits_page.dart';
 import 'package:cinema_scope/pages/media_details_page.dart';
 import 'package:cinema_scope/pages/person_page.dart';
-import 'package:cinema_scope/pages/tv_page.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
@@ -425,6 +424,7 @@ class _MoviePageChildState extends State<_MoviePageChild>
               onTap: () {
                 goToMovieListPage(
                   context,
+                  mediaType: MediaType.movie,
                   genres: [genre],
                 );
               },
@@ -897,7 +897,6 @@ class _CastCrewSection extends StatelessWidget
       combinedCrew.add(writer.copyWith(jobs: jobString));
     }
 
-
     var names = combinedCrew.map((e) => '${e.name}${e.jobs ?? ''}').join(', ');
     label = '$label${combinedCrew.length > 1 ? 's' : ''}';
     // var names = crew.map((e) => e.name).toSet().join(', ');
@@ -1036,10 +1035,13 @@ class CastListView<T extends BaseCredit> extends StatelessWidget
 
   final bottomRadius = 0.0;
 
-  late final nameHeight = nameStyle.height! * nameStyle.fontSize! * maxLines;
+  /// This addition of 0.2 (per line) is required in order to avoid the "A
+  /// RenderFlex overflowed by 0.800 pixels on the bottom." error
+  late final nameHeight =
+      (nameStyle.height! * nameStyle.fontSize! + 0.2) * maxLines;
 
   late final characterHeight =
-      characterStyle.height! * characterStyle.fontSize! * maxLines;
+      (characterStyle.height! * characterStyle.fontSize! + 0.2) * maxLines;
 
   late final nameContainerHeight =
       nameHeight + nameTopPadding + nameBottomPadding;
@@ -1050,13 +1052,7 @@ class CastListView<T extends BaseCredit> extends StatelessWidget
   late final cardHeight =
       posterHeight + nameContainerHeight + characterContainerHeight;
 
-  /// This 0.8 is being to escape the "A RenderFlex overflowed by 0.800
-  /// pixels on the bottom." error. The error is being caused by not
-  /// assigning any height to the name and character test widgets.
-  /// However, assigning height, especially to name text widget makes it
-  /// expand to two lines no matter if name is actually on one line only,
-  /// thereby showing an extra blank line between home snd tasks.
-  late final viewHeight = cardHeight + listViewVerticalPadding * 2 + 0.8;
+  late final viewHeight = cardHeight + listViewVerticalPadding * 2;
 
   @override
   Widget build(BuildContext context) {
@@ -1400,6 +1396,7 @@ class KeywordsSection extends StatelessWidget
                             onTap: () {
                               goToMovieListPage(
                                 context,
+                                mediaType: MediaType.movie,
                                 keywords: [e],
                                 genres: context
                                     .read<MovieViewModel>()

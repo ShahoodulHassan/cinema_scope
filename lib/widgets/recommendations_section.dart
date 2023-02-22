@@ -20,7 +20,7 @@ class RecommendationsSection<M extends Media, T extends MediaViewModel<M>>
 
   @override
   Widget build(BuildContext context) {
-    return Selector<T, TvRecommendationData?>(
+    return Selector<T, RecommendationData?>(
       selector: (_, mvm) => mvm.recommendationData,
       builder: (_, data, __) {
         if (data == null || data.totalResults == 0) {

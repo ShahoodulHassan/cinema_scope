@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:retrofit/http.dart' as http;
 
 import 'models/configuration.dart';
@@ -218,7 +219,7 @@ abstract class TmdbApi {
 
   @http.GET("/discover/{media_type}")
   @http.Headers(headerMap)
-  Future<MovieSearchResult> discoverMoviesByKeyword(
+  Future<CombinedResults> discoverMediaByKeyword(
     @http.Path("media_type") String mediaType,
     @http.Query('with_keywords') String keywords,
     @http.Query('with_genres') String genres,
@@ -235,7 +236,7 @@ abstract class TmdbApi {
 
   @http.GET("/discover/{media_type}")
   @http.Headers(headerMap)
-  Future<MovieSearchResult> discoverMoviesByGenre(
+  Future<CombinedResults> discoverMediaByGenre(
     @http.Path("media_type") String mediaType,
     @http.Query('with_genres') String genres, {
     @http.Query("page") int page = 1,
@@ -248,22 +249,12 @@ abstract class TmdbApi {
 
   @http.GET("/{media_type}/{media_id}/recommendations")
   @http.Headers(headerMap)
-  Future<MovieSearchResult> getMovieRecommendations(
+  Future<CombinedResults> getMediaRecommendations(
     @http.Path("media_type") String mediaType,
     @http.Path("media_id") int mediaId, {
     @http.Query("page") int page = 1,
     @http.Query('language') String language = 'en-US',
   });
-
-
-  @http.GET("/{media_type}/{media_id}/recommendations")
-  @http.Headers(headerMap)
-  Future<RecommendationResult> getRecommendations(
-      @http.Path("media_type") String mediaType,
-      @http.Path("media_id") int mediaId, {
-        @http.Query("page") int page = 1,
-        @http.Query('language') String language = 'en-US',
-      });
 
 
   @http.GET("/person/{id}")

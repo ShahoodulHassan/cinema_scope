@@ -63,9 +63,9 @@ class MultiSearchResult extends BaseSearchResult {
         (json['results'] as List<dynamic>).map((e) {
           var base = BaseResult.fromJson(e as Map<String, dynamic>);
           if (base.mediaType == MediaType.movie.name) {
-            return MovieResult.fromJson(e);
+            return CombinedResult.fromJson(e);
           } else if (base.mediaType == MediaType.tv.name) {
-            return TvResult.fromJson(e);
+            return CombinedResult.fromJson(e);
           } else {
             return PersonResult.fromJson(e);
           }
@@ -129,79 +129,6 @@ class MediaResult extends BaseResult {
   Map<String, dynamic> toJson() => _$MediaResultToJson(this);
 }
 
-/// Decided to combine both movie and tv related fields into this one object,
-/// just for the sake of less objects to choose from.
-/// For ease, getters have been implemented to provide the value according to
-/// the mediaType the instance belongs to.
-// @JsonSerializable(fieldRename: FieldRename.snake)
-// class KnownFor extends MediaResult {
-//   /// Movie related fields
-//   bool? video;
-//
-//   @JsonKey(name: 'release_date', includeFromJson: true, includeToJson: true)
-//   String? _releaseDate;
-//
-//   @JsonKey(name: 'original_title', includeFromJson: true, includeToJson: true)
-//   String? _originalTitle;
-//
-//   @JsonKey(name: 'title', includeFromJson: true, includeToJson: true)
-//   String? _title;
-//
-//   /// TV related fields
-//   @JsonKey(name: 'first_air_date', includeFromJson: true, includeToJson: true)
-//   String? _firstAirDate;
-//
-//   @JsonKey(name: 'origin_country', includeFromJson: true, includeToJson: true)
-//   List<String>? _originCountry;
-//
-//   @JsonKey(name: 'name', includeFromJson: true, includeToJson: true)
-//   String? _name;
-//
-//   @JsonKey(name: 'original_name', includeFromJson: true, includeToJson: true)
-//   String? _originalName;
-//
-//   KnownFor(
-//     super.id,
-//     super.overview,
-//     super.genreIds,
-//     super.voteCount,
-//     super.voteAverage,
-//     super.originalLanguage,
-//     this._title,
-//     this._name,
-//     this._firstAirDate,
-//     this._releaseDate,
-//     this._originCountry,
-//     this._originalName,
-//     this._originalTitle, {
-//     super.mediaType,
-//     super.popularity,
-//     super.posterPath,
-//     super.backdropPath,
-//     super.adult,
-//     String? originalTitle,
-//     String? title,
-//     String? firstAirDate,
-//     this.video,
-//     String? releaseDate,
-//     List<String>? originCountry,
-//     String? name,
-//     String? originalName,
-//   });
-//
-//   String get mediaTitle =>
-//       (mediaType == MediaType.movie.name ? _title : _name) ?? '-';
-//
-//   String? get mediaReleaseDate =>
-//       mediaType == MediaType.movie.name ? _releaseDate : _firstAirDate;
-//
-//   factory KnownFor.fromJson(Map<String, dynamic> json) =>
-//       _$KnownForFromJson(json);
-//
-//   @override
-//   Map<String, dynamic> toJson() => _$KnownForToJson(this);
-// }
-
 @JsonSerializable(fieldRename: FieldRename.snake)
 class CombinedResult extends MediaResult {
   /// It has been made nullable after a bug where movie id 272803 has no
@@ -233,7 +160,8 @@ class CombinedResult extends MediaResult {
     this.firstAirDate,
   });
 
-  String get mediaTitle => name ?? title ?? ''/*mediaType == MediaType.tv.name ? name! : title!*/;
+  String get mediaTitle => name ?? title ?? '';
+      /*mediaType == MediaType.tv.name ? name! : title!*/
 
   String? get mediaReleaseDate => firstAirDate ?? releaseDate;
       /*mediaType == MediaType.tv.name ? firstAirDate : releaseDate;*/
@@ -254,6 +182,8 @@ class CombinedResult extends MediaResult {
   int get hashCode => title.hashCode;
 }
 
+// TODO See if we really need MovieResult and TvResult separately or having
+//  only a CombinedResult suffices
 @JsonSerializable(fieldRename: FieldRename.snake)
 class MovieResult extends MediaResult {
   /// It has been made nullable after a bug where movie id 272803 has no

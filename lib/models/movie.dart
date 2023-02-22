@@ -27,7 +27,7 @@ class Media {
 
   VideoResult videos;
   ImageResult images;
-  RecommendationResult recommendations;
+  CombinedResults recommendations;
   ReviewResult reviews;
 
   Media(
@@ -56,7 +56,6 @@ class Media {
   Map<String, dynamic> toJson() => _$MediaToJson(this);
 }
 
-/// TODO Use [RecommendationResult] here instead of [MovieSearchResult]
 @JsonSerializable(fieldRename: FieldRename.snake)
 class Movie extends Media {
   BaseCollection? belongsToCollection;
@@ -460,18 +459,6 @@ class Crew extends BaseCredit {
   Map<String, dynamic> toJson() => _$CrewToJson(this);
 }
 
-/// That's a custom object unrelated to what objects the API has to offer
-class RecommendationData {
-  final int mediaId;
-  final MovieSearchResult result;
-
-  RecommendationData(this.mediaId, this.result);
-
-  List<MovieResult> get recommendations =>
-      (result.results..removeWhere((element) => element.posterPath == null));
-
-  int get totalResults => result.totalResults;
-}
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class MediaGenre extends Genre {
@@ -596,11 +583,11 @@ class RecommendationResult extends BaseSearchResult {
 }
 
 /// That's a custom object unrelated to what objects the API has to offer
-class TvRecommendationData {
+class RecommendationData {
   final int mediaId;
-  final RecommendationResult result;
+  final CombinedResults result;
 
-  TvRecommendationData(this.mediaId, this.result);
+  RecommendationData(this.mediaId, this.result);
 
   List<CombinedResult> get recommendations =>
       (result.results..removeWhere((element) => element.posterPath == null));

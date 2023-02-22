@@ -667,8 +667,7 @@ Media _$MediaFromJson(Map<String, dynamic> json) => Media(
       (json['vote_average'] as num).toDouble(),
       json['vote_count'] as int,
       VideoResult.fromJson(json['videos'] as Map<String, dynamic>),
-      RecommendationResult.fromJson(
-          json['recommendations'] as Map<String, dynamic>),
+      CombinedResults.fromJson(json['recommendations'] as Map<String, dynamic>),
       ImageResult.fromJson(json['images'] as Map<String, dynamic>),
       ReviewResult.fromJson(json['reviews'] as Map<String, dynamic>),
       backdropPath: json['backdrop_path'] as String?,
@@ -718,8 +717,7 @@ Movie _$MovieFromJson(Map<String, dynamic> json) => Movie(
       (json['vote_average'] as num).toDouble(),
       json['vote_count'] as int,
       VideoResult.fromJson(json['videos'] as Map<String, dynamic>),
-      RecommendationResult.fromJson(
-          json['recommendations'] as Map<String, dynamic>),
+      CombinedResults.fromJson(json['recommendations'] as Map<String, dynamic>),
       ImageResult.fromJson(json['images'] as Map<String, dynamic>),
       ReviewResult.fromJson(json['reviews'] as Map<String, dynamic>),
       json['original_title'] as String,

@@ -75,7 +75,7 @@ class PosterTile extends StatelessWidget {
 
 class MoviePosterTile extends StatelessWidget
     with Utilities, CommonFunctions, GenericFunctions {
-  final MovieResult movie;
+  final CombinedResult movie;
 
   const MoviePosterTile({required this.movie, Key? key}) : super(key: key);
 
@@ -86,13 +86,13 @@ class MoviePosterTile extends StatelessWidget
         return goToMoviePage(
           context,
           id: movie.id,
-          title: movie.movieTitle,
-          releaseDate: movie.releaseDate,
+          title: movie.mediaTitle,
+          releaseDate: movie.mediaReleaseDate,
           overview: movie.overview,
           voteAverage: movie.voteAverage,
         );;
       },
-      title: movie.title,
+      title: movie.mediaTitle,
       poster: NetworkImageView(
         movie.posterPath,
         imageType: ImageType.poster,
@@ -108,12 +108,12 @@ class MoviePosterTile extends StatelessWidget
             Row(
               children: [
                 Visibility(
-                  visible: movie.releaseDate != null &&
-                      movie.releaseDate!.isNotEmpty,
+                  visible: movie.mediaReleaseDate != null &&
+                      movie.mediaReleaseDate!.isNotEmpty,
                   child: Padding(
                     padding: const EdgeInsets.only(right: 16.0),
                     child: Text(
-                      getYearStringFromDate(movie.releaseDate),
+                      getYearStringFromDate(movie.mediaReleaseDate),
                       textAlign: TextAlign.start,
                       style: const TextStyle(fontSize: 15.0),
                     ),
@@ -176,9 +176,11 @@ class MoviePosterTile extends StatelessWidget
   }
 }
 
+// TODO See if it can be merged with MoviePosterTile to form a MediaPosterTile
+// TODO Show Tv specific properties like year range, episode count etc. as well
 class TvPosterTile extends StatelessWidget
     with Utilities, CommonFunctions, GenericFunctions {
-  final TvResult tv;
+  final CombinedResult tv;
 
   const TvPosterTile({required this.tv, Key? key}) : super(key: key);
 
@@ -188,12 +190,12 @@ class TvPosterTile extends StatelessWidget
       onTap: () => goToTvPage(
         context,
         id: tv.id,
-        title: tv.name,
+        title: tv.mediaTitle,
         overview: tv.overview,
-        releaseDate: tv.firstAirDate,
+        releaseDate: tv.mediaReleaseDate,
         voteAverage: tv.voteAverage,
       ),
-      title: tv.name,
+      title: tv.mediaTitle,
       poster: NetworkImageView(
         tv.posterPath,
         imageType: ImageType.poster,
@@ -208,11 +210,11 @@ class TvPosterTile extends StatelessWidget
           children: [
             Row(
               children: [
-                if (tv.firstAirDate != null && tv.firstAirDate!.isNotEmpty)
+                if (tv.mediaReleaseDate != null && tv.mediaReleaseDate!.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(right: 16.0),
                     child: Text(
-                      getYearStringFromDate(tv.firstAirDate),
+                      getYearStringFromDate(tv.mediaReleaseDate),
                       textAlign: TextAlign.start,
                       style: const TextStyle(fontSize: 15.0),
                     ),

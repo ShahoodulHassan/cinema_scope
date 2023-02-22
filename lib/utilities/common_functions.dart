@@ -10,7 +10,6 @@ import '../pages/person_page.dart';
 import '../pages/tv_page.dart';
 
 mixin CommonFunctions on Utilities {
-
   @Deprecated('No need for a new slightly different method')
   goToMoviePageByMovieResult(
     BuildContext context,
@@ -52,13 +51,13 @@ mixin CommonFunctions on Utilities {
   }
 
   goToTvPage(
-      BuildContext context, {
-        required int id,
-        required String title,
-        required String? releaseDate,
-        required double voteAverage,
-        required String? overview,
-      }) {
+    BuildContext context, {
+    required int id,
+    required String title,
+    required String? releaseDate,
+    required double voteAverage,
+    required String? overview,
+  }) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -75,6 +74,7 @@ mixin CommonFunctions on Utilities {
 
   goToMovieListPage(
     BuildContext context, {
+    required MediaType mediaType,
     List<Keyword>? keywords,
     List<Genre>? genres,
     int? mediaId,
@@ -83,7 +83,7 @@ mixin CommonFunctions on Utilities {
       context,
       MaterialPageRoute(builder: (_) {
         return MoviesListPage(
-          mediaType: MediaType.movie,
+          mediaType: mediaType,
           keywords: keywords,
           genres: genres,
           mediaId: mediaId,

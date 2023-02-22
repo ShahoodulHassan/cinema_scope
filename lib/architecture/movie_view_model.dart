@@ -37,10 +37,10 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
 
   List<Genre> get genres => media?.genres ?? [];
 
-  TvRecommendationData? get recommendationData =>
+  RecommendationData? get recommendationData =>
       media == null
           ? null
-          : TvRecommendationData(media!.id, media!.recommendations);
+          : RecommendationData(media!.id, media!.recommendations);
 
   int get totalRecomCount => media?.recommendations.totalResults ?? 0;
 
@@ -450,6 +450,7 @@ class MovieViewModel extends MediaViewModel<Movie> {
                     combinedResults.addAll(result.results);
                   }
 
+                  // TODO Sort randomly
                   /// Sort the combined results by vote average, remove the
                   /// currently displayed movie from the list and notify
                   /// listeners
@@ -468,10 +469,10 @@ class MovieViewModel extends MediaViewModel<Movie> {
     if (media != null) {
       var imageResult = media!.images;
       List<ImageDetail> images = [];
-      images.addAll(imageResult.backdrops
-          .map((e) => e.copyWith.imageType(ImageType.backdrop.name)));
       images.addAll(imageResult.posters
           .map((e) => e.copyWith.imageType(ImageType.poster.name)));
+      images.addAll(imageResult.backdrops
+          .map((e) => e.copyWith.imageType(ImageType.backdrop.name)));
       images.addAll(imageResult.logos
           .map((e) => e.copyWith.imageType(ImageType.logo.name)));
       this.images = images;

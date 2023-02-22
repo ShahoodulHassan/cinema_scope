@@ -25,7 +25,7 @@ class MoviesListPage extends MultiProvider {
     int? mediaId,
   }) : super(
             providers: [
-              ChangeNotifierProvider(create: (_) => MoviesListViewModel()),
+              ChangeNotifierProvider(create: (_) => MediaListViewModel()),
             ],
             child: _MoviesListPageChild(
               // id: id,
@@ -71,7 +71,7 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
     with GenericFunctions, Utilities {
   @override
   void initState() {
-    context.read<MoviesListViewModel>().initializePaging(
+    context.read<MediaListViewModel>().initializePaging(
           mediaType: widget.mediaType,
           genreIds: widget.genres?.map((e) => e.id).toList(),
           keywords: widget.keywords,
@@ -107,7 +107,7 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
                 Text(getAppbarTitle()),
                 AnimatedSize(
                   duration: const Duration(milliseconds: 150),
-                  child: Selector<MoviesListViewModel, int?>(
+                  child: Selector<MediaListViewModel, int?>(
                     builder: (_, count, __) {
                       if (count == null) return const SizedBox.shrink();
                       return Text(
@@ -134,9 +134,12 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
               // );
             },
             pagingController:
-                context.read<MoviesListViewModel>().pagingController,
-            builderDelegate: PagedChildBuilderDelegate<MovieResult>(
-              itemBuilder: (_, movie, index) => MoviePosterTile(movie: movie),
+                context.read<MediaListViewModel>().pagingController,
+            builderDelegate: PagedChildBuilderDelegate<CombinedResult>(
+              itemBuilder: (_, media, index) {
+                return media.mediaType == MediaType.movie.name ?
+                MoviePosterTile(movie: media) : TvPosterTile(tv: media);
+              },
               newPageProgressIndicatorBuilder: (_) => const Center(
                 child: Padding(
                   padding: EdgeInsets.all(16.0),

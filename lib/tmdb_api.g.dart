@@ -736,7 +736,7 @@ class _TmdbApi implements TmdbApi {
   }
 
   @override
-  Future<MovieSearchResult> discoverMoviesByKeyword(
+  Future<CombinedResults> discoverMediaByKeyword(
     mediaType,
     keywords,
     genres, {
@@ -766,7 +766,7 @@ class _TmdbApi implements TmdbApi {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<MovieSearchResult>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<CombinedResults>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -779,12 +779,12 @@ class _TmdbApi implements TmdbApi {
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = MovieSearchResult.fromJson(_result.data!);
+    final value = CombinedResults.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<MovieSearchResult> discoverMoviesByGenre(
+  Future<CombinedResults> discoverMediaByGenre(
     mediaType,
     genres, {
     page = 1,
@@ -812,7 +812,7 @@ class _TmdbApi implements TmdbApi {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<MovieSearchResult>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<CombinedResults>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -825,12 +825,12 @@ class _TmdbApi implements TmdbApi {
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = MovieSearchResult.fromJson(_result.data!);
+    final value = CombinedResults.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<MovieSearchResult> getMovieRecommendations(
+  Future<CombinedResults> getMediaRecommendations(
     mediaType,
     mediaId, {
     page = 1,
@@ -849,7 +849,7 @@ class _TmdbApi implements TmdbApi {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<MovieSearchResult>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<CombinedResults>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -862,12 +862,12 @@ class _TmdbApi implements TmdbApi {
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = MovieSearchResult.fromJson(_result.data!);
+    final value = CombinedResults.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<RecommendationResult> getRecommendations(
+  Future<CombinedResults> getRecommendations(
     mediaType,
     mediaId, {
     page = 1,
@@ -885,8 +885,8 @@ class _TmdbApi implements TmdbApi {
     };
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<RecommendationResult>(Options(
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CombinedResults>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -899,7 +899,7 @@ class _TmdbApi implements TmdbApi {
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = RecommendationResult.fromJson(_result.data!);
+    final value = CombinedResults.fromJson(_result.data!);
     return value;
   }
 
