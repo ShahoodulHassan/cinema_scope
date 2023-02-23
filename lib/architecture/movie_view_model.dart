@@ -184,7 +184,7 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
             moreByGenresOperation =
                 CancelableOperation<List<CombinedResults>>.fromFuture(
                   Future.wait(futures),
-                ).then((results) {
+                ).then((results) async {
                   /// Combine all results into one set
                   /// (set would automatically remove duplicates)
                   Set<CombinedResult> combinedResults = {};
