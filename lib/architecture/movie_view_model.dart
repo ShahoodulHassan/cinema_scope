@@ -145,7 +145,8 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
               .map((e) => e.id)
               .toSet();
           if (genreIds.length > 2) {
-            /// In case of more than two genres, the pairs will be joined by ,
+            /// In case of more than two genres, we will create unique pairs of
+            /// two genres and the pairs will be joined by ,
             for (int i = 0; i < genreIds.length; i++) {
               var genre = genreIds[i];
               var isLast = genre == genreIds.last;
@@ -166,7 +167,7 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
           logIfDebug('genrePairs:$pairs');
 
           if (pairs.isNotEmpty) {
-            List<Future<CombinedResults>> futures = pairs.map((pair) {
+            var futures = pairs.map((pair) {
               return media is Movie
                   ? api.getMoreMoviesByGenres(
                 pair,
@@ -199,13 +200,10 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
                     media is Movie ? MediaType.movie.name : MediaType.tv.name;
                     return e;
                   }).toList()..removeWhere((element) => element.id == media?.id)
+                    ..shuffle()/*
                     ..sort((a, b) {
-                      return List.from([-1, 0, 1])[Random().nextInt(3)];
-                      // return b.voteAverage.compareTo(a.voteAverage);
-                    });
-                  // moreByGenres = combinedResults.toList()
-                  //   ..removeWhere((element) => element.id == media?.id)
-                  //   ..sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
+                      return b.voteAverage.compareTo(a.voteAverage);
+                    })*/;
                   notifyListeners();
                 });
           }
@@ -320,7 +318,7 @@ class MovieViewModel extends MediaViewModel<Movie> {
   }
 
   void _fetchMoreData() async {
-    _fetchMoreByLead();
+    // _fetchMoreByLead();
     _fetchMoreByLeadActor();
     fetchMoreByGenres();
     _fetchMoreByDirector();
@@ -337,18 +335,18 @@ class MovieViewModel extends MediaViewModel<Movie> {
     }
   }
 
-  _fetchMoreByLead() async {
-    if (media != null) {
-      var leadActors = media!.credits.cast.take(2).map((e) => e.id).join('|');
-      moreByLeadOperation = CancelableOperation<CombinedResults>.fromFuture(
-        api.getMoreMoviesByLeadActors(leadActors),
-      ).then((results) {
-        moreByLead = results.results
-          ..removeWhere((element) => element.id == media?.id);
-        notifyListeners();
-      });
-    }
-  }
+  // _fetchMoreByLead() async {
+  //   if (media != null) {
+  //     var leadActors = media!.credits.cast.take(2).map((e) => e.id).join('|');
+  //     moreByLeadOperation = CancelableOperation<CombinedResults>.fromFuture(
+  //       api.getMoreMoviesByLeadActors(leadActors),
+  //     ).then((results) {
+  //       moreByLead = results.results
+  //         ..removeWhere((element) => element.id == media?.id);
+  //       notifyListeners();
+  //     });
+  //   }
+  // }
 
   _fetchMoreByDirector() async {
     var directors = crew.where((element) {
