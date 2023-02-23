@@ -59,7 +59,7 @@ class RecommendationsSection<M extends Media, T extends MediaViewModel<M>>
 
 class _RecommendationsView<M extends Media, T extends MediaViewModel<M>>
     extends StatelessWidget with Utilities, CommonFunctions {
-  final int movieId;
+  final int mediaId;
   final List<CombinedResult> recommendations;
   final int totalRecomCount;
   final int _itemsPerRow = 3;
@@ -80,16 +80,18 @@ class _RecommendationsView<M extends Media, T extends MediaViewModel<M>>
   late final _itemCount = _totalCount < _itemsPerPage
       ? _totalCount
       : _totalCount ~/ _itemsPerPage * _itemsPerPage +
-      (_remainder > _itemsPerRow ? _remainder : 0);
+          (_remainder > _itemsPerRow ? _remainder : 0);
   late final _pageCount = recommendations.length ~/ _itemsPerPage +
       (_remainder > _itemsPerRow ? 1 : 0);
 
+  final bool isMovie = M.toString() == (Movie).toString();
+
   _RecommendationsView(
-      this.movieId,
-      this.recommendations,
-      this.totalRecomCount, {
-        Key? key,
-      }) : super(key: key);
+    this.mediaId,
+    this.recommendations,
+    this.totalRecomCount, {
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -108,10 +110,10 @@ class _RecommendationsView<M extends Media, T extends MediaViewModel<M>>
   }
 
   SliverToBoxAdapter getSectionTitleRow(
-      BuildContext context,
-      int itemCount,
-      int totalRecomCount,
-      ) {
+    BuildContext context,
+    int itemCount,
+    int totalRecomCount,
+  ) {
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
@@ -129,6 +131,12 @@ class _RecommendationsView<M extends Media, T extends MediaViewModel<M>>
             ),
             if (totalRecomCount > itemCount)
               CompactTextButton('See all', onPressed: () {
+                var mediaType = isMovie ? MediaType.movie : MediaType.tv;
+                goToMovieListPage(
+                  context,
+                  mediaType: mediaType,
+                  mediaId: mediaId,
+                );
                 // goToMovieListPage(context, mediaId: movieId);
               }),
           ],
@@ -148,11 +156,11 @@ class _SliverPosterGrid<M extends Media, T extends MediaViewModel<M>>
 
   late final BorderRadius _borderRadius = (_topRadius > 0 || _bottomRadius > 0)
       ? BorderRadius.only(
-    topRight: Radius.circular(_topRadius),
-    topLeft: Radius.circular(_topRadius),
-    bottomRight: Radius.circular(_bottomRadius),
-    bottomLeft: Radius.circular(_bottomRadius),
-  )
+          topRight: Radius.circular(_topRadius),
+          topLeft: Radius.circular(_topRadius),
+          bottomRight: Radius.circular(_bottomRadius),
+          bottomLeft: Radius.circular(_bottomRadius),
+        )
       : BorderRadius.zero;
 
   final List<CombinedResult> _recommendations;
@@ -171,12 +179,12 @@ class _SliverPosterGrid<M extends Media, T extends MediaViewModel<M>>
   final _crossAxisSpacing = 5.0;
 
   _SliverPosterGrid(
-      this._recommendations, {
-        required this.itemsPerRow,
-        required this.itemsPerPage,
-        required this.pageCount,
-        Key? key,
-      }) : super(key: key);
+    this._recommendations, {
+    required this.itemsPerRow,
+    required this.itemsPerPage,
+    required this.pageCount,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -244,12 +252,12 @@ class _SliverPosterGrid<M extends Media, T extends MediaViewModel<M>>
           crossAxisSpacing: _crossAxisSpacing,
         ),
         delegate: SliverChildBuilderDelegate(
-              (context, index) {
+          (context, index) {
             final media = titles[index];
             final destUrl = media.backdropPath == null
                 ? null
                 : context.read<ConfigViewModel>().getImageUrl(
-                ImageType.backdrop, ImageQuality.high, media.backdropPath!);
+                    ImageType.backdrop, ImageQuality.high, media.backdropPath!);
             return Card(
               color: Colors.white,
               surfaceTintColor: Colors.white,
@@ -261,9 +269,9 @@ class _SliverPosterGrid<M extends Media, T extends MediaViewModel<M>>
               // remove the whitespace around the image.
               margin: const EdgeInsets.fromLTRB(1.5, 2.5, 1.8, 2.5),
               child:
-              // Column(
-              //   children: [
-              getImageView(titles, index, context, media, destUrl),
+                  // Column(
+                  //   children: [
+                  getImageView(titles, index, context, media, destUrl),
               // Text(getYearStringFromDate(media.releaseDate), style: textStyle,),
               //   ],
               // ),

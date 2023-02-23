@@ -487,7 +487,7 @@ class _CastCrewSection extends StatelessWidget
       child: Column(
         children: [
           getCreatorsTile(context, creators, label),
-          CompactTextButton('All cast & crew', onPressed: () {
+          CompactTextButton('Full cast & crew', onPressed: () {
             goToCreditsPage(context);
           }),
         ],

@@ -6,14 +6,13 @@ import '../constants.dart';
 import '../models/movie.dart';
 import '../models/search.dart';
 
-
-
 class MediaListViewModel extends ApiViewModel {
   CombinedResults? searchResult;
 
   final PagingController<int, CombinedResult> _pagingController;
 
-  PagingController<int, CombinedResult> get pagingController => _pagingController;
+  PagingController<int, CombinedResult> get pagingController =>
+      _pagingController;
 
   Function(int)? _listener;
 
@@ -53,11 +52,17 @@ class MediaListViewModel extends ApiViewModel {
     _pagingController.addPageRequestListener(_listener!);
   }
 
-  void _appendPageAndNotify(CombinedResults result, int page) {
+  void _appendPageAndNotify(
+      MediaType mediaType, CombinedResults result, int page) {
     searchResult = result;
     final isLastPage = (result.totalPages ?? 1) == page;
     if (page == 1) _pagingController.itemList = <CombinedResult>[];
-    var results = result.results;
+    var results = result.results.map((r) {
+      if (r.mediaType == null || r.mediaType!.isEmpty) {
+        r.mediaType = mediaType.name;
+      }
+      return r;
+    }).toList();
     if (isLastPage) {
       _pagingController.appendLastPage(results);
     } else {
@@ -75,7 +80,7 @@ class MediaListViewModel extends ApiViewModel {
     logIfDebug('id:$mediaId');
     _operation = CancelableOperation<CombinedResults>.fromFuture(
       api.getMediaRecommendations(mediaType.name, mediaId, page: page),
-    ).then((result) => _appendPageAndNotify(result, page));
+    ).then((result) => _appendPageAndNotify(mediaType, result, page));
   }
 
   _discoverByGenre({
@@ -87,7 +92,7 @@ class MediaListViewModel extends ApiViewModel {
     logIfDebug('gIds:$gIds');
     _operation = CancelableOperation<CombinedResults>.fromFuture(
       api.discoverMediaByGenre(mediaType.name, gIds, page: page),
-    ).then((result) => _appendPageAndNotify(result, page));
+    ).then((result) => _appendPageAndNotify(mediaType, result, page));
   }
 
   _discoverByKeyword({
@@ -101,7 +106,7 @@ class MediaListViewModel extends ApiViewModel {
     logIfDebug('gIds:$gIds, kIds:$kIds');
     _operation = CancelableOperation<CombinedResults>.fromFuture(
       api.discoverMediaByKeyword(mediaType.name, kIds, gIds, page: page),
-    ).then((result) => _appendPageAndNotify(result, page));
+    ).then((result) => _appendPageAndNotify(mediaType, result, page));
   }
 
   _disposePageController() {

@@ -191,7 +191,7 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
                     combinedResults.addAll(result.results);
                   }
 
-                  /// Sort the combined results by vote average, remove the
+                  /// Sort the combined results randomly, remove the
                   /// currently displayed movie from the list and notify
                   /// listeners
                   moreByGenres = combinedResults.map((e) {
@@ -199,7 +199,10 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
                     media is Movie ? MediaType.movie.name : MediaType.tv.name;
                     return e;
                   }).toList()..removeWhere((element) => element.id == media?.id)
-                    ..sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
+                    ..sort((a, b) {
+                      return List.from([-1, 0, 1])[Random().nextInt(3)];
+                      // return b.voteAverage.compareTo(a.voteAverage);
+                    });
                   // moreByGenres = combinedResults.toList()
                   //   ..removeWhere((element) => element.id == media?.id)
                   //   ..sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
@@ -362,106 +365,6 @@ class MovieViewModel extends MediaViewModel<Movie> {
     if (actors.isNotEmpty) {
       var actor = actors[Random().nextInt(actors.length)];
       fetchMoreByLeadActor<Cast>(actor, actor.order);
-    }
-  }
-
-  /// Movies having at least two genres from the movie in review, having primary
-  /// release date falling in a period of 10 years spread around the movie in
-  /// question.
-  /// Ideal situation would be to have 5 years ahead and 5 behind. However, if
-  /// the days ahead are less then 5 years (in case of more recent movies), days
-  /// behind are extended beyond 5 years such that the era always spans to 10
-  /// years in total
-  _fetchMoreByGenres() async {
-    if (media != null) {
-      var releaseDate = media!.releaseDate ?? '';
-      if (releaseDate.isNotEmpty) {
-        var date = DateTime.parse(releaseDate);
-        var diffFromNow = DateTime
-            .now()
-            .difference(date)
-            .inDays;
-        var totalDays = 365 * 10; // 10 years
-        var daysForward = min(diffFromNow, (365 * 5));
-        var daysBackward = totalDays - daysForward;
-        var dateLte = DateFormat('yyyy-MM-dd')
-            .format(date.add(Duration(days: daysForward)));
-        var dateGte = DateFormat('yyyy-MM-dd')
-            .format(date.subtract(Duration(days: daysBackward)));
-
-        var year = getYearFromDate(releaseDate);
-        if (year != null) {
-          String primaryYear = '$year';
-          if (DateTime
-              .now()
-              .difference(DateTime.parse('$year-01-01'))
-              .inDays <
-              (30 * 6)) {
-            primaryYear = '$year|${year - 1}';
-          }
-
-          Set<String> pairs = {};
-          var genreIds = media!.genres.map((e) => e.id).toList();
-          Set<int> excludedGenreIds = allGenres
-              .where((element) => !genreIds.contains(element.id))
-              .map((e) => e.id)
-              .toSet();
-          if (genreIds.length > 2) {
-            /// In case of more than two genres, the pairs will be joined by ,
-            for (int i = 0; i < genreIds.length; i++) {
-              var genre = genreIds[i];
-              var isLast = genre == genreIds.last;
-              if (!isLast) {
-                var nextGenres = genreIds.sublist(i + 1);
-                for (int i = 0; i < nextGenres.length; i++) {
-                  pairs.add('$genre,${nextGenres[i]}');
-                }
-              }
-            }
-          } else if (genreIds.isNotEmpty) {
-            /// In case of two genres, both will be joined by ,
-            /// In case of one genre, it alone will be added to the pairs.
-            pairs.add(genreIds.join(','));
-          }
-
-          var keywords = media!.keywords.keywords.map((e) => e.id).join(',');
-          logIfDebug('genrePairs:$pairs');
-
-          if (pairs.isNotEmpty) {
-            List<Future<CombinedResults>> futures = pairs.map((pair) {
-              return api.getMoreMoviesByGenres(
-                pair,
-                dateGte,
-                dateLte,
-                // excludedGenreIds.join(','),
-                // keywords,
-                /*primaryYear*/
-              );
-            }).toList();
-
-            moreByGenresOperation =
-                CancelableOperation<List<CombinedResults>>.fromFuture(
-                  Future.wait(futures),
-                ).then((results) {
-                  /// Combine all results into one set
-                  /// (set would automatically remove duplicates)
-                  Set<CombinedResult> combinedResults = {};
-                  for (var result in results) {
-                    combinedResults.addAll(result.results);
-                  }
-
-                  // TODO Sort randomly
-                  /// Sort the combined results by vote average, remove the
-                  /// currently displayed movie from the list and notify
-                  /// listeners
-                  moreByGenres = combinedResults.toList()
-                    ..removeWhere((element) => element.id == media?.id)
-                    ..sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
-                  notifyListeners();
-                });
-          }
-        }
-      }
     }
   }
 
