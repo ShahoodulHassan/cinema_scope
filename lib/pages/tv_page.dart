@@ -8,6 +8,7 @@ import 'package:sliver_tools/sliver_tools.dart';
 import 'package:tuple/tuple.dart';
 
 import '../architecture/config_view_model.dart';
+import '../architecture/movie_view_model.dart';
 import '../architecture/tv_view_model.dart';
 import '../constants.dart';
 import '../models/configuration.dart';
@@ -101,6 +102,40 @@ class _TvPageChildState extends State<_TvPageChild>
                 Text(widget.title),
               ],
             ),
+          ),
+          Selector<TvViewModel,
+              Tuple3<List<String>, Map<String, ThumbnailType>, String?>>(
+            builder: (_, tuple, __) {
+              logIfDebug('isPinned, thumbnails:$tuple');
+              var height = MediaQuery.of(context).size.width * 9 / 16;
+              if (tuple.item3 != null && tuple.item1.isNotEmpty) {
+                return SliverPersistentHeader(
+                  delegate: TrailerDelegate(
+                    extent: height,
+                    initialVideoId: tuple.item3!,
+                    youtubeKeys: tuple.item1,
+                  ),
+                  pinned: true,
+                );
+              } else {
+                return SliverPersistentHeader(
+                  delegate: ImageDelegate(
+                    // backdropBaseUrl,
+                    tuple.item2.isEmpty ? 0 : height,
+                    tuple.item2,
+                  ),
+                  pinned: false,
+                );
+              }
+            },
+            selector: (_, mvm) {
+              logIfDebug('isPinned, selector called with:${mvm.youtubeKeys}');
+              return Tuple3<List<String>, Map<String, ThumbnailType>, String?>(
+                mvm.youtubeKeys,
+                mvm.thumbMap,
+                mvm.initialVideoId,
+              );
+            },
           ),
           SliverToBoxAdapter(
             child: AnimatedSize(
@@ -481,7 +516,8 @@ class _CastCrewSection extends StatelessWidget
     );
   }
 
-  Widget getCrewSection(BuildContext context, List<TvCrew> creators, String label) {
+  Widget getCrewSection(
+      BuildContext context, List<TvCrew> creators, String label) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Column(
@@ -969,10 +1005,8 @@ class KeywordsSection extends StatelessWidget
                                 context,
                                 mediaType: MediaType.tv,
                                 keywords: [e],
-                                genres: context
-                                    .read<TvViewModel>()
-                                    .media
-                                    ?.genres,
+                                genres:
+                                    context.read<TvViewModel>().media?.genres,
                               );
                             },
                             borderRadius: BorderRadius.circular(6.0),

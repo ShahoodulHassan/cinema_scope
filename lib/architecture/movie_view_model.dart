@@ -37,6 +37,19 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
 
   List<Genre> get genres => media?.genres ?? [];
 
+  List<String> get youtubeKeys => ((media?.videos.results
+      .where((video) => video.type == 'Trailer')
+      .map((vid) => vid.key)
+      .toList() ??
+      <String>[]) +
+      (media?.videos.results
+          .where((video) => video.type == 'Teaser')
+          .map((vid) => vid.key)
+          .toList() ??
+          <String>[]))
+      .take(2)
+      .toList();
+
   RecommendationData? get recommendationData =>
       media == null
           ? null
@@ -53,6 +66,8 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
   Tuple2<BasePersonResult, List<CombinedResult>>? moreByDirector;
   Tuple2<BasePersonResult, List<CombinedResult>>? moreByActor;
 
+  Map<String, ThumbnailType> thumbMap = {};
+
   set recomPageIndex(int index) {
     _recomPageIndex = index;
     notifyListeners();
@@ -60,6 +75,43 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
 
   set operation(CancelableOperation value) {
     _operation = value;
+  }
+
+  compileImages() async {
+    if (media != null) {
+      var imageResult = media!.images;
+      List<ImageDetail> images = [];
+      images.addAll(imageResult.posters
+          .map((e) => e.copyWith.imageType(ImageType.poster.name)));
+      images.addAll(imageResult.backdrops
+          .map((e) => e.copyWith.imageType(ImageType.backdrop.name)));
+      images.addAll(imageResult.logos
+          .map((e) => e.copyWith.imageType(ImageType.logo.name)));
+      this.images = images;
+      notifyListeners();
+    }
+  }
+
+  compileThumbnails() async {
+    logIfDebug('isPinned, compileThumbnails called with movie:$media');
+    if (media != null) {
+      Map<String, ThumbnailType> thumbs = {};
+      for (var key in youtubeKeys) {
+        thumbs[key] = ThumbnailType.video;
+      }
+      // if (media!.backdropPath != null) {
+      //   thumbs[media!.backdropPath!] = ThumbnailType.image;
+      // } else if (media!.images.backdrops.isNotEmpty) {
+      //   thumbs[media!.images.backdrops.first.filePath] = ThumbnailType.image;
+      // }
+      for (var imagePath in media!.images.backdrops.take(2)) {
+        thumbs[imagePath.filePath] = ThumbnailType.image;
+      }
+      logIfDebug('isPinned, thumb:$thumbs');
+      if (thumbs.isNotEmpty) thumbMap = thumbs;
+      logIfDebug('isPinned, thumbMap:$thumbMap');
+      notifyListeners();
+    }
   }
 
   fetchMoreByDirector<C extends BasePersonResult>(C director,
@@ -269,9 +321,9 @@ class MovieViewModel extends MediaViewModel<Movie> {
 
   bool get isTrailerPinned => _isTrailerPinned;
 
-  List<ImageDetail> thumbnails = <ImageDetail>[];
+  // List<ImageDetail> thumbnails = <ImageDetail>[];
 
-  Map<String, ThumbnailType> thumbMap = {};
+
 
   set isTrailerPinned(bool value) {
     _isTrailerPinned = value;
@@ -287,19 +339,19 @@ class MovieViewModel extends MediaViewModel<Movie> {
 
   String? get initialVideoId => _initialVideoId;
 
-  List<String> get youtubeKeys =>
-      ((media?.videos.results
-          .where((video) => video.type == 'Trailer')
-          .map((vid) => vid.key)
-          .toList() ??
-          <String>[]) +
-          (media?.videos.results
-              .where((video) => video.type == 'Teaser')
-              .map((vid) => vid.key)
-              .toList() ??
-              <String>[]))
-          .take(3)
-          .toList();
+  // List<String> get youtubeKeys =>
+  //     ((media?.videos.results
+  //         .where((video) => video.type == 'Trailer')
+  //         .map((vid) => vid.key)
+  //         .toList() ??
+  //         <String>[]) +
+  //         (media?.videos.results
+  //             .where((video) => video.type == 'Teaser')
+  //             .map((vid) => vid.key)
+  //             .toList() ??
+  //             <String>[]))
+  //         .take(3)
+  //         .toList();
 
   MovieViewModel() : super();
 
@@ -322,8 +374,8 @@ class MovieViewModel extends MediaViewModel<Movie> {
     _fetchMoreByLeadActor();
     fetchMoreByGenres();
     _fetchMoreByDirector();
-    _compileThumbnails();
-    _compileImages();
+    compileThumbnails();
+    compileImages();
   }
 
   _compileCertification() async {
@@ -366,37 +418,7 @@ class MovieViewModel extends MediaViewModel<Movie> {
     }
   }
 
-  _compileImages() async {
-    if (media != null) {
-      var imageResult = media!.images;
-      List<ImageDetail> images = [];
-      images.addAll(imageResult.posters
-          .map((e) => e.copyWith.imageType(ImageType.poster.name)));
-      images.addAll(imageResult.backdrops
-          .map((e) => e.copyWith.imageType(ImageType.backdrop.name)));
-      images.addAll(imageResult.logos
-          .map((e) => e.copyWith.imageType(ImageType.logo.name)));
-      this.images = images;
-      notifyListeners();
-    }
-  }
 
-  _compileThumbnails() async {
-    logIfDebug('isPinned, compileThumbnails called with movie:$media');
-    if (media != null) {
-      Map<String, ThumbnailType> thumbs = {};
-      for (var key in youtubeKeys) {
-        thumbs[key] = ThumbnailType.video;
-      }
-      for (var imagePath in media!.images.backdrops.take(2)) {
-        thumbs[imagePath.filePath] = ThumbnailType.image;
-      }
-      logIfDebug('isPinned, thumb:$thumbs');
-      if (thumbs.isNotEmpty) thumbMap = thumbs;
-      logIfDebug('isPinned, thumbMap:$thumbMap');
-      notifyListeners();
-    }
-  }
 }
 
 enum ThumbnailType {

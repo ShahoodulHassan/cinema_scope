@@ -44,7 +44,7 @@ class TvViewModel extends MediaViewModel<Tv> {
 
   List<ImageDetail> thumbnails = <ImageDetail>[];
 
-  Map<String, ThumbnailType> thumbMap = {};
+  // Map<String, ThumbnailType> thumbMap = {};
 
   set isTrailerPinned(bool value) {
     _isTrailerPinned = value;
@@ -60,18 +60,7 @@ class TvViewModel extends MediaViewModel<Tv> {
 
   String? get initialVideoId => _initialVideoId;
 
-  List<String> get youtubeKeys => ((media?.videos.results
-                  .where((video) => video.type == 'Trailer')
-                  .map((vid) => vid.key)
-                  .toList() ??
-              <String>[]) +
-          (media?.videos.results
-                  .where((video) => video.type == 'Teaser')
-                  .map((vid) => vid.key)
-                  .toList() ??
-              <String>[]))
-      .take(3)
-      .toList();
+
 
   getTvWithDetail(int id, List<MediaGenre> allGenres,
       {String? leadActors}) async {
@@ -109,8 +98,8 @@ class TvViewModel extends MediaViewModel<Tv> {
     _fetchMoreByLeadActor();
     fetchMoreByGenres();
     _fetchMoreByDirector();
-    _compileThumbnails();
-    _compileImages();
+    compileThumbnails();
+    compileImages();
   }
 
   _fetchMoreByDirector() async {
@@ -148,35 +137,35 @@ class TvViewModel extends MediaViewModel<Tv> {
     year = years;
   }
 
-  _compileThumbnails() async {
-    logIfDebug('isPinned, compileThumbnails called with tv:$media');
-    if (media != null) {
-      Map<String, ThumbnailType> thumbs = {};
-      for (var key in youtubeKeys) {
-        thumbs[key] = ThumbnailType.video;
-      }
-      for (var imagePath in media!.images.backdrops.take(2)) {
-        thumbs[imagePath.filePath] = ThumbnailType.image;
-      }
-      logIfDebug('isPinned, thumb:$thumbs');
-      if (thumbs.isNotEmpty) thumbMap = thumbs;
-      logIfDebug('isPinned, thumbMap:$thumbMap');
-      notifyListeners();
-    }
-  }
-
-  _compileImages() async {
-    if (media != null) {
-      var imageResult = media!.images;
-      List<ImageDetail> images = [];
-      images.addAll(imageResult.posters
-          .map((e) => e.copyWith.imageType(ImageType.poster.name)));
-      images.addAll(imageResult.backdrops
-          .map((e) => e.copyWith.imageType(ImageType.backdrop.name)));
-      images.addAll(imageResult.logos
-          .map((e) => e.copyWith.imageType(ImageType.logo.name)));
-      this.images = images;
-      notifyListeners();
-    }
-  }
+  // _compileThumbnails() async {
+  //   logIfDebug('isPinned, compileThumbnails called with tv:$media');
+  //   if (media != null) {
+  //     Map<String, ThumbnailType> thumbs = {};
+  //     for (var key in youtubeKeys) {
+  //       thumbs[key] = ThumbnailType.video;
+  //     }
+  //     for (var imagePath in media!.images.backdrops.take(2)) {
+  //       thumbs[imagePath.filePath] = ThumbnailType.image;
+  //     }
+  //     logIfDebug('isPinned, thumb:$thumbs');
+  //     if (thumbs.isNotEmpty) thumbMap = thumbs;
+  //     logIfDebug('isPinned, thumbMap:$thumbMap');
+  //     notifyListeners();
+  //   }
+  // }
+  //
+  // _compileImages() async {
+  //   if (media != null) {
+  //     var imageResult = media!.images;
+  //     List<ImageDetail> images = [];
+  //     images.addAll(imageResult.posters
+  //         .map((e) => e.copyWith.imageType(ImageType.poster.name)));
+  //     images.addAll(imageResult.backdrops
+  //         .map((e) => e.copyWith.imageType(ImageType.backdrop.name)));
+  //     images.addAll(imageResult.logos
+  //         .map((e) => e.copyWith.imageType(ImageType.logo.name)));
+  //     this.images = images;
+  //     notifyListeners();
+  //   }
+  // }
 }

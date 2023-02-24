@@ -138,7 +138,7 @@ class _MoviePageChildState extends State<_MoviePageChild>
               } else {
                 return SliverPersistentHeader(
                   delegate: ImageDelegate(
-                    backdropBaseUrl,
+                    // backdropBaseUrl,
                     tuple.item2.isEmpty ? 0 : height,
                     tuple.item2,
                   ),
@@ -1957,7 +1957,7 @@ class SliverPosterGridSwiper extends StatelessWidget with Utilities {
 
 class ImageDelegate extends SliverPersistentHeaderDelegate
     with GenericFunctions {
-  final String baseUrl;
+  // final String baseUrl;
   final double extent;
   BuildContext? _context;
 
@@ -1973,7 +1973,7 @@ class ImageDelegate extends SliverPersistentHeaderDelegate
 
   final double fraction = 1.0 /*0.88*/;
 
-  ImageDelegate(this.baseUrl, this.extent, this.thumbMap);
+  ImageDelegate(/*this.baseUrl, */this.extent, this.thumbMap);
 
   @override
   Widget build(
@@ -1983,14 +1983,14 @@ class ImageDelegate extends SliverPersistentHeaderDelegate
     return extent == 0
         ? const SizedBox.shrink()
         : Swiper(
-            itemBuilder: (_, index) => getView(index),
+            itemBuilder: (_, index) => getView(context, index),
             autoplay: true,
             itemCount: thumbMap.length,
             indicatorLayout: PageIndicatorLayout.SCALE,
             autoplayDelay: delay,
             loop: thumbMap.length > 1,
 
-            /// Helps in precaching the page
+            /// precaches the next page
             allowImplicitScrolling: true,
             // transformer: ScaleAndFadeTransformer(),
             // viewportFraction: fraction,
@@ -2001,13 +2001,17 @@ class ImageDelegate extends SliverPersistentHeaderDelegate
           );
   }
 
-  Widget getView(int index) {
+  Widget getView(BuildContext context, int index) {
     var entry = thumbMap.entries.elementAt(index);
     if (entry.value == ThumbnailType.image) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(radius),
         child: Image.network(
-          '$baseUrl${entry.key}',
+          context.read<ConfigViewModel>().getImageUrl(
+                ImageType.backdrop,
+                ImageQuality.high,
+                entry.key,
+              ),
           fit: BoxFit.fill,
           errorBuilder: (_, __, ___) {
             return Icon(
@@ -2046,37 +2050,37 @@ class ImageDelegate extends SliverPersistentHeaderDelegate
     }
   }
 
-  List<Widget> getViews() {
-    var views = <Widget>[];
-    for (int i = 0; i < thumbMap.length; i++) {
-      views.add(getView(i));
-      // if (entry.value == ThumbnailType.image) {
-      //   views.add(
-      //     Image.network('$baseUrl${entry.key}', fit: BoxFit.fill),
-      //   );
-      // } else {
-      //   views.add(
-      //     Stack(
-      //       fit: StackFit.expand,
-      //       children: [
-      //         Image.network(getThumbnailUrl(entry.key), fit: BoxFit.fill),
-      //         IconButton(
-      //           onPressed: () {
-      //             _context!.read<MovieViewModel>().isTrailerPinned = true;
-      //           },
-      //           icon: Icon(
-      //             Icons.play_circle_outline_sharp,
-      //             color: Colors.white,
-      //             size: iconSize,
-      //           ),
-      //         ),
-      //       ],
-      //     ),
-      //   );
-      // }
-    }
-    return views;
-  }
+  // List<Widget> getViews() {
+  //   var views = <Widget>[];
+  //   for (int i = 0; i < thumbMap.length; i++) {
+  //     views.add(getView(i));
+  //     // if (entry.value == ThumbnailType.image) {
+  //     //   views.add(
+  //     //     Image.network('$baseUrl${entry.key}', fit: BoxFit.fill),
+  //     //   );
+  //     // } else {
+  //     //   views.add(
+  //     //     Stack(
+  //     //       fit: StackFit.expand,
+  //     //       children: [
+  //     //         Image.network(getThumbnailUrl(entry.key), fit: BoxFit.fill),
+  //     //         IconButton(
+  //     //           onPressed: () {
+  //     //             _context!.read<MovieViewModel>().isTrailerPinned = true;
+  //     //           },
+  //     //           icon: Icon(
+  //     //             Icons.play_circle_outline_sharp,
+  //     //             color: Colors.white,
+  //     //             size: iconSize,
+  //     //           ),
+  //     //         ),
+  //     //       ],
+  //     //     ),
+  //     //   );
+  //     // }
+  //   }
+  //   return views;
+  // }
 
   String getThumbnailUrl(String key) {
     return 'https://img.youtube.com/vi/$key/mqdefault.jpg';
