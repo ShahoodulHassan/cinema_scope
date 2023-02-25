@@ -138,6 +138,94 @@ extension $ImageDetailCopyWith on ImageDetail {
   _$ImageDetailCWProxy get copyWith => _$ImageDetailCWProxyImpl(this);
 }
 
+abstract class _$CombinedResultsCWProxy {
+  CombinedResults page(int page);
+
+  CombinedResults totalPages(int totalPages);
+
+  CombinedResults totalResults(int totalResults);
+
+  CombinedResults results(List<CombinedResult> results);
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `CombinedResults(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// CombinedResults(...).copyWith(id: 12, name: "My name")
+  /// ````
+  CombinedResults call({
+    int? page,
+    int? totalPages,
+    int? totalResults,
+    List<CombinedResult>? results,
+  });
+}
+
+/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfCombinedResults.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfCombinedResults.copyWith.fieldName(...)`
+class _$CombinedResultsCWProxyImpl implements _$CombinedResultsCWProxy {
+  const _$CombinedResultsCWProxyImpl(this._value);
+
+  final CombinedResults _value;
+
+  @override
+  CombinedResults page(int page) => this(page: page);
+
+  @override
+  CombinedResults totalPages(int totalPages) => this(totalPages: totalPages);
+
+  @override
+  CombinedResults totalResults(int totalResults) =>
+      this(totalResults: totalResults);
+
+  @override
+  CombinedResults results(List<CombinedResult> results) =>
+      this(results: results);
+
+  @override
+
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `CombinedResults(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  ///
+  /// Usage
+  /// ```dart
+  /// CombinedResults(...).copyWith(id: 12, name: "My name")
+  /// ````
+  CombinedResults call({
+    Object? page = const $CopyWithPlaceholder(),
+    Object? totalPages = const $CopyWithPlaceholder(),
+    Object? totalResults = const $CopyWithPlaceholder(),
+    Object? results = const $CopyWithPlaceholder(),
+  }) {
+    return CombinedResults(
+      page == const $CopyWithPlaceholder() || page == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.page!
+          // ignore: cast_nullable_to_non_nullable
+          : page as int,
+      totalPages == const $CopyWithPlaceholder() || totalPages == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.totalPages!
+          // ignore: cast_nullable_to_non_nullable
+          : totalPages as int,
+      totalResults == const $CopyWithPlaceholder() || totalResults == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.totalResults!
+          // ignore: cast_nullable_to_non_nullable
+          : totalResults as int,
+      results == const $CopyWithPlaceholder() || results == null
+          // ignore: unnecessary_non_null_assertion
+          ? _value.results!
+          // ignore: cast_nullable_to_non_nullable
+          : results as List<CombinedResult>,
+    );
+  }
+}
+
+extension $CombinedResultsCopyWith on CombinedResults {
+  /// Returns a callable class that can be used as follows: `instanceOfCombinedResults.copyWith(...)` or like so:`instanceOfCombinedResults.copyWith.fieldName(...)`.
+  // ignore: library_private_types_in_public_api
+  _$CombinedResultsCWProxy get copyWith => _$CombinedResultsCWProxyImpl(this);
+}
+
 abstract class _$BaseCreditCWProxy {
   BaseCredit id(int id);
 

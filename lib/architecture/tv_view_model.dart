@@ -1,11 +1,9 @@
 import 'dart:math';
 
 import 'package:async/async.dart';
-import 'package:tuple/tuple.dart';
 
 import '../constants.dart';
 import '../models/movie.dart';
-import '../models/search.dart';
 import '../models/tv.dart';
 import 'config_view_model.dart';
 import 'movie_view_model.dart';
@@ -60,8 +58,6 @@ class TvViewModel extends MediaViewModel<Tv> {
 
   String? get initialVideoId => _initialVideoId;
 
-
-
   getTvWithDetail(int id, List<MediaGenre> allGenres,
       {String? leadActors}) async {
     this.allGenres = allGenres;
@@ -103,14 +99,37 @@ class TvViewModel extends MediaViewModel<Tv> {
   }
 
   _fetchMoreByDirector() async {
-    var directors = crew.where((element) {
-      var list = element.jobs.where(
-          (job) => job.job == Constants.departMap[Department.directing.name]);
-      return list.isNotEmpty;
-    });
-    if (directors.isNotEmpty) {
-      var director = directors.first;
-      fetchMoreByDirector<TvCrew>(director, director.department);
+    if (media != null) {
+      List<TvCrew> crews = [];
+
+      var creators = crew.where((crew) {
+        var list = media!.createdBy.where((creator) {
+          return crew.id == creator.id &&
+              crew.department == Department.writing.name;
+        });
+        return list.isNotEmpty;
+      });
+
+      // var creators = media!.createdBy.map((creator) {
+      //   var list = crew.where((crew) =>
+      //   crew.id == creator.id && crew.department == Department.writing.name);
+      //   if (list.isNotEmpty) return list.first;
+      // }).toList()..removeWhere((element) => element == null);
+      crews.addAll(creators);
+
+      if (crews.isEmpty) {
+        var directors = crew.where((element) {
+          var list = element.jobs.where(
+                  (job) => job.job == Constants.departMap[Department.directing.name]);
+          return list.isNotEmpty;
+        });
+        crews.addAll(directors);
+      }
+
+      if (crews.isNotEmpty) {
+        var crew = crews[Random().nextInt(crews.length)];
+        fetchMoreByDirector<TvCrew>(crew, crew.department);
+      }
     }
   }
 
@@ -137,35 +156,35 @@ class TvViewModel extends MediaViewModel<Tv> {
     year = years;
   }
 
-  // _compileThumbnails() async {
-  //   logIfDebug('isPinned, compileThumbnails called with tv:$media');
-  //   if (media != null) {
-  //     Map<String, ThumbnailType> thumbs = {};
-  //     for (var key in youtubeKeys) {
-  //       thumbs[key] = ThumbnailType.video;
-  //     }
-  //     for (var imagePath in media!.images.backdrops.take(2)) {
-  //       thumbs[imagePath.filePath] = ThumbnailType.image;
-  //     }
-  //     logIfDebug('isPinned, thumb:$thumbs');
-  //     if (thumbs.isNotEmpty) thumbMap = thumbs;
-  //     logIfDebug('isPinned, thumbMap:$thumbMap');
-  //     notifyListeners();
-  //   }
-  // }
-  //
-  // _compileImages() async {
-  //   if (media != null) {
-  //     var imageResult = media!.images;
-  //     List<ImageDetail> images = [];
-  //     images.addAll(imageResult.posters
-  //         .map((e) => e.copyWith.imageType(ImageType.poster.name)));
-  //     images.addAll(imageResult.backdrops
-  //         .map((e) => e.copyWith.imageType(ImageType.backdrop.name)));
-  //     images.addAll(imageResult.logos
-  //         .map((e) => e.copyWith.imageType(ImageType.logo.name)));
-  //     this.images = images;
-  //     notifyListeners();
-  //   }
-  // }
+// _compileThumbnails() async {
+//   logIfDebug('isPinned, compileThumbnails called with tv:$media');
+//   if (media != null) {
+//     Map<String, ThumbnailType> thumbs = {};
+//     for (var key in youtubeKeys) {
+//       thumbs[key] = ThumbnailType.video;
+//     }
+//     for (var imagePath in media!.images.backdrops.take(2)) {
+//       thumbs[imagePath.filePath] = ThumbnailType.image;
+//     }
+//     logIfDebug('isPinned, thumb:$thumbs');
+//     if (thumbs.isNotEmpty) thumbMap = thumbs;
+//     logIfDebug('isPinned, thumbMap:$thumbMap');
+//     notifyListeners();
+//   }
+// }
+//
+// _compileImages() async {
+//   if (media != null) {
+//     var imageResult = media!.images;
+//     List<ImageDetail> images = [];
+//     images.addAll(imageResult.posters
+//         .map((e) => e.copyWith.imageType(ImageType.poster.name)));
+//     images.addAll(imageResult.backdrops
+//         .map((e) => e.copyWith.imageType(ImageType.backdrop.name)));
+//     images.addAll(imageResult.logos
+//         .map((e) => e.copyWith.imageType(ImageType.logo.name)));
+//     this.images = images;
+//     notifyListeners();
+//   }
+// }
 }

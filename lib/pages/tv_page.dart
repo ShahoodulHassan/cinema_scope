@@ -111,6 +111,7 @@ class _TvPageChildState extends State<_TvPageChild>
               if (tuple.item3 != null && tuple.item1.isNotEmpty) {
                 return SliverPersistentHeader(
                   delegate: TrailerDelegate(
+                    mediaType: MediaType.tv,
                     extent: height,
                     initialVideoId: tuple.item3!,
                     youtubeKeys: tuple.item1,
@@ -121,8 +122,9 @@ class _TvPageChildState extends State<_TvPageChild>
                 return SliverPersistentHeader(
                   delegate: ImageDelegate(
                     // backdropBaseUrl,
-                    tuple.item2.isEmpty ? 0 : height,
-                    tuple.item2,
+                    mediaType: MediaType.tv,
+                    extent: tuple.item2.isEmpty ? 0 : height,
+                    thumbMap: tuple.item2,
                   ),
                   pinned: false,
                 );

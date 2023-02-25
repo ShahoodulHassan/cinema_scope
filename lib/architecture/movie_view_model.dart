@@ -124,7 +124,7 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
       media.department == department &&
           media.id != this.media?.id &&
           media.posterPath != null)
-          .toList()
+          .toSet().toList()
         ..sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
       if (moreByDirector.isNotEmpty) {
         this.moreByDirector = Tuple2(director, moreByDirector);
@@ -403,9 +403,9 @@ class MovieViewModel extends MediaViewModel<Movie> {
   _fetchMoreByDirector() async {
     var directors = crew.where((element) {
       return element.job == Constants.departMap[Department.directing.name];
-    });
+    }).toList();
     if (directors.isNotEmpty) {
-      var director = directors.first;
+      var director = directors[Random().nextInt(directors.length)];
       fetchMoreByDirector<Crew>(director, director.department);
     }
   }

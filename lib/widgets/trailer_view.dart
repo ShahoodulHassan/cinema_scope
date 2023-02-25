@@ -9,15 +9,17 @@ import 'package:provider/provider.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../architecture/config_view_model.dart';
-
+import '../architecture/tv_view_model.dart';
+import '../constants.dart';
 
 class TrailerView extends MultiProvider {
   /// It should always be non-empty
   final List<String> youtubeKeys;
-
+  final MediaType mediaType;
   final String initialVideoId;
 
   TrailerView({
+    required this.mediaType,
     required this.youtubeKeys,
     required this.initialVideoId,
     super.key,
@@ -29,12 +31,15 @@ class TrailerView extends MultiProvider {
                 ..initialize(youtubeKeys),
             ),
           ],
-          child: const _TrailerViewChild(),
+          child: _TrailerViewChild(mediaType: mediaType),
         );
 }
 
 class _TrailerViewChild extends StatefulWidget {
-  const _TrailerViewChild({Key? key}) : super(key: key);
+  final MediaType mediaType;
+
+  const _TrailerViewChild({required this.mediaType, Key? key})
+      : super(key: key);
 
   @override
   State<_TrailerViewChild> createState() => _TrailerViewChildState();
@@ -44,6 +49,7 @@ class _TrailerViewChildState extends RouteAwareState<_TrailerViewChild>
     with GenericFunctions {
   late final ConfigViewModel cvm;
   late final YoutubeViewModel yvm;
+
   // late final MovieViewModel mvm;
 
   late final builder = YoutubePlayerBuilder(
@@ -83,6 +89,7 @@ class _TrailerViewChildState extends RouteAwareState<_TrailerViewChild>
     return Stack(children: [
       builder,
       PlayerOverlay(
+        mediaType: widget.mediaType,
         controller: yvm.controller!,
         aspectRatio: builder.player.aspectRatio,
         timeOut: builder.player.controlsTimeOut,
@@ -183,8 +190,11 @@ class PlayerOverlay extends StatefulWidget {
   /// The timeout as set in the player.
   final Duration timeOut;
 
+  final MediaType mediaType;
+
   const PlayerOverlay({
     Key? key,
+    required this.mediaType,
     required this.controller,
     required this.aspectRatio,
     required this.timeOut,
@@ -352,8 +362,14 @@ class _PlayerOverlayState extends State<PlayerOverlay> with GenericFunctions {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
-                getIconButton(Icons.close_rounded,
-                    () => context.read<MovieViewModel>().initialVideoId = null),
+                getIconButton(Icons.close_rounded, () {
+                  logIfDebug('mediaType:${widget.mediaType}');
+                  if (widget.mediaType == MediaType.movie) {
+                    return context.read<MovieViewModel>().initialVideoId = null;
+                  } else if (widget.mediaType == MediaType.tv) {
+                    return context.read<TvViewModel>().initialVideoId = null;
+                  }
+                }),
               ],
             ),
           ),
@@ -449,4 +465,3 @@ class _PlayerOverlayState extends State<PlayerOverlay> with GenericFunctions {
     );
   }
 }
-

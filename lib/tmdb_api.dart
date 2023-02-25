@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:retrofit/http.dart' as http;
 
 import 'models/configuration.dart';
@@ -72,15 +71,15 @@ abstract class TmdbApi {
   @http.GET("/discover/movie")
   @http.Headers(headerMap)
   Future<CombinedResults> getMoreMoviesByLeadActors(
-      @http.Query('with_people') String withPeople, {
-        @http.Query('language') String language = 'en-US',
-        @http.Query('region') String region = 'US',
-        @http.Query('sort_by') String sortBy = 'vote_average.desc',
-        @http.Query('include_adult') String includeAdult = 'false',
-        @http.Query("page") int page = 1,
-        @http.Query("vote_average.gte") double voteAverage = 6.1,
-        @http.Query("vote_count.gte") int voteCount = 100,
-      });
+    @http.Query('with_people') String withPeople, {
+    @http.Query('language') String language = 'en-US',
+    @http.Query('region') String region = 'US',
+    @http.Query('sort_by') String sortBy = 'vote_average.desc',
+    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query("page") int page = 1,
+    @http.Query("vote_average.gte") double voteAverage = 6.1,
+    @http.Query("vote_count.gte") int voteCount = 100,
+  });
 
   /// https://api.themoviedb.org/3/discover/movie?
   /// api_key=ec7b57c566e8af94115bb2c0d910f610&language=en-US&region=US
@@ -90,21 +89,21 @@ abstract class TmdbApi {
   @http.GET("/discover/movie")
   @http.Headers(headerMap)
   Future<CombinedResults> getMoreMoviesByGenres(
-      @http.Query('with_genres') String withGenres,
-      @http.Query('primary_release_date.gte') String releaseDateGte,
-      @http.Query('primary_release_date.lte') String releaseDateLte,
-      // @http.Query('without_genres') String withoutGenres,
-      /*@http.Query("with_keywords") String withKeywords,*/
-      /*@http.Query('primary_release_year') String primaryReleaseYear,*/ {
-        @http.Query('language') String language = 'en-US',
-        @http.Query('with_original_language') String originalLanguage = 'en',
-        @http.Query('region') String region = 'US',
-        @http.Query('sort_by') String sortBy = 'vote_average.desc',
-        @http.Query('include_adult') String includeAdult = 'false',
-        @http.Query("page") int page = 1,
-        @http.Query("vote_average.gte") double voteAverage = 6.1,
-        @http.Query("vote_count.gte") int voteCount = 100,
-      });
+    @http.Query('with_genres') String withGenres,
+    @http.Query('primary_release_date.gte') String releaseDateGte,
+    @http.Query('primary_release_date.lte') String releaseDateLte,
+    // @http.Query('without_genres') String withoutGenres,
+    /*@http.Query("with_keywords") String withKeywords,*/
+    /*@http.Query('primary_release_year') String primaryReleaseYear,*/ {
+    @http.Query('language') String language = 'en-US',
+    @http.Query('with_original_language') String originalLanguage = 'en',
+    @http.Query('region') String region = 'US',
+    @http.Query('sort_by') String sortBy = 'vote_average.desc',
+    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query("page") int page = 1,
+    @http.Query("vote_average.gte") double voteAverage = 6.1,
+    @http.Query("vote_count.gte") int voteCount = 100,
+  });
 
   /// https://api.themoviedb.org/3/search/movie?
   /// api_key=ec7b57c566e8af94115bb2c0d910f610&language=en-US&page=1
@@ -151,7 +150,7 @@ abstract class TmdbApi {
   /// &sort_by=release_date.desc&with_original_language=en
   @http.GET("/discover/movie")
   @http.Headers(headerMap)
-  Future<MovieSearchResult> getLatestMovies(
+  Future<CombinedResults> getLatestMovies(
       @http.Query('primary_release_date.gte') String dateGte,
       @http.Query('primary_release_date.lte') String dateLte,
       {@http.Query('page') int page = 1,
@@ -160,21 +159,23 @@ abstract class TmdbApi {
       @http.Query('include_adult') String includeAdult = 'false',
       @http.Query('with_original_language') String withLanguage = 'en'});
 
-  @http.GET("/movie/popular")
+  @http.GET("/{media_type}/popular")
   @http.Headers(headerMap)
-  Future<MovieSearchResult> getPopularMovies(
+  Future<CombinedResults> getPopularMovies(
+      @http.Path("media_type") String mediaType,
       {@http.Query("page") int page = 1,
       @http.Query('language') String language = 'en-US'});
 
-  @http.GET("/movie/top_rated")
+  @http.GET("/{media_type}/top_rated")
   @http.Headers(headerMap)
-  Future<MovieSearchResult> getTopRatedMovies(
+  Future<CombinedResults> getTopRatedMovies(
+      @http.Path("media_type") String mediaType,
       {@http.Query("page") int page = 1,
       @http.Query('language') String language = 'en-US'});
 
   @http.GET("/movie/upcoming")
   @http.Headers(headerMap)
-  Future<MovieSearchResult> getUpcomingMovies({
+  Future<CombinedResults> getUpcomingMovies({
     @http.Query("page") int page = 1,
     @http.Query('language') String language = 'en-US',
     @http.Query('region') String region = 'US',
@@ -188,10 +189,9 @@ abstract class TmdbApi {
   ///
   /// release_date.gte (tomorrow [Now + 1])
   /// release_date.lte (30 days from tomorrow [Now + 31])
-  @http.GET("/discover/{media_type}")
+  @http.GET("/discover/movie")
   @http.Headers(headerMap)
-  Future<MovieSearchResult> discoverUpcomingMovies(
-    @http.Path("media_type") String mediaType,
+  Future<CombinedResults> discoverUpcomingMovies(
     @http.Query('primary_release_date.gte') String dateGte,
     @http.Query('primary_release_date.lte') String dateLte, {
     @http.Query("page") int page = 1,
@@ -205,17 +205,51 @@ abstract class TmdbApi {
 
   @http.GET("/trending/{media_type}/{time_window}")
   @http.Headers(headerMap)
-  Future<MovieSearchResult> getTrending(
-      @http.Path("media_type") String mediaType,
+  Future<CombinedResults> getTrending(@http.Path("media_type") String mediaType,
       @http.Path("time_window") String timeWindow,
       {@http.Query("page") int page = 1});
 
-  @http.GET("/{media_type}/now_playing")
+  @http.GET("/movie/now_playing")
   @http.Headers(headerMap)
-  Future<MovieSearchResult> getNowPlaying(
-      @http.Path("media_type") String mediaType,
+  Future<CombinedResults> getNowPlaying(
       {@http.Query("page") int page = 1,
       @http.Query('language') String language = 'en-US'});
+
+  ///https://api.themoviedb.org//3/discover/movie?
+  ///api_key=ec7b57c566e8af94115bb2c0d910f610&region=US&with_release_type=3
+  ///&release_date.gte=2023-01-26&release_date.lte=2023-02-25
+  @http.GET("/discover/movie")
+  @http.Headers(headerMap)
+  Future<CombinedResults> discoverInTheaters(
+    @http.Query('release_date.gte') String dateGte,
+    @http.Query('release_date.lte') String dateLte, {
+    @http.Query("page") int page = 1,
+    @http.Query('language') String language = 'en-US',
+    @http.Query('region') String region = 'US',
+    @http.Query('sort_by') String sortBy = 'popularity.desc',
+    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query('with_release_type') int releaseType = 3,
+    @http.Query('with_original_language') String originalLanguage = '',
+  });
+
+  ///https://api.themoviedb.org//3/discover/movie?
+  ///api_key=ec7b57c566e8af94115bb2c0d910f610
+  ///&with_watch_monetization_types=flatrate&watch_region=US
+  ///&with_original_language=&page=3
+  @http.GET("/discover/{media_type}")
+  @http.Headers(headerMap)
+  Future<CombinedResults> discoverStreamingMedia(
+    @http.Path("media_type") String mediaType, {
+    @http.Query("page") int page = 1,
+    @http.Query('language') String language = 'en-US',
+    @http.Query('watch_region') String watchRegion = 'US',
+    @http.Query('with_watch_monetization_types')
+        String withMonetizationTypes = 'flatrate',
+    @http.Query('sort_by') String sortBy = 'popularity.desc',
+    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query('with_original_language') String originalLanguage = '',
+  });
+
 
   @http.GET("/discover/{media_type}")
   @http.Headers(headerMap)
@@ -256,7 +290,6 @@ abstract class TmdbApi {
     @http.Query('language') String language = 'en-US',
   });
 
-
   @http.GET("/person/{id}")
   @http.Headers(headerMap)
   Future<Person> getPersonWithDetail(
@@ -275,39 +308,95 @@ abstract class TmdbApi {
   //       @http.Query('language') String language = 'en-US',
   //     });
 
-
-
-
   /// TV related methods
 
   @http.GET("/tv/{id}")
   @http.Headers(headerMap)
   Future<Tv> getTvWithDetail(
-      @http.Path("id") int id, {
-        @http.Query('language') String language = 'en-US',
-        @http.Query('append_to_response') String append =
+    @http.Path("id") int id, {
+    @http.Query('language') String language = 'en-US',
+    @http.Query('append_to_response') String append =
         'videos,images,recommendations,keywords,reviews,aggregate_credits,'
             'external_ids,alternative_titles',
-        @http.Query('include_image_language') String imageLanguage = 'en,null',
-      });
+    @http.Query('include_image_language') String imageLanguage = 'en,null',
+  });
 
   @http.GET("/discover/tv")
   @http.Headers(headerMap)
   Future<CombinedResults> getMoreTvSeriesByGenres(
-      @http.Query('with_genres') String withGenres,
+    @http.Query('with_genres') String withGenres,
+    @http.Query('first_air_date.gte') String releaseDateGte,
+    @http.Query('first_air_date.lte') String releaseDateLte,
+    // @http.Query('without_genres') String withoutGenres,
+    /*@http.Query("with_keywords") String withKeywords,*/
+    /*@http.Query('primary_release_year') String primaryReleaseYear,*/ {
+    @http.Query('language') String language = 'en-US',
+    @http.Query('with_original_language') String originalLanguage = 'en',
+    @http.Query('watch_region') String region = 'US',
+    @http.Query('sort_by') String sortBy = 'vote_average.desc',
+    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query("page") int page = 1,
+    @http.Query("vote_average.gte") double voteAverage = 6.1,
+    @http.Query("vote_count.gte") int voteCount = 100,
+  });
+
+  @http.GET("/tv/on_the_air")
+  @http.Headers(headerMap)
+  Future<CombinedResults> getOnTheAir(
+      {@http.Query("page") int page = 1,
+      @http.Query('language') String language = 'en-US'});
+
+  ///https://api.themoviedb.org//3/discover/tv?
+  ///api_key=ec7b57c566e8af94115bb2c0d910f610&timezone=America/Edmonton
+  ///&air_date.gte=2023-01-26&air_date.lte=2023-02-25&with_original_language=
+  @http.GET("/discover/tv")
+  @http.Headers(headerMap)
+  Future<CombinedResults> discoverOnTv(
+    @http.Query('air_date.gte') String dateGte,
+    @http.Query('air_date.lte') String dateLte, {
+    @http.Query("page") int page = 1,
+    @http.Query('language') String language = 'en-US',
+    // @http.Query('region') String region = 'US',
+    @http.Query('sort_by') String sortBy = 'popularity.desc',
+    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query('timezone') String timezone = '',
+    @http.Query('with_original_language') String originalLanguage = '',
+  });
+
+  /// https://api.themoviedb.org/3/discover/movie?
+  /// api_key=ec7b57c566e8af94115bb2c0d910f610&language=en-US
+  /// &sort_by=release_date.asc&page=1
+  /// &release_date.gte=2023-01-17&release_date.lte=2023-02-16&region=US
+  /// &with_original_language=en&with_release_type=3|2
+  ///
+  /// release_date.gte (tomorrow [Now + 1])
+  /// release_date.lte (30 days from tomorrow [Now + 31])
+  @http.GET("/discover/tv")
+  @http.Headers(headerMap)
+  Future<CombinedResults> discoverUpcomingTvShows(
+    @http.Query('first_air_date.gte') String releaseDateGte,
+    @http.Query('first_air_date.lte') String releaseDateLte, {
+    @http.Query("page") int page = 1,
+    @http.Query('language') String language = 'en-US',
+    @http.Query('region') String region = 'US',
+    @http.Query('sort_by') String sortBy = 'popularity.desc',
+    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query('with_original_language') String originalLanguage = 'en',
+    // @http.Query('with_release_type') String releaseType = '3|2',
+  });
+
+  /// https://api.themoviedb.org/3/discover/movie?
+  /// api_key=ec7b57c566e8af94115bb2c0d910f610&page=1&language=en-US
+  /// &release_date.gte=2023-01-07&release_date.lte=2023-01-15
+  /// &sort_by=release_date.desc&with_original_language=en
+  @http.GET("/discover/tv")
+  @http.Headers(headerMap)
+  Future<CombinedResults> getLatestTvShows(
       @http.Query('first_air_date.gte') String releaseDateGte,
       @http.Query('first_air_date.lte') String releaseDateLte,
-      // @http.Query('without_genres') String withoutGenres,
-      /*@http.Query("with_keywords") String withKeywords,*/
-      /*@http.Query('primary_release_year') String primaryReleaseYear,*/ {
-        @http.Query('language') String language = 'en-US',
-        @http.Query('with_original_language') String originalLanguage = 'en',
-        @http.Query('watch_region') String region = 'US',
-        @http.Query('sort_by') String sortBy = 'vote_average.desc',
-        @http.Query('include_adult') String includeAdult = 'false',
-        @http.Query("page") int page = 1,
-        @http.Query("vote_average.gte") double voteAverage = 6.1,
-        @http.Query("vote_count.gte") int voteCount = 100,
-      });
-
+      {@http.Query('page') int page = 1,
+      @http.Query('language') String language = 'en-US',
+      @http.Query('sort_by') String sortBy = 'first_air_date.desc',
+      @http.Query('include_adult') String includeAdult = 'false',
+      @http.Query('with_original_language') String withLanguage = 'en'});
 }

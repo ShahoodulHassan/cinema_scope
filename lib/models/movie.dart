@@ -273,6 +273,7 @@ class ImageDetail {
   Map<String, dynamic> toJson() => _$ImageDetailToJson(this);
 }
 
+@CopyWith()
 @JsonSerializable(fieldRename: FieldRename.snake)
 class CombinedResults extends BaseSearchResult {
   List<CombinedResult> results;

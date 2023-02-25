@@ -31,7 +31,7 @@ class _HomePageChildState extends State<_HomePageChild>
   @override
   void initState() {
     logIfDebug('initState called');
-    context.read<HomeViewModel>().getAllResults(MediaType.movie);
+    // context.read<HomeViewModel>().getAllResults(MediaType.movie);
     logIfDebug('async tasks started');
     super.initState();
   }
@@ -58,6 +58,7 @@ class _HomePageChildState extends State<_HomePageChild>
   Widget build(BuildContext context) {
     logIfDebug('build called');
     return Scaffold(
+      backgroundColor: lighten2(Theme.of(context).primaryColorLight, 78),
       appBar: AppBar(
         title: const Text('Cinema scope'),
         actions: [
@@ -75,17 +76,151 @@ class _HomePageChildState extends State<_HomePageChild>
       ),
       body: SingleChildScrollView(
         child: Column(
-          children: const [
-            HomeSection(SectionTitle.dailyTrending, isBigWidget: true),
-            HomeSection(SectionTitle.nowPlaying/*, isBigWidget: true*/),
+          children: [
+            getAnimatedSizeWidget(
+              HomeSection(
+                SectionTitle.trending,
+                params: [TimeWindow.day.name, TimeWindow.week.name],
+                paramTitles: const [
+                  'Today',
+                  'This week',
+                ],
 
-            HomeSection(SectionTitle.latest),
-            HomeSection(SectionTitle.popular),
-            HomeSection(SectionTitle.topRated),
-            HomeSection(SectionTitle.upcoming),
+                /*timeWindow: TimeWindow.week,*/ /*isBigWidget: true*/
+              ),
+            ),
+            getAnimatedSizeWidget(
+              HomeSection(
+                SectionTitle.nowPlaying,
+                params: [MediaType.movie.name, MediaType.tv.name],
+                paramTitles: const [
+                  'In theaters',
+                  'On TV',
+                ],
+                /*mediaType: MediaType.tv,*/ /*, isBigWidget: true*/
+              ),
+            ),
+            HomeSection(
+              SectionTitle.streaming,
+              params: [MediaType.movie.name, MediaType.tv.name],
+              paramTitles: const [
+                'Movie',
+                'TV show',
+              ],
+            ),
+            HomeSection(
+              SectionTitle.latest,
+              params: [MediaType.movie.name, MediaType.tv.name],
+              paramTitles: const [
+                'Movie',
+                'TV show',
+              ],
+            ),
+            HomeSection(
+              SectionTitle.popular,
+              params: [MediaType.movie.name, MediaType.tv.name],
+              paramTitles: const [
+                'Movie',
+                'TV show',
+              ],
+            ),
+            HomeSection(
+              SectionTitle.topRated,
+              params: [MediaType.movie.name, MediaType.tv.name],
+              paramTitles: const [
+                'Movie',
+                'TV show',
+              ],
+            ),
+            HomeSection(
+              SectionTitle.upcoming,
+              params: [MediaType.movie.name, MediaType.tv.name],
+              paramTitles: const [
+                'Movie',
+                'TV show',
+              ],
+            ),
+            const SizedBox(height: 24.0),
           ],
         ),
       ),
     );
   }
+
+  Widget getAnimatedSizeWidget(Widget child) {
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 250),
+      child: child,
+    );
+  }
+}
+
+class BaseHomeSection extends StatelessWidget {
+  final String title;
+  final List<Widget> children;
+
+  final bool showSeeAll;
+  final Function()? onPressed;
+  final String buttonText;
+
+  const BaseHomeSection({
+    required this.title,
+    required this.children,
+    this.showSeeAll = false,
+    this.buttonText = 'See all',
+    this.onPressed,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 36.0),
+      child: Stack(
+        children: [
+          /// This serves as the base card on which the content card is
+          /// stacked. The fill constructor helps match its height with
+          /// the height of the content card.
+          Positioned.fill(
+            child: Container(
+              color: Colors.white,
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              getSeparator(context),
+              getSectionTitleRow(),
+              ...children,
+              getSeparator(context),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget getSeparator(BuildContext context) => Container(
+        height: 1.0,
+        color: Theme.of(context).primaryColorLight,
+      );
+
+  Widget getSectionTitleRow() => Padding(
+        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.5,
+                // height: 1.1,
+              ),
+            ),
+            // if (showSeeAll) CompactTextButton(buttonText, onPressed: onPressed),
+          ],
+        ),
+      );
 }

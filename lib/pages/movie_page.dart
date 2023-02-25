@@ -17,6 +17,7 @@ import 'package:sliver_tools/sliver_tools.dart';
 import 'package:tuple/tuple.dart';
 
 import '../architecture/config_view_model.dart';
+import '../architecture/tv_view_model.dart';
 import '../constants.dart';
 import '../models/movie.dart';
 import '../widgets/compact_text_button.dart';
@@ -129,6 +130,7 @@ class _MoviePageChildState extends State<_MoviePageChild>
               if (tuple.item3 != null && tuple.item1.isNotEmpty) {
                 return SliverPersistentHeader(
                   delegate: TrailerDelegate(
+                    mediaType: MediaType.movie,
                     extent: height,
                     initialVideoId: tuple.item3!,
                     youtubeKeys: tuple.item1,
@@ -139,8 +141,9 @@ class _MoviePageChildState extends State<_MoviePageChild>
                 return SliverPersistentHeader(
                   delegate: ImageDelegate(
                     // backdropBaseUrl,
-                    tuple.item2.isEmpty ? 0 : height,
-                    tuple.item2,
+                    mediaType: MediaType.movie,
+                    extent: tuple.item2.isEmpty ? 0 : height,
+                    thumbMap: tuple.item2,
                   ),
                   pinned: false,
                 );
@@ -457,72 +460,6 @@ class _MoviePageChildState extends State<_MoviePageChild>
   }
 }
 
-class _MoreByLeadSection extends StatelessWidget
-    with GenericFunctions, Utilities, CommonFunctions {
-  final int _maxCount = 20;
-
-  const _MoreByLeadSection({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Selector<MovieViewModel, List<CombinedResult>>(
-      selector: (_, mvm) => mvm.moreByLead ?? [],
-      builder: (_, moreByLead, __) {
-        logIfDebug('moreByLead:$moreByLead');
-        if (moreByLead.isEmpty) {
-          return SliverToBoxAdapter(child: Container());
-        }
-        return BaseSectionSliver(
-          title: 'More by lead actors',
-          children: [
-            PosterCardListView(
-              items: moreByLead.take(_maxCount).toList(),
-              screenWidth: MediaQuery.of(context).size.width,
-              aspectRatio: Constants.arPoster,
-              onTap: (item) {
-                goToMoviePage(
-                  context,
-                  id: item.id,
-                  title: item.mediaTitle,
-                  overview: item.overview,
-                  releaseDate: item.mediaReleaseDate /*getReleaseDate(item)*/,
-                  voteAverage: item.voteAverage,
-                );
-              },
-            ),
-            // Container(
-            //   alignment: Alignment.center,
-            //   padding: const EdgeInsets.only(bottom: 8.0),
-            //   child: CompactTextButton('All filmography', onPressed: () {
-            //     var pvm = context.read<PersonViewModel>();
-            //     var person = pvm.personWithKnownFor.person;
-            //     goToFilmographyPage(
-            //         context, person!.id, person.name, person.combinedCredits);
-            //   }),
-            // ),
-          ],
-        );
-      },
-    );
-  }
-
-// goToFilmographyPage(
-//     BuildContext context,
-//     int id,
-//     String name,
-//     CombinedCredits combinedCredits,
-//     ) {
-//   Navigator.push(
-//     context,
-//     MaterialPageRoute(
-//         builder: (_) => FilmographyPage(
-//           id: id,
-//           name: name,
-//           combinedCredits: combinedCredits,
-//         )),
-//   );
-// }
-}
 
 class MoreByLeadActorSection<M extends Media, T extends MediaViewModel<M>>
     extends StatelessWidget with GenericFunctions, Utilities, CommonFunctions {
@@ -1315,40 +1252,6 @@ class _MediaInfoSection extends StatelessWidget
   }
 }
 
-/// Deprecated in favour of [ImagesSection]
-@Deprecated('Deprecated in favour of ImagesSection')
-class _ImagesSection extends StatelessWidget with GenericFunctions {
-  const _ImagesSection({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Selector<MovieViewModel, List<ImageDetail>>(
-      selector: (_, mvm) => mvm.images ?? [],
-      builder: (_, images, __) {
-        // logIfDebug('tagged:$taggedImages');
-        if (images.isEmpty) {
-          return SliverToBoxAdapter(child: Container());
-        } else {
-          return BaseSectionSliver(
-            title: 'Images',
-            children: [
-              ImageCardListView(
-                images,
-                screenWidth: MediaQuery.of(context).size.width,
-              ),
-              // Container(
-              //   alignment: Alignment.center,
-              //   padding: const EdgeInsets.only(bottom: 8.0),
-              //   child: CompactTextButton('All images', onPressed: () {}),
-              // ),
-            ],
-          );
-        }
-      },
-    );
-  }
-}
-
 class KeywordsSection extends StatelessWidget
     with GenericFunctions, Utilities, CommonFunctions {
   final int _maxCount = 10;
@@ -1501,11 +1404,11 @@ class ReviewsSection extends StatelessWidget {
                       tuple.item1.take(_maxCount).toList(),
                       MediaQuery.of(context).size.width,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child:
-                          CompactTextButton('Write a review', onPressed: () {}),
-                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.only(bottom: 8.0),
+                    //   child:
+                    //       CompactTextButton('Write a review', onPressed: () {}),
+                    // ),
                     getSliverSeparator(context),
                   ],
                 ),
@@ -1959,6 +1862,7 @@ class ImageDelegate extends SliverPersistentHeaderDelegate
     with GenericFunctions {
   // final String baseUrl;
   final double extent;
+  final MediaType mediaType;
   BuildContext? _context;
 
   late final double iconSize = extent * 0.30;
@@ -1973,7 +1877,11 @@ class ImageDelegate extends SliverPersistentHeaderDelegate
 
   final double fraction = 1.0 /*0.88*/;
 
-  ImageDelegate(/*this.baseUrl, */this.extent, this.thumbMap);
+  ImageDelegate({
+    required this.extent,
+    required this.mediaType,
+    required this.thumbMap,
+  });
 
   @override
   Widget build(
@@ -2037,7 +1945,11 @@ class ImageDelegate extends SliverPersistentHeaderDelegate
               // _context!.read<YoutubeViewModel>().currentKey = entry.key;
               // _context!.read<YoutubeViewModel>().reset();
               // _context!.read<MovieViewModel>().isTrailerPinned = true;
-              _context!.read<MovieViewModel>().initialVideoId = entry.key;
+              if (mediaType == MediaType.movie) {
+                _context!.read<MovieViewModel>().initialVideoId = entry.key;
+              } else if (mediaType == MediaType.tv) {
+                _context!.read<TvViewModel>().initialVideoId = entry.key;
+              }
             },
             icon: Icon(
               Icons.play_circle_outline_sharp,
@@ -2101,16 +2013,19 @@ class ImageDelegate extends SliverPersistentHeaderDelegate
 class TrailerDelegate extends SliverPersistentHeaderDelegate
     with GenericFunctions {
   final double extent;
+  final MediaType mediaType;
   final String initialVideoId;
   final List<String> youtubeKeys;
 
   TrailerDelegate({
     required this.extent,
+    required this.mediaType,
     required this.initialVideoId,
     required this.youtubeKeys,
   });
 
   late final child = TrailerView(
+    mediaType: mediaType,
     youtubeKeys: youtubeKeys,
     initialVideoId: initialVideoId,
   );

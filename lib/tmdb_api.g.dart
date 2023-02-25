@@ -465,7 +465,7 @@ class _TmdbApi implements TmdbApi {
   }
 
   @override
-  Future<MovieSearchResult> getLatestMovies(
+  Future<CombinedResults> getLatestMovies(
     dateGte,
     dateLte, {
     page = 1,
@@ -492,7 +492,7 @@ class _TmdbApi implements TmdbApi {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<MovieSearchResult>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<CombinedResults>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -505,12 +505,13 @@ class _TmdbApi implements TmdbApi {
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = MovieSearchResult.fromJson(_result.data!);
+    final value = CombinedResults.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<MovieSearchResult> getPopularMovies({
+  Future<CombinedResults> getPopularMovies(
+    mediaType, {
     page = 1,
     language = 'en-US',
   }) async {
@@ -527,7 +528,7 @@ class _TmdbApi implements TmdbApi {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<MovieSearchResult>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<CombinedResults>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -535,17 +536,18 @@ class _TmdbApi implements TmdbApi {
     )
             .compose(
               _dio.options,
-              '/movie/popular',
+              '/${mediaType}/popular',
               queryParameters: queryParameters,
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = MovieSearchResult.fromJson(_result.data!);
+    final value = CombinedResults.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<MovieSearchResult> getTopRatedMovies({
+  Future<CombinedResults> getTopRatedMovies(
+    mediaType, {
     page = 1,
     language = 'en-US',
   }) async {
@@ -562,7 +564,7 @@ class _TmdbApi implements TmdbApi {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<MovieSearchResult>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<CombinedResults>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -570,17 +572,17 @@ class _TmdbApi implements TmdbApi {
     )
             .compose(
               _dio.options,
-              '/movie/top_rated',
+              '/${mediaType}/top_rated',
               queryParameters: queryParameters,
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = MovieSearchResult.fromJson(_result.data!);
+    final value = CombinedResults.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<MovieSearchResult> getUpcomingMovies({
+  Future<CombinedResults> getUpcomingMovies({
     page = 1,
     language = 'en-US',
     region = 'US',
@@ -599,7 +601,7 @@ class _TmdbApi implements TmdbApi {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<MovieSearchResult>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<CombinedResults>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -612,13 +614,12 @@ class _TmdbApi implements TmdbApi {
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = MovieSearchResult.fromJson(_result.data!);
+    final value = CombinedResults.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<MovieSearchResult> discoverUpcomingMovies(
-    mediaType,
+  Future<CombinedResults> discoverUpcomingMovies(
     dateGte,
     dateLte, {
     page = 1,
@@ -649,7 +650,7 @@ class _TmdbApi implements TmdbApi {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<MovieSearchResult>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<CombinedResults>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -657,17 +658,17 @@ class _TmdbApi implements TmdbApi {
     )
             .compose(
               _dio.options,
-              '/discover/${mediaType}',
+              '/discover/movie',
               queryParameters: queryParameters,
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = MovieSearchResult.fromJson(_result.data!);
+    final value = CombinedResults.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<MovieSearchResult> getTrending(
+  Future<CombinedResults> getTrending(
     mediaType,
     timeWindow, {
     page = 1,
@@ -682,7 +683,7 @@ class _TmdbApi implements TmdbApi {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<MovieSearchResult>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<CombinedResults>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -695,13 +696,12 @@ class _TmdbApi implements TmdbApi {
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = MovieSearchResult.fromJson(_result.data!);
+    final value = CombinedResults.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<MovieSearchResult> getNowPlaying(
-    mediaType, {
+  Future<CombinedResults> getNowPlaying({
     page = 1,
     language = 'en-US',
   }) async {
@@ -718,7 +718,7 @@ class _TmdbApi implements TmdbApi {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<MovieSearchResult>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<CombinedResults>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -726,12 +726,107 @@ class _TmdbApi implements TmdbApi {
     )
             .compose(
               _dio.options,
-              '/${mediaType}/now_playing',
+              '/movie/now_playing',
               queryParameters: queryParameters,
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = MovieSearchResult.fromJson(_result.data!);
+    final value = CombinedResults.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<CombinedResults> discoverInTheaters(
+    dateGte,
+    dateLte, {
+    page = 1,
+    language = 'en-US',
+    region = 'US',
+    sortBy = 'popularity.desc',
+    includeAdult = 'false',
+    releaseType = 3,
+    originalLanguage = '',
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'release_date.gte': dateGte,
+      r'release_date.lte': dateLte,
+      r'page': page,
+      r'language': language,
+      r'region': region,
+      r'sort_by': sortBy,
+      r'include_adult': includeAdult,
+      r'with_release_type': releaseType,
+      r'with_original_language': originalLanguage,
+    };
+    final _headers = <String, dynamic>{
+      r'Content-Type': 'application/json;charset=utf-8',
+      r'Authorization':
+          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYzdiNTdjNTY2ZThhZjk0MTE1YmIyYzBkOTEwZjYxMCIsInN1YiI6IjVhMGE3MDk5YzNhMzY4MjE4YTAxMTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.uyDhjXOvRNfjg_gJFPkSfAuT-F-MFmWVwPoEUftgq1g',
+    };
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CombinedResults>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/json;charset=utf-8',
+    )
+            .compose(
+              _dio.options,
+              '/discover/movie',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CombinedResults.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<CombinedResults> discoverStreamingMedia(
+    mediaType, {
+    page = 1,
+    language = 'en-US',
+    watchRegion = 'US',
+    withMonetizationTypes = 'flatrate',
+    sortBy = 'popularity.desc',
+    includeAdult = 'false',
+    originalLanguage = '',
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'page': page,
+      r'language': language,
+      r'watch_region': watchRegion,
+      r'with_watch_monetization_types': withMonetizationTypes,
+      r'sort_by': sortBy,
+      r'include_adult': includeAdult,
+      r'with_original_language': originalLanguage,
+    };
+    final _headers = <String, dynamic>{
+      r'Content-Type': 'application/json;charset=utf-8',
+      r'Authorization':
+          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYzdiNTdjNTY2ZThhZjk0MTE1YmIyYzBkOTEwZjYxMCIsInN1YiI6IjVhMGE3MDk5YzNhMzY4MjE4YTAxMTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.uyDhjXOvRNfjg_gJFPkSfAuT-F-MFmWVwPoEUftgq1g',
+    };
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CombinedResults>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/json;charset=utf-8',
+    )
+            .compose(
+              _dio.options,
+              '/discover/${mediaType}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CombinedResults.fromJson(_result.data!);
     return value;
   }
 
@@ -831,43 +926,6 @@ class _TmdbApi implements TmdbApi {
 
   @override
   Future<CombinedResults> getMediaRecommendations(
-    mediaType,
-    mediaId, {
-    page = 1,
-    language = 'en-US',
-  }) async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{
-      r'page': page,
-      r'language': language,
-    };
-    final _headers = <String, dynamic>{
-      r'Content-Type': 'application/json;charset=utf-8',
-      r'Authorization':
-          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYzdiNTdjNTY2ZThhZjk0MTE1YmIyYzBkOTEwZjYxMCIsInN1YiI6IjVhMGE3MDk5YzNhMzY4MjE4YTAxMTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.uyDhjXOvRNfjg_gJFPkSfAuT-F-MFmWVwPoEUftgq1g',
-    };
-    _headers.removeWhere((k, v) => v == null);
-    final _data = <String, dynamic>{};
-    final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<CombinedResults>(Options(
-      method: 'GET',
-      headers: _headers,
-      extra: _extra,
-      contentType: 'application/json;charset=utf-8',
-    )
-            .compose(
-              _dio.options,
-              '/${mediaType}/${mediaId}/recommendations',
-              queryParameters: queryParameters,
-              data: _data,
-            )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = CombinedResults.fromJson(_result.data!);
-    return value;
-  }
-
-  @override
-  Future<CombinedResults> getRecommendations(
     mediaType,
     mediaId, {
     page = 1,
@@ -1005,6 +1063,180 @@ class _TmdbApi implements TmdbApi {
       r'page': page,
       r'vote_average.gte': voteAverage,
       r'vote_count.gte': voteCount,
+    };
+    final _headers = <String, dynamic>{
+      r'Content-Type': 'application/json;charset=utf-8',
+      r'Authorization':
+          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYzdiNTdjNTY2ZThhZjk0MTE1YmIyYzBkOTEwZjYxMCIsInN1YiI6IjVhMGE3MDk5YzNhMzY4MjE4YTAxMTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.uyDhjXOvRNfjg_gJFPkSfAuT-F-MFmWVwPoEUftgq1g',
+    };
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CombinedResults>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/json;charset=utf-8',
+    )
+            .compose(
+              _dio.options,
+              '/discover/tv',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CombinedResults.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<CombinedResults> getOnTheAir({
+    page = 1,
+    language = 'en-US',
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'page': page,
+      r'language': language,
+    };
+    final _headers = <String, dynamic>{
+      r'Content-Type': 'application/json;charset=utf-8',
+      r'Authorization':
+          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYzdiNTdjNTY2ZThhZjk0MTE1YmIyYzBkOTEwZjYxMCIsInN1YiI6IjVhMGE3MDk5YzNhMzY4MjE4YTAxMTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.uyDhjXOvRNfjg_gJFPkSfAuT-F-MFmWVwPoEUftgq1g',
+    };
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CombinedResults>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/json;charset=utf-8',
+    )
+            .compose(
+              _dio.options,
+              '/tv/on_the_air',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CombinedResults.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<CombinedResults> discoverOnTv(
+    dateGte,
+    dateLte, {
+    page = 1,
+    language = 'en-US',
+    sortBy = 'popularity.desc',
+    includeAdult = 'false',
+    timezone = '',
+    originalLanguage = '',
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'air_date.gte': dateGte,
+      r'air_date.lte': dateLte,
+      r'page': page,
+      r'language': language,
+      r'sort_by': sortBy,
+      r'include_adult': includeAdult,
+      r'timezone': timezone,
+      r'with_original_language': originalLanguage,
+    };
+    final _headers = <String, dynamic>{
+      r'Content-Type': 'application/json;charset=utf-8',
+      r'Authorization':
+          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYzdiNTdjNTY2ZThhZjk0MTE1YmIyYzBkOTEwZjYxMCIsInN1YiI6IjVhMGE3MDk5YzNhMzY4MjE4YTAxMTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.uyDhjXOvRNfjg_gJFPkSfAuT-F-MFmWVwPoEUftgq1g',
+    };
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CombinedResults>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/json;charset=utf-8',
+    )
+            .compose(
+              _dio.options,
+              '/discover/tv',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CombinedResults.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<CombinedResults> discoverUpcomingTvShows(
+    releaseDateGte,
+    releaseDateLte, {
+    page = 1,
+    language = 'en-US',
+    region = 'US',
+    sortBy = 'popularity.desc',
+    includeAdult = 'false',
+    originalLanguage = 'en',
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'first_air_date.gte': releaseDateGte,
+      r'first_air_date.lte': releaseDateLte,
+      r'page': page,
+      r'language': language,
+      r'region': region,
+      r'sort_by': sortBy,
+      r'include_adult': includeAdult,
+      r'with_original_language': originalLanguage,
+    };
+    final _headers = <String, dynamic>{
+      r'Content-Type': 'application/json;charset=utf-8',
+      r'Authorization':
+          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYzdiNTdjNTY2ZThhZjk0MTE1YmIyYzBkOTEwZjYxMCIsInN1YiI6IjVhMGE3MDk5YzNhMzY4MjE4YTAxMTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.uyDhjXOvRNfjg_gJFPkSfAuT-F-MFmWVwPoEUftgq1g',
+    };
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CombinedResults>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/json;charset=utf-8',
+    )
+            .compose(
+              _dio.options,
+              '/discover/tv',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CombinedResults.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<CombinedResults> getLatestTvShows(
+    releaseDateGte,
+    releaseDateLte, {
+    page = 1,
+    language = 'en-US',
+    sortBy = 'first_air_date.desc',
+    includeAdult = 'false',
+    withLanguage = 'en',
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'first_air_date.gte': releaseDateGte,
+      r'first_air_date.lte': releaseDateLte,
+      r'page': page,
+      r'language': language,
+      r'sort_by': sortBy,
+      r'include_adult': includeAdult,
+      r'with_original_language': withLanguage,
     };
     final _headers = <String, dynamic>{
       r'Content-Type': 'application/json;charset=utf-8',
