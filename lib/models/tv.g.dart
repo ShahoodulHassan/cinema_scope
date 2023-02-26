@@ -27,6 +27,7 @@ Tv _$TvFromJson(Map<String, dynamic> json) => Tv(
       CombinedResults.fromJson(json['recommendations'] as Map<String, dynamic>),
       ImageResult.fromJson(json['images'] as Map<String, dynamic>),
       ReviewResult.fromJson(json['reviews'] as Map<String, dynamic>),
+      WatchProviders.fromJson(json['watch/providers'] as Map<String, dynamic>),
       (json['created_by'] as List<dynamic>)
           .map((e) => CreatedBy.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -95,6 +96,7 @@ Map<String, dynamic> _$TvToJson(Tv instance) => <String, dynamic>{
       'images': instance.images,
       'recommendations': instance.recommendations,
       'reviews': instance.reviews,
+      'watch/providers': instance.watchProviders,
       'created_by': instance.createdBy,
       'episode_run_time': instance.episodeRunTime,
       'first_air_date': instance.firstAirDate,

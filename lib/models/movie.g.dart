@@ -758,6 +758,7 @@ Media _$MediaFromJson(Map<String, dynamic> json) => Media(
       CombinedResults.fromJson(json['recommendations'] as Map<String, dynamic>),
       ImageResult.fromJson(json['images'] as Map<String, dynamic>),
       ReviewResult.fromJson(json['reviews'] as Map<String, dynamic>),
+      WatchProviders.fromJson(json['watch/providers'] as Map<String, dynamic>),
       backdropPath: json['backdrop_path'] as String?,
       homepage: json['homepage'] as String?,
       overview: json['overview'] as String?,
@@ -785,6 +786,7 @@ Map<String, dynamic> _$MediaToJson(Media instance) => <String, dynamic>{
       'images': instance.images,
       'recommendations': instance.recommendations,
       'reviews': instance.reviews,
+      'watch/providers': instance.watchProviders,
     };
 
 Movie _$MovieFromJson(Map<String, dynamic> json) => Movie(
@@ -808,6 +810,7 @@ Movie _$MovieFromJson(Map<String, dynamic> json) => Movie(
       CombinedResults.fromJson(json['recommendations'] as Map<String, dynamic>),
       ImageResult.fromJson(json['images'] as Map<String, dynamic>),
       ReviewResult.fromJson(json['reviews'] as Map<String, dynamic>),
+      WatchProviders.fromJson(json['watch/providers'] as Map<String, dynamic>),
       json['original_title'] as String,
       json['budget'] as int,
       json['revenue'] as int,
@@ -855,6 +858,7 @@ Map<String, dynamic> _$MovieToJson(Movie instance) => <String, dynamic>{
       'images': instance.images,
       'recommendations': instance.recommendations,
       'reviews': instance.reviews,
+      'watch/providers': instance.watchProviders,
       'belongs_to_collection': instance.belongsToCollection,
       'budget': instance.budget,
       'video': instance.video,
@@ -1306,5 +1310,80 @@ Map<String, dynamic> _$RecommendationResultToJson(
       'page': instance.page,
       'total_pages': instance.totalPages,
       'total_results': instance.totalResults,
+      'results': instance.results,
+    };
+
+WatchProvider _$WatchProviderFromJson(Map<String, dynamic> json) =>
+    WatchProvider(
+      json['provider_id'] as int,
+      json['provider_name'] as String,
+      json['display_priority'] as int,
+      logoPath: json['logo_path'] as String?,
+    );
+
+Map<String, dynamic> _$WatchProviderToJson(WatchProvider instance) =>
+    <String, dynamic>{
+      'logo_path': instance.logoPath,
+      'provider_id': instance.providerId,
+      'provider_name': instance.providerName,
+      'display_priority': instance.displayPriority,
+    };
+
+WatchProviderResult _$WatchProviderResultFromJson(Map<String, dynamic> json) =>
+    WatchProviderResult(
+      json['link'] as String,
+      flatrate: (json['flatrate'] as List<dynamic>?)
+          ?.map((e) => WatchProvider.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      buy: (json['buy'] as List<dynamic>?)
+          ?.map((e) => WatchProvider.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      rent: (json['rent'] as List<dynamic>?)
+          ?.map((e) => WatchProvider.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      free: (json['free'] as List<dynamic>?)
+          ?.map((e) => WatchProvider.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      ads: (json['ads'] as List<dynamic>?)
+          ?.map((e) => WatchProvider.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$WatchProviderResultToJson(
+        WatchProviderResult instance) =>
+    <String, dynamic>{
+      'link': instance.link,
+      'flatrate': instance.flatrate,
+      'buy': instance.buy,
+      'rent': instance.rent,
+      'free': instance.free,
+      'ads': instance.ads,
+    };
+
+WatchProviderResults _$WatchProviderResultsFromJson(
+        Map<String, dynamic> json) =>
+    WatchProviderResults(
+      json['US'] == null
+          ? null
+          : WatchProviderResult.fromJson(json['US'] as Map<String, dynamic>),
+      json['UK'] == null
+          ? null
+          : WatchProviderResult.fromJson(json['UK'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$WatchProviderResultsToJson(
+        WatchProviderResults instance) =>
+    <String, dynamic>{
+      'US': instance.us,
+      'UK': instance.uk,
+    };
+
+WatchProviders _$WatchProvidersFromJson(Map<String, dynamic> json) =>
+    WatchProviders(
+      WatchProviderResults.fromJson(json['results'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$WatchProvidersToJson(WatchProviders instance) =>
+    <String, dynamic>{
       'results': instance.results,
     };

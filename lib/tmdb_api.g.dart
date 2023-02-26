@@ -207,7 +207,7 @@ class _TmdbApi implements TmdbApi {
     language = 'en-US',
     append =
         'videos,images,recommendations,keywords,reviews,credits,release_dates'
-            ',alternative_titles',
+            ',alternative_titles,watch/providers',
     imageLanguage = 'en,null',
   }) async {
     const _extra = <String, dynamic>{};
@@ -1002,7 +1002,7 @@ class _TmdbApi implements TmdbApi {
     id, {
     language = 'en-US',
     append = 'videos,images,recommendations,keywords,reviews,aggregate_credits,'
-        'external_ids,alternative_titles',
+        'external_ids,alternative_titles,watch/providers',
     imageLanguage = 'en,null',
   }) async {
     const _extra = <String, dynamic>{};

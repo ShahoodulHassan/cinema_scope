@@ -30,6 +30,9 @@ class Media {
   CombinedResults recommendations;
   ReviewResult reviews;
 
+  @JsonKey(name: 'watch/providers')
+  WatchProviders watchProviders;
+
   Media(
       this.adult,
       this.genres,
@@ -45,6 +48,7 @@ class Media {
       this.recommendations,
       this.images,
       this.reviews,
+      this.watchProviders,
       {this.backdropPath,
       this.homepage,
       this.overview,
@@ -94,6 +98,7 @@ class Movie extends Media {
     super.recommendations,
     super.images,
     super.reviews,
+    super.watchProviders,
     this.originalTitle,
     this.budget,
     this.revenue,
@@ -460,7 +465,6 @@ class Crew extends BaseCredit {
   Map<String, dynamic> toJson() => _$CrewToJson(this);
 }
 
-
 @JsonSerializable(fieldRename: FieldRename.snake)
 class MediaGenre extends Genre {
   final MediaType mediaType;
@@ -594,4 +598,78 @@ class RecommendationData {
       (result.results..removeWhere((element) => element.posterPath == null));
 
   int get totalResults => result.totalResults;
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class WatchProvider {
+  String? logoPath;
+  int providerId;
+  String providerName;
+  int displayPriority;
+
+  WatchProvider(
+    this.providerId,
+    this.providerName,
+    this.displayPriority, {
+    this.logoPath,
+  });
+
+  factory WatchProvider.fromJson(Map<String, dynamic> json) =>
+      _$WatchProviderFromJson(json);
+
+  Map<String, dynamic> toJson() => _$WatchProviderToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class WatchProviderResult {
+  String link;
+  List<WatchProvider>? flatrate;
+  List<WatchProvider>? buy;
+  List<WatchProvider>? rent;
+  List<WatchProvider>? free;
+  List<WatchProvider>? ads;
+
+  WatchProviderResult(
+    this.link, {
+    this.flatrate,
+    this.buy,
+    this.rent,
+    this.free,
+    this.ads,
+  });
+
+  factory WatchProviderResult.fromJson(Map<String, dynamic> json) =>
+      _$WatchProviderResultFromJson(json);
+
+  Map<String, dynamic> toJson() => _$WatchProviderResultToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class WatchProviderResults {
+
+  @JsonKey(name: 'US')
+  WatchProviderResult? us;
+
+  @JsonKey(name: 'UK')
+  WatchProviderResult? uk;
+
+  WatchProviderResults(this.us, this.uk);
+
+  factory WatchProviderResults.fromJson(Map<String, dynamic> json) =>
+      _$WatchProviderResultsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$WatchProviderResultsToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class WatchProviders {
+
+  WatchProviderResults results;
+
+  WatchProviders(this.results);
+
+  factory WatchProviders.fromJson(Map<String, dynamic> json) =>
+      _$WatchProvidersFromJson(json);
+
+  Map<String, dynamic> toJson() => _$WatchProvidersToJson(this);
 }

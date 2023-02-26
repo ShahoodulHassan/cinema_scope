@@ -47,6 +47,7 @@ class Tv extends Media {
     super.recommendations,
     super.images,
     super.reviews,
+    super.watchProviders,
     this.createdBy,
     this.episodeRunTime,
     this.firstAirDate,

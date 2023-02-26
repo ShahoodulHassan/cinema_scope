@@ -60,7 +60,7 @@ abstract class TmdbApi {
     @http.Query('language') String language = 'en-US',
     @http.Query('append_to_response') String append =
         'videos,images,recommendations,keywords,reviews,credits,release_dates'
-            ',alternative_titles',
+            ',alternative_titles,watch/providers',
     @http.Query('include_image_language') String imageLanguage = 'en,null',
   });
 
@@ -317,7 +317,7 @@ abstract class TmdbApi {
     @http.Query('language') String language = 'en-US',
     @http.Query('append_to_response') String append =
         'videos,images,recommendations,keywords,reviews,aggregate_credits,'
-            'external_ids,alternative_titles',
+            'external_ids,alternative_titles,watch/providers',
     @http.Query('include_image_language') String imageLanguage = 'en,null',
   });
 
