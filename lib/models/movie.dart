@@ -3,6 +3,7 @@ import 'package:cinema_scope/models/search.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../utilities/utilities.dart';
 import 'configuration.dart';
 
 part 'movie.g.dart';
@@ -618,6 +619,11 @@ class WatchProvider {
       _$WatchProviderFromJson(json);
 
   Map<String, dynamic> toJson() => _$WatchProviderToJson(this);
+
+  @override
+  String toString() {
+    return 'WatchProvider{logoPath: $logoPath, providerId: $providerId, providerName: $providerName, displayPriority: $displayPriority}';
+  }
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)
@@ -642,28 +648,42 @@ class WatchProviderResult {
       _$WatchProviderResultFromJson(json);
 
   Map<String, dynamic> toJson() => _$WatchProviderResultToJson(this);
+
+  @override
+  String toString() {
+    return 'WatchProviderResult{link: $link, flatrate: $flatrate, buy: $buy, '
+        'rent: $rent, free: $free, ads: $ads}';
+  }
 }
 
+
+/// Custom JSON serialization has to be implemented due to the unusual JSON
+/// structure as pointed out here:
+/// https://www.themoviedb.org/talk/63fba2e757176f008544a439
 @JsonSerializable(fieldRename: FieldRename.snake)
 class WatchProviderResults {
+  // @JsonKey(name: 'US')
+  WatchProviderResult? wpResult;
 
-  @JsonKey(name: 'US')
-  WatchProviderResult? us;
+  WatchProviderResults(this.wpResult);
 
-  @JsonKey(name: 'UK')
-  WatchProviderResult? uk;
+  factory WatchProviderResults.fromJson(Map<String, dynamic> json) {
+    String region = PrefUtil.getValue(Constants.pkRegion, 'US');
+    return WatchProviderResults(
+        json[region] == null
+            ? null
+            : WatchProviderResult.fromJson(json[region] as Map<String, dynamic>),
+      );
+  }
 
-  WatchProviderResults(this.us, this.uk);
-
-  factory WatchProviderResults.fromJson(Map<String, dynamic> json) =>
-      _$WatchProviderResultsFromJson(json);
+  // factory WatchProviderResults.fromJson(Map<String, dynamic> json) =>
+  //     _$WatchProviderResultsFromJson(json);
 
   Map<String, dynamic> toJson() => _$WatchProviderResultsToJson(this);
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class WatchProviders {
-
   WatchProviderResults results;
 
   WatchProviders(this.results);

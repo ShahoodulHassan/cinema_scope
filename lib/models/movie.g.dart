@@ -1363,19 +1363,16 @@ Map<String, dynamic> _$WatchProviderResultToJson(
 WatchProviderResults _$WatchProviderResultsFromJson(
         Map<String, dynamic> json) =>
     WatchProviderResults(
-      json['US'] == null
+      json['wp_result'] == null
           ? null
-          : WatchProviderResult.fromJson(json['US'] as Map<String, dynamic>),
-      json['UK'] == null
-          ? null
-          : WatchProviderResult.fromJson(json['UK'] as Map<String, dynamic>),
+          : WatchProviderResult.fromJson(
+              json['wp_result'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$WatchProviderResultsToJson(
         WatchProviderResults instance) =>
     <String, dynamic>{
-      'US': instance.us,
-      'UK': instance.uk,
+      'wp_result': instance.wpResult,
     };
 
 WatchProviders _$WatchProvidersFromJson(Map<String, dynamic> json) =>

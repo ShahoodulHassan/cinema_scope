@@ -65,6 +65,7 @@ class TvViewModel extends MediaViewModel<Tv> {
       api.getTvWithDetail(id),
     ).then((result) async {
       media = result;
+      logIfDebug('providers:${media?.watchProviders.results.wpResult}');
       // year = getYearStringFromDate(media!.firstAirDate);
       await _compileYears();
       await _compileCreators();

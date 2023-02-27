@@ -363,6 +363,7 @@ class MovieViewModel extends MediaViewModel<Movie> {
     ).then((result) async {
       media = result;
       year = getYearStringFromDate(media!.releaseDate);
+      logIfDebug('providers:${media?.watchProviders.results.wpResult}');
       await _compileCertification();
       notifyListeners();
       _fetchMoreData();
