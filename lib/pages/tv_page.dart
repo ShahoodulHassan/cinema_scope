@@ -139,6 +139,20 @@ class _TvPageChildState extends State<_TvPageChild>
               );
             },
           ),
+          Selector<TvViewModel, String?>(
+            selector: (_, tvm) => tvm.initialVideoId,
+            builder: (_, id, __) {
+              if (id != null && id.isNotEmpty) {
+                return const SliverPinnedHeader(
+                  child: StreamersView<Tv, TvViewModel>(),
+                );
+              } else {
+                return const SliverToBoxAdapter(
+                  child: StreamersView<Tv, TvViewModel>(),
+                );
+              }
+            },
+          ),
           SliverToBoxAdapter(
             child: AnimatedSize(
               duration: animDuration,

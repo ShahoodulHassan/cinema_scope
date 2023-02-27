@@ -158,6 +158,20 @@ class _MoviePageChildState extends State<_MoviePageChild>
               );
             },
           ),
+          Selector<MovieViewModel, String?>(
+            selector: (_, tvm) => tvm.initialVideoId,
+            builder: (_, id, __) {
+              if (id != null && id.isNotEmpty) {
+                return const SliverPinnedHeader(
+                  child: StreamersView<Movie, MovieViewModel>(),
+                );
+              } else {
+                return const SliverToBoxAdapter(
+                  child: StreamersView<Movie, MovieViewModel>(),
+                );
+              }
+            },
+          ),
           SliverToBoxAdapter(
             child: AnimatedSize(
               duration: animDuration,
@@ -460,7 +474,6 @@ class _MoviePageChildState extends State<_MoviePageChild>
   }
 }
 
-
 class MoreByLeadActorSection<M extends Media, T extends MediaViewModel<M>>
     extends StatelessWidget with GenericFunctions, Utilities, CommonFunctions {
   final int _maxCount = 20;
@@ -537,6 +550,56 @@ class MoreByLeadActorSection<M extends Media, T extends MediaViewModel<M>>
 //         )),
 //   );
 // }
+}
+
+// TODO implement PageView to show all streamers, if available
+// TODO make the streamer clickable
+class StreamersView<M extends Media, V extends MediaViewModel<M>>
+    extends StatelessWidget {
+  const StreamersView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<V, List<WatchProvider>>(
+      selector: (_, mvm) => mvm.streamingProviders ?? [],
+      builder: (_, streamers, __) {
+        if (streamers.isEmpty) {
+          return const SizedBox.shrink();
+        } else {
+          var streamer = streamers.first;
+          return Container(
+            color: Theme.of(context).primaryColorLight,
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.09,
+                    child: NetworkImageView(
+                      streamer.logoPath,
+                      imageType: ImageType.logo,
+                      aspectRatio: Constants.arAvatar,
+                      topRadius: 4.0,
+                      bottomRadius: 4.0,
+                    ),
+                  ),
+                ),
+                Text(
+                  'Now streaming on\n${streamer.providerName}',
+                  style: const TextStyle(
+                    height: 1.15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+      },
+    );
+  }
 }
 
 class MoreByGenresSection<M extends Media, T extends MediaViewModel<M>>

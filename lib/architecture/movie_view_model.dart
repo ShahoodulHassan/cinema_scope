@@ -38,24 +38,26 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
   List<Genre> get genres => media?.genres ?? [];
 
   List<String> get youtubeKeys => ((media?.videos.results
-      .where((video) => video.type == 'Trailer')
-      .map((vid) => vid.key)
-      .toList() ??
-      <String>[]) +
-      (media?.videos.results
-          .where((video) => video.type == 'Teaser')
-          .map((vid) => vid.key)
-          .toList() ??
-          <String>[]))
+                  .where((video) => video.type == 'Trailer')
+                  .map((vid) => vid.key)
+                  .toList() ??
+              <String>[]) +
+          (media?.videos.results
+                  .where((video) => video.type == 'Teaser')
+                  .map((vid) => vid.key)
+                  .toList() ??
+              <String>[]))
       .take(2)
       .toList();
 
-  RecommendationData? get recommendationData =>
-      media == null
-          ? null
-          : RecommendationData(media!.id, media!.recommendations);
+  RecommendationData? get recommendationData => media == null
+      ? null
+      : RecommendationData(media!.id, media!.recommendations);
 
   int get totalRecomCount => media?.recommendations.totalResults ?? 0;
+
+  List<WatchProvider>? get streamingProviders =>
+      media?.watchProviders.results.wpResult?.flatrate;
 
   CancelableOperation? _operation;
   CancelableOperation? _moreByLeadOperation;
@@ -114,17 +116,18 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
     }
   }
 
-  fetchMoreByDirector<C extends BasePersonResult>(C director,
-      String department) async {
+  fetchMoreByDirector<C extends BasePersonResult>(
+      C director, String department) async {
     moreByDirectorOperation = CancelableOperation<Person>.fromFuture(
-        api.getPersonWithDetail(director.id, append: 'combined_credits'))
+            api.getPersonWithDetail(director.id, append: 'combined_credits'))
         .then((person) {
       var moreByDirector = person.combinedCredits.crew
           .where((media) =>
-      media.department == department &&
-          media.id != this.media?.id &&
-          media.posterPath != null)
-          .toSet().toList()
+              media.department == department &&
+              media.id != this.media?.id &&
+              media.posterPath != null)
+          .toSet()
+          .toList()
         ..sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
       if (moreByDirector.isNotEmpty) {
         this.moreByDirector = Tuple2(director, moreByDirector);
@@ -135,13 +138,13 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
 
   fetchMoreByLeadActor<C extends BasePersonResult>(C actor, int order) async {
     moreByLeadOperation = CancelableOperation<Person>.fromFuture(
-        api.getPersonWithDetail(actor.id, append: 'combined_credits'))
+            api.getPersonWithDetail(actor.id, append: 'combined_credits'))
         .then((person) {
       var moreByActor = person.combinedCredits.cast
           .where((media) =>
-      (media.order ?? 3) <= order &&
-          media.id != this.media?.id &&
-          media.posterPath != null)
+              (media.order ?? 3) <= order &&
+              media.id != this.media?.id &&
+              media.posterPath != null)
           .toList()
         ..sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
       // logIfDebug('moreByActor:$moreByActor');
@@ -162,15 +165,12 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
   fetchMoreByGenres() async {
     if (media != null) {
       var releaseDate = (media is Movie
-          ? (media as Movie).releaseDate
-          : (media as Tv).firstAirDate) ??
+              ? (media as Movie).releaseDate
+              : (media as Tv).firstAirDate) ??
           '';
       if (releaseDate.isNotEmpty) {
         var date = DateTime.parse(releaseDate);
-        var diffFromNow = DateTime
-            .now()
-            .difference(date)
-            .inDays;
+        var diffFromNow = DateTime.now().difference(date).inDays;
         var totalDays = 365 * 10; // 10 years
         var daysForward = min(diffFromNow, (365 * 5));
         var daysBackward = totalDays - daysForward;
@@ -182,10 +182,7 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
         var year = getYearFromDate(releaseDate);
         if (year != null) {
           String primaryYear = '$year';
-          if (DateTime
-              .now()
-              .difference(DateTime.parse('$year-01-01'))
-              .inDays <
+          if (DateTime.now().difference(DateTime.parse('$year-01-01')).inDays <
               (30 * 6)) {
             primaryYear = '$year|${year - 1}';
           }
@@ -222,42 +219,44 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
             var futures = pairs.map((pair) {
               return media is Movie
                   ? api.getMoreMoviesByGenres(
-                pair,
-                dateGte,
-                dateLte,
-              )
+                      pair,
+                      dateGte,
+                      dateLte,
+                    )
                   : api.getMoreTvSeriesByGenres(
-                pair,
-                dateGte,
-                dateLte,
-              );
+                      pair,
+                      dateGte,
+                      dateLte,
+                    );
             }).toList();
 
             moreByGenresOperation =
                 CancelableOperation<List<CombinedResults>>.fromFuture(
-                  Future.wait(futures),
-                ).then((results) async {
-                  /// Combine all results into one set
-                  /// (set would automatically remove duplicates)
-                  Set<CombinedResult> combinedResults = {};
-                  for (var result in results) {
-                    combinedResults.addAll(result.results);
-                  }
+              Future.wait(futures),
+            ).then((results) async {
+              /// Combine all results into one set
+              /// (set would automatically remove duplicates)
+              Set<CombinedResult> combinedResults = {};
+              for (var result in results) {
+                combinedResults.addAll(result.results);
+              }
 
-                  /// Sort the combined results randomly, remove the
-                  /// currently displayed movie from the list and notify
-                  /// listeners
-                  moreByGenres = combinedResults.map((e) {
-                    e.mediaType ??=
+              /// Sort the combined results randomly, remove the
+              /// currently displayed movie from the list and notify
+              /// listeners
+              moreByGenres = combinedResults.map((e) {
+                e.mediaType ??=
                     media is Movie ? MediaType.movie.name : MediaType.tv.name;
-                    return e;
-                  }).toList()..removeWhere((element) => element.id == media?.id)
-                    ..shuffle()/*
+                return e;
+              }).toList()
+                    ..removeWhere((element) => element.id == media?.id)
+                    ..shuffle() /*
                     ..sort((a, b) {
                       return b.voteAverage.compareTo(a.voteAverage);
-                    })*/;
-                  notifyListeners();
-                });
+                    })*/
+                  ;
+              notifyListeners();
+            });
           }
         }
       }
@@ -288,8 +287,6 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
 
 class MovieViewModel extends MediaViewModel<Movie> {
   // Movie? movie;
-
-
 
   String? get runtime {
     var runtime = media?.runtime;
@@ -322,8 +319,6 @@ class MovieViewModel extends MediaViewModel<Movie> {
   bool get isTrailerPinned => _isTrailerPinned;
 
   // List<ImageDetail> thumbnails = <ImageDetail>[];
-
-
 
   set isTrailerPinned(bool value) {
     _isTrailerPinned = value;
@@ -418,8 +413,6 @@ class MovieViewModel extends MediaViewModel<Movie> {
       fetchMoreByLeadActor<Cast>(actor, actor.order);
     }
   }
-
-
 }
 
 enum ThumbnailType {
