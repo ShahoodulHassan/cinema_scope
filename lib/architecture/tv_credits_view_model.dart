@@ -143,6 +143,7 @@ class TvCreditsViewModel extends ChangeNotifier
     sorted.addAll(depts.where((element) => !sorted.contains(element)).toList()
       ..sort((a, b) => a.compareTo(b)));
 
+    availableDepartments = {};
     for (var crew in sorted) {
       availableDepartments[crew] = FilterState.unselected;
     }
