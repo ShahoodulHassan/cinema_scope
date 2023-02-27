@@ -29,6 +29,8 @@ class Constants {
   static const String pkCombinedGenres = 'pk_combined_genres';
   static const String pkConfigStoreDate = 'pk_config_store_date';
 
+  static const String pkRegion = 'pk_region';
+
 
   static final Map<String, String> departMap = {
     Department.acting.name: 'Actor',
