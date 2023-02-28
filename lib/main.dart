@@ -58,11 +58,32 @@ class MyApp extends StatelessWidget {
           // ),
         ),
         navigatorObservers: [routeObserver],
-        home: const MyHomePage(title: 'Cinema scope'),
+        home: const SplashPage(),
+        // home: const MyHomePage(title: 'Cinema scope'),
       ),
     );
   }
 }
+
+class SplashPage extends StatelessWidget with GenericFunctions {
+  const SplashPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<ConfigViewModel, bool>(
+      builder: (_, isConfigComplete, __) {
+        logIfDebug('isConfigComplete:$isConfigComplete');
+        return isConfigComplete
+            ? HomePage()
+            : const SizedBox.shrink();
+      },
+      selector: (_, cvm) {
+        return cvm.isConfigComplete;
+      },
+    );
+  }
+}
+
 
 class MyHomePage extends StatefulWidget  {
   const MyHomePage({super.key, required this.title});
