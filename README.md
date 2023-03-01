@@ -48,6 +48,6 @@ Some of the Flutter packages that have been used in this project are:
 	<li>Create a pull request to the original repository.</li>
 </ol>
 <h2>Contributing</h2>
-<p>Cinema Scope is open source and contributions are always welcome! If you find a bug or want to add a feature, simply create a new issue on the <a href="https://github.com/yourusername/cinema_scope/issues">Github repository</a> or fork the project and submit a pull request.</p>
+<p>Cinema Scope is open source and contributions are always welcome! If you find a bug or want to add a feature, simply create a new issue on the <a href="https://github.com/ShahoodulHassan/cinema_scope/issues">Github repository</a> or fork the project and submit a pull request.</p>
 <h2>License</h2>
 <p>Cinema Scope is licensed under the MIT License. See the <a href="https://github.com/yourusername/cinema_scope/blob/main/LICENSE">LICENSE</a> file for more information.</p>
