@@ -57,7 +57,9 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
   int get totalRecomCount => media?.recommendations.totalResults ?? 0;
 
   List<WatchProvider>? get streamingProviders =>
-      media?.watchProviders.results.wpResult?.flatrate;
+      media?.watchProviders.results.wpResult?.flatrate?..sort((a, b) {
+        return b.displayPriority.compareTo(a.displayPriority);
+      });
 
   CancelableOperation? _operation;
   CancelableOperation? _moreByLeadOperation;
