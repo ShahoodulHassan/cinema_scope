@@ -16,6 +16,17 @@
   <li>Shows filmography, images, personal details, and alternative names on the person detail page</li>
   <li>Implements multi-search and infinite scrolling functionality on the search page</li>
 </ul>
+<h2>Packages used</h2>
+Some of the Flutter packages that have been used in this project are:
+<ul>
+  <li>provider - for State management</li>
+  <li>infinite_scroll_pagination - for infinite scrolling of paginated results</li>
+  <li>youtube_player_flutter - for playing Youtube trailers</li>
+  <li>photo_view - for zooming and panning of images</li>
+  <li>sliver_tools - for expanding on the usage of Slivers</li>
+  <li>retrofit - for pulling TMDB API data</li>
+  <li>card_swiper - for auto-play and loop features of PageView</li>
+</ul>
 <h2>How to Use</h2>
 <p>To use Cinema Scope, you must first create a TMDB API key by signing up at <a href="https://www.themoviedb.org/signup">TMDB</a>. Once you have a key, head into your account page, under the API section, you will see a new token listed called <b>API Read Access Token</b>. Replace the value of the `accessToken` constant in the `lib/tmdb_api.dart` file with your API Read Access Token. Then, simply run the app on your emulator or device to start browsing movies and TV shows.</p>
 <h2>Contributing</h2>
