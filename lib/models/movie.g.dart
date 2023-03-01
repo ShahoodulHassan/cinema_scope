@@ -905,8 +905,8 @@ ProductionCompany _$ProductionCompanyFromJson(Map<String, dynamic> json) =>
     ProductionCompany(
       json['id'] as int,
       json['name'] as String,
-      json['origin_country'] as String,
       logoPath: json['logo_path'] as String?,
+      originCountry: json['origin_country'] as String?,
     );
 
 Map<String, dynamic> _$ProductionCompanyToJson(ProductionCompany instance) =>

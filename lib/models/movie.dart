@@ -177,9 +177,9 @@ class ProductionCompany {
   int id;
   String? logoPath;
   String name;
-  String originCountry;
+  String? originCountry;
 
-  ProductionCompany(this.id, this.name, this.originCountry, {this.logoPath});
+  ProductionCompany(this.id, this.name, {this.logoPath, this.originCountry});
 
   factory ProductionCompany.fromJson(Map<String, dynamic> json) =>
       _$ProductionCompanyFromJson(json);
