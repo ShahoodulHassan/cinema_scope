@@ -55,17 +55,17 @@ dependencies:
   google_fonts: ^4.0.1
   video_thumbnail: ^0.5.3
   card_swiper: ^2.0.4
-  visibility_detector: ^0.3.3
+#  visibility_detector: ^0.3.3 # Remove
   tuple: ^2.0.1
 
-  flutter_group_sliver:
-    git: https://github.com/ShahoodulHassan/flutter_group_sliver
+#  flutter_group_sliver: # Remove
+#    git: https://github.com/ShahoodulHassan/flutter_group_sliver
   sliver_tools: ^0.2.9
   copy_with_extension: ^5.0.0
   shared_preferences: ^2.0.17
   age_calculator: ^1.0.0
   photo_view: ^0.14.0
-  animated_list_plus: ^0.4.5
+#  animated_list_plus: ^0.4.5 # Remove
 
 dev_dependencies:
   flutter_test:
