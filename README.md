@@ -19,16 +19,34 @@
 <h2>Packages used</h2>
 Some of the Flutter packages that have been used in this project are:
 <ul>
-  <li>provider - for State management</li>
-  <li>infinite_scroll_pagination - for infinite scrolling of paginated results</li>
-  <li>youtube_player_flutter - for playing Youtube trailers</li>
-  <li>photo_view - for zooming and panning of images</li>
-  <li>sliver_tools - for expanding on the usage of Slivers</li>
-  <li>retrofit - for pulling TMDB API data</li>
-  <li>card_swiper - for auto-play and loop features of PageView</li>
+  <li><a href="https://pub.dev/packages/provider">provider</a> - for State management</li>
+  <li><a href="https://pub.dev/packages/infinite_scroll_pagination">infinite_scroll_pagination</a> - for infinite scrolling of paginated results</li>
+  <li><a href="https://pub.dev/packages/youtube_player_flutter">youtube_player_flutter</a> - for playing Youtube trailers</li>
+  <li><a href="https://pub.dev/packages/photo_view">photo_view</a> - for zooming and panning of images</li>
+  <li><a href="https://pub.dev/packages/sliver_tools">sliver_tools</a> - for expanding on the usage of Slivers</li>
+  <li><a href="https://pub.dev/packages/retrofit">retrofit</a> - for pulling TMDB API data</li>
+  <li><a href="https://pub.dev/packages/card_swiper">card_swiper</a> - for auto-play and loop features of PageView</li>
 </ul>
 <h2>How to Use</h2>
 <p>To use Cinema Scope, you must first create a TMDB API key by signing up at <a href="https://www.themoviedb.org/signup">TMDB</a>. Once you have a key, head into your account page, under the API section, you will see a new token listed called <b>API Read Access Token</b>. Replace the value of the `accessToken` constant in the `lib/tmdb_api.dart` file with your API Read Access Token. Then, simply run the app on your emulator or device to start browsing movies and TV shows.</p>
+<h2>How to Run the App</h2>
+
+<ol>
+	<li>Clone the repository to your local machine.</li>
+	<li>Open the project in your preferred IDE.</li>
+	<li>Run the app on your preferred emulator or physical device.</li>
+</ol>
+
+<h2>How to Contribute</h2>
+
+<ol>
+	<li>Fork the repository.</li>
+	<li>Clone the forked repository to your local machine.</li>
+	<li>Create a new branch for your feature or bug fix.</li>
+	<li>Make your changes and commit them.</li>
+	<li>Push your changes to your forked repository.</li>
+	<li>Create a pull request to the original repository.</li>
+</ol>
 <h2>Contributing</h2>
 <p>Cinema Scope is open source and contributions are always welcome! If you find a bug or want to add a feature, simply create a new issue on the <a href="https://github.com/yourusername/cinema_scope/issues">Github repository</a> or fork the project and submit a pull request.</p>
 <h2>License</h2>
