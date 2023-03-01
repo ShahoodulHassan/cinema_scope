@@ -470,16 +470,18 @@ class _TmdbApi implements TmdbApi {
     dateLte, {
     page = 1,
     language = 'en-US',
+    region = 'US',
     sortBy = 'release_date.desc',
     includeAdult = 'false',
     withLanguage = 'en',
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
-      r'primary_release_date.gte': dateGte,
-      r'primary_release_date.lte': dateLte,
+      r'release_date.gte': dateGte,
+      r'release_date.lte': dateLte,
       r'page': page,
       r'language': language,
+      r'region': region,
       r'sort_by': sortBy,
       r'include_adult': includeAdult,
       r'with_original_language': withLanguage,
@@ -632,8 +634,8 @@ class _TmdbApi implements TmdbApi {
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
-      r'primary_release_date.gte': dateGte,
-      r'primary_release_date.lte': dateLte,
+      r'release_date.gte': dateGte,
+      r'release_date.lte': dateLte,
       r'page': page,
       r'language': language,
       r'region': region,
@@ -1130,6 +1132,7 @@ class _TmdbApi implements TmdbApi {
     dateLte, {
     page = 1,
     language = 'en-US',
+    region = 'US',
     sortBy = 'popularity.desc',
     includeAdult = 'false',
     timezone = '',
@@ -1141,6 +1144,7 @@ class _TmdbApi implements TmdbApi {
       r'air_date.lte': dateLte,
       r'page': page,
       r'language': language,
+      r'region': region,
       r'sort_by': sortBy,
       r'include_adult': includeAdult,
       r'timezone': timezone,
@@ -1184,8 +1188,8 @@ class _TmdbApi implements TmdbApi {
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
-      r'first_air_date.gte': releaseDateGte,
-      r'first_air_date.lte': releaseDateLte,
+      r'air_date.gte': releaseDateGte,
+      r'air_date.lte': releaseDateLte,
       r'page': page,
       r'language': language,
       r'region': region,
@@ -1224,16 +1228,18 @@ class _TmdbApi implements TmdbApi {
     releaseDateLte, {
     page = 1,
     language = 'en-US',
+    region = 'US',
     sortBy = 'first_air_date.desc',
     includeAdult = 'false',
     withLanguage = 'en',
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
-      r'first_air_date.gte': releaseDateGte,
-      r'first_air_date.lte': releaseDateLte,
+      r'air_date.gte': releaseDateGte,
+      r'air_date.lte': releaseDateLte,
       r'page': page,
       r'language': language,
+      r'region': region,
       r'sort_by': sortBy,
       r'include_adult': includeAdult,
       r'with_original_language': withLanguage,

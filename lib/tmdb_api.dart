@@ -151,10 +151,11 @@ abstract class TmdbApi {
   @http.GET("/discover/movie")
   @http.Headers(headerMap)
   Future<CombinedResults> getLatestMovies(
-      @http.Query('primary_release_date.gte') String dateGte,
-      @http.Query('primary_release_date.lte') String dateLte,
+      @http.Query('release_date.gte') String dateGte,
+      @http.Query('release_date.lte') String dateLte,
       {@http.Query('page') int page = 1,
       @http.Query('language') String language = 'en-US',
+      @http.Query('region') String region = 'US',
       @http.Query('sort_by') String sortBy = 'release_date.desc',
       @http.Query('include_adult') String includeAdult = 'false',
       @http.Query('with_original_language') String withLanguage = 'en'});
@@ -192,8 +193,8 @@ abstract class TmdbApi {
   @http.GET("/discover/movie")
   @http.Headers(headerMap)
   Future<CombinedResults> discoverUpcomingMovies(
-    @http.Query('primary_release_date.gte') String dateGte,
-    @http.Query('primary_release_date.lte') String dateLte, {
+    @http.Query('release_date.gte') String dateGte,
+    @http.Query('release_date.lte') String dateLte, {
     @http.Query("page") int page = 1,
     @http.Query('language') String language = 'en-US',
     @http.Query('region') String region = 'US',
@@ -249,7 +250,6 @@ abstract class TmdbApi {
     @http.Query('include_adult') String includeAdult = 'false',
     @http.Query('with_original_language') String originalLanguage = '',
   });
-
 
   @http.GET("/discover/{media_type}")
   @http.Headers(headerMap)
@@ -356,7 +356,7 @@ abstract class TmdbApi {
     @http.Query('air_date.lte') String dateLte, {
     @http.Query("page") int page = 1,
     @http.Query('language') String language = 'en-US',
-    // @http.Query('region') String region = 'US',
+    @http.Query('region') String region = 'US',
     @http.Query('sort_by') String sortBy = 'popularity.desc',
     @http.Query('include_adult') String includeAdult = 'false',
     @http.Query('timezone') String timezone = '',
@@ -374,8 +374,8 @@ abstract class TmdbApi {
   @http.GET("/discover/tv")
   @http.Headers(headerMap)
   Future<CombinedResults> discoverUpcomingTvShows(
-    @http.Query('first_air_date.gte') String releaseDateGte,
-    @http.Query('first_air_date.lte') String releaseDateLte, {
+    @http.Query('air_date.gte') String releaseDateGte,
+    @http.Query('air_date.lte') String releaseDateLte, {
     @http.Query("page") int page = 1,
     @http.Query('language') String language = 'en-US',
     @http.Query('region') String region = 'US',
@@ -392,10 +392,11 @@ abstract class TmdbApi {
   @http.GET("/discover/tv")
   @http.Headers(headerMap)
   Future<CombinedResults> getLatestTvShows(
-      @http.Query('first_air_date.gte') String releaseDateGte,
-      @http.Query('first_air_date.lte') String releaseDateLte,
+      @http.Query('air_date.gte') String releaseDateGte,
+      @http.Query('air_date.lte') String releaseDateLte,
       {@http.Query('page') int page = 1,
       @http.Query('language') String language = 'en-US',
+      @http.Query('region') String region = 'US',
       @http.Query('sort_by') String sortBy = 'first_air_date.desc',
       @http.Query('include_adult') String includeAdult = 'false',
       @http.Query('with_original_language') String withLanguage = 'en'});

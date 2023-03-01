@@ -116,14 +116,14 @@ class _HomePageChildState extends State<_HomePageChild>
                 'TV show',
               ],
             ),
-            HomeSection(
-              SectionTitle.popular,
-              params: [MediaType.movie.name, MediaType.tv.name],
-              paramTitles: const [
-                'Movie',
-                'TV show',
-              ],
-            ),
+            // HomeSection(
+            //   SectionTitle.popular,
+            //   params: [MediaType.movie.name, MediaType.tv.name],
+            //   paramTitles: const [
+            //     'Movie',
+            //     'TV show',
+            //   ],
+            // ),
             HomeSection(
               SectionTitle.topRated,
               params: [MediaType.movie.name, MediaType.tv.name],
