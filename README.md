@@ -16,6 +16,12 @@
   <li>Shows filmography, images, personal details, and alternative names on the person detail page</li>
   <li>Implements multi-search and infinite scrolling functionality on the search page</li>
 </ul>
+<h2>Screenshots</h2>
+
+<img src="/screenshots/screenshot_1.png" alt="Screenshot 1">
+<img src="/screenshots/screenshot_2.png" alt="Screenshot 2">
+<img src="/screenshots/screenshot_3.png" alt="Screenshot 3">
+<img src="/screenshots/screenshot_4.png" alt="Screenshot 4">
 <h2>Packages used</h2>
 Some of the Flutter packages that have been used in this project are:
 <ul>
