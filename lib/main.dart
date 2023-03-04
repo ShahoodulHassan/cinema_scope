@@ -23,7 +23,7 @@ void main() async {
 final RouteObserver<ModalRoute<void>> routeObserver =
     RouteObserver<ModalRoute<void>>();
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatelessWidget with GenericFunctions {
   const MyApp({super.key});
 
   @override
@@ -58,150 +58,37 @@ class MyApp extends StatelessWidget {
           // ),
         ),
         navigatorObservers: [routeObserver],
-        home: const SplashPage(),
+        home: Selector<ConfigViewModel, bool>(
+          builder: (_, isConfigComplete, __) {
+            logIfDebug('isConfigComplete:$isConfigComplete');
+            return isConfigComplete
+                ? HomePage()
+                : const SizedBox.shrink();
+          },
+          selector: (_, cvm) => cvm.isConfigComplete,
+        ),
         // home: const MyHomePage(title: 'Cinema scope'),
       ),
     );
   }
 }
 
-class SplashPage extends StatelessWidget with GenericFunctions {
-  const SplashPage({Key? key}) : super(key: key);
+// class ConfigCheckerPage extends StatelessWidget with GenericFunctions {
+//   const ConfigCheckerPage({Key? key}) : super(key: key);
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Selector<ConfigViewModel, bool>(
+//       builder: (_, isConfigComplete, __) {
+//         logIfDebug('isConfigComplete:$isConfigComplete');
+//         return isConfigComplete
+//             ? HomePage()
+//             : const SizedBox.shrink();
+//       },
+//       selector: (_, cvm) {
+//         return cvm.isConfigComplete;
+//       },
+//     );
+//   }
+// }
 
-  @override
-  Widget build(BuildContext context) {
-    return Selector<ConfigViewModel, bool>(
-      builder: (_, isConfigComplete, __) {
-        logIfDebug('isConfigComplete:$isConfigComplete');
-        return isConfigComplete
-            ? HomePage()
-            : const SizedBox.shrink();
-      },
-      selector: (_, cvm) {
-        return cvm.isConfigComplete;
-      },
-    );
-  }
-}
-
-
-class MyHomePage extends StatefulWidget  {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> with GenericFunctions,
-    RouteAware {
-  @override
-  void initState() {
-    super.initState();
-    // context.read<ConfigViewModel>().getConfigurations();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    routeObserver.subscribe(this, ModalRoute.of(context)!);
-  }
-
-  @override
-  void didPush() {
-    logIfDebug('didPush called');
-    super.didPush();
-  }
-
-  @override
-  void didPushNext() {
-    logIfDebug('didPushNext called');
-    super.didPushNext();
-  }
-
-  @override
-  void didPopNext() {
-    logIfDebug('didPopNext called');
-    super.didPopNext();
-  }
-
-  @override
-  void dispose() {
-    routeObserver.unsubscribe(this);
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Selector<ConfigViewModel, bool>(
-        builder: (_, isConfigComplete, __) {
-          logIfDebug('isConfigComplete:$isConfigComplete');
-          return isConfigComplete
-              ? Center(
-                  child: IntrinsicWidth(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        ElevatedButton.icon(
-                          // color: Theme.of(context).primaryColor,
-                          label: const Text(
-                            'HOME',
-                            style: TextStyle(
-                              // color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              getHomePageRoute(),
-                              // getSearchPageRoute(),
-                            );
-                          }, icon: const Icon(Icons.home_outlined),
-                        ),
-                        const SizedBox(height: 16.0,),
-                        ElevatedButton.icon(
-                          // color: Theme.of(context).primaryColor,
-                          label: const Text(
-                            'SEARCH',
-                            style: TextStyle(
-                              // color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              getSearchPageRoute(),
-                              // getSearchPageRoute(),
-                            );
-                          }, icon: const Icon(Icons.search_rounded),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              : const SizedBox.shrink();
-        },
-        selector: (_, cvm) {
-          return cvm.isConfigComplete;
-        },
-      ),
-    );
-  }
-
-  getSearchPageRoute() => MaterialPageRoute(
-        builder: (_) => SearchPage(),
-      );
-
-  getHomePageRoute() => MaterialPageRoute(
-        builder: (_) => HomePage(),
-      );
-}
