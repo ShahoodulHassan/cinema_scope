@@ -251,6 +251,24 @@ abstract class TmdbApi {
     @http.Query('with_original_language') String originalLanguage = '',
   });
 
+  ///http://api.themoviedb.org/3/discover/tv?
+  ///api_key=ec7b57c566e8af94115bb2c0d910f610&watch_region=PK&language=en-US
+  ///&include_adult=false&with_watch_monetization_types=free|ads
+  @http.GET("/discover/{media_type}")
+  @http.Headers(headerMap)
+  Future<CombinedResults> discoverFreeMedia(
+      @http.Path("media_type") String mediaType, {
+        @http.Query("page") int page = 1,
+        @http.Query('language') String language = 'en-US',
+        @http.Query('watch_region') String watchRegion = 'US',
+        @http.Query('with_watch_monetization_types')
+        String withMonetizationTypes = 'free|ads',
+        @http.Query('sort_by') String sortBy = 'popularity.desc',
+        @http.Query('include_adult') String includeAdult = 'false',
+        @http.Query('with_original_language') String originalLanguage = '',
+      });
+
+
   @http.GET("/discover/{media_type}")
   @http.Headers(headerMap)
   Future<CombinedResults> discoverMediaByKeyword(

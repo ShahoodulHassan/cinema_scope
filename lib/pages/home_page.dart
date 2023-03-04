@@ -109,6 +109,14 @@ class _HomePageChildState extends State<_HomePageChild>
               ],
             ),
             HomeSection(
+              SectionTitle.freeToWatch,
+              params: [MediaType.movie.name, MediaType.tv.name],
+              paramTitles: const [
+                'Movie',
+                'TV show',
+              ],
+            ),
+            HomeSection(
               SectionTitle.latest,
               params: [MediaType.movie.name, MediaType.tv.name],
               paramTitles: const [

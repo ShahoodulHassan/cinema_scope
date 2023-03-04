@@ -15,6 +15,7 @@ class HomeViewModel extends ApiViewModel {
   CombinedResults? trendingResult;
   CombinedResults? nowPlayingResult;
   CombinedResults? streamingResult;
+  CombinedResults? freeMediaResult;
 
   Map<SectionTitle, String> sectionParamMap = {};
 
@@ -34,6 +35,8 @@ class HomeViewModel extends ApiViewModel {
         return upcomingMoviesResult;
       case SectionTitle.streaming:
         return streamingResult;
+      case SectionTitle.freeToWatch:
+        return freeMediaResult;
     }
   }
 
@@ -214,7 +217,7 @@ class HomeViewModel extends ApiViewModel {
 
   // TODO document the logic applied here
   /// We allow refreshable results here, hence no check for type != param
-  getStreaming(MediaType? mediaType) async {
+  getStreamingMedia(MediaType? mediaType) async {
     var type = (mediaType ?? MediaType.movie).name;
     // var param = sectionParamMap[SectionTitle.streaming];
     // if (type != param) {
@@ -235,6 +238,34 @@ class HomeViewModel extends ApiViewModel {
     logIfDebug('streaming:${combined.length}');
 
     streamingResult = result.copyWith
+        .results((combined..shuffle()).take(maxItemCount).map((e) {
+      e.mediaType ??= type;
+      return e;
+    }).toList());
+    notifyListeners();
+    // }
+  }
+
+  /// We allow refreshable results here, hence no check for type != param
+  getFreeMedia(MediaType? mediaType) async {
+    var type = (mediaType ?? MediaType.movie).name;
+    sectionParamMap[SectionTitle.freeToWatch] = type;
+
+    int maxItemCount = 30;
+    List<CombinedResult> combined = [];
+    var result = await api.discoverFreeMedia(type);
+    combined.addAll(result.results);
+
+    if (result.totalPages > 1) {
+      int maxPageCount = min(3, result.totalPages);
+      for (int i = 2; i <= maxPageCount; i++) {
+        var res = await api.discoverFreeMedia(type, page: i);
+        combined.addAll(res.results);
+      }
+    }
+    logIfDebug('freeMedia:${combined.length}');
+
+    freeMediaResult = result.copyWith
         .results((combined..shuffle()).take(maxItemCount).map((e) {
       e.mediaType ??= type;
       return e;

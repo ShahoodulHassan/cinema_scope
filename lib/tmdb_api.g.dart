@@ -833,6 +833,52 @@ class _TmdbApi implements TmdbApi {
   }
 
   @override
+  Future<CombinedResults> discoverFreeMedia(
+    mediaType, {
+    page = 1,
+    language = 'en-US',
+    watchRegion = 'US',
+    withMonetizationTypes = 'free|ads',
+    sortBy = 'popularity.desc',
+    includeAdult = 'false',
+    originalLanguage = '',
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'page': page,
+      r'language': language,
+      r'watch_region': watchRegion,
+      r'with_watch_monetization_types': withMonetizationTypes,
+      r'sort_by': sortBy,
+      r'include_adult': includeAdult,
+      r'with_original_language': originalLanguage,
+    };
+    final _headers = <String, dynamic>{
+      r'Content-Type': 'application/json;charset=utf-8',
+      r'Authorization':
+          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYzdiNTdjNTY2ZThhZjk0MTE1YmIyYzBkOTEwZjYxMCIsInN1YiI6IjVhMGE3MDk5YzNhMzY4MjE4YTAxMTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.uyDhjXOvRNfjg_gJFPkSfAuT-F-MFmWVwPoEUftgq1g',
+    };
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CombinedResults>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/json;charset=utf-8',
+    )
+            .compose(
+              _dio.options,
+              '/discover/${mediaType}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CombinedResults.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
   Future<CombinedResults> discoverMediaByKeyword(
     mediaType,
     keywords,
