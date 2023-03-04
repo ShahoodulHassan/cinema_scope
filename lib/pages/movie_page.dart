@@ -15,6 +15,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 import 'package:tuple/tuple.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../architecture/config_view_model.dart';
 import '../architecture/tv_view_model.dart';
@@ -162,12 +163,12 @@ class _MoviePageChildState extends State<_MoviePageChild>
             selector: (_, tvm) => tvm.initialVideoId,
             builder: (_, id, __) {
               if (id != null && id.isNotEmpty) {
-                return const SliverPinnedHeader(
-                  child: StreamersView<Movie, MovieViewModel>(),
+                return SliverPinnedHeader(
+                  child: StreamersView<Movie, MovieViewModel>(id: widget.id),
                 );
               } else {
-                return const SliverToBoxAdapter(
-                  child: StreamersView<Movie, MovieViewModel>(),
+                return SliverToBoxAdapter(
+                  child: StreamersView<Movie, MovieViewModel>(id: widget.id),
                 );
               }
             },
@@ -556,7 +557,10 @@ class MoreByLeadActorSection<M extends Media, T extends MediaViewModel<M>>
 // TODO make the streamer clickable
 class StreamersView<M extends Media, V extends MediaViewModel<M>>
     extends StatelessWidget {
-  const StreamersView({Key? key}) : super(key: key);
+
+  final int id;
+
+  const StreamersView({required this.id, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -567,33 +571,42 @@ class StreamersView<M extends Media, V extends MediaViewModel<M>>
           return const SizedBox.shrink();
         } else {
           var streamer = streamers.first;
-          return Container(
-            color: Theme.of(context).primaryColorLight,
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.09,
-                    child: NetworkImageView(
-                      streamer.logoPath,
-                      imageType: ImageType.logo,
-                      aspectRatio: Constants.arAvatar,
-                      topRadius: 4.0,
-                      bottomRadius: 4.0,
+          return InkWell(
+            onTap: () {
+              // Future.delayed(Duration(milliseconds: 500), () {
+                launchUrlString('https://www.themoviedb.org/movie/${id}/watch');
+              // });
+            },
+            // highlightColor: Theme.of(context).primaryColor.withOpacity(0.3),
+            splashColor: Theme.of(context).primaryColor.withOpacity(0.3),
+            child: Ink(
+              color: Theme.of(context).primaryColorLight,
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.09,
+                      child: NetworkImageView(
+                        streamer.logoPath,
+                        imageType: ImageType.logo,
+                        aspectRatio: Constants.arAvatar,
+                        topRadius: 4.0,
+                        bottomRadius: 4.0,
+                      ),
                     ),
                   ),
-                ),
-                Text(
-                  'Now streaming on\n${streamer.providerName}',
-                  style: const TextStyle(
-                    height: 1.15,
-                    fontWeight: FontWeight.bold,
+                  Text(
+                    'Now streaming on\n${streamer.providerName}',
+                    style: const TextStyle(
+                      height: 1.15,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         }

@@ -143,12 +143,12 @@ class _TvPageChildState extends State<_TvPageChild>
             selector: (_, tvm) => tvm.initialVideoId,
             builder: (_, id, __) {
               if (id != null && id.isNotEmpty) {
-                return const SliverPinnedHeader(
-                  child: StreamersView<Tv, TvViewModel>(),
+                return SliverPinnedHeader(
+                  child: StreamersView<Tv, TvViewModel>(id: widget.id),
                 );
               } else {
-                return const SliverToBoxAdapter(
-                  child: StreamersView<Tv, TvViewModel>(),
+                return SliverToBoxAdapter(
+                  child: StreamersView<Tv, TvViewModel>(id: widget.id),
                 );
               }
             },
