@@ -38,12 +38,14 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
   List<Genre> get genres => media?.genres ?? [];
 
   List<String> get youtubeKeys => ((media?.videos.results
-                  .where((video) => video.type == 'Trailer')
+                  .where((video) =>
+                      video.site == 'YouTube' && video.type == 'Trailer')
                   .map((vid) => vid.key)
                   .toList() ??
               <String>[]) +
           (media?.videos.results
-                  .where((video) => video.type == 'Teaser')
+                  .where((video) =>
+                      video.site == 'YouTube' && video.type == 'Teaser')
                   .map((vid) => vid.key)
                   .toList() ??
               <String>[]))
@@ -57,9 +59,10 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
   int get totalRecomCount => media?.recommendations.totalResults ?? 0;
 
   List<WatchProvider>? get streamingProviders =>
-      media?.watchProviders.results.wpResult?.flatrate?..sort((a, b) {
-        return b.displayPriority.compareTo(a.displayPriority);
-      });
+      media?.watchProviders.results.wpResult?.flatrate
+        ?..sort((a, b) {
+          return b.displayPriority.compareTo(a.displayPriority);
+        });
 
   CancelableOperation? _operation;
   CancelableOperation? _moreByLeadOperation;
