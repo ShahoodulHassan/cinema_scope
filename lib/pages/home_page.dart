@@ -194,14 +194,16 @@ class BaseHomeSection extends StatelessWidget {
               color: Colors.white,
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              getSeparator(context),
-              getSectionTitleRow(),
-              ...children,
-              getSeparator(context),
-            ],
+          IntrinsicWidth(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                getSeparator(context),
+                getSectionTitleRow(),
+                ...children,
+                getSeparator(context),
+              ],
+            ),
           ),
         ],
       ),
