@@ -28,14 +28,14 @@ class MyApp extends StatelessWidget with GenericFunctions {
 
   @override
   Widget build(BuildContext context) {
-    var mainColor = Colors.deepPurple;
+    var primarySwatch = buildMaterialColor(getColorFromHexCode('#895EA0'));
     var appBarItemColor = Colors.black87;
     return AppLifecycleManager(
       child: MaterialApp(
         title: 'Cinema scope',
         theme: ThemeData(
-          primarySwatch: mainColor,
-          highlightColor: mainColor.shade100.withOpacity(0.5),
+          primarySwatch: primarySwatch,
+          highlightColor: primarySwatch.shade100.withOpacity(0.5),
           useMaterial3: true,
           fontFamily: GoogleFonts.lato().fontFamily,
           appBarTheme: AppBarTheme(
