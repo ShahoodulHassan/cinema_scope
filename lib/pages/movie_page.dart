@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:cinema_scope/architecture/movie_view_model.dart';
 import 'package:cinema_scope/models/configuration.dart';
@@ -12,6 +15,7 @@ import 'package:cinema_scope/widgets/image_view.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_network/image_network.dart';
 import 'package:provider/provider.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 import 'package:tuple/tuple.dart';
@@ -556,14 +560,15 @@ class MoreByLeadActorSection<M extends Media, T extends MediaViewModel<M>>
 // TODO implement PageView to show all streamers, if available
 // TODO make the streamer clickable
 class StreamersView<M extends Media, V extends MediaViewModel<M>>
-    extends StatelessWidget {
-
+    extends StatelessWidget with Utilities {
+  final double maxIconSize = 64.0;
   final int id;
 
   const StreamersView({required this.id, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    var type = M.toString() == (Movie).toString() ? 'movie' : 'tv';
     return Selector<V, List<WatchProvider>>(
       selector: (_, mvm) => mvm.streamingProviders ?? [],
       builder: (_, streamers, __) {
@@ -571,24 +576,27 @@ class StreamersView<M extends Media, V extends MediaViewModel<M>>
           return const SizedBox.shrink();
         } else {
           var streamer = streamers.first;
+          var width = min(MediaQuery.of(context).size.width * 0.09, maxIconSize);
           return InkWell(
             onTap: () {
               // Future.delayed(Duration(milliseconds: 500), () {
-                launchUrlString('https://www.themoviedb.org/movie/${id}/watch');
+              launchUrlString(
+                  'https://www.themoviedb.org/$type/${id}/watch');
               // });
             },
             // highlightColor: Theme.of(context).primaryColor.withOpacity(0.3),
             splashColor: Theme.of(context).primaryColor.withOpacity(0.3),
-            child: Ink(
+            child: Container(
               color: Theme.of(context).primaryColorLight,
-              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(right: 8.0),
                     child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.09,
+                      width: width,
                       child: NetworkImageView(
                         streamer.logoPath,
                         imageType: ImageType.logo,
@@ -1990,47 +1998,68 @@ class ImageDelegate extends SliverPersistentHeaderDelegate
     if (entry.value == ThumbnailType.image) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(radius),
-        child: Image.network(
+        child: NetworkImageView(
           context.read<ConfigViewModel>().getImageUrl(
                 ImageType.backdrop,
                 ImageQuality.high,
                 entry.key,
               ),
+          imageType: ImageType.backdrop,
+          aspectRatio: Constants.arBackdrop,
           fit: BoxFit.fill,
-          errorBuilder: (_, __, ___) {
-            return Icon(
-              Icons.error_outline_sharp,
-              size: extent * 0.30,
-            );
-          },
         ),
+        // child: Image.network(
+        //   context.read<ConfigViewModel>().getImageUrl(
+        //         ImageType.backdrop,
+        //         ImageQuality.high,
+        //         entry.key,
+        //       ),
+        //   fit: BoxFit.fill,
+        //   errorBuilder: (_, __, ___) {
+        //     return Icon(
+        //       Icons.error_outline_sharp,
+        //       size: extent * 0.30,
+        //     );
+        //   },
+        // ),
       );
     } else {
+      var imageUrl = getThumbnailUrl(entry.key);
+      var width = MediaQuery.of(context).size.width;
       return Stack(
-        fit: StackFit.expand,
+        // fit: StackFit.expand,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(radius),
-            child: Image.network(
-              getThumbnailUrl(entry.key),
-              fit: BoxFit.fill,
+          ImageNetwork(
+            image: imageUrl,
+            imageCache: CachedNetworkImageProvider(imageUrl),
+            height: width / Constants.arBackdrop,
+            width: width,
+            onLoading: Image.asset(
+              Constants.placeholderPath,
+              fit: BoxFit.contain,
             ),
+            onError: const Center(
+              child: Icon(
+                Icons.error_outline_rounded,
+                color: Colors.red,
+              ),
+            ),
+            fitWeb: BoxFitWeb.fill,
           ),
-          IconButton(
-            onPressed: () {
-              // _context!.read<YoutubeViewModel>().currentKey = entry.key;
-              // _context!.read<YoutubeViewModel>().reset();
-              // _context!.read<MovieViewModel>().isTrailerPinned = true;
-              if (mediaType == MediaType.movie) {
-                _context!.read<MovieViewModel>().initialVideoId = entry.key;
-              } else if (mediaType == MediaType.tv) {
-                _context!.read<TvViewModel>().initialVideoId = entry.key;
-              }
-            },
-            icon: Icon(
-              Icons.play_circle_outline_sharp,
-              color: Colors.white,
-              size: iconSize,
+          Center(
+            child: IconButton(
+              onPressed: () {
+                if (mediaType == MediaType.movie) {
+                  _context!.read<MovieViewModel>().initialVideoId = entry.key;
+                } else if (mediaType == MediaType.tv) {
+                  _context!.read<TvViewModel>().initialVideoId = entry.key;
+                }
+              },
+              icon: Icon(
+                Icons.play_circle_outline_sharp,
+                color: Colors.white,
+                size: iconSize,
+              ),
             ),
           ),
         ],
