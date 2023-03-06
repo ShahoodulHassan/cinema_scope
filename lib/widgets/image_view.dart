@@ -2,13 +2,15 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinema_scope/architecture/config_view_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_network/image_network.dart';
 import 'package:provider/provider.dart';
 
 import '../constants.dart';
 import '../utilities/generic_functions.dart';
 
-class NetworkImageView extends StatelessWidget {
+class NetworkImageView extends StatelessWidget with GenericFunctions {
   final String? imagePath;
 
   final ImageType imageType;
@@ -56,11 +58,15 @@ class NetworkImageView extends StatelessWidget {
     if (imagePath == null) {
       child = placeholder;
     } else {
-      String imageUrl = imagePath!.contains('/http')
-          ? imagePath!.replaceFirst('/http', 'http')
-          : context
-              .read<ConfigViewModel>()
-              .getImageUrl(imageType, imageQuality, imagePath!);
+      // double imageWidth = width == null ? MediaQuery.of(context).size.width : width!;
+      String imageUrl = imagePath!.startsWith('http')
+          ? imagePath!
+          : imagePath!.contains('/http')
+              ? imagePath!.replaceFirst('/http', 'http')
+              : context
+                  .read<ConfigViewModel>()
+                  .getImageUrl(imageType, imageQuality, imagePath!);
+      logIfDebug('imagePath:$imagePath, imageUrl:$imageUrl');
       child = CachedNetworkImage(
         alignment: Alignment.topRight,
         imageUrl: imageUrl,
