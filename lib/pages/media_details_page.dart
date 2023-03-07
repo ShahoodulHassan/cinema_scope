@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import '../architecture/config_view_model.dart';
 import '../models/movie.dart';
 
-
 /// This page is meant to show the sub details of movie details
 /// T can be any model object which means that all possible objects would have
 /// to be dealt with in the code that links the models with the UI.
@@ -76,7 +75,10 @@ class _TextTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Text(englishName),
+      child: Text(
+        englishName,
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
     );
   }
 }

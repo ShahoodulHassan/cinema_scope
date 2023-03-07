@@ -21,6 +21,7 @@ import '../architecture/person_view_model.dart';
 import '../models/search.dart';
 import '../utilities/generic_functions.dart';
 import '../widgets/compact_text_button.dart';
+import 'movie_page.dart';
 
 class PersonPage extends MultiProvider {
   PersonPage({
@@ -83,7 +84,7 @@ class _PersonPageChildState extends State<_PersonPageChild>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: lighten2(Theme.of(context).primaryColorLight, 78),
+      backgroundColor: getScaffoldColor(context),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -177,7 +178,8 @@ class _PersonPageChildState extends State<_PersonPageChild>
   }
 }
 
-class _ExternalIdsView extends StatelessWidget with GenericFunctions {
+class _ExternalIdsView extends StatelessWidget
+    with GenericFunctions, Utilities, CommonFunctions {
   const _ExternalIdsView({Key? key}) : super(key: key);
 
   @override
@@ -196,33 +198,41 @@ class _ExternalIdsView extends StatelessWidget with GenericFunctions {
               children: [
                 if (externalIds!.imdbId != null)
                   getIconButton(
-                    FontAwesomeIcons.imdb,
+                    context,
+                    const Icon(FontAwesomeIcons.imdb),
                     () => openUrlString(
                       '${Constants.imdbPersonUrl}${externalIds.imdbId}',
                     ),
                   ),
                 if (externalIds.instagramId != null)
                   getIconButton(
-                    FontAwesomeIcons.instagram,
+                    context,
+                    const Icon(FontAwesomeIcons.instagram),
                     () => openUrlString(
                       '${Constants.instagramBaseUrl}${externalIds.instagramId}',
                     ),
                   ),
                 if (externalIds.twitterId != null)
                   getIconButton(
-                    FontAwesomeIcons.twitter,
+                    context,
+                    const Icon(FontAwesomeIcons.twitter),
                     () => openUrlString(
                         '${Constants.twitterBaseUrl}${externalIds.twitterId}'),
                   ),
                 if (externalIds.facebookId != null)
                   getIconButton(
-                    FontAwesomeIcons.facebook,
+                    context,
+                    const Icon(FontAwesomeIcons.facebook),
                     () => openUrlString(
                       '${Constants.facebookBaseUrl}${externalIds.facebookId}',
                     ),
                   ),
                 if (homepage != null)
-                  getIconButton(Icons.link, () => openUrlString(homepage)),
+                  getIconButton(
+                    context,
+                    const Icon(Icons.link),
+                    () => openUrlString(homepage),
+                  ),
               ],
             ),
           );
@@ -235,8 +245,8 @@ class _ExternalIdsView extends StatelessWidget with GenericFunctions {
     );
   }
 
-  Widget getIconButton(IconData icon, Function() onPressed) =>
-      IconButton(onPressed: onPressed, icon: Icon(icon));
+// Widget getIconButton(IconData icon, Function() onPressed) =>
+//     IconButton(onPressed: onPressed, icon: Icon(icon));
 }
 
 class BaseSectionSliver extends StatelessWidget {
@@ -259,7 +269,7 @@ class BaseSectionSliver extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverPadding(
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
+      padding: const EdgeInsets.symmetric(vertical: 20.0),
       sliver: SliverStack(
         children: [
           /// This serves as the base card on which the content card is
@@ -274,10 +284,10 @@ class BaseSectionSliver extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                getSliverSeparator(context),
+                getSectionSeparator(context),
                 getSectionTitleRow(),
                 ...children,
-                getSliverSeparator(context),
+                getSectionSeparator(context),
               ],
             ),
           ),
@@ -285,11 +295,6 @@ class BaseSectionSliver extends StatelessWidget {
       ),
     );
   }
-
-  Widget getSliverSeparator(BuildContext context) => Container(
-        height: 1.0,
-        color: Theme.of(context).primaryColorLight,
-      );
 
   Widget getSectionTitleRow() => Padding(
         padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),

@@ -375,7 +375,7 @@ class _SearchAppbarState extends State<SearchAppbar> with GenericFunctions {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(30.0),
                 borderSide: BorderSide(
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).colorScheme.primary,
                   width: 2.0,
                 ),
               ),
@@ -422,7 +422,7 @@ class _SearchAppbarState extends State<SearchAppbar> with GenericFunctions {
               ),
               hintText: 'Search movies, TV, people',
               filled: true,
-              fillColor: Theme.of(context).primaryColorLight.withOpacity(0.5),
+              fillColor: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5),
             ),
           ),
         ),

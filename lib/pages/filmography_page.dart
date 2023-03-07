@@ -389,7 +389,7 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
         height: 30.0,
         width: 4.0,
         decoration: BoxDecoration(
-          color: Theme.of(context).primaryColorDark.withOpacity(0.3),
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
           borderRadius: BorderRadius.circular(16.0),
         ),
       ),
@@ -520,13 +520,13 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
         label: Text(
           label,
           style: TextStyle(
-            color: selected ? Colors.white : Theme.of(context).primaryColorDark,
+            color: selected ? Colors.white : Theme.of(context).colorScheme.primary,
           ),
         ),
         side: selected
             ? null
             : BorderSide(
-                color: Theme.of(context).primaryColorDark,
+                color: Theme.of(context).colorScheme.primary,
                 width: 0.7,
               ),
         shape: RoundedRectangleBorder(
@@ -647,7 +647,7 @@ class CombinedPosterTile extends StatelessWidget
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(4.0),
                       color:
-                          Theme.of(context).primaryColorLight.withOpacity(0.4),
+                          Theme.of(context).colorScheme.primaryContainer.withOpacity(0.4),
                     ),
                     child: Text(
                       'TV Series',

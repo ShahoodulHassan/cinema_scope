@@ -1,5 +1,7 @@
 import 'package:cinema_scope/architecture/home_view_model.dart';
+import 'package:cinema_scope/pages/movie_page.dart';
 import 'package:cinema_scope/pages/search_page.dart';
+import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:cinema_scope/widgets/home_section.dart';
@@ -27,7 +29,7 @@ class _HomePageChild extends StatefulWidget {
 }
 
 class _HomePageChildState extends State<_HomePageChild>
-    with GenericFunctions, Utilities, RouteAware {
+    with GenericFunctions, Utilities, RouteAware, CommonFunctions {
   @override
   void initState() {
     logIfDebug('initState called');
@@ -58,7 +60,7 @@ class _HomePageChildState extends State<_HomePageChild>
   Widget build(BuildContext context) {
     logIfDebug('build called');
     return Scaffold(
-      backgroundColor: lighten2(Theme.of(context).primaryColorLight, 78),
+      backgroundColor: getScaffoldColor(context),
       appBar: AppBar(
         title: const Text('Cinema scope'),
         actions: [
@@ -189,19 +191,23 @@ class BaseHomeSection extends StatelessWidget {
           /// This serves as the base card on which the content card is
           /// stacked. The fill constructor helps match its height with
           /// the height of the content card.
-          Positioned.fill(
-            child: Container(
+          const Positioned.fill(
+            child: Card(
+              elevation: 5.0,
               color: Colors.white,
+              surfaceTintColor: Colors.white,
+              margin: EdgeInsets.zero,
+              shape: ContinuousRectangleBorder(),
             ),
           ),
           IntrinsicWidth(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                getSeparator(context),
+                getSectionSeparator(context),
                 getSectionTitleRow(),
                 ...children,
-                getSeparator(context),
+                getSectionSeparator(context),
               ],
             ),
           ),
@@ -210,10 +216,10 @@ class BaseHomeSection extends StatelessWidget {
     );
   }
 
-  Widget getSeparator(BuildContext context) => Container(
-        height: 1.0,
-        color: Theme.of(context).primaryColorLight,
-      );
+  // Widget getSeparator(BuildContext context) => Container(
+  //       height: 1.0,
+  //       color: Theme.of(context).primaryColorLight,
+  //     );
 
   Widget getSectionTitleRow() => Padding(
         padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),

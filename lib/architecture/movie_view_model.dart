@@ -15,6 +15,14 @@ import '../models/tv.dart';
 abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
   late final List<MediaGenre> allGenres;
 
+  bool isMovie = T.toString() == (Movie).toString();
+
+  List<Keyword> get keywords =>
+      (isMovie
+          ? (media as Movie?)?.keywords.keywords
+          : (media as Tv?)?.keywords.results) ??
+      [];
+
   T? media;
 
   int _recomPageIndex = 0;
@@ -317,7 +325,7 @@ class MovieViewModel extends MediaViewModel<Movie> {
 
   int get totalCastCount => cast.length;
 
-  List<Keyword> get keywords => media?.keywords.keywords ?? [];
+  // List<Keyword> get keywords => media?.keywords.keywords ?? [];
 
   bool _isTrailerPinned = false;
 

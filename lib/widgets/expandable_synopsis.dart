@@ -1,8 +1,6 @@
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../architecture/movie_view_model.dart';
 import '../utilities/generic_functions.dart';
 
 class ExpandableSynopsis extends StatefulWidget {

@@ -29,7 +29,7 @@ class TvViewModel extends MediaViewModel<Tv> {
 
   int get totalCastCount => cast.length;
 
-  List<Keyword> get keywords => media?.keywords.results ?? [];
+  // List<Keyword> get keywords => media?.keywords.results ?? [];
 
   String? get runtime {
     var runtime = media?.episodeRunTime ?? [];

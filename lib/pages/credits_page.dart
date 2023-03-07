@@ -99,7 +99,7 @@ class _CreditsPageChildState extends State<_CreditsPageChild>
                 bottom: crew.isNotEmpty && cast.isNotEmpty
                     ? TabBar(
                         indicatorSize: TabBarIndicatorSize.tab,
-                        indicatorColor: Theme.of(context).primaryColorDark,
+                        indicatorColor: Theme.of(context).colorScheme.primary,
                         labelColor: Colors.black87,
                         labelStyle: TextStyle(
                           fontFamily: baseFontFamily,
@@ -318,13 +318,13 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
       label: Text(
         label,
         style: TextStyle(
-          color: selected ? Colors.white : Theme.of(context).primaryColorDark,
+          color: selected ? Colors.white : Theme.of(context).colorScheme.primary,
         ),
       ),
       side: selected
           ? null
           : BorderSide(
-              color: Theme.of(context).primaryColorDark,
+              color: Theme.of(context).colorScheme.primary,
               width: 0.7,
             ),
       shape: RoundedRectangleBorder(
@@ -339,7 +339,7 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
       //     : null,
       // visualDensity: VisualDensity(horizontal: 0.0, vertical: -1,),
       selected: selected,
-      selectedColor: Theme.of(context).primaryColor.withOpacity(0.8),
+      selectedColor: Theme.of(context).colorScheme.primary.withOpacity(0.8),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 0.0),
       labelPadding: const EdgeInsets.symmetric(horizontal: 4.0),

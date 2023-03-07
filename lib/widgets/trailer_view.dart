@@ -5,6 +5,7 @@ import 'package:cinema_scope/architecture/youtube_view_model.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/widgets/route_aware_state.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
@@ -381,14 +382,14 @@ class _PlayerOverlayState extends State<PlayerOverlay> with GenericFunctions {
   /// PlayPauseButton has its own criteria for visibility, so other icons have
   /// been made visible independent of the PlayPauseButton.
   Widget getCenterOverlay() {
-    /// Size of PlayPauseButton
-    const double playButtonSize = 60.0;
+    /// Size of PlayPauseButton (including progress indicator)
+    const double playButtonSize = 70.0;
 
     /// Max one side padding allowed for the icons
-    const double maxPadding = playButtonSize / 2;
+    const double maxPadding = playButtonSize / 1.5;
 
     /// Allowed icon size
-    const double iconSize = playButtonSize * 2 / 3;
+    const double iconSize = playButtonSize * 2 / 4;
 
     /// Number of icons required on each side of the play icon
     const double iconCount = 1;
@@ -402,10 +403,11 @@ class _PlayerOverlayState extends State<PlayerOverlay> with GenericFunctions {
 
     /// Padding should be the lower of available and max padding
     final double padding = min(availablePadding, maxPadding);
-
+    logIfDebug('availablePadding:$availablePadding, maxPadding:$maxPadding');
     return Align(
       alignment: AlignmentDirectional.center,
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Visibility(
@@ -414,21 +416,24 @@ class _PlayerOverlayState extends State<PlayerOverlay> with GenericFunctions {
             child: Padding(
               padding: EdgeInsets.only(right: padding),
               child: getIconButton(
-                Icons.skip_previous_rounded,
+                FontAwesomeIcons.backwardStep,
                 () => yvm.loadPrevious(),
                 iconSize: iconSize,
                 isBgRequired: false,
               ),
             ),
           ),
-          PlayPauseButton(controller: controller),
+          SizedBox(
+            width: playButtonSize,
+            child: Center(child: PlayPauseButton(controller: controller)),
+          ),
           Visibility(
             visible: controller.value.isControlsVisible &&
                 yvm.youtubeKeys.length > 1,
             child: Padding(
               padding: EdgeInsets.only(left: padding),
               child: getIconButton(
-                Icons.skip_next_rounded,
+                FontAwesomeIcons.forwardStep,
                 () => yvm.loadNext(),
                 iconSize: iconSize,
                 isBgRequired: false,

@@ -3,6 +3,7 @@ import 'package:cinema_scope/pages/search_page.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:cinema_scope/widgets/app_lifecycle_manager.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -17,57 +18,71 @@ void main() async {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
         create: (_) => ConfigViewModel()..checkConfigurations()),
-  ], child: const MyApp()));
+  ], child: MyApp()));
 }
 
 final RouteObserver<ModalRoute<void>> routeObserver =
     RouteObserver<ModalRoute<void>>();
 
 class MyApp extends StatelessWidget with GenericFunctions {
-  const MyApp({super.key});
+  MyApp({super.key});
+
+  late final primarySwatch = buildMaterialColor(getColorFromHexCode('#895EA0'));
+
+  late final _defaultLightColorScheme =
+      ColorScheme.fromSeed(seedColor: getColorFromHexCode('#895EA0'));
+
+  late final _defaultDarkColorScheme = ColorScheme.fromSwatch(
+      primarySwatch: primarySwatch, brightness: Brightness.dark);
 
   @override
   Widget build(BuildContext context) {
-    var primarySwatch = buildMaterialColor(getColorFromHexCode('#895EA0'));
+    // var primarySwatch = Colors.amber;
+    var primaryColor = getColorFromHexCode('#452665'); // 174378
     var appBarItemColor = Colors.black87;
     return AppLifecycleManager(
-      child: MaterialApp(
-        title: 'Cinema scope',
-        theme: ThemeData(
-          primarySwatch: primarySwatch,
-          highlightColor: primarySwatch.shade100.withOpacity(0.5),
-          useMaterial3: true,
-          fontFamily: GoogleFonts.lato().fontFamily,
-          appBarTheme: AppBarTheme(
-            titleTextStyle: TextStyle(
-              color: appBarItemColor,
-              fontSize: 24.0,
-              fontFamily: GoogleFonts.lato().fontFamily,
-              // fontWeight: FontWeight.bold,
+      child: DynamicColorBuilder(
+        builder: (light, dark) {
+          return MaterialApp(
+            title: 'Cinema scope',
+            theme: ThemeData(
+                colorSchemeSeed: primaryColor,
+                // colorScheme: _defaultLightColorScheme,
+                // primarySwatch: primarySwatch,
+                highlightColor: primaryColor.withOpacity(0.10),
+                splashColor: primaryColor.withOpacity(0.10),
+                useMaterial3: true,
+                fontFamily: GoogleFonts.lato().fontFamily,
+                appBarTheme: AppBarTheme(
+                  titleTextStyle: TextStyle(
+                    color: appBarItemColor,
+                    fontSize: 24.0,
+                    fontFamily: GoogleFonts.lato().fontFamily,
+                    // fontWeight: FontWeight.bold,
+                  ),
+                  actionsIconTheme: IconThemeData(
+                    color: appBarItemColor,
+                  ),
+                  iconTheme: IconThemeData(
+                    color: appBarItemColor,
+                  ),
+                )
+                // textTheme: Theme.of(context).textTheme.apply(
+                //   fontSizeFactor: 1.1,
+                //   fontSizeDelta: 2.0,
+                // ),
+                ),
+            navigatorObservers: [routeObserver],
+            home: Selector<ConfigViewModel, bool>(
+              builder: (_, isConfigComplete, __) {
+                logIfDebug('isConfigComplete:$isConfigComplete');
+                return isConfigComplete ? HomePage() : const SizedBox.shrink();
+              },
+              selector: (_, cvm) => cvm.isConfigComplete,
             ),
-            actionsIconTheme: IconThemeData(
-              color: appBarItemColor,
-            ),
-            iconTheme: IconThemeData(
-              color: appBarItemColor,
-            ),
-          )
-          // textTheme: Theme.of(context).textTheme.apply(
-          //   fontSizeFactor: 1.1,
-          //   fontSizeDelta: 2.0,
-          // ),
-        ),
-        navigatorObservers: [routeObserver],
-        home: Selector<ConfigViewModel, bool>(
-          builder: (_, isConfigComplete, __) {
-            logIfDebug('isConfigComplete:$isConfigComplete');
-            return isConfigComplete
-                ? HomePage()
-                : const SizedBox.shrink();
-          },
-          selector: (_, cvm) => cvm.isConfigComplete,
-        ),
-        // home: const MyHomePage(title: 'Cinema scope'),
+            // home: const MyHomePage(title: 'Cinema scope'),
+          );
+        },
       ),
     );
   }
@@ -91,4 +106,3 @@ class MyApp extends StatelessWidget with GenericFunctions {
 //     );
 //   }
 // }
-

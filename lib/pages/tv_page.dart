@@ -89,7 +89,7 @@ class _TvPageChildState extends State<_TvPageChild>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: lighten2(Theme.of(context).primaryColorLight, 78),
+      backgroundColor: getScaffoldColor(context),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -179,7 +179,10 @@ class _TvPageChildState extends State<_TvPageChild>
                     buildYearRow(),
                     buildEpisodesRow(context),
                     buildTagline(),
-                    ExpandableSynopsis(widget.overview),
+                    ExpandableSynopsis(
+                      widget.overview,
+                      changeSize: false,
+                    ),
                     buildGenresAndLinks(),
                   ],
                 ),
@@ -194,7 +197,7 @@ class _TvPageChildState extends State<_TvPageChild>
           const MoreByDirectorSection<Tv, TvViewModel>(),
           const MoreByLeadActorSection<Tv, TvViewModel>(),
           const MoreByGenresSection<Tv, TvViewModel>(),
-          const KeywordsSection(),
+          const KeywordsSection<Tv, TvViewModel>(),
         ],
       ),
     );
@@ -384,7 +387,7 @@ class _TvPageChildState extends State<_TvPageChild>
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (genres.isNotEmpty) getGenreView(genres),
+              if (genres.isNotEmpty) getGenreView<Tv>(genres),
               if (imdbId.isNotEmpty || homepage.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -393,20 +396,25 @@ class _TvPageChildState extends State<_TvPageChild>
                     children: [
                       if (imdbId.isNotEmpty)
                         getIconButton(
+                          context,
                           const Icon(FontAwesomeIcons.imdb),
                           () => openUrlString(
                             '${Constants.imdbTitleUrl}$imdbId',
                           ),
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       if (homepage.isNotEmpty)
                         getIconButton(
-                            (homepage.contains('netflix')
-                                ? Image.asset(
-                                    'assets/icons/icons8_netflix_24.png',
-                                    color: Theme.of(context).primaryColorDark,
-                                  )
-                                : const Icon(Icons.link)),
-                            () => openUrlString(homepage)),
+                          context,
+                          (homepage.contains('netflix')
+                              ? Image.asset(
+                                  'assets/icons/icons8_netflix_24.png',
+                                  color: Theme.of(context).primaryColorDark,
+                                )
+                              : const Icon(Icons.link)),
+                          () => openUrlString(homepage),
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                     ],
                   ),
                 ),
@@ -417,62 +425,62 @@ class _TvPageChildState extends State<_TvPageChild>
     );
   }
 
-  Widget getIconButton(Widget icon, Function() onPressed) => IconButton(
-        onPressed: onPressed,
-        icon: icon,
-        iconSize: 24.0,
-        color: Theme.of(context).primaryColorDark,
-        // padding: EdgeInsets.zero,
-        // visualDensity: VisualDensity(horizontal: -2.0, vertical: -2.0),
-      );
+// Widget getIconButton(Widget icon, Function() onPressed) => IconButton(
+//       onPressed: onPressed,
+//       icon: icon,
+//       iconSize: 24.0,
+//       color: Theme.of(context).primaryColorDark,
+//       // padding: EdgeInsets.zero,
+//       // visualDensity: VisualDensity(horizontal: -2.0, vertical: -2.0),
+//     );
 
-  /// This method expects a non-empty list of genres
-  Widget getGenreView(List<Genre> genres) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-      child: SizedBox(
-        height: 34,
-        child: ListView.separated(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          separatorBuilder: (_, index) => const SizedBox(width: 8),
-          scrollDirection: Axis.horizontal,
-          itemBuilder: (BuildContext context, int index) {
-            final genre = genres[index];
-            return InkWellOverlay(
-              onTap: () {
-                goToMovieListPage(
-                  context,
-                  mediaType: MediaType.tv,
-                  genres: [genre],
-                );
-              },
-              borderRadius: BorderRadius.circular(6.0),
-              child: Chip(
-                backgroundColor:
-                    Theme.of(context).primaryColorLight.withOpacity(0.17),
-                padding: EdgeInsets.zero,
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                label: Text(
-                  genre.name,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Theme.of(context).primaryColorDark,
-                  ),
-                ),
-                side: BorderSide(
-                  color: Theme.of(context).primaryColorDark,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6.0),
-                ),
-              ),
-            );
-          },
-          itemCount: genres.length,
-        ),
-      ),
-    );
-  }
+// /// This method expects a non-empty list of genres
+// Widget getGenreView(List<Genre> genres) {
+//   return Padding(
+//     padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+//     child: SizedBox(
+//       height: 34,
+//       child: ListView.separated(
+//         padding: const EdgeInsets.symmetric(horizontal: 16.0),
+//         separatorBuilder: (_, index) => const SizedBox(width: 8),
+//         scrollDirection: Axis.horizontal,
+//         itemBuilder: (BuildContext context, int index) {
+//           final genre = genres[index];
+//           return InkWellOverlay(
+//             onTap: () {
+//               goToMediaListPage(
+//                 context,
+//                 mediaType: MediaType.tv,
+//                 genres: [genre],
+//               );
+//             },
+//             borderRadius: BorderRadius.circular(6.0),
+//             child: Chip(
+//               backgroundColor:
+//                   Theme.of(context).primaryColorLight.withOpacity(0.17),
+//               padding: EdgeInsets.zero,
+//               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+//               label: Text(
+//                 genre.name,
+//                 style: TextStyle(
+//                   fontSize: 14,
+//                   color: Theme.of(context).primaryColorDark,
+//                 ),
+//               ),
+//               side: BorderSide(
+//                 color: Theme.of(context).primaryColorDark,
+//               ),
+//               shape: RoundedRectangleBorder(
+//                 borderRadius: BorderRadius.circular(6.0),
+//               ),
+//             ),
+//           );
+//         },
+//         itemCount: genres.length,
+//       ),
+//     ),
+//   );
+// }
 }
 
 class _CastCrewSection extends StatelessWidget
@@ -504,7 +512,7 @@ class _CastCrewSection extends StatelessWidget
               SliverToBoxAdapter(
                 child: Column(
                   children: [
-                    getSliverSeparator(context),
+                    getSectionSeparator(context),
                     if (tuple.item1.isNotEmpty)
                       getSectionTitleRow(tuple.item1.length > _maxCount, () {}),
                     if (tuple.item1.isNotEmpty)
@@ -521,7 +529,7 @@ class _CastCrewSection extends StatelessWidget
                       getCrewSection(context, tuple.item2,
                           'Creator${tuple.item2.length > 1 ? 's' : ''}'),
                     // getCrewSection(context, tuple.item2),
-                    getSliverSeparator(context),
+                    getSectionSeparator(context),
                   ],
                 ),
               ),
@@ -607,11 +615,6 @@ class _CastCrewSection extends StatelessWidget
       );
     }));
   }
-
-  Widget getSliverSeparator(BuildContext context) => Container(
-        height: 1.0,
-        color: Theme.of(context).primaryColorLight,
-      );
 
   Widget getSectionTitleRow(bool showSeeAll, Function()? onPressed) => Padding(
         padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
@@ -972,118 +975,97 @@ class _MediaInfoSection extends StatelessWidget
   }
 }
 
-class KeywordsSection extends StatelessWidget
-    with GenericFunctions, Utilities, CommonFunctions {
-  final int _maxCount = 10;
-
-  const KeywordsSection({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Selector<TvViewModel, Tuple2<List<Keyword>, int>>(
-      selector: (_, tvm) => Tuple2(
-        tvm.keywords.take(_maxCount).toList(),
-        tvm.keywords.length,
-      ),
-      builder: (_, tuple, __) {
-        if (tuple.item2 == 0) {
-          return SliverToBoxAdapter(child: Container());
-        }
-        return SliverPadding(
-          padding: const EdgeInsets.symmetric(vertical: 12.0),
-          sliver: SliverStack(
-            children: [
-              /// This serves as the base card on which the content card is
-              /// stacked. The fill constructor helps match its height with
-              /// the height of the content card.
-              SliverPositioned.fill(
-                child: Container(
-                  color: Colors.white,
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    getSliverSeparator(context),
-                    getSectionTitleRow(tuple.item2 > _maxCount, () {}),
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 16.0, horizontal: 16.0),
-                      child: Wrap(
-                        alignment: WrapAlignment.start,
-                        spacing: 8.0,
-                        runSpacing: 10.0,
-                        children: tuple.item1.map((e) {
-                          return InkWellOverlay(
-                            onTap: () {
-                              goToMovieListPage(
-                                context,
-                                mediaType: MediaType.tv,
-                                keywords: [e],
-                                genres:
-                                    context.read<TvViewModel>().media?.genres,
-                              );
-                            },
-                            borderRadius: BorderRadius.circular(6.0),
-                            child: Chip(
-                              backgroundColor: Theme.of(context)
-                                  .primaryColorLight
-                                  .withOpacity(0.17),
-                              padding: EdgeInsets.zero,
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
-                              label: Text(
-                                e.name.toProperCase(),
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Theme.of(context).primaryColorDark,
-                                ),
-                              ),
-                              side: BorderSide(
-                                color: Theme.of(context).primaryColorDark,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6.0),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                    getSliverSeparator(context),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget getSliverSeparator(BuildContext context) => Container(
-        height: 1.0,
-        color: Theme.of(context).primaryColorLight,
-      );
-
-  Widget getSectionTitleRow(bool showSeeAll, Function()? onPressed) => Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Keywords' /*.toUpperCase()*/,
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.5,
-                // height: 1.1,
-              ),
-            ),
-            if (showSeeAll) CompactTextButton('See all', onPressed: onPressed),
-          ],
-        ),
-      );
-}
+// class KeywordsSection extends StatelessWidget
+//     with GenericFunctions, Utilities, CommonFunctions {
+//   final int _maxCount = 10;
+//
+//   const KeywordsSection({Key? key}) : super(key: key);
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Selector<TvViewModel, Tuple2<List<Keyword>, int>>(
+//       selector: (_, tvm) => Tuple2(
+//         tvm.keywords.take(_maxCount).toList(),
+//         tvm.keywords.length,
+//       ),
+//       builder: (_, tuple, __) {
+//         if (tuple.item2 == 0) {
+//           return SliverToBoxAdapter(child: Container());
+//         }
+//         return SliverPadding(
+//           padding: const EdgeInsets.symmetric(vertical: 12.0),
+//           sliver: SliverStack(
+//             children: [
+//               /// This serves as the base card on which the content card is
+//               /// stacked. The fill constructor helps match its height with
+//               /// the height of the content card.
+//               SliverPositioned.fill(
+//                 child: Container(
+//                   color: Colors.white,
+//                 ),
+//               ),
+//               SliverToBoxAdapter(
+//                 child: Column(
+//                   children: [
+//                     getSliverSeparator(context),
+//                     getSectionTitleRow(tuple.item2 > _maxCount, () {}),
+//                     Container(
+//                       width: MediaQuery.of(context).size.width,
+//                       padding: const EdgeInsets.symmetric(
+//                           vertical: 16.0, horizontal: 16.0),
+//                       child: Wrap(
+//                         alignment: WrapAlignment.start,
+//                         spacing: 8.0,
+//                         runSpacing: 10.0,
+//                         children: tuple.item1.map((e) {
+//                           return InkWellOverlay(
+//                             onTap: () {
+//                               goToMediaListPage(
+//                                 context,
+//                                 mediaType: MediaType.tv,
+//                                 keywords: [e],
+//                                 genres:
+//                                     context.read<TvViewModel>().media?.genres,
+//                               );
+//                             },
+//                             borderRadius: BorderRadius.circular(6.0),
+//                             child: buildKeywordChip(context, e),
+//                           );
+//                         }).toList(),
+//                       ),
+//                     ),
+//                     getSliverSeparator(context),
+//                   ],
+//                 ),
+//               ),
+//             ],
+//           ),
+//         );
+//       },
+//     );
+//   }
+//
+//   Widget getSliverSeparator(BuildContext context) => Container(
+//         height: 1.0,
+//         color: Theme.of(context).primaryColorLight,
+//       );
+//
+//   Widget getSectionTitleRow(bool showSeeAll, Function()? onPressed) => Padding(
+//         padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
+//         child: Row(
+//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//           children: [
+//             const Text(
+//               'Keywords' /*.toUpperCase()*/,
+//               style: TextStyle(
+//                 fontSize: 18.0,
+//                 fontWeight: FontWeight.bold,
+//                 letterSpacing: 1.5,
+//                 // height: 1.1,
+//               ),
+//             ),
+//             if (showSeeAll) CompactTextButton('See all', onPressed: onPressed),
+//           ],
+//         ),
+//       );
+// }

@@ -132,7 +132,7 @@ class _RecommendationsView<M extends Media, T extends MediaViewModel<M>>
             if (totalRecomCount > itemCount)
               CompactTextButton('See all', onPressed: () {
                 var mediaType = isMovie ? MediaType.movie : MediaType.tv;
-                goToMovieListPage(
+                goToMediaListPage(
                   context,
                   mediaType: mediaType,
                   mediaId: mediaId,

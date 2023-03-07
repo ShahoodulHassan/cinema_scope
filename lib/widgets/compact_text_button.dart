@@ -26,10 +26,10 @@ class CompactTextButton extends StatelessWidget {
       onPressed: onPressed,
       child: Text(
         title.toUpperCase(),
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 16.0,
           fontWeight: FontWeight.bold,
-          color: Theme.of(context).primaryColorDark,
+          // color: Theme.of(context).colorScheme.primary,
           // height: 1.1,
         ),
       ),

@@ -121,8 +121,8 @@ class ImagePage extends StatelessWidget {
               if (progress != null)
                 Center(
                   child: CircularProgressIndicator(
-                    backgroundColor: Theme.of(context).primaryColorLight,
-                    color: Theme.of(context).primaryColor,
+                    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                    color: Theme.of(context).colorScheme.primary,
                     value: progress.expectedTotalBytes != null
                         ? progress.cumulativeBytesLoaded /
                             progress.expectedTotalBytes!

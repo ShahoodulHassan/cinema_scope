@@ -126,13 +126,13 @@ class _HomeSectionState extends State<HomeSection>
                           constraints: const BoxConstraints(
                               minWidth: 0.0, minHeight: 0.0),
                           borderRadius: BorderRadius.circular(16.0),
-                          borderColor: Theme.of(context).primaryColorDark,
-                          selectedColor: Theme.of(context).primaryColorDark,
-                          fillColor: Theme.of(context).primaryColorLight.withOpacity(0.2),
-                          highlightColor: Theme.of(context).primaryColor.withOpacity(0.5),
+                          borderColor: Theme.of(context).colorScheme.primary,
+                          // selectedColor: Theme.of(context).primaryColorDark,
+                          // fillColor: Theme.of(context).primaryColorLight.withOpacity(0.2),
+                          // highlightColor: Theme.of(context).primaryColor.withOpacity(0.5),
                           selectedBorderColor:
-                              Theme.of(context).primaryColorDark,
-                          borderWidth: 0.7,
+                          Theme.of(context).colorScheme.primary,
+                          borderWidth: 0.5,
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           isSelected: widget.params.map((e) {
                             return e == param;
@@ -201,6 +201,7 @@ class _HomeListViewState extends State<HomeListView>
   late final titleLines = widget.isBigWidget ? 1 : 2;
   late final yearFontSize = titleFontSize - 4.0;
   final listViewVerticalPadding = 16.0;
+  final listViewBottomPadding = 24.0;
   final listViewHorizontalPadding = 16.0;
   late final ratingIconSize = widget.isBigWidget ? 24.0 : 20.0;
   late final ratingFontSize = widget.isBigWidget ? 18.0 : 16.0;
@@ -257,7 +258,7 @@ class _HomeListViewState extends State<HomeListView>
 
   late final cardHeight = posterHeight +
       titleContainerHeight +
-      listViewVerticalPadding * 2 +
+      listViewVerticalPadding + listViewBottomPadding +
       (isUpcoming || isLatest ? 0 : ratingContainerHeight) +
       yearContainerHeight;
 
@@ -276,9 +277,9 @@ class _HomeListViewState extends State<HomeListView>
           child: ListView.separated(
             // shrinkWrap: true,
             physics: const ClampingScrollPhysics(),
-            padding: EdgeInsets.symmetric(
-                horizontal: listViewHorizontalPadding,
-                vertical: listViewVerticalPadding),
+            padding: EdgeInsets.fromLTRB(
+                listViewHorizontalPadding,
+                listViewVerticalPadding, listViewHorizontalPadding, listViewBottomPadding),
             itemBuilder: (_, index) {
               var movie = widget.results[index];
               if (index == 0) {
@@ -369,6 +370,7 @@ class _HomeListViewState extends State<HomeListView>
           child: Material(
             color: Colors.transparent,
             child: InkWell(
+              borderRadius: BorderRadius.circular(12.0),
               onTap: () {
                 logIfDebug(
                     'onTap called for:${media.mediaTitle}, type:${media.mediaType}');

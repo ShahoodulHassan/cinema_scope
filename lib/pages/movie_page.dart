@@ -113,7 +113,7 @@ class _MoviePageChildState extends State<_MoviePageChild>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: lighten2(Theme.of(context).primaryColorLight, 78),
+      backgroundColor: getScaffoldColor(context),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -202,7 +202,10 @@ class _MoviePageChildState extends State<_MoviePageChild>
                     ),
                     buildYearRow(context),
                     buildTagline(),
-                    ExpandableSynopsis(widget.overview),
+                    ExpandableSynopsis(
+                      widget.overview,
+                      changeSize: false,
+                    ),
                     buildGenresAndLinks(),
                   ],
                 ),
@@ -217,7 +220,7 @@ class _MoviePageChildState extends State<_MoviePageChild>
           const MoreByDirectorSection<Movie, MovieViewModel>(),
           const MoreByLeadActorSection<Movie, MovieViewModel>(),
           const MoreByGenresSection<Movie, MovieViewModel>(),
-          const KeywordsSection(),
+          const KeywordsSection<Movie, MovieViewModel>(),
           const SliverToBoxAdapter(child: SizedBox(height: 16)),
         ],
       ),
@@ -322,7 +325,7 @@ class _MoviePageChildState extends State<_MoviePageChild>
       padding: const EdgeInsets.only(right: 16.0),
       child: Container(
         decoration: BoxDecoration(
-          border: Border.all(color: Theme.of(context).primaryColorDark),
+          border: Border.all(color: Theme.of(context).colorScheme.primary),
           borderRadius: BorderRadius.circular(8.0),
         ),
         padding: const EdgeInsets.symmetric(
@@ -332,7 +335,7 @@ class _MoviePageChildState extends State<_MoviePageChild>
         child: Text(
           certification,
           style: TextStyle(
-            color: Theme.of(context).primaryColorDark,
+            color: Theme.of(context).colorScheme.primary,
             fontSize: 14.0,
             fontWeight: FontWeight.bold,
             // fontStyle: FontStyle.italic,
@@ -387,7 +390,7 @@ class _MoviePageChildState extends State<_MoviePageChild>
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (genres.isNotEmpty) getGenreView(genres),
+              if (genres.isNotEmpty) getGenreView<Movie>(genres),
               if (imdbId.isNotEmpty || homepage.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -396,20 +399,25 @@ class _MoviePageChildState extends State<_MoviePageChild>
                     children: [
                       if (imdbId.isNotEmpty)
                         getIconButton(
+                          context,
                           const Icon(FontAwesomeIcons.imdb),
                           () => openUrlString(
                             '${Constants.imdbTitleUrl}$imdbId',
                           ),
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       if (homepage.isNotEmpty)
                         getIconButton(
-                            (homepage.contains('netflix')
-                                ? Image.asset(
-                                    'assets/icons/icons8_netflix_24.png',
-                                    color: Theme.of(context).primaryColorDark,
-                                  )
-                                : const Icon(Icons.link)),
-                            () => openUrlString(homepage)),
+                          context,
+                          (homepage.contains('netflix')
+                              ? Image.asset(
+                                  'assets/icons/icons8_netflix_24.png',
+                                  color: Theme.of(context).colorScheme.primary,
+                                )
+                              : const Icon(Icons.link)),
+                          () => openUrlString(homepage),
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                     ],
                   ),
                 ),
@@ -420,63 +428,54 @@ class _MoviePageChildState extends State<_MoviePageChild>
     );
   }
 
-  Widget getIconButton(Widget icon, Function() onPressed) => IconButton(
-        onPressed: onPressed,
-        icon: icon,
-        iconSize: 24.0,
-        color: Theme.of(context).primaryColorDark,
-        // padding: EdgeInsets.zero,
-        // visualDensity: VisualDensity(horizontal: -2.0, vertical: -2.0),
-      );
-
-  /// This method expects a non-empty list of genres
-  Widget getGenreView(List<Genre> genres) {
-    // final genres = movie.genres;
-    return Padding(
-      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-      child: SizedBox(
-        height: 34,
-        child: ListView.separated(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          separatorBuilder: (_, index) => const SizedBox(width: 8),
-          scrollDirection: Axis.horizontal,
-          itemBuilder: (BuildContext context, int index) {
-            final genre = genres[index];
-            return InkWellOverlay(
-              onTap: () {
-                goToMovieListPage(
-                  context,
-                  mediaType: MediaType.movie,
-                  genres: [genre],
-                );
-              },
-              borderRadius: BorderRadius.circular(6.0),
-              child: Chip(
-                backgroundColor:
-                    Theme.of(context).primaryColorLight.withOpacity(0.17),
-                padding: EdgeInsets.zero,
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                label: Text(
-                  genre.name,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Theme.of(context).primaryColorDark,
-                  ),
-                ),
-                side: BorderSide(
-                  color: Theme.of(context).primaryColorDark,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6.0),
-                ),
-              ),
-            );
-          },
-          itemCount: genres.length,
-        ),
-      ),
-    );
-  }
+// /// This method expects a non-empty list of genres
+// Widget getGenreView(List<Genre> genres) {
+//   // final genres = movie.genres;
+//   return Padding(
+//     padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+//     child: SizedBox(
+//       height: 34,
+//       child: ListView.separated(
+//         padding: const EdgeInsets.symmetric(horizontal: 16.0),
+//         separatorBuilder: (_, index) => const SizedBox(width: 8),
+//         scrollDirection: Axis.horizontal,
+//         itemBuilder: (BuildContext context, int index) {
+//           final genre = genres[index];
+//           return InkWellOverlay(
+//             onTap: () {
+//               goToMediaListPage(
+//                 context,
+//                 mediaType: MediaType.movie,
+//                 genres: [genre],
+//               );
+//             },
+//             borderRadius: BorderRadius.circular(6.0),
+//             child: Chip(
+//               backgroundColor:
+//                   Theme.of(context).primaryColorLight.withOpacity(0.17),
+//               padding: EdgeInsets.zero,
+//               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+//               label: Text(
+//                 genre.name,
+//                 style: TextStyle(
+//                   fontSize: 14,
+//                   color: Theme.of(context).primaryColorDark,
+//                 ),
+//               ),
+//               side: BorderSide(
+//                 color: Theme.of(context).primaryColorDark,
+//               ),
+//               shape: RoundedRectangleBorder(
+//                 borderRadius: BorderRadius.circular(6.0),
+//               ),
+//             ),
+//           );
+//         },
+//         itemCount: genres.length,
+//       ),
+//     ),
+//   );
+// }
 }
 
 class MoreByLeadActorSection<M extends Media, T extends MediaViewModel<M>>
@@ -576,14 +575,15 @@ class StreamersView<M extends Media, V extends MediaViewModel<M>>
           return const SizedBox.shrink();
         } else {
           var streamer = streamers.first;
-          var width = min(MediaQuery.of(context).size.width * 0.09, maxIconSize);
+          var width =
+              min(MediaQuery.of(context).size.width * 0.09, maxIconSize);
           return Material(
-            color: Theme.of(context).primaryColorLight,
+            color: Theme.of(context).colorScheme.tertiary.withOpacity(0.5),
             child: InkWell(
-              onTap: () => launchUrlString(
-                    'https://www.themoviedb.org/$type/$id/watch'),
-              // highlightColor: Theme.of(context).primaryColor.withOpacity(0.3),
-              splashColor: Theme.of(context).primaryColor.withOpacity(0.3),
+              onTap: () =>
+                  launchUrlString('https://www.themoviedb.org/$type/$id/watch'),
+              // highlightColor: Theme.of(context).highlightColor,
+              // splashColor: Theme.of(context).splashColor,
               child: Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
@@ -828,7 +828,7 @@ class _CastCrewSection extends StatelessWidget
               SliverToBoxAdapter(
                 child: Column(
                   children: [
-                    getSliverSeparator(context),
+                    getSectionSeparator(context),
                     if (tuple.item1.isNotEmpty)
                       getSectionTitleRow(tuple.item1.length > _maxCount, () {}),
                     if (tuple.item1.isNotEmpty)
@@ -843,7 +843,7 @@ class _CastCrewSection extends StatelessWidget
                     //   ),
                     if (tuple.item2.isNotEmpty)
                       getCrewSection(context, tuple.item2),
-                    getSliverSeparator(context),
+                    getSectionSeparator(context),
                   ],
                 ),
               ),
@@ -978,11 +978,6 @@ class _CastCrewSection extends StatelessWidget
     }));
   }
 
-  Widget getSliverSeparator(BuildContext context) => Container(
-        height: 1.0,
-        color: Theme.of(context).primaryColorLight,
-      );
-
   Widget getSectionTitleRow(bool showSeeAll, Function()? onPressed) => Padding(
         padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
         child: Row(
@@ -1002,6 +997,11 @@ class _CastCrewSection extends StatelessWidget
         ),
       );
 }
+
+Widget getSectionSeparator(BuildContext context) => Container(
+      height: 1.0,
+      color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+    );
 
 class CastListView<T extends BaseCredit> extends StatelessWidget
     with Utilities, CommonFunctions {
@@ -1334,15 +1334,16 @@ class _MediaInfoSection extends StatelessWidget
   }
 }
 
-class KeywordsSection extends StatelessWidget
-    with GenericFunctions, Utilities, CommonFunctions {
+class KeywordsSection<M extends Media, VM extends MediaViewModel<M>>
+    extends StatelessWidget with GenericFunctions, Utilities, CommonFunctions {
   final int _maxCount = 10;
 
   const KeywordsSection({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Selector<MovieViewModel, Tuple2<List<Keyword>, int>>(
+    var isMovie = M.toString() == (Movie).toString();
+    return Selector<VM, Tuple2<List<Keyword>, int>>(
       selector: (_, mvm) => Tuple2(
         mvm.keywords.take(_maxCount).toList(),
         mvm.keywords.length,
@@ -1366,7 +1367,7 @@ class KeywordsSection extends StatelessWidget
               SliverToBoxAdapter(
                 child: Column(
                   children: [
-                    getSliverSeparator(context),
+                    getSectionSeparator(context),
                     getSectionTitleRow(tuple.item2 > _maxCount, () {}),
                     Container(
                       width: MediaQuery.of(context).size.width,
@@ -1376,47 +1377,24 @@ class KeywordsSection extends StatelessWidget
                         alignment: WrapAlignment.start,
                         spacing: 8.0,
                         runSpacing: 10.0,
-                        children: tuple.item1.map((e) {
+                        children: tuple.item1.map((keyword) {
                           return InkWellOverlay(
                             onTap: () {
-                              goToMovieListPage(
+                              goToMediaListPage(
                                 context,
-                                mediaType: MediaType.movie,
-                                keywords: [e],
-                                genres: context
-                                    .read<MovieViewModel>()
-                                    .media
-                                    ?.genres,
+                                mediaType:
+                                    isMovie ? MediaType.movie : MediaType.tv,
+                                keywords: [keyword],
+                                genres: context.read<VM>().media?.genres,
                               );
                             },
                             borderRadius: BorderRadius.circular(6.0),
-                            child: Chip(
-                              backgroundColor: Theme.of(context)
-                                  .primaryColorLight
-                                  .withOpacity(0.17),
-                              padding: EdgeInsets.zero,
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
-                              label: Text(
-                                e.name.toProperCase(),
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Theme.of(context).primaryColorDark,
-                                ),
-                              ),
-                              side: BorderSide(
-                                color: Theme.of(context).primaryColorDark,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6.0),
-                              ),
-                            ),
+                            child: getKeywordChip(context, keyword),
                           );
                         }).toList(),
                       ),
                     ),
-                    getSliverSeparator(context),
+                    getSectionSeparator(context),
                   ],
                 ),
               ),
@@ -1427,10 +1405,33 @@ class KeywordsSection extends StatelessWidget
     );
   }
 
-  Widget getSliverSeparator(BuildContext context) => Container(
-        height: 1.0,
-        color: Theme.of(context).primaryColorLight,
-      );
+  Chip getKeywordChip(BuildContext context, Keyword keyword) {
+    return Chip(
+      backgroundColor:
+          Theme.of(context).colorScheme.primaryContainer.withOpacity(0.17),
+      padding: EdgeInsets.zero,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      label: Text(
+        keyword.name.toProperCase(),
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          fontSize: 14,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      ),
+      side: BorderSide(
+        color: Theme.of(context).colorScheme.primary,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(6.0),
+      ),
+    );
+  }
+
+  // Widget getSliverSeparator(BuildContext context) => Container(
+  //       height: 1.0,
+  //       color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+  //     );
 
   Widget getSectionTitleRow(bool showSeeAll, Function()? onPressed) => Padding(
         padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
@@ -1451,6 +1452,126 @@ class KeywordsSection extends StatelessWidget
         ),
       );
 }
+
+// class KeywordsSectionOld extends StatelessWidget
+//     with GenericFunctions, Utilities, CommonFunctions {
+//   final int _maxCount = 10;
+//
+//   const KeywordsSectionOld({Key? key}) : super(key: key);
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Selector<MovieViewModel, Tuple2<List<Keyword>, int>>(
+//       selector: (_, mvm) => Tuple2(
+//         mvm.keywords.take(_maxCount).toList(),
+//         mvm.keywords.length,
+//       ),
+//       builder: (_, tuple, __) {
+//         if (tuple.item2 == 0) {
+//           return SliverToBoxAdapter(child: Container());
+//         }
+//         return SliverPadding(
+//           padding: const EdgeInsets.symmetric(vertical: 12.0),
+//           sliver: SliverStack(
+//             children: [
+//               /// This serves as the base card on which the content card is
+//               /// stacked. The fill constructor helps match its height with
+//               /// the height of the content card.
+//               SliverPositioned.fill(
+//                 child: Container(
+//                   color: Colors.white,
+//                 ),
+//               ),
+//               SliverToBoxAdapter(
+//                 child: Column(
+//                   children: [
+//                     getSliverSeparator(context),
+//                     getSectionTitleRow(tuple.item2 > _maxCount, () {}),
+//                     Container(
+//                       width: MediaQuery.of(context).size.width,
+//                       padding: const EdgeInsets.symmetric(
+//                           vertical: 16.0, horizontal: 16.0),
+//                       child: Wrap(
+//                         alignment: WrapAlignment.start,
+//                         spacing: 8.0,
+//                         runSpacing: 10.0,
+//                         children: tuple.item1.map((e) {
+//                           return InkWellOverlay(
+//                             onTap: () {
+//                               goToMediaListPage(
+//                                 context,
+//                                 mediaType: MediaType.movie,
+//                                 keywords: [e],
+//                                 genres: context
+//                                     .read<MovieViewModel>()
+//                                     .media
+//                                     ?.genres,
+//                               );
+//                             },
+//                             borderRadius: BorderRadius.circular(6.0),
+//                             child: buildKeywordChip(context, e),
+//                           );
+//                         }).toList(),
+//                       ),
+//                     ),
+//                     getSliverSeparator(context),
+//                   ],
+//                 ),
+//               ),
+//             ],
+//           ),
+//         );
+//       },
+//     );
+//   }
+//
+//   Widget getSliverSeparator(BuildContext context) => Container(
+//         height: 1.0,
+//         color: Theme.of(context).primaryColorLight,
+//       );
+//
+//   Widget getSectionTitleRow(bool showSeeAll, Function()? onPressed) => Padding(
+//         padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
+//         child: Row(
+//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//           children: [
+//             const Text(
+//               'Keywords' /*.toUpperCase()*/,
+//               style: TextStyle(
+//                 fontSize: 18.0,
+//                 fontWeight: FontWeight.bold,
+//                 letterSpacing: 1.5,
+//                 // height: 1.1,
+//               ),
+//             ),
+//             if (showSeeAll) CompactTextButton('See all', onPressed: onPressed),
+//           ],
+//         ),
+//       );
+// }
+
+// Chip buildKeywordChip(BuildContext context, Keyword keyword) {
+//   return Chip(
+//     backgroundColor:
+//         Theme.of(context).colorScheme.primaryContainer.withOpacity(0.17),
+//     padding: EdgeInsets.zero,
+//     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+//     label: Text(
+//       keyword.name.toProperCase(),
+//       overflow: TextOverflow.ellipsis,
+//       style: TextStyle(
+//         fontSize: 14,
+//         color: Theme.of(context).colorScheme.primary,
+//       ),
+//     ),
+//     side: BorderSide(
+//       color: Theme.of(context).colorScheme.primary,
+//     ),
+//     shape: RoundedRectangleBorder(
+//       borderRadius: BorderRadius.circular(6.0),
+//     ),
+//   );
+// }
 
 class ReviewsSection extends StatelessWidget {
   final int _maxCount = 10;
