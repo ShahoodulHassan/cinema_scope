@@ -577,43 +577,41 @@ class StreamersView<M extends Media, V extends MediaViewModel<M>>
         } else {
           var streamer = streamers.first;
           var width = min(MediaQuery.of(context).size.width * 0.09, maxIconSize);
-          return InkWell(
-            onTap: () {
-              // Future.delayed(Duration(milliseconds: 500), () {
-              launchUrlString(
-                  'https://www.themoviedb.org/$type/${id}/watch');
-              // });
-            },
-            // highlightColor: Theme.of(context).primaryColor.withOpacity(0.3),
-            splashColor: Theme.of(context).primaryColor.withOpacity(0.3),
-            child: Container(
-              color: Theme.of(context).primaryColorLight,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: SizedBox(
-                      width: width,
-                      child: NetworkImageView(
-                        streamer.logoPath,
-                        imageType: ImageType.logo,
-                        aspectRatio: Constants.arAvatar,
-                        topRadius: 4.0,
-                        bottomRadius: 4.0,
+          return Material(
+            color: Theme.of(context).primaryColorLight,
+            child: InkWell(
+              onTap: () => launchUrlString(
+                    'https://www.themoviedb.org/$type/$id/watch'),
+              // highlightColor: Theme.of(context).primaryColor.withOpacity(0.3),
+              splashColor: Theme.of(context).primaryColor.withOpacity(0.3),
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: SizedBox(
+                        width: width,
+                        child: NetworkImageView(
+                          streamer.logoPath,
+                          imageType: ImageType.logo,
+                          aspectRatio: Constants.arAvatar,
+                          topRadius: 4.0,
+                          bottomRadius: 4.0,
+                        ),
                       ),
                     ),
-                  ),
-                  Text(
-                    'Now streaming on\n${streamer.providerName}',
-                    style: const TextStyle(
-                      height: 1.15,
-                      fontWeight: FontWeight.bold,
+                    Text(
+                      'Now streaming on\n${streamer.providerName}',
+                      style: const TextStyle(
+                        height: 1.15,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );
