@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:cinema_scope/architecture/config_view_model.dart';
 import 'package:cinema_scope/models/movie.dart';
@@ -67,6 +68,7 @@ class ImagePage extends StatelessWidget {
     );
   }
 
+  @Deprecated('InteractiveViewer didn\'t work as per my requirements')
   Widget getImageView(BuildContext context, ImageDetail image) {
     return InteractiveViewer(
       child: Container(
@@ -100,7 +102,7 @@ class ImagePage extends StatelessWidget {
 
   PhotoView buildPhotoView(BuildContext context, ImageDetail image) {
     return PhotoView(
-      imageProvider: Image.network(getImageUrl(image, context)).image,
+      imageProvider: CachedNetworkImageProvider(getImageUrl(image, context)),
       maxScale: PhotoViewComputedScale.contained * 4.0,
       minScale: PhotoViewComputedScale.contained * 1.0,
       loadingBuilder: (_, progress) {

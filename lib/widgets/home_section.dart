@@ -127,6 +127,9 @@ class _HomeSectionState extends State<HomeSection>
                               minWidth: 0.0, minHeight: 0.0),
                           borderRadius: BorderRadius.circular(16.0),
                           borderColor: Theme.of(context).primaryColorDark,
+                          selectedColor: Theme.of(context).primaryColorDark,
+                          fillColor: Theme.of(context).primaryColorLight.withOpacity(0.2),
+                          highlightColor: Theme.of(context).primaryColor.withOpacity(0.5),
                           selectedBorderColor:
                               Theme.of(context).primaryColorDark,
                           borderWidth: 0.7,
