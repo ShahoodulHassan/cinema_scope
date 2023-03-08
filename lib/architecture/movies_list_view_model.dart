@@ -95,6 +95,16 @@ class MediaListViewModel extends ApiViewModel {
     ).then((result) => _appendPageAndNotify(mediaType, result, page));
   }
 
+  /// We keep region and originalLanguage off because if we didn't, we might be
+  /// served with nothing.
+  /// For example, if we started from the Trending titles, there is no region
+  /// in the query, so we might click on a title that is not of the selected
+  /// region. When we click on a keyword, we might end up with no results
+  /// because this query is region specific.
+  /// This is not an ideal solution though.
+  /// TODO 08/03/2023 Reconsider the region and originalLanguage params once
+  /// region is taken from the preferences
+  ///
   _discoverByKeyword({
     required MediaType mediaType,
     required List<int> genreIds,
@@ -105,8 +115,17 @@ class MediaListViewModel extends ApiViewModel {
     String kIds = keywords.map((e) => e.id).join(',');
     logIfDebug('gIds:$gIds, kIds:$kIds');
     _operation = CancelableOperation<CombinedResults>.fromFuture(
-      api.discoverMediaByKeyword(mediaType.name, kIds, gIds, page: page),
-    ).then((result) => _appendPageAndNotify(mediaType, result, page));
+      api.discoverMediaByKeyword(
+        mediaType.name,
+        kIds,
+        gIds,
+        page: page,
+        region: '',
+        originalLanguage: '',
+      ),
+    ).then((result) {
+      _appendPageAndNotify(mediaType, result, page);
+    });
   }
 
   _disposePageController() {
