@@ -131,7 +131,7 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
 
   fetchMoreByDirector<C extends BasePersonResult>(
       C director, String department) async {
-    moreByDirectorOperation = CancelableOperation<Person>.fromFuture(
+    _moreByDirectorOperation = CancelableOperation<Person>.fromFuture(
             api.getPersonWithDetail(director.id, append: 'combined_credits'))
         .then((person) {
       var moreByDirector = person.combinedCredits.crew
@@ -150,7 +150,7 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
   }
 
   fetchMoreByLeadActor<C extends BasePersonResult>(C actor, int order) async {
-    moreByLeadOperation = CancelableOperation<Person>.fromFuture(
+    _moreByLeadOperation = CancelableOperation<Person>.fromFuture(
             api.getPersonWithDetail(actor.id, append: 'combined_credits'))
         .then((person) {
       var moreByActor = person.combinedCredits.cast
@@ -243,7 +243,7 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
                     );
             }).toList();
 
-            moreByGenresOperation =
+            _moreByGenresOperation =
                 CancelableOperation<List<CombinedResults>>.fromFuture(
               Future.wait(futures),
             ).then((results) async {
@@ -285,17 +285,17 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
     super.dispose();
   }
 
-  set moreByLeadOperation(CancelableOperation value) {
-    _moreByLeadOperation = value;
-  }
-
-  set moreByGenresOperation(CancelableOperation value) {
-    _moreByGenresOperation = value;
-  }
-
-  set moreByDirectorOperation(CancelableOperation value) {
-    _moreByDirectorOperation = value;
-  }
+  // set moreByLeadOperation(CancelableOperation value) {
+  //   _moreByLeadOperation = value;
+  // }
+  //
+  // set moreByGenresOperation(CancelableOperation value) {
+  //   _moreByGenresOperation = value;
+  // }
+  //
+  // set moreByDirectorOperation(CancelableOperation value) {
+  //   _moreByDirectorOperation = value;
+  // }
 }
 
 class MovieViewModel extends MediaViewModel<Movie> {
@@ -310,28 +310,15 @@ class MovieViewModel extends MediaViewModel<Movie> {
 
   String? get imdbId => media?.imdbId;
 
-  // RecommendationData? get recommendationData => movie == null
-  //     ? null
-  //     : RecommendationData(movie!.id, movie!.recommendations);
-
-  // List<MovieResult> get recommendations =>
-  //     (movie?.recommendations.results
-  //       ?..removeWhere((element) => element.posterPath == null)) ??
-  //     [];
-
   List<Cast> get cast => media?.credits.cast ?? [];
 
   List<Crew> get crew => media?.credits.crew ?? [];
 
   int get totalCastCount => cast.length;
 
-  // List<Keyword> get keywords => media?.keywords.keywords ?? [];
-
   bool _isTrailerPinned = false;
 
   bool get isTrailerPinned => _isTrailerPinned;
-
-  // List<ImageDetail> thumbnails = <ImageDetail>[];
 
   set isTrailerPinned(bool value) {
     _isTrailerPinned = value;
