@@ -249,7 +249,7 @@ class _ExternalIdsView extends StatelessWidget
 //     IconButton(onPressed: onPressed, icon: Icon(icon));
 }
 
-class BaseSectionSliver extends StatelessWidget {
+class BaseSectionSliver extends StatelessWidget with Utilities, CommonFunctions {
   final String title;
   final List<Widget> children;
 
@@ -275,9 +275,13 @@ class BaseSectionSliver extends StatelessWidget {
           /// This serves as the base card on which the content card is
           /// stacked. The fill constructor helps match its height with
           /// the height of the content card.
-          SliverPositioned.fill(
-            child: Container(
+          const SliverPositioned.fill(
+            child: Card(
+              elevation: 5.0,
               color: Colors.white,
+              surfaceTintColor: Colors.white,
+              margin: EdgeInsets.zero,
+              shape: ContinuousRectangleBorder(),
             ),
           ),
           SliverToBoxAdapter(

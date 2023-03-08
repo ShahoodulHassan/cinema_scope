@@ -145,6 +145,11 @@ mixin CommonFunctions on Utilities {
     );
   }
 
+  Widget getSectionSeparator(BuildContext context) => Container(
+    height: 1.0,
+    color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+  );
+
   Color getScaffoldColor(BuildContext context) =>
       lighten2(Theme.of(context).colorScheme.primaryContainer, 75);
 

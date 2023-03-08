@@ -165,7 +165,7 @@ class _HomePageChildState extends State<_HomePageChild>
   }
 }
 
-class BaseHomeSection extends StatelessWidget {
+class BaseHomeSection extends StatelessWidget with Utilities, CommonFunctions {
   final String title;
   final List<Widget> children;
 
