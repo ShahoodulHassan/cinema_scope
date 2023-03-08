@@ -497,45 +497,58 @@ class _CastCrewSection extends StatelessWidget
         if (tuple.item1.isEmpty && tuple.item2.isEmpty) {
           return SliverToBoxAdapter(child: Container());
         }
-        return SliverPadding(
-          padding: const EdgeInsets.symmetric(vertical: 12.0),
-          sliver: SliverStack(
-            children: [
-              /// This serves as the base card on which the content card is
-              /// stacked. The fill constructor helps match its height with
-              /// the height of the content card.
-              SliverPositioned.fill(
-                child: Container(
-                  color: Colors.white,
-                ),
+        return BaseSectionSliver(
+          title: 'Top billed cast',
+          children: [
+            if (tuple.item1.isNotEmpty)
+              _CastListView<TvCast>(
+                tuple.item1.take(_maxCount).toList(),
+                MediaQuery.of(context).size.width,
               ),
-              SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    getSectionSeparator(context),
-                    if (tuple.item1.isNotEmpty)
-                      getSectionTitleRow(tuple.item1.length > _maxCount, () {}),
-                    if (tuple.item1.isNotEmpty)
-                      _CastListView<TvCast>(
-                        tuple.item1.take(_maxCount).toList(),
-                        MediaQuery.of(context).size.width,
-                      ),
-                    // if (tuple.item2.isNotEmpty)
-                    //   CastListView<Crew>(
-                    //     tuple.item2,
-                    //     MediaQuery.of(context).size.width,
-                    //   ),
-                    if (tuple.item2.isNotEmpty)
-                      getCrewSection(context, tuple.item2,
-                          'Creator${tuple.item2.length > 1 ? 's' : ''}'),
-                    // getCrewSection(context, tuple.item2),
-                    getSectionSeparator(context),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            if (tuple.item2.isNotEmpty)
+              getCrewSection(context, tuple.item2,
+                  'Creator${tuple.item2.length > 1 ? 's' : ''}'),
+          ],
         );
+        // return SliverPadding(
+        //   padding: const EdgeInsets.symmetric(vertical: 12.0),
+        //   sliver: SliverStack(
+        //     children: [
+        //       /// This serves as the base card on which the content card is
+        //       /// stacked. The fill constructor helps match its height with
+        //       /// the height of the content card.
+        //       SliverPositioned.fill(
+        //         child: Container(
+        //           color: Colors.white,
+        //         ),
+        //       ),
+        //       SliverToBoxAdapter(
+        //         child: Column(
+        //           children: [
+        //             getSectionSeparator(context),
+        //             if (tuple.item1.isNotEmpty)
+        //               getSectionTitleRow(tuple.item1.length > _maxCount, () {}),
+        //             if (tuple.item1.isNotEmpty)
+        //               _CastListView<TvCast>(
+        //                 tuple.item1.take(_maxCount).toList(),
+        //                 MediaQuery.of(context).size.width,
+        //               ),
+        //             // if (tuple.item2.isNotEmpty)
+        //             //   CastListView<Crew>(
+        //             //     tuple.item2,
+        //             //     MediaQuery.of(context).size.width,
+        //             //   ),
+        //             if (tuple.item2.isNotEmpty)
+        //               getCrewSection(context, tuple.item2,
+        //                   'Creator${tuple.item2.length > 1 ? 's' : ''}'),
+        //             // getCrewSection(context, tuple.item2),
+        //             getSectionSeparator(context),
+        //           ],
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // );
       },
     );
   }
