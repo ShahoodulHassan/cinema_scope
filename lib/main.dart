@@ -1,5 +1,4 @@
 import 'package:cinema_scope/pages/home_page.dart';
-import 'package:cinema_scope/pages/search_page.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:cinema_scope/widgets/app_lifecycle_manager.dart';
@@ -47,8 +46,6 @@ class MyApp extends StatelessWidget with GenericFunctions {
             title: 'Cinema scope',
             theme: ThemeData(
                 colorSchemeSeed: primaryColor,
-                // colorScheme: _defaultLightColorScheme,
-                // primarySwatch: primarySwatch,
                 highlightColor: primaryColor.withOpacity(0.10),
                 splashColor: primaryColor.withOpacity(0.10),
                 useMaterial3: true,
@@ -88,21 +85,3 @@ class MyApp extends StatelessWidget with GenericFunctions {
   }
 }
 
-// class ConfigCheckerPage extends StatelessWidget with GenericFunctions {
-//   const ConfigCheckerPage({Key? key}) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Selector<ConfigViewModel, bool>(
-//       builder: (_, isConfigComplete, __) {
-//         logIfDebug('isConfigComplete:$isConfigComplete');
-//         return isConfigComplete
-//             ? HomePage()
-//             : const SizedBox.shrink();
-//       },
-//       selector: (_, cvm) {
-//         return cvm.isConfigComplete;
-//       },
-//     );
-//   }
-// }
