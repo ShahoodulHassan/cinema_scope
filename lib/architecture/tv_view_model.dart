@@ -9,17 +9,10 @@ import 'config_view_model.dart';
 import 'movie_view_model.dart';
 
 class TvViewModel extends MediaViewModel<Tv> {
-  // Tv? tv;
-
-  String? year;
-
-  // double? get voteAverage => tv?.voteAverage;
 
   String? certification;
 
   String? get imdbId => media?.externalIds?.imdbId;
-
-  // String? get homepage => tv?.homepage;
 
   List<TvCast> get cast => media?.aggregateCredits.cast ?? [];
 
@@ -28,8 +21,6 @@ class TvViewModel extends MediaViewModel<Tv> {
   List<TvCrew>? creators;
 
   int get totalCastCount => cast.length;
-
-  // List<Keyword> get keywords => media?.keywords.results ?? [];
 
   String? get runtime {
     var runtime = media?.episodeRunTime ?? [];
@@ -41,8 +32,6 @@ class TvViewModel extends MediaViewModel<Tv> {
   bool get isTrailerPinned => _isTrailerPinned;
 
   List<ImageDetail> thumbnails = <ImageDetail>[];
-
-  // Map<String, ThumbnailType> thumbMap = {};
 
   set isTrailerPinned(bool value) {
     _isTrailerPinned = value;
@@ -157,35 +146,4 @@ class TvViewModel extends MediaViewModel<Tv> {
     year = years;
   }
 
-// _compileThumbnails() async {
-//   logIfDebug('isPinned, compileThumbnails called with tv:$media');
-//   if (media != null) {
-//     Map<String, ThumbnailType> thumbs = {};
-//     for (var key in youtubeKeys) {
-//       thumbs[key] = ThumbnailType.video;
-//     }
-//     for (var imagePath in media!.images.backdrops.take(2)) {
-//       thumbs[imagePath.filePath] = ThumbnailType.image;
-//     }
-//     logIfDebug('isPinned, thumb:$thumbs');
-//     if (thumbs.isNotEmpty) thumbMap = thumbs;
-//     logIfDebug('isPinned, thumbMap:$thumbMap');
-//     notifyListeners();
-//   }
-// }
-//
-// _compileImages() async {
-//   if (media != null) {
-//     var imageResult = media!.images;
-//     List<ImageDetail> images = [];
-//     images.addAll(imageResult.posters
-//         .map((e) => e.copyWith.imageType(ImageType.poster.name)));
-//     images.addAll(imageResult.backdrops
-//         .map((e) => e.copyWith.imageType(ImageType.backdrop.name)));
-//     images.addAll(imageResult.logos
-//         .map((e) => e.copyWith.imageType(ImageType.logo.name)));
-//     this.images = images;
-//     notifyListeners();
-//   }
-// }
 }
