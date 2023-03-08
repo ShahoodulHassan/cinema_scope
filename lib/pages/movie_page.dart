@@ -25,6 +25,7 @@ import '../architecture/config_view_model.dart';
 import '../architecture/tv_view_model.dart';
 import '../constants.dart';
 import '../models/movie.dart';
+import '../widgets/base_section_sliver.dart';
 import '../widgets/compact_text_button.dart';
 import '../widgets/expandable_synopsis.dart';
 import '../widgets/ink_well_overlay.dart';
@@ -712,7 +713,7 @@ class MoreByGenresSection<M extends Media, T extends MediaViewModel<M>>
 
 class MoreByDirectorSection<M extends Media, T extends MediaViewModel<M>>
     extends StatelessWidget with GenericFunctions, Utilities, CommonFunctions {
-  final int _maxCount = 20;
+  // final int _maxCount = 20;
 
   const MoreByDirectorSection({Key? key}) : super(key: key);
 

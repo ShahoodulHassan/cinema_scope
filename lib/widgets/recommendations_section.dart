@@ -1,4 +1,3 @@
-import 'package:cinema_scope/pages/person_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sliver_tools/sliver_tools.dart';
@@ -12,6 +11,7 @@ import '../models/tv.dart';
 import '../utilities/common_functions.dart';
 import '../utilities/generic_functions.dart';
 import '../utilities/utilities.dart';
+import 'base_section_sliver.dart';
 import 'compact_text_button.dart';
 import 'image_view.dart';
 

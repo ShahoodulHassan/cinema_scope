@@ -9,7 +9,6 @@ import '../architecture/home_view_model.dart';
 import '../constants.dart';
 import '../models/movie.dart';
 import '../models/search.dart';
-import '../pages/home_page.dart';
 import '../utilities/generic_functions.dart';
 import '../utilities/utilities.dart';
 
@@ -26,6 +25,82 @@ enum SectionTitle {
   final String name;
 
   const SectionTitle(this.name);
+}
+
+class BaseHomeSection extends StatelessWidget with Utilities, CommonFunctions {
+  final String title;
+  final List<Widget> children;
+
+  final bool showSeeAll;
+  final Function()? onPressed;
+  final String buttonText;
+
+  const BaseHomeSection({
+    required this.title,
+    required this.children,
+    this.showSeeAll = false,
+    this.buttonText = 'See all',
+    this.onPressed,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 36.0),
+      child: Stack(
+        children: [
+          /// This serves as the base card on which the content card is
+          /// stacked. The fill constructor helps match its height with
+          /// the height of the content card.
+          const Positioned.fill(
+            child: Card(
+              elevation: 5.0,
+              color: Colors.white,
+              surfaceTintColor: Colors.white,
+              margin: EdgeInsets.zero,
+              shape: ContinuousRectangleBorder(),
+            ),
+          ),
+          IntrinsicWidth(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                getSectionSeparator(context),
+                getSectionTitleRow(),
+                ...children,
+                getSectionSeparator(context),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Widget getSeparator(BuildContext context) => Container(
+  //       height: 1.0,
+  //       color: Theme.of(context).primaryColorLight,
+  //     );
+
+  Widget getSectionTitleRow() => Padding(
+    padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 18.0,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.5,
+            // height: 1.1,
+          ),
+        ),
+        // if (showSeeAll) CompactTextButton(buttonText, onPressed: onPressed),
+      ],
+    ),
+  );
 }
 
 class HomeSection extends StatefulWidget {

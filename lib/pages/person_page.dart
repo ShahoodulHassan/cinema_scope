@@ -14,14 +14,13 @@ import 'package:cinema_scope/widgets/image_view.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:sliver_tools/sliver_tools.dart';
 import 'package:tuple/tuple.dart';
 
 import '../architecture/person_view_model.dart';
 import '../models/search.dart';
 import '../utilities/generic_functions.dart';
+import '../widgets/base_section_sliver.dart';
 import '../widgets/compact_text_button.dart';
-import 'movie_page.dart';
 
 class PersonPage extends MultiProvider {
   PersonPage({
@@ -247,77 +246,6 @@ class _ExternalIdsView extends StatelessWidget
 
 // Widget getIconButton(IconData icon, Function() onPressed) =>
 //     IconButton(onPressed: onPressed, icon: Icon(icon));
-}
-
-class BaseSectionSliver extends StatelessWidget with Utilities, CommonFunctions {
-  final String title;
-  final List<Widget> children;
-
-  final bool showSeeAll;
-  final Function()? onPressed;
-  final String buttonText;
-
-  const BaseSectionSliver({
-    required this.title,
-    required this.children,
-    this.showSeeAll = false,
-    this.buttonText = 'See all',
-    this.onPressed,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverPadding(
-      padding: const EdgeInsets.symmetric(vertical: 20.0),
-      sliver: SliverStack(
-        children: [
-          /// This serves as the base card on which the content card is
-          /// stacked. The fill constructor helps match its height with
-          /// the height of the content card.
-          const SliverPositioned.fill(
-            child: Card(
-              elevation: 5.0,
-              color: Colors.white,
-              surfaceTintColor: Colors.white,
-              margin: EdgeInsets.zero,
-              shape: ContinuousRectangleBorder(),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                getSectionSeparator(context),
-                getSectionTitleRow(),
-                ...children,
-                getSectionSeparator(context),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget getSectionTitleRow() => Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.5,
-                // height: 1.1,
-              ),
-            ),
-            if (showSeeAll) CompactTextButton(buttonText, onPressed: onPressed),
-          ],
-        ),
-      );
 }
 
 class _PersonalInfoSection extends StatelessWidget
