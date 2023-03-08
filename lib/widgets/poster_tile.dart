@@ -260,7 +260,8 @@ class TvPosterTile extends StatelessWidget
                   ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(4.0),
-                    color: Theme.of(context).primaryColorLight.withOpacity(0.4),
+                    color: Theme.of(context).colorScheme.primaryContainer
+                        .withOpacity(0.6),
                   ),
                   child: Text(
                     'TV Series',
