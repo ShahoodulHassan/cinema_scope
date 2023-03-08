@@ -780,23 +780,6 @@ class MoreByDirectorSection<M extends Media, T extends MediaViewModel<M>>
       },
     );
   }
-
-// goToFilmographyPage(
-//     BuildContext context,
-//     int id,
-//     String name,
-//     CombinedCredits combinedCredits,
-//     ) {
-//   Navigator.push(
-//     context,
-//     MaterialPageRoute(
-//         builder: (_) => FilmographyPage(
-//           id: id,
-//           name: name,
-//           combinedCredits: combinedCredits,
-//         )),
-//   );
-// }
 }
 
 class _CastCrewSection extends StatelessWidget
@@ -813,43 +796,55 @@ class _CastCrewSection extends StatelessWidget
         if (tuple.item1.isEmpty && tuple.item2.isEmpty) {
           return SliverToBoxAdapter(child: Container());
         }
-        return SliverPadding(
-          padding: const EdgeInsets.symmetric(vertical: 12.0),
-          sliver: SliverStack(
-            children: [
-              /// This serves as the base card on which the content card is
-              /// stacked. The fill constructor helps match its height with
-              /// the height of the content card.
-              SliverPositioned.fill(
-                child: Container(
-                  color: Colors.white,
-                ),
+        return BaseSectionSliver(
+          title: 'Top billed cast',
+          children: [
+            if (tuple.item1.isNotEmpty)
+              CastListView<Cast>(
+                tuple.item1.take(_maxCount).toList(),
+                MediaQuery.of(context).size.width,
               ),
-              SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    getSectionSeparator(context),
-                    if (tuple.item1.isNotEmpty)
-                      getSectionTitleRow(tuple.item1.length > _maxCount, () {}),
-                    if (tuple.item1.isNotEmpty)
-                      CastListView<Cast>(
-                        tuple.item1.take(_maxCount).toList(),
-                        MediaQuery.of(context).size.width,
-                      ),
-                    // if (tuple.item2.isNotEmpty)
-                    //   CastListView<Crew>(
-                    //     tuple.item2,
-                    //     MediaQuery.of(context).size.width,
-                    //   ),
-                    if (tuple.item2.isNotEmpty)
-                      getCrewSection(context, tuple.item2),
-                    getSectionSeparator(context),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            if (tuple.item2.isNotEmpty)
+              getCrewSection(context, tuple.item2),
+          ],
         );
+        // return SliverPadding(
+        //   padding: const EdgeInsets.symmetric(vertical: 12.0),
+        //   sliver: SliverStack(
+        //     children: [
+        //       /// This serves as the base card on which the content card is
+        //       /// stacked. The fill constructor helps match its height with
+        //       /// the height of the content card.
+        //       SliverPositioned.fill(
+        //         child: Container(
+        //           color: Colors.white,
+        //         ),
+        //       ),
+        //       SliverToBoxAdapter(
+        //         child: Column(
+        //           children: [
+        //             getSectionSeparator(context),
+        //             if (tuple.item1.isNotEmpty)
+        //               getSectionTitleRow(tuple.item1.length > _maxCount, () {}),
+        //             if (tuple.item1.isNotEmpty)
+        //               CastListView<Cast>(
+        //                 tuple.item1.take(_maxCount).toList(),
+        //                 MediaQuery.of(context).size.width,
+        //               ),
+        //             // if (tuple.item2.isNotEmpty)
+        //             //   CastListView<Crew>(
+        //             //     tuple.item2,
+        //             //     MediaQuery.of(context).size.width,
+        //             //   ),
+        //             if (tuple.item2.isNotEmpty)
+        //               getCrewSection(context, tuple.item2),
+        //             getSectionSeparator(context),
+        //           ],
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // );
       },
     );
   }
@@ -978,30 +973,25 @@ class _CastCrewSection extends StatelessWidget
     }));
   }
 
-  Widget getSectionTitleRow(bool showSeeAll, Function()? onPressed) => Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
-            Text(
-              'Top billed cast' /*.toUpperCase()*/,
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.5,
-                // height: 1.1,
-              ),
-            ),
-            // if (showSeeAll) CompactTextButton('All cast', onPressed: onPressed),
-          ],
-        ),
-      );
+  // Widget getSectionTitleRow(bool showSeeAll, Function()? onPressed) => Padding(
+  //       padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
+  //       child: Row(
+  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //         children: const [
+  //           Text(
+  //             'Top billed cast' /*.toUpperCase()*/,
+  //             style: TextStyle(
+  //               fontSize: 18.0,
+  //               fontWeight: FontWeight.bold,
+  //               letterSpacing: 1.5,
+  //               // height: 1.1,
+  //             ),
+  //           ),
+  //           // if (showSeeAll) CompactTextButton('All cast', onPressed: onPressed),
+  //         ],
+  //       ),
+  //     );
 }
-
-Widget getSectionSeparator(BuildContext context) => Container(
-      height: 1.0,
-      color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
-    );
 
 class CastListView<T extends BaseCredit> extends StatelessWidget
     with Utilities, CommonFunctions {
@@ -1352,55 +1342,84 @@ class KeywordsSection<M extends Media, VM extends MediaViewModel<M>>
         if (tuple.item2 == 0) {
           return SliverToBoxAdapter(child: Container());
         }
-        return SliverPadding(
-          padding: const EdgeInsets.symmetric(vertical: 12.0),
-          sliver: SliverStack(
-            children: [
-              /// This serves as the base card on which the content card is
-              /// stacked. The fill constructor helps match its height with
-              /// the height of the content card.
-              SliverPositioned.fill(
-                child: Container(
-                  color: Colors.white,
-                ),
+        return BaseSectionSliver(
+          title: 'Keywords',
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width,
+              padding:
+                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+              child: Wrap(
+                alignment: WrapAlignment.start,
+                spacing: 8.0,
+                runSpacing: 10.0,
+                children: tuple.item1.map((keyword) {
+                  return InkWellOverlay(
+                    onTap: () {
+                      goToMediaListPage(
+                        context,
+                        mediaType: isMovie ? MediaType.movie : MediaType.tv,
+                        keywords: [keyword],
+                        genres: context.read<VM>().media?.genres,
+                      );
+                    },
+                    borderRadius: BorderRadius.circular(6.0),
+                    child: getKeywordChip(context, keyword),
+                  );
+                }).toList(),
               ),
-              SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    getSectionSeparator(context),
-                    getSectionTitleRow(tuple.item2 > _maxCount, () {}),
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 16.0, horizontal: 16.0),
-                      child: Wrap(
-                        alignment: WrapAlignment.start,
-                        spacing: 8.0,
-                        runSpacing: 10.0,
-                        children: tuple.item1.map((keyword) {
-                          return InkWellOverlay(
-                            onTap: () {
-                              goToMediaListPage(
-                                context,
-                                mediaType:
-                                    isMovie ? MediaType.movie : MediaType.tv,
-                                keywords: [keyword],
-                                genres: context.read<VM>().media?.genres,
-                              );
-                            },
-                            borderRadius: BorderRadius.circular(6.0),
-                            child: getKeywordChip(context, keyword),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                    getSectionSeparator(context),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         );
+        // return SliverPadding(
+        //   padding: const EdgeInsets.symmetric(vertical: 12.0),
+        //   sliver: SliverStack(
+        //     children: [
+        //       /// This serves as the base card on which the content card is
+        //       /// stacked. The fill constructor helps match its height with
+        //       /// the height of the content card.
+        //       SliverPositioned.fill(
+        //         child: Container(
+        //           color: Colors.white,
+        //         ),
+        //       ),
+        //       SliverToBoxAdapter(
+        //         child: Column(
+        //           children: [
+        //             getSectionSeparator(context),
+        //             getSectionTitleRow(tuple.item2 > _maxCount, () {}),
+        //             Container(
+        //               width: MediaQuery.of(context).size.width,
+        //               padding: const EdgeInsets.symmetric(
+        //                   vertical: 16.0, horizontal: 16.0),
+        //               child: Wrap(
+        //                 alignment: WrapAlignment.start,
+        //                 spacing: 8.0,
+        //                 runSpacing: 10.0,
+        //                 children: tuple.item1.map((keyword) {
+        //                   return InkWellOverlay(
+        //                     onTap: () {
+        //                       goToMediaListPage(
+        //                         context,
+        //                         mediaType:
+        //                             isMovie ? MediaType.movie : MediaType.tv,
+        //                         keywords: [keyword],
+        //                         genres: context.read<VM>().media?.genres,
+        //                       );
+        //                     },
+        //                     borderRadius: BorderRadius.circular(6.0),
+        //                     child: getKeywordChip(context, keyword),
+        //                   );
+        //                 }).toList(),
+        //               ),
+        //             ),
+        //             getSectionSeparator(context),
+        //           ],
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // );
       },
     );
   }
@@ -1428,150 +1447,25 @@ class KeywordsSection<M extends Media, VM extends MediaViewModel<M>>
     );
   }
 
-  // Widget getSliverSeparator(BuildContext context) => Container(
-  //       height: 1.0,
-  //       color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
-  //     );
-
-  Widget getSectionTitleRow(bool showSeeAll, Function()? onPressed) => Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Keywords' /*.toUpperCase()*/,
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.5,
-                // height: 1.1,
-              ),
-            ),
-            if (showSeeAll) CompactTextButton('See all', onPressed: onPressed),
-          ],
-        ),
-      );
-}
-
-// class KeywordsSectionOld extends StatelessWidget
-//     with GenericFunctions, Utilities, CommonFunctions {
-//   final int _maxCount = 10;
-//
-//   const KeywordsSectionOld({Key? key}) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Selector<MovieViewModel, Tuple2<List<Keyword>, int>>(
-//       selector: (_, mvm) => Tuple2(
-//         mvm.keywords.take(_maxCount).toList(),
-//         mvm.keywords.length,
-//       ),
-//       builder: (_, tuple, __) {
-//         if (tuple.item2 == 0) {
-//           return SliverToBoxAdapter(child: Container());
-//         }
-//         return SliverPadding(
-//           padding: const EdgeInsets.symmetric(vertical: 12.0),
-//           sliver: SliverStack(
-//             children: [
-//               /// This serves as the base card on which the content card is
-//               /// stacked. The fill constructor helps match its height with
-//               /// the height of the content card.
-//               SliverPositioned.fill(
-//                 child: Container(
-//                   color: Colors.white,
-//                 ),
-//               ),
-//               SliverToBoxAdapter(
-//                 child: Column(
-//                   children: [
-//                     getSliverSeparator(context),
-//                     getSectionTitleRow(tuple.item2 > _maxCount, () {}),
-//                     Container(
-//                       width: MediaQuery.of(context).size.width,
-//                       padding: const EdgeInsets.symmetric(
-//                           vertical: 16.0, horizontal: 16.0),
-//                       child: Wrap(
-//                         alignment: WrapAlignment.start,
-//                         spacing: 8.0,
-//                         runSpacing: 10.0,
-//                         children: tuple.item1.map((e) {
-//                           return InkWellOverlay(
-//                             onTap: () {
-//                               goToMediaListPage(
-//                                 context,
-//                                 mediaType: MediaType.movie,
-//                                 keywords: [e],
-//                                 genres: context
-//                                     .read<MovieViewModel>()
-//                                     .media
-//                                     ?.genres,
-//                               );
-//                             },
-//                             borderRadius: BorderRadius.circular(6.0),
-//                             child: buildKeywordChip(context, e),
-//                           );
-//                         }).toList(),
-//                       ),
-//                     ),
-//                     getSliverSeparator(context),
-//                   ],
-//                 ),
-//               ),
-//             ],
-//           ),
-//         );
-//       },
-//     );
-//   }
-//
-//   Widget getSliverSeparator(BuildContext context) => Container(
-//         height: 1.0,
-//         color: Theme.of(context).primaryColorLight,
-//       );
-//
-//   Widget getSectionTitleRow(bool showSeeAll, Function()? onPressed) => Padding(
-//         padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
-//         child: Row(
-//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//           children: [
-//             const Text(
-//               'Keywords' /*.toUpperCase()*/,
-//               style: TextStyle(
-//                 fontSize: 18.0,
-//                 fontWeight: FontWeight.bold,
-//                 letterSpacing: 1.5,
-//                 // height: 1.1,
-//               ),
+// Widget getSectionTitleRow(bool showSeeAll, Function()? onPressed) => Padding(
+//       padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
+//       child: Row(
+//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//         children: [
+//           const Text(
+//             'Keywords' /*.toUpperCase()*/,
+//             style: TextStyle(
+//               fontSize: 18.0,
+//               fontWeight: FontWeight.bold,
+//               letterSpacing: 1.5,
+//               // height: 1.1,
 //             ),
-//             if (showSeeAll) CompactTextButton('See all', onPressed: onPressed),
-//           ],
-//         ),
-//       );
-// }
-
-// Chip buildKeywordChip(BuildContext context, Keyword keyword) {
-//   return Chip(
-//     backgroundColor:
-//         Theme.of(context).colorScheme.primaryContainer.withOpacity(0.17),
-//     padding: EdgeInsets.zero,
-//     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-//     label: Text(
-//       keyword.name.toProperCase(),
-//       overflow: TextOverflow.ellipsis,
-//       style: TextStyle(
-//         fontSize: 14,
-//         color: Theme.of(context).colorScheme.primary,
+//           ),
+//           if (showSeeAll) CompactTextButton('See all', onPressed: onPressed),
+//         ],
 //       ),
-//     ),
-//     side: BorderSide(
-//       color: Theme.of(context).colorScheme.primary,
-//     ),
-//     shape: RoundedRectangleBorder(
-//       borderRadius: BorderRadius.circular(6.0),
-//     ),
-//   );
-// }
+//     );
+}
 
 class ReviewsSection extends StatelessWidget {
   final int _maxCount = 10;
@@ -1586,66 +1480,75 @@ class ReviewsSection extends StatelessWidget {
         if (tuple.item1.isEmpty) {
           return SliverToBoxAdapter(child: Container());
         }
-        return SliverPadding(
-          padding: const EdgeInsets.symmetric(vertical: 12.0),
-          sliver: SliverStack(
-            children: [
-              /// This serves as the base card on which the content card is
-              /// stacked. The fill constructor helps match its height with
-              /// the height of the content card.
-              SliverPositioned.fill(
-                child: Container(
-                  color: Colors.white,
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    getSliverSeparator(context),
-                    getSectionTitleRow(tuple.item1.length > _maxCount, () {}),
-                    ReviewsListView(
-                      tuple.item1.take(_maxCount).toList(),
-                      MediaQuery.of(context).size.width,
-                    ),
-                    // Padding(
-                    //   padding: const EdgeInsets.only(bottom: 8.0),
-                    //   child:
-                    //       CompactTextButton('Write a review', onPressed: () {}),
-                    // ),
-                    getSliverSeparator(context),
-                  ],
-                ),
-              ),
-            ],
-          ),
+        return BaseSectionSliver(
+          title: 'User reviews',
+          children: [
+            ReviewsListView(
+              tuple.item1.take(_maxCount).toList(),
+              MediaQuery.of(context).size.width,
+            ),
+          ],
         );
+        // return SliverPadding(
+        //   padding: const EdgeInsets.symmetric(vertical: 12.0),
+        //   sliver: SliverStack(
+        //     children: [
+        //       /// This serves as the base card on which the content card is
+        //       /// stacked. The fill constructor helps match its height with
+        //       /// the height of the content card.
+        //       SliverPositioned.fill(
+        //         child: Container(
+        //           color: Colors.white,
+        //         ),
+        //       ),
+        //       SliverToBoxAdapter(
+        //         child: Column(
+        //           children: [
+        //             getSliverSeparator(context),
+        //             getSectionTitleRow(tuple.item1.length > _maxCount, () {}),
+        //             ReviewsListView(
+        //               tuple.item1.take(_maxCount).toList(),
+        //               MediaQuery.of(context).size.width,
+        //             ),
+        //             // Padding(
+        //             //   padding: const EdgeInsets.only(bottom: 8.0),
+        //             //   child:
+        //             //       CompactTextButton('Write a review', onPressed: () {}),
+        //             // ),
+        //             getSliverSeparator(context),
+        //           ],
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // );
       },
     );
   }
 
-  Widget getSliverSeparator(BuildContext context) => Container(
-        height: 1.0,
-        color: Theme.of(context).primaryColorLight,
-      );
+// Widget getSliverSeparator(BuildContext context) => Container(
+//       height: 1.0,
+//       color: Theme.of(context).primaryColorLight,
+//     );
 
-  Widget getSectionTitleRow(bool showSeeAll, Function()? onPressed) => Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'User reviews' /*.toUpperCase()*/,
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.5,
-                // height: 1.1,
-              ),
-            ),
-            if (showSeeAll) CompactTextButton('See all', onPressed: onPressed),
-          ],
-        ),
-      );
+// Widget getSectionTitleRow(bool showSeeAll, Function()? onPressed) => Padding(
+//       padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
+//       child: Row(
+//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//         children: [
+//           const Text(
+//             'User reviews' /*.toUpperCase()*/,
+//             style: TextStyle(
+//               fontSize: 18.0,
+//               fontWeight: FontWeight.bold,
+//               letterSpacing: 1.5,
+//               // height: 1.1,
+//             ),
+//           ),
+//           if (showSeeAll) CompactTextButton('See all', onPressed: onPressed),
+//         ],
+//       ),
+//     );
 }
 
 class ReviewsListView extends StatelessWidget with GenericFunctions {
