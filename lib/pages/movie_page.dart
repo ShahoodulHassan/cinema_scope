@@ -579,7 +579,7 @@ class StreamersView<M extends Media, V extends MediaViewModel<M>>
           var width =
               min(MediaQuery.of(context).size.width * 0.09, maxIconSize);
           return Material(
-            color: Theme.of(context).colorScheme.tertiary.withOpacity(0.5),
+            color: lighten2(Theme.of(context).colorScheme.tertiary, 60),
             child: InkWell(
               onTap: () =>
                   launchUrlString('https://www.themoviedb.org/$type/$id/watch'),
