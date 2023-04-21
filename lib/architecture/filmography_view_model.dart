@@ -98,11 +98,22 @@ class FilmographyViewModel extends ChangeNotifier
       var genres = <String, FilterState>{};
       for (var result in _results) {
         for (var genreId in result.genreIds) {
-          var mediaGenre = combinedGenres.singleWhere((element) =>
-              element.mediaType.name == result.mediaType &&
-              element.id == genreId);
-          genres[mediaGenre.name] =
+          logIfDebug('id:${result.id}, title:${result.mediaTitle}, mediaType:${result.mediaType}, checking genreId:$genreId');
+          // var mediaGenre = combinedGenres.singleWhere((element) =>
+          //     element.mediaType.name == result.mediaType &&
+          //     element.id == genreId);
+          MediaGenre? mediaGenre;
+          for (var genre in combinedGenres) {
+            var matched = genre.mediaType.name == result.mediaType &&
+                genre.id == genreId;
+            if (matched) {
+              mediaGenre = genre;
+            }
+          }
+          if (mediaGenre != null) {
+            genres[mediaGenre.name] =
               availableGenreNames[mediaGenre.name] ?? FilterState.unselected;
+          }
         }
 
         if (result.mediaType != null) {
@@ -195,11 +206,31 @@ class FilmographyViewModel extends ChangeNotifier
     }
 
     for (var credit in _allResults) {
+      // logIfDebug('title:${credit.mediaTitle}, mediaType:${credit.mediaType}');
       for (var genreId in credit.genreIds) {
-        var mediaGenre = combinedGenres.singleWhere((element) =>
-            element.mediaType.name == credit.mediaType &&
-            element.id == genreId);
-        _allGenresMap.putIfAbsent(mediaGenre.name, () => {}).add(mediaGenre);
+        logIfDebug('id:${credit.id}, title:${credit.mediaTitle}, mediaType:${credit.mediaType}, checking genreId:$genreId');
+        // var mediaGenre = combinedGenres.singleWhere((element) {
+        //   var matched = element.mediaType.name == credit.mediaType &&
+        //     element.id == genreId;
+        //   // if (matched) {
+        //   //   logIfDebug('mediaType:${element.mediaType}, '
+        //   //       'genreId:$genreId vs id:${element.id}');
+        //   // }
+        //   return matched;
+        // });
+        MediaGenre? mediaGenre;
+        for (var genre in combinedGenres) {
+          var matched = genre.mediaType.name == credit.mediaType &&
+              genre.id == genreId;
+          if (matched) {
+            logIfDebug('mediaType:${genre.mediaType}, '
+                'genreId:$genreId vs id:${genre.id}');
+            mediaGenre = genre;
+          }
+        }
+        if (mediaGenre != null) {
+          _allGenresMap.putIfAbsent(mediaGenre.name, () => {}).add(mediaGenre);
+        }
       }
 
       if (credit.mediaType != null) _allMediaTypes.add(credit.mediaType!);
