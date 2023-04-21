@@ -9,6 +9,11 @@ import 'package:provider/provider.dart';
 
 import 'architecture/config_view_model.dart';
 
+final navigatorKey = GlobalKey<NavigatorState>();
+
+/// Global application level context
+var appContext = navigatorKey.currentState!.overlay!.context;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await PrefUtil.init();
@@ -43,6 +48,8 @@ class MyApp extends StatelessWidget with GenericFunctions {
       child: DynamicColorBuilder(
         builder: (light, dark) {
           return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            navigatorKey: navigatorKey,
             title: 'Cinema scope',
             theme: ThemeData(
                 colorSchemeSeed: primaryColor,

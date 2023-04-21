@@ -380,3 +380,12 @@ extension StringCasingExtension on String {
           .map((str) => str.toProperCase())
           .join(' ');
 }
+
+extension Contextual on BuildContext {
+  unfocus() {
+    FocusScopeNode currentFocus = FocusScope.of(this);
+    if (!currentFocus.hasPrimaryFocus) {
+      currentFocus.focusedChild?.unfocus();
+    }
+  }
+}
