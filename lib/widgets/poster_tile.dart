@@ -342,7 +342,10 @@ class PersonPosterTile extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     return PosterTile(
-      onTap: () => goToPersonPage(context, person),
+      onTap: () {
+        context.unfocus();
+        goToPersonPage(context, person);
+      },
       title: person.name,
       poster: NetworkImageView(
         person.profilePath,
