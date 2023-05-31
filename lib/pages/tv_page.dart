@@ -35,18 +35,18 @@ class TvPage extends MultiProvider {
     required String? overview,
     required String heroImageTag,
   }) : super(
-            providers: [
-              ChangeNotifierProvider(create: (_) => TvViewModel()),
-              // ChangeNotifierProvider(create: (_) => YoutubeViewModel()),
-            ],
-            child: _TvPageChild(
-              id,
-              title,
-              year,
-              voteAverage,
-              overview,
-              heroImageTag,
-            ));
+      providers: [
+        ChangeNotifierProvider(create: (_) => TvViewModel()),
+        // ChangeNotifierProvider(create: (_) => YoutubeViewModel()),
+      ],
+      child: _TvPageChild(
+        id,
+        title,
+        year,
+        voteAverage,
+        overview,
+        heroImageTag,
+      ));
 }
 
 class _TvPageChild extends StatefulWidget {
@@ -56,15 +56,14 @@ class _TvPageChild extends StatefulWidget {
   final String? year, overview;
   final double voteAverage;
 
-  const _TvPageChild(
-    this.id,
-    this.title,
-    this.year,
-    this.voteAverage,
-    this.overview,
-    this.heroImageTag, {
-    Key? key,
-  }) : super(key: key);
+  const _TvPageChild(this.id,
+      this.title,
+      this.year,
+      this.voteAverage,
+      this.overview,
+      this.heroImageTag, {
+        Key? key,
+      }) : super(key: key);
 
   @override
   State<_TvPageChild> createState() => _TvPageChildState();
@@ -82,7 +81,9 @@ class _TvPageChildState extends State<_TvPageChild>
     tvm = context.read<TvViewModel>()
       ..getTvWithDetail(
         widget.id,
-        context.read<ConfigViewModel>().combinedGenres,
+        context
+            .read<ConfigViewModel>()
+            .combinedGenres,
       );
   }
 
@@ -107,7 +108,10 @@ class _TvPageChildState extends State<_TvPageChild>
               Tuple3<List<String>, Map<String, ThumbnailType>, String?>>(
             builder: (_, tuple, __) {
               logIfDebug('isPinned, thumbnails:$tuple');
-              var height = MediaQuery.of(context).size.width * 9 / 16;
+              var height = MediaQuery
+                  .of(context)
+                  .size
+                  .width * 9 / 16;
               if (tuple.item3 != null && tuple.item1.isNotEmpty) {
                 return SliverPersistentHeader(
                   delegate: TrailerDelegate(
@@ -225,10 +229,11 @@ class _TvPageChildState extends State<_TvPageChild>
             );
           }
         },
-        selector: (_, tvm) => Tuple2<String?, double?>(
-          tvm.year,
-          tvm.voteAverage,
-        ),
+        selector: (_, tvm) =>
+            Tuple2<String?, double?>(
+              tvm.year,
+              tvm.voteAverage,
+            ),
       ),
     );
   }
@@ -257,10 +262,11 @@ class _TvPageChildState extends State<_TvPageChild>
             );
           }
         },
-        selector: (_, tvm) => Tuple2<int?, int?>(
-          tvm.media?.numberOfSeasons,
-          tvm.media?.numberOfEpisodes,
-        ),
+        selector: (_, tvm) =>
+            Tuple2<int?, int?>(
+              tvm.media?.numberOfSeasons,
+              tvm.media?.numberOfEpisodes,
+            ),
       ),
     );
   }
@@ -291,7 +297,7 @@ class _TvPageChildState extends State<_TvPageChild>
           Text(
             ' ${applyCommaAndRound(voteAverage, 1, false, true)}'
             // '   (${applyCommaAndRoundNoZeroes(movie.voteCount * 1.0, 0, true)})'
-            '',
+                '',
             style: const TextStyle(
               // fontWeight: FontWeight.normal,
               fontSize: 16.0,
@@ -322,7 +328,9 @@ class _TvPageChildState extends State<_TvPageChild>
       padding: const EdgeInsets.only(right: 16.0),
       child: Container(
         decoration: BoxDecoration(
-          border: Border.all(color: Theme.of(context).primaryColorDark),
+          border: Border.all(color: Theme
+              .of(context)
+              .primaryColorDark),
           borderRadius: BorderRadius.circular(8.0),
         ),
         padding: const EdgeInsets.symmetric(
@@ -332,7 +340,9 @@ class _TvPageChildState extends State<_TvPageChild>
         child: Text(
           certification,
           style: TextStyle(
-            color: Theme.of(context).primaryColorDark,
+            color: Theme
+                .of(context)
+                .primaryColorDark,
             fontSize: 14.0,
             fontWeight: FontWeight.bold,
             // fontStyle: FontStyle.italic,
@@ -350,19 +360,19 @@ class _TvPageChildState extends State<_TvPageChild>
           return tagline == null || tagline.isEmpty
               ? const SizedBox.shrink()
               : Padding(
-                  padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
-                  child: Text(
-                    '"$tagline"',
-                    textAlign: TextAlign.start,
-                    style: GoogleFonts.literata(
-                      textStyle: const TextStyle(
-                        fontSize: 18.0,
-                        // fontWeight: FontWeight.bold,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                  ),
-                );
+            padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
+            child: Text(
+              '"$tagline"',
+              textAlign: TextAlign.start,
+              style: GoogleFonts.literata(
+                textStyle: const TextStyle(
+                  fontSize: 18.0,
+                  // fontWeight: FontWeight.bold,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ),
+          );
         },
         selector: (_, tvm) => tvm.tagline,
       ),
@@ -373,11 +383,12 @@ class _TvPageChildState extends State<_TvPageChild>
     return AnimatedSize(
       duration: animDuration,
       child: Selector<TvViewModel, Tuple3<String?, String?, List<Genre>?>>(
-        selector: (_, tvm) => Tuple3<String?, String?, List<Genre>>(
-          tvm.imdbId,
-          tvm.homepage,
-          tvm.genres,
-        ),
+        selector: (_, tvm) =>
+            Tuple3<String?, String?, List<Genre>>(
+              tvm.imdbId,
+              tvm.homepage,
+              tvm.genres,
+            ),
         builder: (_, tuple, __) {
           logIfDebug('builder called with tv:$tuple');
           var imdbId = tuple.item1 ?? '';
@@ -398,22 +409,32 @@ class _TvPageChildState extends State<_TvPageChild>
                         getIconButton(
                           context,
                           const Icon(FontAwesomeIcons.imdb),
-                          () => openUrlString(
-                            '${Constants.imdbTitleUrl}$imdbId',
-                          ),
-                          color: Theme.of(context).colorScheme.primary,
+                              () =>
+                              openUrlString(
+                                '${Constants.imdbTitleUrl}$imdbId',
+                              ),
+                          color: Theme
+                              .of(context)
+                              .colorScheme
+                              .primary,
                         ),
                       if (homepage.isNotEmpty)
                         getIconButton(
                           context,
                           (homepage.contains('netflix')
                               ? Image.asset(
-                                  'assets/icons/icons8_netflix_24.png',
-                                  color: Theme.of(context).primaryColorDark,
-                                )
+                            'assets/icons/icons8_netflix_24.png',
+                            color: Theme
+                                .of(context)
+                                .colorScheme
+                                .primary,
+                          )
                               : const Icon(Icons.link)),
-                          () => openUrlString(homepage),
-                          color: Theme.of(context).colorScheme.primary,
+                              () => openUrlString(homepage),
+                          color: Theme
+                              .of(context)
+                              .colorScheme
+                              .primary,
                         ),
                     ],
                   ),
@@ -503,7 +524,10 @@ class _CastCrewSection extends StatelessWidget
             if (tuple.item1.isNotEmpty)
               _CastListView<TvCast>(
                 tuple.item1.take(_maxCount).toList(),
-                MediaQuery.of(context).size.width,
+                MediaQuery
+                    .of(context)
+                    .size
+                    .width,
               ),
             if (tuple.item2.isNotEmpty)
               getCrewSection(context, tuple.item2,
@@ -553,8 +577,8 @@ class _CastCrewSection extends StatelessWidget
     );
   }
 
-  Widget getCrewSection(
-      BuildContext context, List<TvCrew> creators, String label) {
+  Widget getCrewSection(BuildContext context, List<TvCrew> creators,
+      String label) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Column(
@@ -568,8 +592,8 @@ class _CastCrewSection extends StatelessWidget
     );
   }
 
-  Widget getCreatorsTile(
-      BuildContext context, List<TvCrew> creators, String label) {
+  Widget getCreatorsTile(BuildContext context, List<TvCrew> creators,
+      String label) {
     if (creators.isEmpty) return const SizedBox.shrink();
     return Material(
       color: Colors.transparent,
@@ -613,8 +637,7 @@ class _CastCrewSection extends StatelessWidget
     );
   }
 
-  void goToCreditsPage(
-    BuildContext context, {
+  void goToCreditsPage(BuildContext context, {
     AggregateCredits? credits,
     String? title,
   }) {
@@ -629,7 +652,8 @@ class _CastCrewSection extends StatelessWidget
     }));
   }
 
-  Widget getSectionTitleRow(bool showSeeAll, Function()? onPressed) => Padding(
+  Widget getSectionTitleRow(bool showSeeAll, Function()? onPressed) =>
+      Padding(
         padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -787,18 +811,19 @@ class _CastListView<T extends BaseTvCredit> extends StatelessWidget
                             Text(
                               (person is TvCast
                                   ? person.roles
-                                      .map((e) => e.character)
-                                      .join(', ')
+                                  .map((e) => e.character)
+                                  .join(', ')
                                   : (person as TvCrew)
-                                      .jobs
-                                      .map((e) => e.job)
-                                      .join(', ')),
+                                  .jobs
+                                  .map((e) => e.job)
+                                  .join(', ')),
                               maxLines: maxLines,
                               overflow: TextOverflow.ellipsis,
                               style: characterStyle,
                             ),
                             Text(
-                              '${person.totalEpisodeCount} episode${person.totalEpisodeCount > 1 ? 's' : ''}',
+                              '${person.totalEpisodeCount} episode${person
+                                  .totalEpisodeCount > 1 ? 's' : ''}',
                               maxLines: episodeMaxLines,
                               overflow: TextOverflow.ellipsis,
                               style: episodeStyle,
@@ -885,37 +910,37 @@ class _MediaInfoSection extends StatelessWidget
           onTap: tv.spokenLanguages.length <= 1
               ? null
               : () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) {
-                    return MediaSubDetailsPage<LanguageConfig>(
-                        list: tv.spokenLanguages,
-                        title: 'Spoken languages',
-                        name: tv.name);
-                  }));
-                }),
+            Navigator.push(context, MaterialPageRoute(builder: (_) {
+              return MediaSubDetailsPage<LanguageConfig>(
+                  list: tv.spokenLanguages,
+                  title: 'Spoken languages',
+                  name: tv.name);
+            }));
+          }),
       if (tv.productionCountries.isNotEmpty)
         getSubSection('Produced in', tv.productionCountries.first.name,
             onTap: tv.productionCountries.length <= 1
                 ? null
                 : () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) {
-                      return MediaSubDetailsPage<ProductionCountry>(
-                          list: tv.productionCountries,
-                          title: 'Production countries',
-                          name: tv.name);
-                    }));
-                  }),
+              Navigator.push(context, MaterialPageRoute(builder: (_) {
+                return MediaSubDetailsPage<ProductionCountry>(
+                    list: tv.productionCountries,
+                    title: 'Production countries',
+                    name: tv.name);
+              }));
+            }),
       if (tv.productionCompanies.isNotEmpty)
         getSubSection('Production by', tv.productionCompanies.first.name,
             onTap: tv.productionCompanies.length <= 1
                 ? null
                 : () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) {
-                      return MediaSubDetailsPage<ProductionCompany>(
-                          list: tv.productionCompanies,
-                          title: 'Production companies',
-                          name: tv.name);
-                    }));
-                  }),
+              Navigator.push(context, MaterialPageRoute(builder: (_) {
+                return MediaSubDetailsPage<ProductionCompany>(
+                    list: tv.productionCompanies,
+                    title: 'Production companies',
+                    name: tv.name);
+              }));
+            }),
     ];
   }
 

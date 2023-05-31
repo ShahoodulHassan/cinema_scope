@@ -344,6 +344,7 @@ class PersonPosterTile extends StatelessWidget
     return PosterTile(
       onTap: () {
         context.unfocus();
+
         goToPersonPage(context, person);
       },
       title: person.name,

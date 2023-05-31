@@ -80,59 +80,6 @@ class _SearchPageChildState extends State<_SearchPageChild>
             toolbarHeight: 0,
             elevation: 24,
             bottom: SearchAppbar(),
-            // flexibleSpace: FlexibleSpaceBar(
-            //   background: Padding(
-            //     padding: const EdgeInsets.only(
-            //         top: 28, bottom: 8, left: 16, right: 16),
-            //     child: TextField(
-            //       expands: true,
-            //       maxLines: null,
-            //       minLines: null,
-            //       controller: _controller,
-            //       onChanged: (query) {
-            //         logIfDebug('query:{$query}');
-            //         if (query != lastQuery) {
-            //           lastQuery = query;
-            //           context.read<SearchViewModel>().searchPagedMovies(query);
-            //         }
-            //       },
-            //       decoration: InputDecoration(
-            //         focusedBorder: OutlineInputBorder(
-            //           borderRadius: BorderRadius.circular(30.0),
-            //           borderSide: BorderSide(
-            //             color: Theme.of(context).primaryColor,
-            //             width: 2.0,
-            //           ),
-            //         ),
-            //         disabledBorder: OutlineInputBorder(
-            //           borderRadius: BorderRadius.circular(30.0),
-            //           borderSide: const BorderSide(
-            //             style: BorderStyle.none,
-            //           ),
-            //         ),
-            //         errorBorder: OutlineInputBorder(
-            //           borderRadius: BorderRadius.circular(30.0),
-            //           borderSide: const BorderSide(
-            //             style: BorderStyle.none,
-            //           ),
-            //         ),
-            //         enabledBorder: OutlineInputBorder(
-            //           borderRadius: BorderRadius.circular(30.0),
-            //           borderSide: const BorderSide(
-            //             style: BorderStyle.none,
-            //           ),
-            //         ),
-            //         contentPadding: const EdgeInsets.symmetric(vertical: 10.0),
-            //         // isDense: true,
-            //         // constraints: BoxConstraints.tightFor(width: double.maxFinite, height: 80),
-            //         prefixIcon: const Icon(Icons.search),
-            //         hintText: 'Search',
-            //         filled: true,
-            //         fillColor: Colors.amber.shade50,
-            //       ),
-            //     ),
-            //   ),
-            // ),
           ),
           SliverPersistentHeader(
             delegate: CountDelegate(),
