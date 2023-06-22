@@ -5,7 +5,7 @@ import 'package:cinema_scope/pages/search_page.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
-import 'package:cinema_scope/widgets/home_section_test.dart';
+import 'package:cinema_scope/widgets/home_section.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

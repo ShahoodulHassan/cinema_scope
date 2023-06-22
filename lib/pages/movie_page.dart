@@ -12,7 +12,7 @@ import 'package:cinema_scope/pages/person_page.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
-import 'package:cinema_scope/widgets/home_section_test.dart';
+import 'package:cinema_scope/widgets/home_section.dart';
 import 'package:cinema_scope/widgets/image_view.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

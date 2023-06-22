@@ -23,7 +23,7 @@ import '../models/search.dart';
 import '../utilities/generic_functions.dart';
 import '../widgets/base_section_sliver.dart';
 import '../widgets/compact_text_button.dart';
-import '../widgets/home_section_test.dart';
+import '../widgets/home_section.dart';
 
 class PersonPage extends MultiProvider {
   PersonPage({
