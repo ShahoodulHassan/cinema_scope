@@ -70,6 +70,11 @@ class CreditsViewModel extends ChangeNotifier
     for (var key in _mediaToDeptJobsMap.keys) {
       _mediaToDeptJobsStringMap[key] = _attachDeptWithJobs(key);
     }
+
+    for (var crew in _allResults.whereType<Crew>()) {
+      crew.jobs = _mediaToDeptJobsStringMap[crew.id];
+    }
+
     _results = _allResults;
     await _prepareAllFilters();
     // await _prepareAvailableFilters(notify: false);
