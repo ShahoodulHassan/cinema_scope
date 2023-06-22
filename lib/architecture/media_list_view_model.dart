@@ -1,12 +1,16 @@
 import 'package:async/async.dart';
 import 'package:cinema_scope/architecture/search_view_model.dart';
+import 'package:cinema_scope/utilities/common_functions.dart';
+import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 import '../constants.dart';
 import '../models/movie.dart';
 import '../models/search.dart';
 
-class MediaListViewModel extends ApiViewModel {
+class MediaListViewModel extends ApiViewModel with Utilities, CommonFunctions {
+  late final List<MediaGenre> _combinedGenres;
+
   CombinedResults? searchResult;
 
   final PagingController<int, CombinedResult> _pagingController;
@@ -22,10 +26,12 @@ class MediaListViewModel extends ApiViewModel {
 
   initializePaging({
     required MediaType mediaType,
+    required List<MediaGenre> combinedGenres,
     List<int>? genreIds,
     List<Keyword>? keywords,
     int? mediaId,
   }) {
+    _combinedGenres = combinedGenres;
     _listener ??= (pageKey) {
       logIfDebug('page listener called for pageKey=$pageKey');
       if (keywords != null) {
@@ -55,12 +61,14 @@ class MediaListViewModel extends ApiViewModel {
   void _appendPageAndNotify(
       MediaType mediaType, CombinedResults result, int page) {
     searchResult = result;
-    final isLastPage = (result.totalPages ?? 1) == page;
+    final isLastPage = result.totalPages == page;
     if (page == 1) _pagingController.itemList = <CombinedResult>[];
     var results = result.results.map((r) {
       if (r.mediaType == null || r.mediaType!.isEmpty) {
         r.mediaType = mediaType.name;
       }
+      r.genreNamesString = getGenreNamesFromIds(_combinedGenres, r.genreIds,
+          r.mediaType == MediaType.tv.name ? MediaType.tv : MediaType.movie);
       return r;
     }).toList();
     if (isLastPage) {

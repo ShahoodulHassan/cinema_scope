@@ -28,6 +28,13 @@ class NetworkImageView extends StatelessWidget with GenericFunctions {
     fit: BoxFit.contain,
   );
 
+  late final Widget loadingPlaceholder = Container(
+    decoration: BoxDecoration(
+      borderRadius: borderRadius,
+      color: Colors.black12,
+    ),
+  );
+
   BorderRadius get borderRadius {
     if (topRadius > 0 || bottomRadius > 0) {
       return BorderRadius.only(
@@ -66,15 +73,15 @@ class NetworkImageView extends StatelessWidget with GenericFunctions {
               : context
                   .read<ConfigViewModel>()
                   .getImageUrl(imageType, imageQuality, imagePath!);
-      logIfDebug('imagePath:$imagePath, imageUrl:$imageUrl');
+      // logIfDebug('imagePath:$imagePath, imageUrl:$imageUrl');
       child = CachedNetworkImage(
         alignment: Alignment.topRight,
         imageUrl: imageUrl,
-        placeholder: (_, __) => placeholder,
+        placeholder: (_, __) => loadingPlaceholder,
         errorWidget: (_, __, ___) {
           return const Center(
             child: Icon(
-              Icons.error_outline_rounded,
+              Icons.error_outline_sharp,
               color: Colors.red,
             ),
           );

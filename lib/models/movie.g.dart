@@ -91,33 +91,27 @@ class _$ImageDetailCWProxyImpl implements _$ImageDetailCWProxy {
   }) {
     return ImageDetail(
       aspectRatio == const $CopyWithPlaceholder() || aspectRatio == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.aspectRatio!
+          ? _value.aspectRatio
           // ignore: cast_nullable_to_non_nullable
           : aspectRatio as double,
       height == const $CopyWithPlaceholder() || height == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.height!
+          ? _value.height
           // ignore: cast_nullable_to_non_nullable
           : height as int,
       filePath == const $CopyWithPlaceholder() || filePath == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.filePath!
+          ? _value.filePath
           // ignore: cast_nullable_to_non_nullable
           : filePath as String,
       voteAverage == const $CopyWithPlaceholder() || voteAverage == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.voteAverage!
+          ? _value.voteAverage
           // ignore: cast_nullable_to_non_nullable
           : voteAverage as double,
       voteCount == const $CopyWithPlaceholder() || voteCount == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.voteCount!
+          ? _value.voteCount
           // ignore: cast_nullable_to_non_nullable
           : voteCount as int,
       width == const $CopyWithPlaceholder() || width == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.width!
+          ? _value.width
           // ignore: cast_nullable_to_non_nullable
           : width as int,
       iso6391: iso6391 == const $CopyWithPlaceholder()
@@ -197,23 +191,19 @@ class _$CombinedResultsCWProxyImpl implements _$CombinedResultsCWProxy {
   }) {
     return CombinedResults(
       page == const $CopyWithPlaceholder() || page == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.page!
+          ? _value.page
           // ignore: cast_nullable_to_non_nullable
           : page as int,
       totalPages == const $CopyWithPlaceholder() || totalPages == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.totalPages!
+          ? _value.totalPages
           // ignore: cast_nullable_to_non_nullable
           : totalPages as int,
       totalResults == const $CopyWithPlaceholder() || totalResults == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.totalResults!
+          ? _value.totalResults
           // ignore: cast_nullable_to_non_nullable
           : totalResults as int,
       results == const $CopyWithPlaceholder() || results == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.results!
+          ? _value.results
           // ignore: cast_nullable_to_non_nullable
           : results as List<CombinedResult>,
     );
@@ -320,34 +310,28 @@ class _$BaseCreditCWProxyImpl implements _$BaseCreditCWProxy {
   }) {
     return BaseCredit(
       id == const $CopyWithPlaceholder() || id == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.id!
+          ? _value.id
           // ignore: cast_nullable_to_non_nullable
           : id as int,
       adult == const $CopyWithPlaceholder() || adult == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.adult!
+          ? _value.adult
           // ignore: cast_nullable_to_non_nullable
           : adult as bool,
       name == const $CopyWithPlaceholder() || name == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.name!
+          ? _value.name
           // ignore: cast_nullable_to_non_nullable
           : name as String,
       knownForDepartment == const $CopyWithPlaceholder() ||
               knownForDepartment == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.knownForDepartment!
+          ? _value.knownForDepartment
           // ignore: cast_nullable_to_non_nullable
           : knownForDepartment as String,
       originalName == const $CopyWithPlaceholder() || originalName == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.originalName!
+          ? _value.originalName
           // ignore: cast_nullable_to_non_nullable
           : originalName as String,
       creditId == const $CopyWithPlaceholder() || creditId == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.creditId!
+          ? _value.creditId
           // ignore: cast_nullable_to_non_nullable
           : creditId as String,
       popularity: popularity == const $CopyWithPlaceholder()
@@ -486,49 +470,40 @@ class _$CastCWProxyImpl implements _$CastCWProxy {
   }) {
     return Cast(
       id == const $CopyWithPlaceholder() || id == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.id!
+          ? _value.id
           // ignore: cast_nullable_to_non_nullable
           : id as int,
       adult == const $CopyWithPlaceholder() || adult == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.adult!
+          ? _value.adult
           // ignore: cast_nullable_to_non_nullable
           : adult as bool,
       name == const $CopyWithPlaceholder() || name == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.name!
+          ? _value.name
           // ignore: cast_nullable_to_non_nullable
           : name as String,
       knownForDepartment == const $CopyWithPlaceholder() ||
               knownForDepartment == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.knownForDepartment!
+          ? _value.knownForDepartment
           // ignore: cast_nullable_to_non_nullable
           : knownForDepartment as String,
       originalName == const $CopyWithPlaceholder() || originalName == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.originalName!
+          ? _value.originalName
           // ignore: cast_nullable_to_non_nullable
           : originalName as String,
       creditId == const $CopyWithPlaceholder() || creditId == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.creditId!
+          ? _value.creditId
           // ignore: cast_nullable_to_non_nullable
           : creditId as String,
       castId == const $CopyWithPlaceholder() || castId == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.castId!
+          ? _value.castId
           // ignore: cast_nullable_to_non_nullable
           : castId as int,
       character == const $CopyWithPlaceholder() || character == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.character!
+          ? _value.character
           // ignore: cast_nullable_to_non_nullable
           : character as String,
       order == const $CopyWithPlaceholder() || order == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.order!
+          ? _value.order
           // ignore: cast_nullable_to_non_nullable
           : order as int,
       popularity: popularity == const $CopyWithPlaceholder()
@@ -667,44 +642,36 @@ class _$CrewCWProxyImpl implements _$CrewCWProxy {
   }) {
     return Crew(
       id == const $CopyWithPlaceholder() || id == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.id!
+          ? _value.id
           // ignore: cast_nullable_to_non_nullable
           : id as int,
       adult == const $CopyWithPlaceholder() || adult == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.adult!
+          ? _value.adult
           // ignore: cast_nullable_to_non_nullable
           : adult as bool,
       name == const $CopyWithPlaceholder() || name == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.name!
+          ? _value.name
           // ignore: cast_nullable_to_non_nullable
           : name as String,
       knownForDepartment == const $CopyWithPlaceholder() ||
               knownForDepartment == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.knownForDepartment!
+          ? _value.knownForDepartment
           // ignore: cast_nullable_to_non_nullable
           : knownForDepartment as String,
       originalName == const $CopyWithPlaceholder() || originalName == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.originalName!
+          ? _value.originalName
           // ignore: cast_nullable_to_non_nullable
           : originalName as String,
       creditId == const $CopyWithPlaceholder() || creditId == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.creditId!
+          ? _value.creditId
           // ignore: cast_nullable_to_non_nullable
           : creditId as String,
       department == const $CopyWithPlaceholder() || department == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.department!
+          ? _value.department
           // ignore: cast_nullable_to_non_nullable
           : department as String,
       job == const $CopyWithPlaceholder() || job == null
-          // ignore: unnecessary_non_null_assertion
-          ? _value.job!
+          ? _value.job
           // ignore: cast_nullable_to_non_nullable
           : job as String,
       popularity: popularity == const $CopyWithPlaceholder()
@@ -758,7 +725,10 @@ Media _$MediaFromJson(Map<String, dynamic> json) => Media(
       CombinedResults.fromJson(json['recommendations'] as Map<String, dynamic>),
       ImageResult.fromJson(json['images'] as Map<String, dynamic>),
       ReviewResult.fromJson(json['reviews'] as Map<String, dynamic>),
-      WatchProviders.fromJson(json['watch/providers'] as Map<String, dynamic>),
+      json['watch/providers'] == null
+          ? null
+          : WatchProviders.fromJson(
+              json['watch/providers'] as Map<String, dynamic>),
       backdropPath: json['backdrop_path'] as String?,
       homepage: json['homepage'] as String?,
       overview: json['overview'] as String?,
@@ -810,7 +780,10 @@ Movie _$MovieFromJson(Map<String, dynamic> json) => Movie(
       CombinedResults.fromJson(json['recommendations'] as Map<String, dynamic>),
       ImageResult.fromJson(json['images'] as Map<String, dynamic>),
       ReviewResult.fromJson(json['reviews'] as Map<String, dynamic>),
-      WatchProviders.fromJson(json['watch/providers'] as Map<String, dynamic>),
+      json['watch/providers'] == null
+          ? null
+          : WatchProviders.fromJson(
+              json['watch/providers'] as Map<String, dynamic>),
       json['original_title'] as String,
       json['budget'] as int,
       json['revenue'] as int,

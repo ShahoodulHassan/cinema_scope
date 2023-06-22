@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:age_calculator/age_calculator.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinema_scope/architecture/config_view_model.dart';
 import 'package:cinema_scope/constants.dart';
 import 'package:cinema_scope/models/movie.dart';
@@ -14,6 +15,7 @@ import 'package:cinema_scope/widgets/image_view.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:sliver_tools/sliver_tools.dart';
 import 'package:tuple/tuple.dart';
 
 import '../architecture/person_view_model.dart';
@@ -21,6 +23,7 @@ import '../models/search.dart';
 import '../utilities/generic_functions.dart';
 import '../widgets/base_section_sliver.dart';
 import '../widgets/compact_text_button.dart';
+import '../widgets/home_section_test.dart';
 
 class PersonPage extends MultiProvider {
   PersonPage({
@@ -97,80 +100,84 @@ class _PersonPageChildState extends State<_PersonPageChild>
               ],
             ),
           ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 0.0, top: 24.0),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+          MultiSliver(
+            children: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 0.0, top: 24.0),
+                  child: Column(
                     children: [
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.40,
-                        // height: (MediaQuery.of(context).size.width * 0.40) /
-                        //     Constants.arProfile * 0.8,
-                        child: NetworkImageView(
-                          widget.profilePath,
-                          imageType: ImageType.profile,
-                          aspectRatio: Constants.arProfile * 1.15,
-                          topRadius: 4.0,
-                          bottomRadius: 4.0,
-                          fit: BoxFit.fitWidth,
-                          heroImageTag: '${widget.id}',
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.40,
+                            // height: (MediaQuery.of(context).size.width * 0.40) /
+                            //     Constants.arProfile * 0.8,
+                            child: NetworkImageView(
+                              widget.profilePath,
+                              imageType: ImageType.profile,
+                              aspectRatio: Constants.arProfile * 1.15,
+                              topRadius: 4.0,
+                              bottomRadius: 4.0,
+                              fit: BoxFit.fitWidth,
+                              heroImageTag: '${widget.id}',
+                            ),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          top: 16.0,
+                          right: 8.0,
+                          left: 8.0,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              widget.name,
+                              style: const TextStyle(
+                                fontSize: 24.0,
+                                letterSpacing: 2.0,
+                                fontWeight: FontWeight.bold,
+                                // height: 1.1,
+                              ),
+                            ),
+                            AnimatedSize(
+                              duration: const Duration(milliseconds: 250),
+                              child: Selector<PersonViewModel, String?>(
+                                builder: (_, jobs, __) {
+                                  if (jobs == null || jobs.isEmpty) {
+                                    return const SizedBox.shrink();
+                                  }
+                                  return Text(
+                                    jobs,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 16.0,
+                                    ),
+                                  );
+                                },
+                                selector: (_, pvm) => pvm.jobs,
+                              ),
+                            ),
+                            const _ExternalIdsView(),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      top: 16.0,
-                      right: 8.0,
-                      left: 8.0,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          widget.name,
-                          style: const TextStyle(
-                            fontSize: 24.0,
-                            letterSpacing: 2.0,
-                            fontWeight: FontWeight.bold,
-                            // height: 1.1,
-                          ),
-                        ),
-                        AnimatedSize(
-                          duration: const Duration(milliseconds: 250),
-                          child: Selector<PersonViewModel, String?>(
-                            builder: (_, jobs, __) {
-                              if (jobs == null || jobs.isEmpty) {
-                                return const SizedBox.shrink();
-                              }
-                              return Text(
-                                jobs,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 16.0,
-                                ),
-                              );
-                            },
-                            selector: (_, pvm) => pvm.jobs,
-                          ),
-                        ),
-                        const _ExternalIdsView(),
-                      ],
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
+              const _BiographySection(),
+              _FilmographySection(),
+              const _PersonalInfoSection(),
+              const ImagesSection<PersonViewModel>(),
+              const SliverToBoxAdapter(child: SizedBox(height: 16)),
+            ],
           ),
-          const _BiographySection(),
-          _FilmographySection(),
-          const _PersonalInfoSection(),
-          const ImagesSection<PersonViewModel>(),
-          const SliverToBoxAdapter(child: SizedBox(height: 16)),
         ],
       ),
     );
@@ -509,13 +516,24 @@ class ImagesSection<T extends BaseMediaViewModel> extends StatelessWidget
         if (images.isEmpty) {
           return SliverToBoxAdapter(child: Container());
         } else {
+          final totalCount = images.length;
+          const trimmedCount = 15;
+          final showSeeAll = totalCount > trimmedCount;
           return BaseSectionSliver(
-            title: 'Images',
+            title: 'Images ($totalCount)',
+            showSeeAll: showSeeAll,
+            onPressed: showSeeAll ? () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => ImagePage(
+                    images: images,
+                    initialPage: 0,
+                  ),
+                ),
+              );
+            } : null,
             children: [
-              ImageCardListView(
-                images,
-                screenWidth: MediaQuery.of(context).size.width,
-              ),
+              MyImageCardListView(images, trimmedCount),
             ],
           );
         }
@@ -524,133 +542,115 @@ class ImagesSection<T extends BaseMediaViewModel> extends StatelessWidget
   }
 }
 
-class ImageCardListView extends StatelessWidget
+class MyImageCardListView extends StatelessWidget
     with GenericFunctions, Utilities, CommonFunctions {
-  final List<ImageDetail> _images;
-  final double screenWidth;
-
-  List<ImageDetail> get images => _images
-      .where((element) => element.imageType != ImageType.logo.name)
-      .toList();
-
-  ImageCardListView(
-    this._images, {
-    required this.screenWidth,
-    this.topRadius = 4.0,
-    this.bottomRadius = 4.0,
-    Key? key,
-  }) : super(key: key);
-
-  final separatorWidth = 10.0;
-
-  final listViewHorizontalPadding = 16.0;
+  final List<ImageDetail> _items;
+  final int _trimmedCount;
+  final double posterHeight;
+  final double radius;
 
   final listViewVerticalPadding = 16.0;
 
-  late final deductibleWidth = listViewHorizontalPadding + separatorWidth;
+  final listViewHorizontalPadding = 16.0 - Constants.cardMargin;
 
-  /// Backdrop width is calculated assuming we want to show 1.33 backdrop images
-  /// on one screen
-  late final backdropWidth = (screenWidth - deductibleWidth) / 1.33;
-
-  /// A uniform image height has been calculated using backdropWidth as the
-  /// baseline.
-  late final imageHeight = backdropWidth / Constants.arBackdrop;
-
-  final double topRadius;
-
-  final double bottomRadius;
-
-  late final cardHeight = imageHeight;
-
-  late final viewHeight = cardHeight + listViewVerticalPadding * 2;
+  MyImageCardListView(
+    this._items, this._trimmedCount, {
+    this.posterHeight = 150.0,
+    this.radius = 4.0,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
+    logIfDebug('build called');
+
+    const cardMargin = 4.0;
+
+    final listViewHeight = posterHeight + listViewVerticalPadding * 2;
+
+    final images = _items.take(_trimmedCount)
+        .where((element) => element.imageType != ImageType.logo.name)
+        .toList();
+
     return SizedBox(
-      width: screenWidth,
-      height: viewHeight,
-      child: ListView.separated(
+      height: listViewHeight,
+      child: ListView.builder(
         itemBuilder: (_, index) {
-          var image = images[index];
-          var imageType = image.imageType != null
-              ? ImageType.values
-                  .firstWhere((element) => element.name == image.imageType)
-              : ImageType.profile;
-          var imageQuality =
-              image.imageType == ImageType.still.name && image.aspectRatio > 1.0
-                  ? ImageQuality.high
-                  : ImageQuality.medium;
-          return buildImageCard(image, imageType, imageQuality, context, index);
+          // logIfDebug('MyListView itemBuilder called');
+          final image = images[index];
+          return buildItemView(
+            context,
+            image,
+            index,
+            cardMargin: cardMargin,
+          );
         },
-        separatorBuilder: (_, index) => SizedBox(width: separatorWidth),
+        physics: const ClampingScrollPhysics(),
         padding: EdgeInsets.symmetric(
           horizontal: listViewHorizontalPadding,
           vertical: listViewVerticalPadding,
         ),
-        scrollDirection: Axis.horizontal,
         itemCount: images.length,
+        scrollDirection: Axis.horizontal,
       ),
     );
   }
 
-  Stack buildImageCard(ImageDetail image, ImageType imageType,
-      ImageQuality imageQuality, BuildContext context, int index) {
+  Widget buildItemView(
+    BuildContext context,
+    ImageDetail image,
+    int index, {
+    required double cardMargin,
+  }) {
+    var imageType = image.imageType != null
+        ? ImageType.values
+            .firstWhere((element) => element.name == image.imageType)
+        : ImageType.profile;
+    var imageQuality =
+        image.imageType == ImageType.still.name && image.aspectRatio > 1.0
+            ? ImageQuality.high
+            : ImageQuality.medium;
     return Stack(
       children: [
         Card(
+          color: Colors.white,
           surfaceTintColor: Colors.white,
-          elevation: 4.0,
+          elevation: 3.0,
+          margin: EdgeInsets.symmetric(horizontal: cardMargin),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(topRadius),
+            borderRadius: BorderRadius.circular(radius),
           ),
-          margin: EdgeInsets.zero,
           child: SizedBox(
-            width: imageHeight * image.aspectRatio,
-            // height: posterHeight,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                NetworkImageView(
-                  image.filePath,
-                  imageType: imageType,
-                  aspectRatio: image.aspectRatio,
-                  topRadius: topRadius,
-                  bottomRadius: bottomRadius,
-                  imageQuality: imageQuality,
-                  // heroImageTag: image.filePath,
-                  // fit: BoxFit.fitHeight,
-                ),
-              ],
+            height: posterHeight,
+            child: NetworkImageView(
+              image.filePath,
+              imageType: imageType,
+              imageQuality: imageQuality,
+              aspectRatio: image.aspectRatio,
+              topRadius: radius,
+              bottomRadius: radius,
             ),
           ),
         ),
         Positioned.fill(
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(topRadius),
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) {
-                    return ImagePage(
-                      images: _images,
-                      initialPage: index,
-                      placeholderImageType: imageType,
-                      placeholderQuality: imageQuality,
-                    );
-                  },
-                ));
-                // goToMoviePage(
-                //   context,
-                //   id: image.id,
-                //   title: title,
-                //   overview: image.overview,
-                //   releaseDate:
-                //       image.mediaReleaseDate /*getReleaseDate(item)*/,
-                //   voteAverage: image.voteAverage,
-                // );
-              },
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: cardMargin),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(radius),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => ImagePage(
+                        images: _items,
+                        initialPage: index,
+                        placeholderQuality: imageQuality,
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ),
@@ -677,33 +677,40 @@ class _FilmographySection extends StatelessWidget
         return BaseSectionSliver(
           title: 'Known for',
           children: [
-            PosterCardListView(
+            MediaPosterListView(
               items: knownFor.values.take(_maxCount).toList(),
-              screenWidth: MediaQuery.of(context).size.width,
-              aspectRatio: Constants.arPoster,
+              posterWidth: 140.0,
+              radius: 4.0,
+              listViewBottomPadding: 16.0,
               subtitle: (item) => getJob(item),
-              onTap: (item) {
-                if (item.mediaType == MediaType.movie.name) {
-                  goToMoviePage(
-                    context,
-                    id: item.id,
-                    title: item.mediaTitle,
-                    overview: item.overview,
-                    releaseDate: item.mediaReleaseDate /*getReleaseDate(item)*/,
-                    voteAverage: item.voteAverage,
-                  );
-                } else if (item.mediaType == MediaType.tv.name) {
-                  goToTvPage(
-                    context,
-                    id: item.id,
-                    title: item.mediaTitle,
-                    overview: item.overview,
-                    releaseDate: item.mediaReleaseDate /*getReleaseDate(item)*/,
-                    voteAverage: item.voteAverage,
-                  );
-                }
-              },
             ),
+            // PosterCardListView(
+            //   items: knownFor.values.take(_maxCount).toList(),
+            //   screenWidth: MediaQuery.of(context).size.width,
+            //   aspectRatio: Constants.arPoster,
+            //   subtitle: (item) => getJob(item),
+            //   onTap: (item) {
+            //     if (item.mediaType == MediaType.movie.name) {
+            //       goToMoviePage(
+            //         context,
+            //         id: item.id,
+            //         title: item.mediaTitle,
+            //         overview: item.overview,
+            //         releaseDate: item.mediaReleaseDate /*getReleaseDate(item)*/,
+            //         voteAverage: item.voteAverage,
+            //       );
+            //     } else if (item.mediaType == MediaType.tv.name) {
+            //       goToTvPage(
+            //         context,
+            //         id: item.id,
+            //         title: item.mediaTitle,
+            //         overview: item.overview,
+            //         releaseDate: item.mediaReleaseDate /*getReleaseDate(item)*/,
+            //         voteAverage: item.voteAverage,
+            //       );
+            //     }
+            //   },
+            // ),
             Container(
               alignment: Alignment.center,
               padding: const EdgeInsets.only(bottom: 8.0),
@@ -755,6 +762,259 @@ class PosterCardListView extends StatelessWidget
   final Function(CombinedResult item) onTap;
 
   PosterCardListView({
+    required this.items,
+    required this.screenWidth,
+    required this.aspectRatio,
+    required this.onTap,
+    this.subtitle,
+    Key? key,
+  }) : super(key: key);
+
+  final separatorWidth = 10.0;
+
+  final listViewHorizontalPadding = 16.0;
+
+  final listViewVerticalPadding = 16.0;
+
+  final cardCount = 2.5;
+
+  late final deductibleWidth =
+      listViewHorizontalPadding + separatorWidth * cardCount.toInt();
+
+  late final posterWidth = 145.0;
+
+  late final posterHeight = posterWidth / aspectRatio;
+
+  final maxLines = 2;
+
+  final textHorizPadding = 8.0;
+
+  final nameTopPadding = 8.0;
+
+  final nameBottomPadding = 2.0;
+
+  final yearTopPadding = 0.0;
+
+  final yearBottomPadding = 8.0;
+
+  final subtitleTopPadding = 0.0;
+
+  final subtitleBottomPadding = 8.0;
+
+  final iconSize = 18.0;
+
+  final nameStyle = const TextStyle(
+    fontSize: 14.0,
+    fontWeight: FontWeight.bold,
+    height: 1.2,
+  );
+
+  final yearStyle = const TextStyle(
+    fontSize: 14.0,
+    height: 1.2,
+  );
+
+  final topRadius = 4.0;
+
+  final bottomRadius = 0.0;
+
+  late final nameHeight = nameStyle.height! * nameStyle.fontSize! * maxLines;
+
+  late final subtitleHeight =
+      yearStyle.height! * yearStyle.fontSize! * maxLines;
+
+  late final yearHeight = yearStyle.height! * yearStyle.fontSize!;
+
+  late final nameContainerHeight =
+      nameHeight + nameTopPadding + nameBottomPadding;
+
+  late final subtitleContainerHeight =
+      subtitleHeight + subtitleTopPadding + subtitleBottomPadding;
+
+  late final yearContainerHeight =
+      max(iconSize, yearHeight) + yearTopPadding + yearBottomPadding;
+
+  late final cardHeight = posterHeight +
+      nameContainerHeight +
+      (subtitle != null ? subtitleContainerHeight : 0.0) +
+      yearContainerHeight;
+
+  /// This 0.8 is being added to escape the "A RenderFlex overflowed by 0.800
+  /// pixels on the bottom." error. The error is being caused by not
+  /// assigning any height to the name and character test widgets.
+  /// However, assigning height, especially to name text widget makes it
+  /// expand to two lines no matter if name is actually on one line only,
+  /// thereby showing an extra blank line between home snd tasks.
+  late final viewHeight = cardHeight + listViewVerticalPadding * 2 + 0.8;
+
+  @override
+  Widget build(BuildContext context) {
+    logIfDebug('build called with list:$items');
+    return SizedBox(
+      height: viewHeight,
+      child: ListView.builder(
+        itemExtent: posterWidth,
+        itemBuilder: (_, index) {
+          var item = items[index];
+          logIfDebug('item:${item.id}, mediaType:${item.mediaType}');
+          var title = item.mediaTitle /*getMediaTitle(item)*/;
+          var year =
+              getYearStringFromDate(item.mediaReleaseDate) /*getYear(item)*/;
+          var job = /*getJob(item)*/ subtitle?.call(item) ?? '';
+          return Stack(
+            children: [
+              Card(
+                surfaceTintColor: Colors.white,
+                elevation: 4.0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(topRadius),
+                ),
+                margin: EdgeInsets.zero,
+                child: SizedBox(
+                  width: posterWidth,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      NetworkImageView(
+                        item.posterPath,
+                        imageType: ImageType.poster,
+                        aspectRatio: aspectRatio,
+                        topRadius: topRadius,
+                        bottomRadius: bottomRadius,
+                      ),
+                      Container(
+                        padding: EdgeInsets.fromLTRB(
+                          textHorizPadding,
+                          nameTopPadding,
+                          textHorizPadding,
+                          nameBottomPadding,
+                        ),
+                        // height: nameContainerHeight,
+                        child: Text(
+                          title,
+                          maxLines: maxLines,
+                          overflow: TextOverflow.ellipsis,
+                          style: nameStyle,
+                        ),
+                      ),
+                      if (year.isNotEmpty || item.voteAverage > 0.0)
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(
+                            textHorizPadding,
+                            yearTopPadding,
+                            textHorizPadding,
+                            yearBottomPadding,
+                          ),
+                          child: Row(
+                            children: [
+                              Visibility(
+                                visible: year.isNotEmpty,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: Text(
+                                    year,
+                                    textAlign: TextAlign.start,
+                                    style: yearStyle,
+                                  ),
+                                ),
+                              ),
+                              Visibility(
+                                visible: item.voteAverage > 0.0,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.star_sharp,
+                                        size: iconSize,
+                                        color: Constants.ratingIconColor,
+                                      ),
+                                      Text(
+                                        ' ${applyCommaAndRound(
+                                          item.voteAverage,
+                                          1,
+                                          false,
+                                          true,
+                                        )}',
+                                        style: yearStyle,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Visibility(
+                                visible: item.mediaType == MediaType.tv.name,
+                                child: Text(
+                                  'TV',
+                                  style: yearStyle,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      Visibility(
+                        visible: job.isNotEmpty,
+                        child: Container(
+                          padding: EdgeInsets.fromLTRB(
+                            textHorizPadding,
+                            subtitleTopPadding,
+                            textHorizPadding,
+                            subtitleBottomPadding,
+                          ),
+                          // height: characterContainerHeight,
+                          child: Text(
+                            job,
+                            maxLines: maxLines,
+                            overflow: TextOverflow.ellipsis,
+                            style: yearStyle,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned.fill(
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(topRadius),
+                    onTap: () => onTap(item),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+        // separatorBuilder: (_, index) => SizedBox(width: separatorWidth),
+        padding: EdgeInsets.symmetric(
+          horizontal: listViewHorizontalPadding,
+          vertical: listViewVerticalPadding,
+        ),
+        scrollDirection: Axis.horizontal,
+        itemCount: items.length,
+      ),
+    );
+  }
+
+  String getJob(CombinedResult item) {
+    // logIfDebug('getJob=>id:${item.id}, title:${getMediaTitle(item)}, type:${item.mediaType}');
+    if (item is CombinedOfCast) return item.character;
+    if (item is CombinedOfCrew) return item.job;
+    return '';
+  }
+}
+
+class PosterCardListViewOld extends StatelessWidget
+    with GenericFunctions, Utilities, CommonFunctions {
+  final List<CombinedResult> items;
+  final double screenWidth;
+  final double aspectRatio;
+
+  final String Function(CombinedResult item)? subtitle;
+  final Function(CombinedResult item) onTap;
+
+  PosterCardListViewOld({
     required this.items,
     required this.screenWidth,
     required this.aspectRatio,

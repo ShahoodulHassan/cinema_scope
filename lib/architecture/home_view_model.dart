@@ -3,9 +3,9 @@ import 'dart:math';
 import 'package:cinema_scope/architecture/search_view_model.dart';
 import 'package:cinema_scope/constants.dart';
 import 'package:cinema_scope/models/movie.dart';
-import 'package:cinema_scope/widgets/home_section.dart';
 
 import '../models/search.dart';
+import '../pages/home_page.dart';
 
 class HomeViewModel extends ApiViewModel {
   CombinedResults? latestMoviesResult;
@@ -18,6 +18,8 @@ class HomeViewModel extends ApiViewModel {
   CombinedResults? freeMediaResult;
 
   Map<SectionTitle, String> sectionParamMap = {};
+
+  Map<SectionTitle, double> sectionOffsets = {};
 
   CombinedResults? getResultBySectionTitle(SectionTitle title) {
     switch (title) {
@@ -38,6 +40,14 @@ class HomeViewModel extends ApiViewModel {
       case SectionTitle.freeToWatch:
         return freeMediaResult;
     }
+  }
+
+  double getSectionOffset(SectionTitle title) {
+    return sectionOffsets[title] ?? sectionOffsets.putIfAbsent(title, () => 0.0);
+  }
+
+  setSectionOffset(SectionTitle title, double offset) async {
+    sectionOffsets[title] = offset;
   }
 
   // getAllResults(MediaType mediaType, {TimeWindow? timeWindow}) async {
@@ -119,13 +129,13 @@ class HomeViewModel extends ApiViewModel {
   /// We allow refreshable results here, hence no check for type != param
   getDiscoverUpcoming(MediaType? mediaType) async {
     var type = (mediaType ?? MediaType.movie).name;
-    // var param = sectionParamMap[SectionTitle.upcoming];
-    // if (type != param) {
+    var param = sectionParamMap[SectionTitle.upcoming];
+    if (type != param) {
     /// We add two page long upcoming movies
     await _getDiscoverUpcoming(type);
     await _getDiscoverUpcoming(type, page: 2);
     // await _getDiscoverUpcoming(type, page: 3);
-    // }
+    }
   }
 
   /// release_date.gte (tomorrow [Now + 1])

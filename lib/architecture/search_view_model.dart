@@ -1,4 +1,7 @@
 import 'package:async/async.dart';
+import 'package:cinema_scope/constants.dart';
+import 'package:cinema_scope/models/movie.dart';
+import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:dio/dio.dart';
@@ -8,7 +11,9 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import '../models/search.dart';
 import '../tmdb_api.dart';
 
-class SearchViewModel extends ApiViewModel with Utilities {
+class SearchViewModel extends ApiViewModel with Utilities, CommonFunctions {
+  late final List<MediaGenre> _combinedGenres;
+
   MultiSearchResult? searchResult;
 
   String query = '';
@@ -21,14 +26,36 @@ class SearchViewModel extends ApiViewModel with Utilities {
 
   CancelableOperation? _operation;
 
-  // bool _isInitialized = false;
+  final TextEditingController controller = TextEditingController();
+
+  String lastQuery = '';
+
+  bool isBackVisible = false /*true*/;
+
+  final focusNode = FocusNode();
 
   SearchViewModel() : super() {
     _pagingController = PagingController(firstPageKey: 1)
       ..appendLastPage(<BaseResult>[]);
   }
 
-  initializePaging() {
+  onChanged(String query) {
+    logIfDebug('query:{$query}');
+    if (query != lastQuery) {
+      var shouldNotify = query.isNotEmpty && lastQuery.isEmpty;
+      lastQuery = query;
+      if (shouldNotify) notifyListeners();
+      searchPagedMovies(query);
+    }
+  }
+
+  clearQuery() {
+    controller.clear();
+    onChanged(controller.text);
+  }
+
+  initializePaging(List<MediaGenre> combinedGenres) {
+    _combinedGenres = combinedGenres;
     _listener ??= (pageKey) {
       logIfDebug('page listener called for pageKey=$pageKey');
       searchPagedMovies(query, page: pageKey);
@@ -59,7 +86,18 @@ class SearchViewModel extends ApiViewModel with Utilities {
     searchResult = result;
     final isLastPage = (result?.totalPages ?? 1) == page;
     if (page == 1) _pagingController.itemList = <BaseResult>[];
-    var results = result?.results ?? <BaseResult>[];
+    var results = (result?.results ?? <BaseResult>[]).map((result) {
+      if (result is CombinedResult) {
+        (result).genreNamesString = getGenreNamesFromIds(
+          _combinedGenres,
+          result.genreIds,
+          result.mediaType == MediaType.tv.name
+              ? MediaType.tv
+              : MediaType.movie,
+        );
+      }
+      return result;
+    }).toList();
     // await sortResults(results);
     if (isLastPage) {
       _pagingController.appendLastPage(results);

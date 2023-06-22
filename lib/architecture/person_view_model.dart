@@ -75,7 +75,14 @@ class PersonViewModel extends BaseMediaViewModel {
       _knownForMediaResults = {};
       for (var item in knownFor) {
         for (var mediaOfCast in person.combinedCredits.cast) {
-          if (item.id == mediaOfCast.id) {
+          /// TODO 19/06/2023 This 'genreIds.isNotEmpty' has been added after
+          /// experiencing an issue where when Judie Delpy was clicked in the
+          /// cast of movie named 'Before Sunset', the cast included a
+          /// Collection [id:109701] with null genreIds field.
+          /// I should report it by asking:
+          /// 1) why a collection is being returned in cast credits
+          /// 2) how to differentiate a collection from a regular cast credit
+          if (item.id == mediaOfCast.id && mediaOfCast.genreIds.isNotEmpty) {
             _knownForMediaResults![item.id] = mediaOfCast;
             break;
           }

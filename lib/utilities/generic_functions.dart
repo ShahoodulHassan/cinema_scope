@@ -24,11 +24,6 @@ mixin GenericFunctions {
     }
   }
 
-  /// It is basically used to check if a nullable bool is true or not, in a null
-  /// safe way.
-  /// It takes in a nullable bool and returns a non-null bool
-  bool isNullSafeTrue(bool? aBool) => aBool ?? false;
-
   /// This method simply finds out the current focus, checks if it has the
   /// primary focus or not:
   /// If no => take the focus away (hide keyboard)
@@ -388,4 +383,19 @@ extension Contextual on BuildContext {
       currentFocus.focusedChild?.unfocus();
     }
   }
+}
+
+extension NullStringExtension on String? {
+  bool get isNotNullNorEmpty => (this ?? '').isNotEmpty;
+
+  bool get isNullOrEmpty => (this ?? '').isEmpty;
+
+  bool get isNotNullButEmpty => this != null && this!.isEmpty;
+}
+
+extension NullBoolExtension on bool? {
+  /// It is basically used to check if a nullable bool is true or not, in a null
+  /// safe way.
+  /// It applies on a nullable bool and returns a non-null bool
+  bool get isNotNullAndTrue => this ?? false;
 }

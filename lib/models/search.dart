@@ -97,6 +97,14 @@ class BaseResult {
   Map<String, dynamic> toJson() => _$BaseResultToJson(this);
 }
 
+/// TODO 19/06/2023 'genreIds, voteCount, voteAverage, originalLanguage' have
+/// been given a constant value after experiencing an issue where when
+/// Judie Delpy was clicked in the cast of
+/// movie named 'Before Sunset', the cast included a Collection [id:109701]
+/// with null genreIds field.
+/// I should report it by asking:
+/// 1) why a collection is being returned in cast credits
+/// 2) how to differentiate a collection from a regular cast credit
 @JsonSerializable(fieldRename: FieldRename.snake)
 class MediaResult extends BaseResult {
   String? posterPath;
@@ -110,11 +118,11 @@ class MediaResult extends BaseResult {
 
   MediaResult(
     super.id,
-    this.overview,
-    this.genreIds,
-    this.voteCount,
-    this.voteAverage,
-    this.originalLanguage, {
+    this.overview, {
+    this.genreIds = const <int>[],
+    this.voteCount = 0,
+    this.voteAverage = 0.0,
+    this.originalLanguage = '',
     super.mediaType,
     super.popularity,
     this.posterPath,
@@ -137,14 +145,16 @@ class CombinedResult extends MediaResult {
   List<String>? originCountry;
   String? originalTitle, title, name, originalName;
   bool? video;
+  String deptJobsString;
+  String genreNamesString;
 
   CombinedResult(
     super.id,
-    super.overview,
+    super.overview, {
     super.genreIds,
     super.voteCount,
     super.voteAverage,
-    super.originalLanguage, {
+    super.originalLanguage,
     super.mediaType,
     super.popularity,
     super.posterPath,
@@ -158,13 +168,17 @@ class CombinedResult extends MediaResult {
     this.name,
     this.originalName,
     this.firstAirDate,
+    this.deptJobsString = '',
+    this.genreNamesString = '',
   });
 
   String get mediaTitle => name ?? title ?? '';
-      /*mediaType == MediaType.tv.name ? name! : title!*/
+
+  /*mediaType == MediaType.tv.name ? name! : title!*/
 
   String? get mediaReleaseDate => firstAirDate ?? releaseDate;
-      /*mediaType == MediaType.tv.name ? firstAirDate : releaseDate;*/
+
+  /*mediaType == MediaType.tv.name ? firstAirDate : releaseDate;*/
 
   factory CombinedResult.fromJson(Map<String, dynamic> json) =>
       _$CombinedResultFromJson(json);
@@ -174,9 +188,7 @@ class CombinedResult extends MediaResult {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is CombinedResult &&
-          id == other.id;
+      identical(this, other) || other is CombinedResult && id == other.id;
 
   @override
   int get hashCode => title.hashCode;
@@ -196,13 +208,13 @@ class MovieResult extends MediaResult {
   MovieResult(
     super.id,
     super.overview,
+    this.originalTitle,
+    this.title,
+    this.video, {
     super.genreIds,
     super.voteCount,
     super.voteAverage,
     super.originalLanguage,
-    this.originalTitle,
-    this.title,
-    this.video, {
     // super.mediaType,
     super.popularity,
     super.posterPath,
@@ -230,13 +242,13 @@ class TvResult extends MediaResult {
   TvResult(
     super.id,
     super.overview,
+    this.originCountry,
+    this.name,
+    this.originalName, {
     super.genreIds,
     super.voteCount,
     super.voteAverage,
     super.originalLanguage,
-    this.originCountry,
-    this.name,
-    this.originalName, {
     // super.mediaType,
     super.popularity,
     super.posterPath,

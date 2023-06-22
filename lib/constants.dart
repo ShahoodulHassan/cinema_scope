@@ -12,6 +12,11 @@ class Constants {
   static const double arProfile = 185 / 278;
   static const double arAvatar = 185 / 185;
 
+  static const double cardMargin = 4.0;
+  static const double posterWidth = 100.0;
+  static const double posterVPadding = 8.0;
+  static const double posterWidthFactor = 0.25;
+
   static const String moviePageHeroTag = 'movie_page_hero';
 
   static const String placeholderPath = 'assets/images/placeholder.png';

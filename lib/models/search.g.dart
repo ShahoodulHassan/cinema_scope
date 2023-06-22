@@ -90,10 +90,13 @@ Map<String, dynamic> _$BaseResultToJson(BaseResult instance) =>
 MediaResult _$MediaResultFromJson(Map<String, dynamic> json) => MediaResult(
       json['id'] as int,
       json['overview'] as String,
-      (json['genre_ids'] as List<dynamic>).map((e) => e as int).toList(),
-      json['vote_count'] as int,
-      (json['vote_average'] as num).toDouble(),
-      json['original_language'] as String,
+      genreIds: (json['genre_ids'] as List<dynamic>?)
+              ?.map((e) => e as int)
+              .toList() ??
+          const <int>[],
+      voteCount: json['vote_count'] as int? ?? 0,
+      voteAverage: (json['vote_average'] as num?)?.toDouble() ?? 0.0,
+      originalLanguage: json['original_language'] as String? ?? '',
       mediaType: json['media_type'] as String?,
       popularity: (json['popularity'] as num?)?.toDouble(),
       posterPath: json['poster_path'] as String?,
@@ -120,10 +123,13 @@ CombinedResult _$CombinedResultFromJson(Map<String, dynamic> json) =>
     CombinedResult(
       json['id'] as int,
       json['overview'] as String,
-      (json['genre_ids'] as List<dynamic>).map((e) => e as int).toList(),
-      json['vote_count'] as int,
-      (json['vote_average'] as num).toDouble(),
-      json['original_language'] as String,
+      genreIds: (json['genre_ids'] as List<dynamic>?)
+              ?.map((e) => e as int)
+              .toList() ??
+          const <int>[],
+      voteCount: json['vote_count'] as int? ?? 0,
+      voteAverage: (json['vote_average'] as num?)?.toDouble() ?? 0.0,
+      originalLanguage: json['original_language'] as String? ?? '',
       mediaType: json['media_type'] as String?,
       popularity: (json['popularity'] as num?)?.toDouble(),
       posterPath: json['poster_path'] as String?,
@@ -139,6 +145,8 @@ CombinedResult _$CombinedResultFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String?,
       originalName: json['original_name'] as String?,
       firstAirDate: json['first_air_date'] as String?,
+      deptJobsString: json['dept_jobs_string'] as String? ?? '',
+      genreNamesString: json['genre_names_string'] as String? ?? '',
     );
 
 Map<String, dynamic> _$CombinedResultToJson(CombinedResult instance) =>
@@ -162,18 +170,23 @@ Map<String, dynamic> _$CombinedResultToJson(CombinedResult instance) =>
       'name': instance.name,
       'original_name': instance.originalName,
       'video': instance.video,
+      'dept_jobs_string': instance.deptJobsString,
+      'genre_names_string': instance.genreNamesString,
     };
 
 MovieResult _$MovieResultFromJson(Map<String, dynamic> json) => MovieResult(
       json['id'] as int,
       json['overview'] as String,
-      (json['genre_ids'] as List<dynamic>).map((e) => e as int).toList(),
-      json['vote_count'] as int,
-      (json['vote_average'] as num).toDouble(),
-      json['original_language'] as String,
       json['original_title'] as String,
       json['title'] as String,
       json['video'] as bool,
+      genreIds: (json['genre_ids'] as List<dynamic>?)
+              ?.map((e) => e as int)
+              .toList() ??
+          const <int>[],
+      voteCount: json['vote_count'] as int? ?? 0,
+      voteAverage: (json['vote_average'] as num?)?.toDouble() ?? 0.0,
+      originalLanguage: json['original_language'] as String? ?? '',
       popularity: (json['popularity'] as num?)?.toDouble(),
       posterPath: json['poster_path'] as String?,
       backdropPath: json['backdrop_path'] as String?,
@@ -203,15 +216,18 @@ Map<String, dynamic> _$MovieResultToJson(MovieResult instance) =>
 TvResult _$TvResultFromJson(Map<String, dynamic> json) => TvResult(
       json['id'] as int,
       json['overview'] as String,
-      (json['genre_ids'] as List<dynamic>).map((e) => e as int).toList(),
-      json['vote_count'] as int,
-      (json['vote_average'] as num).toDouble(),
-      json['original_language'] as String,
       (json['origin_country'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
       json['name'] as String,
       json['original_name'] as String,
+      genreIds: (json['genre_ids'] as List<dynamic>?)
+              ?.map((e) => e as int)
+              .toList() ??
+          const <int>[],
+      voteCount: json['vote_count'] as int? ?? 0,
+      voteAverage: (json['vote_average'] as num?)?.toDouble() ?? 0.0,
+      originalLanguage: json['original_language'] as String? ?? '',
       popularity: (json['popularity'] as num?)?.toDouble(),
       posterPath: json['poster_path'] as String?,
       backdropPath: json['backdrop_path'] as String?,

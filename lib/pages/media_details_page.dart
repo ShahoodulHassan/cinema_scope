@@ -28,12 +28,18 @@ class MediaSubDetailsPage<T> extends StatelessWidget {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title),
+            Text(
+              title,
+              style: Theme.of(context).appBarTheme.titleTextStyle?.copyWith(
+                    height: 1.2,
+                  ),
+            ),
             Text(
               name,
               style: const TextStyle(
                 color: Colors.black87,
                 fontSize: 16.0,
+                height: 1.2,
               ),
             ),
           ],

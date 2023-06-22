@@ -522,12 +522,8 @@ class _CastCrewSection extends StatelessWidget
           title: 'Top billed cast',
           children: [
             if (tuple.item1.isNotEmpty)
-              _CastListView<TvCast>(
-                tuple.item1.take(_maxCount).toList(),
-                MediaQuery
-                    .of(context)
-                    .size
-                    .width,
+              _TvCastPosterListView(
+                items: tuple.item1.take(_maxCount).toList(),
               ),
             if (tuple.item2.isNotEmpty)
               getCrewSection(context, tuple.item2,
@@ -653,11 +649,11 @@ class _CastCrewSection extends StatelessWidget
   }
 
   Widget getSectionTitleRow(bool showSeeAll, Function()? onPressed) =>
-      Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
+      const Padding(
+        padding: EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
+          children: [
             Text(
               'Top billed cast' /*.toUpperCase()*/,
               style: TextStyle(
@@ -671,6 +667,213 @@ class _CastCrewSection extends StatelessWidget
           ],
         ),
       );
+}
+
+class _TvCastPosterListView extends StatelessWidget
+    with GenericFunctions, Utilities, CommonFunctions {
+  final List<TvCast> items;
+  final double posterWidth;
+  final double radius;
+
+  final titleContainerPadding = 8.0;
+
+  late final titleFontSize = 14.0;
+
+  final titleLineHeight = 1.2;
+
+  final aspectRatio = Constants.arProfile / 0.87;
+
+  final maxLines = 2;
+
+  final episodeMaxLines = 1;
+
+  late final yearFontSize = titleFontSize;
+
+  final listViewTopPadding = 16.0;
+
+  final listViewHorizontalPadding = 16.0 - Constants.cardMargin;
+
+  final nameTopPadding = 8.0;
+
+  final characterVerticalPadding = 6.0;
+
+  final episodeBottomPadding = 8.0;
+
+  final nameStyle = const TextStyle(
+    fontSize: 14.0,
+    fontWeight: FontWeight.bold,
+    height: 1.2,
+  );
+
+  final characterStyle = const TextStyle(
+    fontSize: 14.0,
+    height: 1.2,
+  );
+
+  final episodeStyle = const TextStyle(
+    fontSize: 14.0,
+    height: 1.2,
+    color: Colors.black54,
+  );
+
+  /// This addition of 0.2 (per line) is required in order to avoid the "A
+  /// RenderFlex overflowed by 0.800 pixels on the bottom." error
+  late final nameHeight =
+      (nameStyle.height! * nameStyle.fontSize! + 0.2) * maxLines;
+
+  late final characterHeight =
+      (characterStyle.height! * characterStyle.fontSize! + 0.2) * maxLines;
+
+  late final episodeHeight =
+      (episodeStyle.height! * episodeStyle.fontSize! + 0.2) * episodeMaxLines;
+
+  late final nameContainerHeight = nameHeight + nameTopPadding;
+
+  late final characterContainerHeight =
+      characterHeight + characterVerticalPadding * 2;
+
+  late final episodeContainerHeight = episodeHeight + episodeBottomPadding;
+
+  _TvCastPosterListView({
+    required this.items,
+    this.posterWidth = 140.0,
+    this.radius = 4.0,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    logIfDebug('build called');
+    final posterHeight = (posterWidth - Constants.cardMargin * 2) / aspectRatio;
+
+    final listViewHeight = posterHeight +
+        nameContainerHeight +
+        characterContainerHeight +
+        episodeContainerHeight +
+        listViewTopPadding * 2;
+
+    return SizedBox(
+      height: listViewHeight,
+      child: ListView.builder(
+        itemBuilder: (_, index) {
+          // logIfDebug('MyListView itemBuilder called');
+          final cast = items[index];
+          return buildItemView(
+            context,
+            cast,
+            cardMargin: Constants.cardMargin,
+            nameContainerHeight: nameContainerHeight,
+            characterContainerHeight: characterContainerHeight,
+          );
+        },
+        physics: const ClampingScrollPhysics(),
+        padding: EdgeInsets.fromLTRB(
+          listViewHorizontalPadding,
+          listViewTopPadding,
+          listViewHorizontalPadding,
+          listViewTopPadding,
+        ),
+        itemCount: items.length,
+        scrollDirection: Axis.horizontal,
+        itemExtent: posterWidth,
+      ),
+    );
+  }
+
+  Widget buildItemView(
+      BuildContext context,
+      TvCast cast, {
+        required double cardMargin,
+        required double nameContainerHeight,
+        required double characterContainerHeight,
+      }) {
+    return Stack(
+      children: [
+        Card(
+          color: Colors.white,
+          surfaceTintColor: Colors.white,
+          elevation: 3.0,
+          margin: EdgeInsets.symmetric(horizontal: cardMargin),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(radius),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              NetworkImageView(
+                cast.profilePath,
+                imageType: ImageType.profile,
+                aspectRatio: aspectRatio,
+                topRadius: radius,
+                fit: BoxFit.fitWidth,
+              ),
+              Container(
+                padding: EdgeInsets.fromLTRB(
+                  titleContainerPadding,
+                  nameTopPadding,
+                  titleContainerPadding,
+                  0.0,
+                ),
+                // height: nameContainerHeight,
+                child: Text(
+                  cast.name,
+                  maxLines: maxLines,
+                  overflow: TextOverflow.ellipsis,
+                  style: nameStyle,
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.fromLTRB(
+                  titleContainerPadding,
+                  characterVerticalPadding,
+                  titleContainerPadding,
+                  characterVerticalPadding,
+                ),
+                // height: characterContainerHeight,
+                child: Text(
+                  cast.roles
+                      .map((e) => e.character)
+                      .join(', '),
+                  maxLines: maxLines,
+                  overflow: TextOverflow.ellipsis,
+                  style: characterStyle,
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.fromLTRB(
+                  titleContainerPadding,
+                  0.0,
+                  titleContainerPadding,
+                  episodeBottomPadding,
+                ),
+                // height: episodeContainerHeight,
+                child: Text(
+                  '${cast.totalEpisodeCount} episode${cast
+                      .totalEpisodeCount > 1 ? 's' : ''}',
+                  maxLines: episodeMaxLines,
+                  overflow: TextOverflow.ellipsis,
+                  style: episodeStyle,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Positioned.fill(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: cardMargin),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(radius),
+                onTap: () {
+                  goToPersonPage(context, cast);
+                },
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 class _CastListView<T extends BaseTvCredit> extends StatelessWidget

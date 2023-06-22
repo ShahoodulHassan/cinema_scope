@@ -12,13 +12,11 @@ class ImagePage extends StatelessWidget {
   final List<ImageDetail> images;
   final int initialPage;
 
-  final ImageType placeholderImageType;
   final ImageQuality placeholderQuality;
 
   ImagePage({
     required this.images,
     required this.initialPage,
-    required this.placeholderImageType,
     this.placeholderQuality = ImageQuality.medium,
     Key? key,
   }) : super(key: key);
@@ -70,6 +68,10 @@ class ImagePage extends StatelessWidget {
 
   @Deprecated('InteractiveViewer didn\'t work as per my requirements')
   Widget getImageView(BuildContext context, ImageDetail image) {
+    var imageType = image.imageType != null
+        ? ImageType.values
+        .firstWhere((element) => element.name == image.imageType)
+        : ImageType.profile;
     return InteractiveViewer(
       child: Container(
         color: Colors.black,
@@ -78,7 +80,7 @@ class ImagePage extends StatelessWidget {
           children: [
             NetworkImageView(
               image.filePath,
-              imageType: placeholderImageType,
+              imageType: imageType,
               aspectRatio: image.aspectRatio,
               imageQuality: placeholderQuality,
               // heroImageTag: image.filePath,
@@ -101,6 +103,10 @@ class ImagePage extends StatelessWidget {
   }
 
   PhotoView buildPhotoView(BuildContext context, ImageDetail image) {
+    var imageType = image.imageType != null
+        ? ImageType.values
+        .firstWhere((element) => element.name == image.imageType)
+        : ImageType.profile;
     return PhotoView(
       imageProvider: CachedNetworkImageProvider(getImageUrl(image, context)),
       maxScale: PhotoViewComputedScale.contained * 4.0,
@@ -113,7 +119,7 @@ class ImagePage extends StatelessWidget {
             children: [
               NetworkImageView(
                 image.filePath,
-                imageType: placeholderImageType,
+                imageType: imageType,
                 aspectRatio: image.aspectRatio,
                 imageQuality: placeholderQuality,
                 // heroImageTag: image.filePath,

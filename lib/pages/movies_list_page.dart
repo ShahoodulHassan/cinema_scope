@@ -1,4 +1,6 @@
+import 'package:cinema_scope/architecture/config_view_model.dart';
 import 'package:cinema_scope/constants.dart';
+import 'package:cinema_scope/main.dart';
 import 'package:cinema_scope/models/search.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
@@ -7,18 +9,12 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 
-import '../architecture/movies_list_view_model.dart';
+import '../architecture/media_list_view_model.dart';
 import '../models/movie.dart';
-import 'movie_page.dart';
 
 class MoviesListPage extends MultiProvider {
   MoviesListPage({
     super.key,
-    // required int id,
-    // required String title,
-    // required String? year,
-    // required double voteAverage,
-    // required String? overview,
     required MediaType mediaType,
     List<Genre>? genres,
     List<Keyword>? keywords,
@@ -28,11 +24,6 @@ class MoviesListPage extends MultiProvider {
               ChangeNotifierProvider(create: (_) => MediaListViewModel()),
             ],
             child: _MoviesListPageChild(
-              // id: id,
-              // title: title,
-              // year: year,
-              // voteAverage: voteAverage,
-              // overview: overview,
               mediaType: mediaType,
               genres: genres,
               keywords: keywords,
@@ -76,6 +67,7 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
           genreIds: widget.genres?.map((e) => e.id).toList(),
           keywords: widget.keywords,
           mediaId: widget.mediaId,
+          combinedGenres: context.read<ConfigViewModel>().combinedGenres,
         );
     super.initState();
   }
@@ -92,8 +84,11 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
     return title ?? 'Cinema scope';
   }
 
+  bool get isPortrait => MediaQuery.orientationOf(context) == Orientation.portrait;
+
   @override
   Widget build(BuildContext context) {
+    // logIfDebug('screenWidth=${MediaQuery.sizeOf(context).width}');
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -104,7 +99,12 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(getAppbarTitle()),
+                Text(
+                  getAppbarTitle(),
+                  style: Theme.of(context).appBarTheme.titleTextStyle?.copyWith(
+                        height: 1.2,
+                      ),
+                ),
                 AnimatedSize(
                   duration: const Duration(milliseconds: 150),
                   child: Selector<MediaListViewModel, int?>(
@@ -114,6 +114,8 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
                         '(${applyCommaAndRoundNoZeroes(count.toDouble(), 0, true)})',
                         style: const TextStyle(
                           fontSize: 16.0,
+                          height: 1.2,
+                          fontWeight: FontWeight.normal,
                         ),
                       );
                     },
@@ -123,22 +125,20 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
               ],
             ),
           ),
-          PagedSliverList.separated(
-            separatorBuilder: (_, index) {
-              return Container(
-                height: 0.6,
-                color: Theme.of(context).primaryColorLight,
-              );
-              // return SizedBox.fromSize(
-              //   size: const Size.fromHeight(8.0),
-              // );
-            },
+          PagedSliverGrid(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: MediaQuery.sizeOf(context).width ~/ 340,
+              mainAxisExtent: mainAxisExtent,
+            ),
+            // itemExtent: Constants.posterWidth / Constants.arPoster +
+            //     Constants.posterVPadding * 2,
             pagingController:
                 context.read<MediaListViewModel>().pagingController,
             builderDelegate: PagedChildBuilderDelegate<CombinedResult>(
               itemBuilder: (_, media, index) {
-                return media.mediaType == MediaType.movie.name ?
-                MoviePosterTile(movie: media) : TvPosterTile(tv: media);
+                return media.mediaType == MediaType.movie.name
+                    ? MoviePosterTile(movie: media)
+                    : TvPosterTile(tv: media);
               },
               newPageProgressIndicatorBuilder: (_) => const Center(
                 child: Padding(
@@ -167,21 +167,9 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
     );
   }
 
-  void goToMoviePage(BuildContext context, MovieResult movie,
-      {String? destUrl}) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => MoviePage(
-            id: movie.id,
-            title: movie.movieTitle,
-            year: getYearStringFromDate(movie.releaseDate),
-            voteAverage: movie.voteAverage,
-            overview: movie.overview,
-            sourceUrl: null,
-            destUrl: destUrl,
-            heroImageTag: ''),
-      ),
-    ).then((value) {});
+  double get mainAxisExtent {
+    return (Constants.posterWidth / Constants.arPoster) +
+        (Constants.posterVPadding * 2);
   }
+
 }

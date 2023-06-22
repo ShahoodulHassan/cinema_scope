@@ -4,6 +4,7 @@ import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:cinema_scope/widgets/app_lifecycle_manager.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -14,7 +15,10 @@ final navigatorKey = GlobalKey<NavigatorState>();
 /// Global application level context
 var appContext = navigatorKey.currentState!.overlay!.context;
 
+final Color kPrimary = Theme.of(appContext).colorScheme.primary;
+
 void main() async {
+  print('main called');
   WidgetsFlutterBinding.ensureInitialized();
   await PrefUtil.init();
   // await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -41,9 +45,11 @@ class MyApp extends StatelessWidget with GenericFunctions {
 
   @override
   Widget build(BuildContext context) {
+    logIfDebug('build called');
     // var primarySwatch = Colors.amber;
     var primaryColor = getColorFromHexCode('#452665'); // 174378
     var appBarItemColor = Colors.black87;
+    var fontFamily = GoogleFonts.poppins().fontFamily;
     return AppLifecycleManager(
       child: DynamicColorBuilder(
         builder: (light, dark) {
@@ -52,31 +58,37 @@ class MyApp extends StatelessWidget with GenericFunctions {
             navigatorKey: navigatorKey,
             title: 'Cinema scope',
             theme: ThemeData(
-                colorSchemeSeed: primaryColor,
-                highlightColor: primaryColor.withOpacity(0.10),
-                splashColor: primaryColor.withOpacity(0.10),
-                useMaterial3: true,
-                fontFamily: GoogleFonts.lato().fontFamily,
-                appBarTheme: AppBarTheme(
-                  titleTextStyle: TextStyle(
-                    color: appBarItemColor,
-                    fontSize: 24.0,
-                    fontFamily: GoogleFonts.lato().fontFamily,
-                    // fontWeight: FontWeight.bold,
-                  ),
-                  actionsIconTheme: IconThemeData(
-                    color: appBarItemColor,
-                  ),
-                  iconTheme: IconThemeData(
-                    color: appBarItemColor,
-                  ),
-                )
-                // textTheme: Theme.of(context).textTheme.apply(
-                //   fontSizeFactor: 1.1,
-                //   fontSizeDelta: 2.0,
-                // ),
+              colorSchemeSeed: primaryColor,
+              highlightColor: primaryColor.withOpacity(0.10),
+              splashColor: primaryColor.withOpacity(0.10),
+              useMaterial3: true,
+              fontFamily: fontFamily,
+              scrollbarTheme: Theme.of(context).scrollbarTheme.copyWith(
+                thumbColor: const MaterialStatePropertyAll(Colors.black26),
+                radius: const Radius.circular(12.0),
+              ),
+              appBarTheme: AppBarTheme(
+                titleTextStyle: TextStyle(
+                  color: appBarItemColor,
+                  fontSize: 22,
+                  fontFamily: fontFamily,
+                  // fontWeight: FontWeight.bold,
                 ),
+                actionsIconTheme: IconThemeData(
+                  color: appBarItemColor,
+                ),
+                iconTheme: IconThemeData(
+                  color: appBarItemColor,
+                ),
+              ),
+            ),
             navigatorObservers: [routeObserver],
+            builder: (ctx, child) {
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                child: child!,
+              );
+            },
             home: Selector<ConfigViewModel, bool>(
               builder: (_, isConfigComplete, __) {
                 logIfDebug('isConfigComplete:$isConfigComplete');
@@ -91,4 +103,3 @@ class MyApp extends StatelessWidget with GenericFunctions {
     );
   }
 }
-

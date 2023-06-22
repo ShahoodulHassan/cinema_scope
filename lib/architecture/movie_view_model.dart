@@ -4,6 +4,7 @@ import 'package:async/async.dart';
 import 'package:cinema_scope/architecture/config_view_model.dart';
 import 'package:cinema_scope/architecture/person_view_model.dart';
 import 'package:cinema_scope/models/search.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:tuple/tuple.dart';
 
@@ -67,7 +68,7 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
   int get totalRecomCount => media?.recommendations.totalResults ?? 0;
 
   List<WatchProvider>? get streamingProviders =>
-      media?.watchProviders.results.wpResult?.flatrate
+      media?.watchProviders?.results.wpResult?.flatrate
         ?..sort((a, b) {
           return b.displayPriority.compareTo(a.displayPriority);
         });
@@ -102,7 +103,7 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
           .map((e) => e.copyWith.imageType(ImageType.backdrop.name)));
       images.addAll(imageResult.logos
           .map((e) => e.copyWith.imageType(ImageType.logo.name)));
-      this.images = images;
+      this.images = images..removeWhere((element) => element.filePath.contains('.svg'));
       notifyListeners();
     }
   }
@@ -358,7 +359,7 @@ class MovieViewModel extends MediaViewModel<Movie> {
     ).then((result) async {
       media = result;
       year = getYearStringFromDate(media!.releaseDate);
-      logIfDebug('providers:${media?.watchProviders.results.wpResult}');
+      logIfDebug('providers:${media?.watchProviders?.results.wpResult}');
       await _compileCertification();
       notifyListeners();
       _fetchMoreData();

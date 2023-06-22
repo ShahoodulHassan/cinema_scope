@@ -131,30 +131,6 @@ class ConfigViewModel extends ApiViewModel {
     PrefUtil.setValue(Constants.pkCombinedGenres, jsonEncode(genres));
   }
 
-  /// Since I found the bug reported in
-  /// https://www.themoviedb.org/talk/63ea28b1a2e60200932b0343, I've decided to
-  /// not rely on the genre segregation made by the API.
-  String getGenreNamesFromIds(List<int> genreIds, MediaType mediaType) {
-    logIfDebug(
-        'getGenreNamesFromIds=>mediaType:$mediaType, genreIds:$genreIds');
-
-    return (genreIds.map((id) {
-      var genres = combinedGenres
-          .where((genre) => genre.mediaType == mediaType && genre.id == id);
-      if (genres.isNotEmpty) return genres.first.name;
-    }).toList()
-          ..removeWhere((element) => element == null))
-        .join(', ');
-
-    // return genreIds
-    //     .map((id) =>
-    // combinedGenres
-    //     .singleWhere(
-    //         (genre) => genre.mediaType == mediaType && genre.id == id)
-    //     .name)
-    //     .join(', ');
-  }
-
   ApiConfiguration? getPrefApiConfiguration() {
     var json = PrefUtil.getValue(Constants.pkApiConfig, '');
     return json.isEmpty

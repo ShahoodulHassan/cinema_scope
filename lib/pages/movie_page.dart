@@ -6,11 +6,13 @@ import 'package:cinema_scope/architecture/movie_view_model.dart';
 import 'package:cinema_scope/models/configuration.dart';
 import 'package:cinema_scope/models/search.dart';
 import 'package:cinema_scope/pages/credits_page.dart';
+import 'package:cinema_scope/pages/image_page.dart';
 import 'package:cinema_scope/pages/media_details_page.dart';
 import 'package:cinema_scope/pages/person_page.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
+import 'package:cinema_scope/widgets/home_section_test.dart';
 import 'package:cinema_scope/widgets/image_view.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -42,6 +44,7 @@ class MoviePage extends MultiProvider {
     required String? overview,
     required String? sourceUrl,
     required String? destUrl,
+    required String? backdrop,
     required String heroImageTag,
   }) : super(
             providers: [
@@ -56,6 +59,7 @@ class MoviePage extends MultiProvider {
               overview,
               sourceUrl,
               destUrl,
+              backdrop,
               heroImageTag,
             ));
 }
@@ -64,7 +68,7 @@ class _MoviePageChild extends StatefulWidget {
   final int id;
 
   final String title, heroImageTag;
-  final String? year, overview, sourceUrl, destUrl;
+  final String? year, overview, sourceUrl, destUrl, backdrop;
   final double voteAverage;
 
   const _MoviePageChild(
@@ -75,6 +79,7 @@ class _MoviePageChild extends StatefulWidget {
     this.overview,
     this.sourceUrl,
     this.destUrl,
+    this.backdrop,
     this.heroImageTag, {
     Key? key,
   }) : super(key: key);
@@ -88,6 +93,7 @@ class _MoviePageChildState extends State<_MoviePageChild>
   late final String? sourceUrl = widget.sourceUrl;
   late final String? destUrl = widget.destUrl;
   late final String heroImageTag = widget.heroImageTag;
+  late final backdrop = widget.backdrop;
 
   final animDuration = const Duration(milliseconds: 250);
 
@@ -121,66 +127,75 @@ class _MoviePageChildState extends State<_MoviePageChild>
             // floating: true,
             pinned: true,
             // snap: true,
+            // flexibleSpace: backdrop.isNotNullNorEmpty ? NetworkImageView(
+            //   '$backdropBaseUrl$backdrop',
+            //   imageType: ImageType.backdrop,
+            //   aspectRatio: Constants.arBackdrop,
+            // ) : null,
+            // expandedHeight:
+            //     MediaQuery.sizeOf(context).width / Constants.arBackdrop - MediaQuery.paddingOf(context).top,
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.title),
+                Text(
+                  widget.title,
+                ),
               ],
             ),
           ),
-          Selector<MovieViewModel,
-              Tuple3<List<String>, Map<String, ThumbnailType>, String?>>(
-            builder: (_, tuple, __) {
-              logIfDebug('isPinned, thumbnails:$tuple');
-              var height = MediaQuery.of(context).size.width * 9 / 16;
-              if (tuple.item3 != null && tuple.item1.isNotEmpty) {
-                return SliverPersistentHeader(
-                  delegate: TrailerDelegate(
-                    mediaType: MediaType.movie,
-                    extent: height,
-                    initialVideoId: tuple.item3!,
-                    youtubeKeys: tuple.item1,
-                  ),
-                  pinned: true,
+          MultiSliver(children: [
+            Selector<MovieViewModel,
+                Tuple3<List<String>, Map<String, ThumbnailType>, String?>>(
+              builder: (_, tuple, __) {
+                logIfDebug('isPinned, thumbnails:$tuple');
+                var height = MediaQuery.sizeOf(context).width * 9 / 16;
+                if (tuple.item3 != null && tuple.item1.isNotEmpty) {
+                  return SliverPersistentHeader(
+                    delegate: TrailerDelegate(
+                      mediaType: MediaType.movie,
+                      extent: height,
+                      initialVideoId: tuple.item3!,
+                      youtubeKeys: tuple.item1,
+                    ),
+                    pinned: true,
+                  );
+                } else {
+                  return SliverPersistentHeader(
+                    delegate: ImageDelegate(
+                      // backdropBaseUrl,
+                      mediaType: MediaType.movie,
+                      extent: tuple.item2.isEmpty ? 0 : height,
+                      thumbMap: tuple.item2,
+                    ),
+                    pinned: false,
+                  );
+                }
+              },
+              selector: (_, mvm) {
+                logIfDebug('isPinned, selector called with:${mvm.youtubeKeys}');
+                return Tuple3<List<String>, Map<String, ThumbnailType>,
+                    String?>(
+                  mvm.youtubeKeys,
+                  mvm.thumbMap,
+                  mvm.initialVideoId,
                 );
-              } else {
-                return SliverPersistentHeader(
-                  delegate: ImageDelegate(
-                    // backdropBaseUrl,
-                    mediaType: MediaType.movie,
-                    extent: tuple.item2.isEmpty ? 0 : height,
-                    thumbMap: tuple.item2,
-                  ),
-                  pinned: false,
-                );
-              }
-            },
-            selector: (_, mvm) {
-              logIfDebug('isPinned, selector called with:${mvm.youtubeKeys}');
-              return Tuple3<List<String>, Map<String, ThumbnailType>, String?>(
-                mvm.youtubeKeys,
-                mvm.thumbMap,
-                mvm.initialVideoId,
-              );
-            },
-          ),
-          Selector<MovieViewModel, String?>(
-            selector: (_, tvm) => tvm.initialVideoId,
-            builder: (_, id, __) {
-              if (id != null && id.isNotEmpty) {
-                return SliverPinnedHeader(
-                  child: StreamersView<Movie, MovieViewModel>(id: widget.id),
-                );
-              } else {
-                return SliverToBoxAdapter(
-                  child: StreamersView<Movie, MovieViewModel>(id: widget.id),
-                );
-              }
-            },
-          ),
-          SliverToBoxAdapter(
-            child: AnimatedSize(
-              duration: animDuration,
+              },
+            ),
+            Selector<MovieViewModel, String?>(
+              selector: (_, tvm) => tvm.initialVideoId,
+              builder: (_, id, __) {
+                if (id != null && id.isNotEmpty) {
+                  return SliverPinnedHeader(
+                    child: StreamersView<Movie, MovieViewModel>(id: widget.id),
+                  );
+                } else {
+                  return SliverToBoxAdapter(
+                    child: StreamersView<Movie, MovieViewModel>(id: widget.id),
+                  );
+                }
+              },
+            ),
+            SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.only(top: 16.0, bottom: 0.0),
                 child: Column(
@@ -212,17 +227,17 @@ class _MoviePageChildState extends State<_MoviePageChild>
                 ),
               ),
             ),
-          ),
-          const _CastCrewSection(),
-          const ImagesSection<MovieViewModel>(),
-          const _MediaInfoSection(),
-          const RecommendationsSection<Movie, MovieViewModel>(),
-          const ReviewsSection(),
-          const MoreByDirectorSection<Movie, MovieViewModel>(),
-          const MoreByLeadActorSection<Movie, MovieViewModel>(),
-          const MoreByGenresSection<Movie, MovieViewModel>(),
-          const KeywordsSection<Movie, MovieViewModel>(),
-          const SliverToBoxAdapter(child: SizedBox(height: 16)),
+            const _CastCrewSection(),
+            const ImagesSection<MovieViewModel>(),
+            const _MediaInfoSection(),
+            const RecommendationsSection<Movie, MovieViewModel>(),
+            const ReviewsSection(),
+            const MoreByDirectorSection<Movie, MovieViewModel>(),
+            const MoreByLeadActorSection<Movie, MovieViewModel>(),
+            const MoreByGenresSection<Movie, MovieViewModel>(),
+            const KeywordsSection<Movie, MovieViewModel>(),
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
+          ]),
         ],
       ),
     );
@@ -497,42 +512,11 @@ class MoreByLeadActorSection<M extends Media, T extends MediaViewModel<M>>
         return BaseSectionSliver(
           title: 'More by ${moreByActor.item1.name}',
           children: [
-            PosterCardListView(
+            MediaPosterListView(
               items: moreByActor.item2.take(_maxCount).toList(),
-              screenWidth: MediaQuery.of(context).size.width,
-              aspectRatio: Constants.arPoster,
-              onTap: (item) {
-                if (item.mediaType == MediaType.movie.name) {
-                  goToMoviePage(
-                    context,
-                    id: item.id,
-                    title: item.mediaTitle,
-                    overview: item.overview,
-                    releaseDate: item.mediaReleaseDate /*getReleaseDate(item)*/,
-                    voteAverage: item.voteAverage,
-                  );
-                } else if (item.mediaType == MediaType.tv.name) {
-                  goToTvPage(
-                    context,
-                    id: item.id,
-                    title: item.mediaTitle,
-                    overview: item.overview,
-                    releaseDate: item.mediaReleaseDate /*getReleaseDate(item)*/,
-                    voteAverage: item.voteAverage,
-                  );
-                }
-              },
+              posterWidth: 140.0,
+              radius: 4.0,
             ),
-            // Container(
-            //   alignment: Alignment.center,
-            //   padding: const EdgeInsets.only(bottom: 8.0),
-            //   child: CompactTextButton('All filmography', onPressed: () {
-            //     var pvm = context.read<PersonViewModel>();
-            //     var person = pvm.personWithKnownFor.person;
-            //     goToFilmographyPage(
-            //         context, person!.id, person.name, person.combinedCredits);
-            //   }),
-            // ),
           ],
         );
       },
@@ -648,35 +632,42 @@ class MoreByGenresSection<M extends Media, T extends MediaViewModel<M>>
                 'having most of the similar genres',
                 style: TextStyle(
                   color: Colors.black87,
+                  height: 1.2,
                 ),
               ),
             ),
-            PosterCardListView(
+            MediaPosterListView(
               items: list.take(_maxCount).toList(),
-              screenWidth: MediaQuery.of(context).size.width,
-              aspectRatio: Constants.arPoster,
-              onTap: (item) {
-                item.mediaType == MediaType.movie.name
-                    ? goToMoviePage(
-                        context,
-                        id: item.id,
-                        title: item.mediaTitle,
-                        overview: item.overview,
-                        releaseDate:
-                            item.mediaReleaseDate /*getReleaseDate(item)*/,
-                        voteAverage: item.voteAverage,
-                      )
-                    : goToTvPage(
-                        context,
-                        id: item.id,
-                        title: item.mediaTitle,
-                        overview: item.overview,
-                        releaseDate:
-                            item.mediaReleaseDate /*getReleaseDate(item)*/,
-                        voteAverage: item.voteAverage,
-                      );
-              },
+              posterWidth: 140.0,
+              radius: 4.0,
+              listViewBottomPadding: 16.0,
             ),
+            // PosterCardListView(
+            //   items: list.take(_maxCount).toList(),
+            //   screenWidth: MediaQuery.of(context).size.width,
+            //   aspectRatio: Constants.arPoster,
+            //   onTap: (item) {
+            //     item.mediaType == MediaType.movie.name
+            //         ? goToMoviePage(
+            //             context,
+            //             id: item.id,
+            //             title: item.mediaTitle,
+            //             overview: item.overview,
+            //             releaseDate:
+            //                 item.mediaReleaseDate /*getReleaseDate(item)*/,
+            //             voteAverage: item.voteAverage,
+            //           )
+            //         : goToTvPage(
+            //             context,
+            //             id: item.id,
+            //             title: item.mediaTitle,
+            //             overview: item.overview,
+            //             releaseDate:
+            //                 item.mediaReleaseDate /*getReleaseDate(item)*/,
+            //             voteAverage: item.voteAverage,
+            //           );
+            //   },
+            // ),
             Container(
               alignment: Alignment.center,
               padding: const EdgeInsets.only(bottom: 8.0),
@@ -740,42 +731,11 @@ class MoreByDirectorSection<M extends Media, T extends MediaViewModel<M>>
             //     ),
             //   ),
             // ),
-            PosterCardListView(
-              items: tuple.item2 /*.take(_maxCount).toList()*/,
-              screenWidth: MediaQuery.of(context).size.width,
-              aspectRatio: Constants.arPoster,
-              onTap: (item) {
-                if (item.mediaType == MediaType.movie.name) {
-                  goToMoviePage(
-                    context,
-                    id: item.id,
-                    title: item.mediaTitle,
-                    overview: item.overview,
-                    releaseDate: item.mediaReleaseDate /*getReleaseDate(item)*/,
-                    voteAverage: item.voteAverage,
-                  );
-                } else if (item.mediaType == MediaType.tv.name) {
-                  goToTvPage(
-                    context,
-                    id: item.id,
-                    title: item.mediaTitle,
-                    releaseDate: item.mediaReleaseDate,
-                    voteAverage: item.voteAverage,
-                    overview: item.overview,
-                  );
-                }
-              },
+            MediaPosterListView(
+              items: tuple.item2,
+              posterWidth: 140.0,
+              radius: 4.0,
             ),
-            // Container(
-            //   alignment: Alignment.center,
-            //   padding: const EdgeInsets.only(bottom: 8.0),
-            //   child: CompactTextButton('Explore all', onPressed: () {
-            //     // var pvm = context.read<PersonViewModel>();
-            //     // var person = pvm.personWithKnownFor.person;
-            //     // goToFilmographyPage(
-            //     //     context, person!.id, person.name, person.combinedCredits);
-            //   }),
-            // ),
           ],
         );
       },
@@ -801,51 +761,12 @@ class _CastCrewSection extends StatelessWidget
           title: 'Top billed cast',
           children: [
             if (tuple.item1.isNotEmpty)
-              CastListView<Cast>(
-                tuple.item1.take(_maxCount).toList(),
-                MediaQuery.of(context).size.width,
+              _CastPosterListView(
+                items: tuple.item1.take(_maxCount).toList(),
               ),
-            if (tuple.item2.isNotEmpty)
-              getCrewSection(context, tuple.item2),
+            if (tuple.item2.isNotEmpty) getCrewSection(context, tuple.item2),
           ],
         );
-        // return SliverPadding(
-        //   padding: const EdgeInsets.symmetric(vertical: 12.0),
-        //   sliver: SliverStack(
-        //     children: [
-        //       /// This serves as the base card on which the content card is
-        //       /// stacked. The fill constructor helps match its height with
-        //       /// the height of the content card.
-        //       SliverPositioned.fill(
-        //         child: Container(
-        //           color: Colors.white,
-        //         ),
-        //       ),
-        //       SliverToBoxAdapter(
-        //         child: Column(
-        //           children: [
-        //             getSectionSeparator(context),
-        //             if (tuple.item1.isNotEmpty)
-        //               getSectionTitleRow(tuple.item1.length > _maxCount, () {}),
-        //             if (tuple.item1.isNotEmpty)
-        //               CastListView<Cast>(
-        //                 tuple.item1.take(_maxCount).toList(),
-        //                 MediaQuery.of(context).size.width,
-        //               ),
-        //             // if (tuple.item2.isNotEmpty)
-        //             //   CastListView<Crew>(
-        //             //     tuple.item2,
-        //             //     MediaQuery.of(context).size.width,
-        //             //   ),
-        //             if (tuple.item2.isNotEmpty)
-        //               getCrewSection(context, tuple.item2),
-        //             getSectionSeparator(context),
-        //           ],
-        //         ),
-        //       ),
-        //     ],
-        //   ),
-        // );
       },
     );
   }
@@ -974,59 +895,53 @@ class _CastCrewSection extends StatelessWidget
     }));
   }
 
-  // Widget getSectionTitleRow(bool showSeeAll, Function()? onPressed) => Padding(
-  //       padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
-  //       child: Row(
-  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //         children: const [
-  //           Text(
-  //             'Top billed cast' /*.toUpperCase()*/,
-  //             style: TextStyle(
-  //               fontSize: 18.0,
-  //               fontWeight: FontWeight.bold,
-  //               letterSpacing: 1.5,
-  //               // height: 1.1,
-  //             ),
-  //           ),
-  //           // if (showSeeAll) CompactTextButton('All cast', onPressed: onPressed),
-  //         ],
-  //       ),
-  //     );
+// Widget getSectionTitleRow(bool showSeeAll, Function()? onPressed) => Padding(
+//       padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
+//       child: Row(
+//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//         children: const [
+//           Text(
+//             'Top billed cast' /*.toUpperCase()*/,
+//             style: TextStyle(
+//               fontSize: 18.0,
+//               fontWeight: FontWeight.bold,
+//               letterSpacing: 1.5,
+//               // height: 1.1,
+//             ),
+//           ),
+//           // if (showSeeAll) CompactTextButton('All cast', onPressed: onPressed),
+//         ],
+//       ),
+//     );
 }
 
-class CastListView<T extends BaseCredit> extends StatelessWidget
-    with Utilities, CommonFunctions {
-  final List<T> casts;
-  final double screenWidth;
+class _CastPosterListView extends StatelessWidget
+    with GenericFunctions, Utilities, CommonFunctions {
+  final List<Cast> items;
+  final double posterWidth;
+  final double radius;
 
-  CastListView(this.casts, this.screenWidth, {Key? key}) : super(key: key);
+  final titleContainerPadding = 8.0;
 
-  final separatorWidth = 10.0;
+  late final titleFontSize = 14.0;
 
-  final listViewHorizontalPadding = 16.0;
-
-  final listViewVerticalPadding = 16.0;
-
-  final cardCount = 2.5;
-
-  late final deductibleWidth =
-      listViewHorizontalPadding + separatorWidth * cardCount.toInt();
-
-  late final posterWidth = (screenWidth - deductibleWidth) / cardCount;
+  final titleLineHeight = 1.2;
 
   final aspectRatio = Constants.arProfile / 0.87;
 
-  late final posterHeight = posterWidth / aspectRatio;
-
   final maxLines = 2;
 
-  final textHorizPadding = 8.0;
+  late final yearFontSize = titleFontSize;
+
+  final listViewTopPadding = 16.0;
+
+  final listViewHorizontalPadding = 16.0 - Constants.cardMargin;
 
   final nameTopPadding = 8.0;
 
   final nameBottomPadding = 0.0;
 
-  final characterTopPadding = 0.0;
+  final characterTopPadding = 6.0;
 
   final characterBottomPadding = 8.0;
 
@@ -1041,117 +956,139 @@ class CastListView<T extends BaseCredit> extends StatelessWidget
     height: 1.2,
   );
 
-  final topRadius = 4.0;
-
-  final bottomRadius = 0.0;
-
-  /// This addition of 0.2 (per line) is required in order to avoid the "A
-  /// RenderFlex overflowed by 0.800 pixels on the bottom." error
-  late final nameHeight =
-      (nameStyle.height! * nameStyle.fontSize! + 0.2) * maxLines;
-
-  late final characterHeight =
-      (characterStyle.height! * characterStyle.fontSize! + 0.2) * maxLines;
-
-  late final nameContainerHeight =
-      nameHeight + nameTopPadding + nameBottomPadding;
-
-  late final characterContainerHeight =
-      characterHeight + characterTopPadding + characterBottomPadding;
-
-  late final cardHeight =
-      posterHeight + nameContainerHeight + characterContainerHeight;
-
-  late final viewHeight = cardHeight + listViewVerticalPadding * 2;
+  _CastPosterListView({
+    required this.items,
+    this.posterWidth = 140.0,
+    this.radius = 4.0,
+  });
 
   @override
   Widget build(BuildContext context) {
+    logIfDebug('build called');
+    final posterHeight = (posterWidth - Constants.cardMargin * 2) / aspectRatio;
+
+    /// This addition of 0.2 (per line) is required in order to avoid the "A
+    /// RenderFlex overflowed by 0.800 pixels on the bottom." error
+    late final nameHeight =
+        (nameStyle.height! * nameStyle.fontSize! + 0.2) * maxLines;
+
+    late final characterHeight =
+        (characterStyle.height! * characterStyle.fontSize! + 0.2) * maxLines;
+
+    late final nameContainerHeight =
+        nameHeight + nameTopPadding + nameBottomPadding;
+
+    late final characterContainerHeight =
+        characterHeight + characterTopPadding + characterBottomPadding;
+
+    final listViewHeight = posterHeight +
+        nameContainerHeight +
+        characterContainerHeight +
+        listViewTopPadding * 2;
+
     return SizedBox(
-      width: screenWidth,
-      height: viewHeight,
-      child: ListView.separated(
-        // primary: false,
+      height: listViewHeight,
+      child: ListView.builder(
         itemBuilder: (_, index) {
-          var cast = casts[index];
-          return Stack(
+          // logIfDebug('MyListView itemBuilder called');
+          final cast = items[index];
+          return buildItemView(
+            context,
+            cast,
+            cardMargin: Constants.cardMargin,
+            nameContainerHeight: nameContainerHeight,
+            characterContainerHeight: characterContainerHeight,
+          );
+        },
+        physics: const ClampingScrollPhysics(),
+        padding: EdgeInsets.fromLTRB(
+          listViewHorizontalPadding,
+          listViewTopPadding,
+          listViewHorizontalPadding,
+          listViewTopPadding,
+        ),
+        itemCount: items.length,
+        scrollDirection: Axis.horizontal,
+        itemExtent: posterWidth,
+      ),
+    );
+  }
+
+  Widget buildItemView(
+    BuildContext context,
+    Cast cast, {
+    required double cardMargin,
+    required double nameContainerHeight,
+    required double characterContainerHeight,
+  }) {
+    return Stack(
+      children: [
+        Card(
+          color: Colors.white,
+          surfaceTintColor: Colors.white,
+          elevation: 3.0,
+          margin: EdgeInsets.symmetric(horizontal: cardMargin),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(radius),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Card(
-                surfaceTintColor: Colors.white,
-                elevation: 4.0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(topRadius),
+              NetworkImageView(
+                cast.profilePath,
+                imageType: ImageType.profile,
+                aspectRatio: aspectRatio,
+                topRadius: radius,
+                fit: BoxFit.fitWidth,
+              ),
+              Container(
+                padding: EdgeInsets.fromLTRB(
+                  titleContainerPadding,
+                  nameTopPadding,
+                  titleContainerPadding,
+                  nameBottomPadding,
                 ),
-                margin: EdgeInsets.zero,
-                child: SizedBox(
-                  width: posterWidth,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      NetworkImageView(
-                        cast.profilePath,
-                        imageType: ImageType.profile,
-                        aspectRatio: aspectRatio,
-                        topRadius: topRadius,
-                        bottomRadius: bottomRadius,
-                        fit: BoxFit.fitWidth,
-                        heroImageTag: '${cast.id}',
-                      ),
-                      Container(
-                        padding: EdgeInsets.fromLTRB(
-                          textHorizPadding,
-                          nameTopPadding,
-                          textHorizPadding,
-                          nameBottomPadding,
-                        ),
-                        // height: nameContainerHeight,
-                        child: Text(
-                          cast.name,
-                          maxLines: maxLines,
-                          overflow: TextOverflow.ellipsis,
-                          style: nameStyle,
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.fromLTRB(
-                          textHorizPadding,
-                          characterTopPadding,
-                          textHorizPadding,
-                          characterBottomPadding,
-                        ),
-                        // height: characterContainerHeight,
-                        child: Text(
-                          cast is Cast ? cast.character : (cast as Crew).job,
-                          maxLines: maxLines,
-                          overflow: TextOverflow.ellipsis,
-                          style: characterStyle,
-                        ),
-                      ),
-                    ],
-                  ),
+                // height: nameContainerHeight,
+                child: Text(
+                  cast.name,
+                  maxLines: maxLines,
+                  overflow: TextOverflow.ellipsis,
+                  style: nameStyle,
                 ),
               ),
-              Positioned.fill(
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(topRadius),
-                    onTap: () {
-                      goToPersonPage(context, cast);
-                    },
-                  ),
+              Container(
+                padding: EdgeInsets.fromLTRB(
+                  titleContainerPadding,
+                  characterTopPadding,
+                  titleContainerPadding,
+                  characterBottomPadding,
+                ),
+                // height: characterContainerHeight,
+                child: Text(
+                  cast.character,
+                  maxLines: maxLines,
+                  overflow: TextOverflow.ellipsis,
+                  style: characterStyle,
                 ),
               ),
             ],
-          );
-        },
-        separatorBuilder: (_, index) => SizedBox(width: separatorWidth),
-        padding: EdgeInsets.symmetric(
-          horizontal: listViewHorizontalPadding,
-          vertical: listViewVerticalPadding,
+          ),
         ),
-        scrollDirection: Axis.horizontal,
-        itemCount: casts.length,
-      ),
+        Positioned.fill(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: cardMargin),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(radius),
+                onTap: () {
+                  goToPersonPage(context, cast);
+                },
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -1486,7 +1423,6 @@ class ReviewsSection extends StatelessWidget {
           children: [
             ReviewsListView(
               tuple.item1.take(_maxCount).toList(),
-              MediaQuery.of(context).size.width,
             ),
           ],
         );
@@ -1554,26 +1490,16 @@ class ReviewsSection extends StatelessWidget {
 
 class ReviewsListView extends StatelessWidget with GenericFunctions {
   final List<Review> reviews;
-  final double screenWidth;
 
-  ReviewsListView(this.reviews, this.screenWidth, {Key? key}) : super(key: key);
-
-  final separatorWidth = 10.0;
+  ReviewsListView(this.reviews, {Key? key}) : super(key: key);
 
   final listViewHorizontalPadding = 16.0;
 
-  final listViewVerticalPadding = 16.0;
+  final listViewTopPadding = 16.0;
 
-  final cardCount = 1.25;
-
-  late final deductibleWidth = listViewHorizontalPadding +
-      separatorWidth * (cardCount > 1 ? cardCount.toInt() : 0);
-
-  late final sectionWidth = (screenWidth - deductibleWidth) / cardCount;
+  final listViewBottomPadding = 24.0;
 
   final aspectRatio = Constants.arAvatar;
-
-  late final posterHeight = sectionWidth / aspectRatio;
 
   final avatarSize = 50.0;
 
@@ -1581,7 +1507,7 @@ class ReviewsListView extends StatelessWidget with GenericFunctions {
 
   final textHorizPadding = 16.0;
 
-  final ratingVertPadding = 8.0;
+  final ratingBottomPadding = 10.0;
 
   final nameTopPadding = 8.0;
 
@@ -1601,7 +1527,319 @@ class ReviewsListView extends StatelessWidget with GenericFunctions {
   );
 
   final reviewTextStyle = const TextStyle(
+    fontSize: 14.0,
+    height: 1.2,
+  );
+
+  final dateTextStyle = const TextStyle(
+    color: Colors.black54,
+    fontSize: 12.0,
+    height: 1.2,
+  );
+
+  final topRadius = 4.0;
+
+  final bottomRadius = 4.0;
+
+  final ratingIconSize = 14.0;
+
+  late final nameHeight =
+      nameStyle.height! * nameStyle.fontSize! * 1 /* (max lines) */;
+
+  // late final nameContainerHeight =
+  //     nameHeight + nameTopPadding + nameBottomPadding;
+
+  /// This 0.8 is being to escape the "A RenderFlex overflowed by 0.800
+  /// pixels on the bottom." error. The error is being caused by not
+  /// assigning any height to the name and character test widgets.
+  /// However, assigning height, especially to name text widget makes it
+  /// expand to two lines no matter if name is actually on one line only,
+  /// thereby showing an extra blank line between home snd tasks.
+  /* + 0.8*/
+
+  @override
+  Widget build(BuildContext context) {
+    final isPortrait =
+        MediaQuery.orientationOf(context) == Orientation.portrait;
+
+    final viewWidth = isPortrait ? 260.0 : 360.0;
+
+    final reviewHeight = isPortrait ? 170.0 : 130.0;
+
+    final reviewContainerHeight =
+        reviewHeight + reviewTopPadding + reviewBottomPadding;
+
+    final authorContainerHeight = avatarSize + authorVerticalPadding * 2;
+
+    final ratingContainerHeight = ratingIconSize + ratingBottomPadding;
+
+    final cardHeight =
+        authorContainerHeight + reviewContainerHeight + ratingContainerHeight;
+
+    final viewHeight = cardHeight + listViewTopPadding + listViewBottomPadding;
+
+    return SizedBox(
+      height: viewHeight,
+      child: ListView.builder(
+        itemBuilder: (_, index) {
+          final review = reviews[index];
+          final imagePath = review.authorDetails.avatarPath;
+          return buildItemView(context, viewWidth, imagePath, review);
+        },
+        itemExtent: viewWidth,
+        padding: EdgeInsets.fromLTRB(
+          listViewHorizontalPadding - Constants.cardMargin,
+          listViewTopPadding,
+          listViewHorizontalPadding - Constants.cardMargin,
+          listViewBottomPadding,
+        ),
+        scrollDirection: Axis.horizontal,
+        itemCount: reviews.length,
+      ),
+    );
+  }
+
+  Card buildItemView(
+    BuildContext context,
+    double viewWidth,
+    String? imagePath,
+    Review review,
+  ) {
+    var scrollbarPadding = 4.0;
+    var controller = ScrollController();
+    return Card(
+      color: Colors.white,
+      surfaceTintColor: Colors.white,
+      elevation: 3.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(topRadius),
+      ),
+      margin: const EdgeInsets.symmetric(horizontal: Constants.cardMargin),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.all(authorVerticalPadding),
+            child: SizedBox(
+              // width: avatarSize,
+              height: avatarSize,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  InkWellOverlay(
+                    onTap: imagePath.isNotNullNorEmpty
+                        ? () {
+                            logIfDebug('Avatar clicked');
+                            Navigator.of(context)
+                                .push(MaterialPageRoute(builder: (_) {
+                              return ImagePage(
+                                images: [
+                                  ImageDetail(
+                                    Constants.arProfile,
+                                    0,
+                                    imagePath ?? '',
+                                    0,
+                                    0,
+                                    0,
+                                  ),
+                                ],
+                                initialPage: 0,
+                              );
+                            }));
+                          }
+                        : null,
+                    borderRadius: BorderRadius.circular(avatarSize),
+                    child: NetworkImageView(
+                      imagePath,
+                      imageType: ImageType.profile,
+                      imageQuality: ImageQuality.original,
+                      aspectRatio: aspectRatio,
+                      topRadius: avatarSize,
+                      bottomRadius: avatarSize,
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        left: 8.0,
+                        right: 8.0,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          InkWellOverlay(
+                            child: Text(
+                              review.author,
+                              maxLines: 1,
+                              style: nameStyle,
+                            ),
+                            onTap: () {
+                              logIfDebug('${review.author} clicked');
+                            },
+                          ),
+                          Text(
+                            getReadableDate(review.createdAt),
+                            style: dateTextStyle,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (review.authorDetails.rating != null)
+                  getRatingRow(review.authorDetails.rating!.toInt()),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      top: reviewTopPadding,
+                      bottom: reviewBottomPadding,
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.only(right: scrollbarPadding),
+                      child: Scrollbar(
+                        controller: controller,
+                        thumbVisibility: true,
+                        thickness: 4.0,
+                        child: SingleChildScrollView(
+                          controller: controller,
+                          physics: const ClampingScrollPhysics(),
+                          padding: EdgeInsets.only(
+                            left: textHorizPadding,
+                            right: textHorizPadding - scrollbarPadding,
+                          ),
+                          child: Text(
+                            review.content,
+                            // maxLines: maxLines,
+                            // overflow: TextOverflow.ellipsis,
+                            style: reviewTextStyle,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget getRatingRow(int rating) {
+    var icons = List<FaIcon>.filled(
+      rating,
+      FaIcon(
+        FontAwesomeIcons.solidStar,
+        size: ratingIconSize,
+        color: Constants.ratingIconColor,
+      ),
+      growable: true,
+    );
+    while (icons.length < 10) {
+      icons.add(FaIcon(
+        FontAwesomeIcons.star,
+        size: ratingIconSize,
+      ));
+    }
+    // if (rating < 10) {
+    //   icons.insertAll(
+    //     rating,
+    //     List<FaIcon>.filled(
+    //       10 - rating,
+    //       FaIcon(
+    //         FontAwesomeIcons.star,
+    //         size: ratingIconSize,
+    //       ),
+    //     ),
+    //   );
+    // }
+    return Padding(
+      padding: EdgeInsets.only(
+        left: textHorizPadding,
+        right: textHorizPadding,
+        bottom: ratingBottomPadding,
+      ),
+      child: Row(
+        children: icons.map((e) {
+          if (icons.indexOf(e) == icons.length - 1) {
+            return e;
+          } else {
+            return Padding(
+              padding: const EdgeInsets.only(
+                right: 1.5,
+              ),
+              child: e,
+            );
+          }
+        }).toList(),
+      ),
+    );
+  }
+}
+
+@Deprecated('Old version')
+class ReviewsListViewOld extends StatelessWidget with GenericFunctions {
+  final List<Review> reviews;
+  final double screenWidth;
+
+  ReviewsListViewOld(this.reviews, this.screenWidth, {Key? key})
+      : super(key: key);
+
+  final separatorWidth = 10.0;
+
+  final listViewHorizontalPadding = 16.0;
+
+  final listViewTopPadding = 16.0;
+
+  final listViewBottomPadding = 24.0;
+
+  final cardCount = 1.25;
+
+  late final deductibleWidth = listViewHorizontalPadding +
+      separatorWidth * (cardCount > 1 ? cardCount.toInt() : 0);
+
+  late final sectionWidth = (screenWidth - deductibleWidth) / cardCount;
+
+  final aspectRatio = Constants.arAvatar;
+
+  late final posterHeight = sectionWidth / aspectRatio;
+
+  final avatarSize = 50.0;
+
+  final maxLines = 12;
+
+  final textHorizPadding = 16.0;
+
+  final ratingBottomPadding = 8.0;
+
+  final nameTopPadding = 8.0;
+
+  final nameBottomPadding = 0.0;
+
+  final reviewTopPadding = 0.0;
+
+  final reviewBottomPadding = 16.0;
+
+  final authorVerticalPadding = 16.0;
+
+  final nameStyle = const TextStyle(
     fontSize: 16.0,
+    fontWeight: FontWeight.bold,
+    height: 1.2,
+    decoration: TextDecoration.underline,
+  );
+
+  final reviewTextStyle = const TextStyle(
+    fontSize: 14.0,
     height: 1.2,
   );
 
@@ -1630,7 +1868,7 @@ class ReviewsListView extends StatelessWidget with GenericFunctions {
 
   late final authorContainerHeight = avatarSize + authorVerticalPadding * 2;
 
-  late final ratingContainerHeight = ratingIconSize + ratingVertPadding * 2;
+  late final ratingContainerHeight = ratingIconSize + ratingBottomPadding;
 
   late final cardHeight = authorContainerHeight +
       /*posterHeight + nameContainerHeight + */ reviewContainerHeight +
@@ -1642,121 +1880,166 @@ class ReviewsListView extends StatelessWidget with GenericFunctions {
   /// However, assigning height, especially to name text widget makes it
   /// expand to two lines no matter if name is actually on one line only,
   /// thereby showing an extra blank line between home snd tasks.
-  late final viewHeight = cardHeight + listViewVerticalPadding * 2 /* + 0.8*/;
+  /* + 0.8*/
 
   @override
   Widget build(BuildContext context) {
+    final viewHeight = cardHeight + listViewTopPadding + listViewBottomPadding;
     return SizedBox(
-      width: screenWidth,
       height: viewHeight,
       child: ListView.separated(
         itemBuilder: (_, index) {
-          var review = reviews[index];
-          return Card(
-            surfaceTintColor: Colors.white,
-            elevation: 4.0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(topRadius),
-            ),
-            margin: EdgeInsets.zero,
-            child: InkWell(
-              onTap: () {
-                logIfDebug('Card clicked');
-              },
+          final review = reviews[index];
+          final imagePath = review.authorDetails.avatarPath;
+          return buildItemView(imagePath, context, review);
+        },
+        separatorBuilder: (_, index) => SizedBox(width: separatorWidth),
+        padding: EdgeInsets.fromLTRB(
+          listViewHorizontalPadding,
+          listViewTopPadding,
+          listViewHorizontalPadding,
+          listViewBottomPadding,
+        ),
+        scrollDirection: Axis.horizontal,
+        itemCount: reviews.length,
+      ),
+    );
+  }
+
+  Card buildItemView(String? imagePath, BuildContext context, Review review) {
+    return Card(
+      color: Colors.white,
+      surfaceTintColor: Colors.white,
+      elevation: 4.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(topRadius),
+      ),
+      margin: EdgeInsets.zero,
+      child: SizedBox(
+        width: sectionWidth - 40,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.all(authorVerticalPadding),
               child: SizedBox(
-                width: sectionWidth,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                // width: avatarSize,
+                height: avatarSize,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Padding(
-                      padding: EdgeInsets.all(authorVerticalPadding),
-                      child: SizedBox(
-                        // width: avatarSize,
-                        height: avatarSize,
-                        child: Row(
+                    InkWellOverlay(
+                      onTap: imagePath.isNotNullNorEmpty
+                          ? () {
+                              logIfDebug('Avatar clicked');
+                              Navigator.of(context)
+                                  .push(MaterialPageRoute(builder: (_) {
+                                return ImagePage(
+                                  images: [
+                                    ImageDetail(
+                                      Constants.arProfile,
+                                      0,
+                                      imagePath ?? '',
+                                      0,
+                                      0,
+                                      0,
+                                    ),
+                                  ],
+                                  initialPage: 0,
+                                );
+                              }));
+                            }
+                          : null,
+                      borderRadius: BorderRadius.circular(avatarSize),
+                      child: NetworkImageView(
+                        imagePath,
+                        imageType: ImageType.profile,
+                        imageQuality: ImageQuality.original,
+                        aspectRatio: aspectRatio,
+                        topRadius: avatarSize,
+                        bottomRadius: avatarSize,
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          left: 8.0,
+                          right: 8.0,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             InkWellOverlay(
+                              child: Text(
+                                review.author,
+                                maxLines: 1,
+                                style: nameStyle,
+                              ),
                               onTap: () {
-                                logIfDebug('Avatar clicked');
+                                logIfDebug('${review.author} clicked');
                               },
-                              borderRadius: BorderRadius.circular(avatarSize),
-                              child: NetworkImageView(
-                                review.authorDetails.avatarPath,
-                                imageType: ImageType.profile,
-                                imageQuality: ImageQuality.original,
-                                aspectRatio: aspectRatio,
-                                topRadius: avatarSize,
-                                bottomRadius: avatarSize,
-                              ),
                             ),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                  left: 8.0,
-                                  right: 8.0,
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    InkWellOverlay(
-                                      child: Text(
-                                        review.author,
-                                        maxLines: 1,
-                                        style: nameStyle,
-                                      ),
-                                      onTap: () {
-                                        logIfDebug('${review.author} clicked');
-                                      },
-                                    ),
-                                    Text(
-                                      getReadableDate(review.createdAt),
-                                      style: dateTextStyle,
-                                    ),
-                                  ],
-                                ),
-                              ),
+                            Text(
+                              getReadableDate(review.createdAt),
+                              style: dateTextStyle,
                             ),
                           ],
                         ),
                       ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (review.authorDetails.rating != null)
-                          getRatingRow(review.authorDetails.rating!.toInt()),
-                        Container(
-                          padding: EdgeInsets.fromLTRB(
-                            textHorizPadding,
-                            reviewTopPadding,
-                            textHorizPadding,
-                            reviewBottomPadding,
-                          ),
-                          height: reviewContainerHeight,
-                          child: Text(
-                            review.content,
-                            maxLines: maxLines,
-                            overflow: TextOverflow.ellipsis,
-                            style: reviewTextStyle,
-                          ),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),
             ),
-          );
-        },
-        separatorBuilder: (_, index) => SizedBox(width: separatorWidth),
-        padding: EdgeInsets.symmetric(
-          horizontal: listViewHorizontalPadding,
-          vertical: listViewVerticalPadding,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (review.authorDetails.rating != null)
+                    getRatingRow(review.authorDetails.rating!.toInt()),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        top: reviewTopPadding,
+                        bottom: reviewBottomPadding,
+                      ),
+                      child: Stack(
+                        alignment: Alignment.bottomCenter,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 4.0),
+                            child: Scrollbar(
+                              thumbVisibility: true,
+                              thickness: 4.0,
+                              child: SingleChildScrollView(
+                                physics: const ClampingScrollPhysics(),
+                                padding: EdgeInsets.only(
+                                  left: textHorizPadding,
+                                  right: textHorizPadding - 4.0,
+                                ),
+                                child: Text(
+                                  review.content,
+                                  // maxLines: maxLines,
+                                  // overflow: TextOverflow.ellipsis,
+                                  style: reviewTextStyle,
+                                ),
+                              ),
+                            ),
+                          ),
+                          // Container(
+                          //   color: Colors.white60,
+                          //   height: 24.0,
+                          // )
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        scrollDirection: Axis.horizontal,
-        itemCount: reviews.length,
       ),
     );
   }
@@ -1773,18 +2056,21 @@ class ReviewsListView extends StatelessWidget with GenericFunctions {
     );
     if (rating < 10) {
       icons.insertAll(
-          rating,
-          List<Icon>.filled(
-              10 - rating,
-              Icon(
-                Icons.star_outline_sharp,
-                size: ratingIconSize,
-              )));
+        rating,
+        List<Icon>.filled(
+          10 - rating,
+          Icon(
+            Icons.star_outline_sharp,
+            size: ratingIconSize,
+          ),
+        ),
+      );
     }
     return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: textHorizPadding,
-        vertical: ratingVertPadding,
+      padding: EdgeInsets.only(
+        left: textHorizPadding,
+        right: textHorizPadding,
+        bottom: ratingBottomPadding,
       ),
       child: Row(
         children: icons,
@@ -1955,6 +2241,7 @@ class SliverPosterGridSwiper extends StatelessWidget with Utilities {
             overview: movie.overview,
             sourceUrl: null,
             destUrl: destUrl,
+            backdrop: movie.backdropPath,
             heroImageTag: ''),
       ),
     ).then((value) {});

@@ -57,7 +57,7 @@ class BaseSectionSliver extends StatelessWidget with Utilities, CommonFunctions 
   }
 
   Widget getSectionTitleRow() => Padding(
-    padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
+    padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

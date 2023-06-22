@@ -32,7 +32,7 @@ class Media {
   ReviewResult reviews;
 
   @JsonKey(name: 'watch/providers')
-  WatchProviders watchProviders;
+  WatchProviders? watchProviders;
 
   Media(
       this.adult,

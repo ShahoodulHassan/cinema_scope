@@ -29,7 +29,7 @@ class _ExpandableSynopsisState extends State<ExpandableSynopsis>
     with GenericFunctions {
   final expandedFontSize = 16.0;
   late final collapsedFontSize = expandedFontSize - (widget.changeSize ? 2 : 0);
-  final expandedHeight = 1.3;
+  late final expandedHeight = widget.changeSize ? 1.3 : 1.2;
   late final collapsedHeight = expandedHeight - (widget.changeSize ? 0.1 : 0);
   late var height = widget.expanded ? expandedHeight : collapsedHeight;
   late var fontSize = widget.expanded ? expandedFontSize : collapsedFontSize;

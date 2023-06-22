@@ -5,6 +5,7 @@ import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sliver_tools/sliver_tools.dart';
 import 'package:tuple/tuple.dart';
 
 import '../architecture/config_view_model.dart';
@@ -55,11 +56,10 @@ class _FilmographyPageChildState extends State<_FilmographyPageChild>
     super.initState();
     fvm = context.read<FilmographyViewModel>();
     WidgetsBinding.instance.addPostFrameCallback(
-      (_) =>
-        fvm.initialize(
-          widget.combinedCredits,
-          context.read<ConfigViewModel>().combinedGenres,
-        ),
+      (_) => fvm.initialize(
+        widget.combinedCredits,
+        context.read<ConfigViewModel>().combinedGenres,
+      ),
     );
   }
 
@@ -67,264 +67,57 @@ class _FilmographyPageChildState extends State<_FilmographyPageChild>
   Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: lighten2(Theme.of(context).primaryColorLight, 78),
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            floating: true,
-            pinned: true,
-            // snap: true,
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Filmography'),
-                Text(
-                  widget.name,
-                  style: const TextStyle(
-                    color: Colors.black87,
-                    fontSize: 16.0,
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Filmography',
+                    style:
+                        Theme.of(context).appBarTheme.titleTextStyle?.copyWith(
+                              height: 1.2,
+                            ),
                   ),
-                ),
-              ],
+                  Text(
+                    widget.name,
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontSize: 16.0,
+                      height: 1.2,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                ],
+              ),
+              // bottom: const _FilterBar(),
             ),
-            bottom: const _FilterBar(),
-          ),
-          // SliverPersistentHeader(
-          //   delegate: _FilterDelegate(),
-          //   pinned: true,
-          //   // floating: true,
-          // ),
-          // Selector<
-          //     FilmographyViewModel,
-          //     Tuple3<Map<String, bool?>, Map<String, bool?>,
-          //         Map<String, bool?>>>(
-          //   builder: (_, tuple, __) {
-          //     var depts = tuple.item1;
-          //     var types = tuple.item2;
-          //     var genres = tuple.item3;
-          //     if (depts.isEmpty && types.isEmpty && genres.isEmpty) {
-          //       return const SliverToBoxAdapter(child: SizedBox.shrink());
-          //     } else {
-          //       return SliverToBoxAdapter(
-          //         child: Padding(
-          //           padding: const EdgeInsets.symmetric(vertical: 8.0),
-          //           child: Column(
-          //             children: [
-          //               if (depts.isNotEmpty)
-          //                 SizedBox(
-          //                   height: 46.0,
-          //                   child: Row(
-          //                     children: [
-          //                       if (types.isNotEmpty)
-          //                         ListView.separated(
-          //                           itemBuilder: (_, index) {
-          //                             var item = types.entries.elementAt(index);
-          //                             var label = item.key == MediaType.tv.name
-          //                                 ? item.key.toUpperCase()
-          //                                 : item.key.toProperCase();
-          //                             var selected =
-          //                                 item.value == null || item.value!;
-          //                             return buildFilterChip(
-          //                               label,
-          //                               context,
-          //                               selected,
-          //                                   (isSelected) {
-          //                                 fvm.toggleMediaTypes(
-          //                                     item.key, isSelected);
-          //                               },
-          //                             );
-          //                           },
-          //                           shrinkWrap: true,
-          //                           physics: const NeverScrollableScrollPhysics(),
-          //                           padding: const EdgeInsets.only(left: 8.0),
-          //                           separatorBuilder: (_, __) =>
-          //                           const SizedBox(width: 6.0),
-          //                           itemCount: types.length,
-          //                           scrollDirection: Axis.horizontal,
-          //                         ),
-          //                       if (types.isNotEmpty && depts.isNotEmpty)
-          //                         Padding(
-          //                           padding: const EdgeInsets.symmetric(
-          //                               horizontal: 8.0),
-          //                           child: Container(
-          //                             height: 30.0,
-          //                             width: 4.0,
-          //                             decoration: BoxDecoration(
-          //                               color: Theme.of(context)
-          //                                   .primaryColorDark
-          //                                   .withOpacity(0.3),
-          //                               borderRadius: BorderRadius.circular(50.0),
-          //                             ),
-          //                           ),
-          //                         ),
-          //                       // Padding(
-          //                       //   padding:
-          //                       //       const EdgeInsets.symmetric(horizontal: 8.0),
-          //                       //   child: Text(
-          //                       //     '|',
-          //                       //     style: const TextStyle(
-          //                       //         fontWeight: FontWeight.bold),
-          //                       //   ),
-          //                       // ),
-          //                       Expanded(
-          //                         child: ListView.separated(
-          //                           itemBuilder: (_, index) {
-          //                             var item = depts.entries.elementAt(index);
-          //                             var label = item.key;
-          //                             var selected =
-          //                                 item.value == null || item.value!;
-          //                             return buildFilterChip(
-          //                               label,
-          //                               context,
-          //                               selected,
-          //                                   (isSelected) {
-          //                                 fvm.toggleDepartments(
-          //                                     label, isSelected);
-          //                               },
-          //                             );
-          //                           },
-          //                           padding: EdgeInsets.only(
-          //                             left: (types.isNotEmpty ? 0.0 : 8.0),
-          //                             right: 8.0,
-          //                           ),
-          //                           separatorBuilder: (_, __) =>
-          //                           const SizedBox(width: 6.0),
-          //                           itemCount: depts.length,
-          //                           scrollDirection: Axis.horizontal,
-          //                         ),
-          //                       ),
-          //                     ],
-          //                   ),
-          //                 ),
-          //               if (genres.isNotEmpty)
-          //                 SizedBox(
-          //                   height: 46.0,
-          //                   child: Row(
-          //                     children: [
-          //                       // Padding(
-          //                       //   padding:
-          //                       //       const EdgeInsets.symmetric(horizontal: 8.0),
-          //                       //   child: Text(
-          //                       //     'Genres'.toUpperCase(),
-          //                       //     style: const TextStyle(
-          //                       //         fontWeight: FontWeight.bold),
-          //                       //   ),
-          //                       // ),
-          //                       Expanded(
-          //                         child: ListView.separated(
-          //                           itemBuilder: (_, index) {
-          //                             var item = genres.entries.elementAt(index);
-          //                             var label = item.key;
-          //                             var selected =
-          //                                 item.value == null || item.value!;
-          //                             return buildFilterChip(
-          //                               label,
-          //                               context,
-          //                               selected,
-          //                                   (isSelected) {
-          //                                 fvm.toggleGenres(label, isSelected);
-          //                               },
-          //                             );
-          //                           },
-          //                           padding: const EdgeInsets.symmetric(
-          //                               horizontal: 8.0),
-          //                           separatorBuilder: (_, __) =>
-          //                           const SizedBox(width: 6.0),
-          //                           itemCount: genres.length,
-          //                           scrollDirection: Axis.horizontal,
-          //                         ),
-          //                       ),
-          //                     ],
-          //                   ),
-          //                 ),
-          //               // if (types.isNotEmpty)
-          //               //   SizedBox(
-          //               //     height: 52.0,
-          //               //     child: Row(
-          //               //       children: [
-          //               //         Padding(
-          //               //           padding:
-          //               //               const EdgeInsets.symmetric(horizontal: 8.0),
-          //               //           child: Text(
-          //               //             'Media types'.toUpperCase(),
-          //               //             style: const TextStyle(
-          //               //                 fontWeight: FontWeight.bold),
-          //               //           ),
-          //               //         ),
-          //               //         Expanded(
-          //               //           child: ListView.separated(
-          //               //             itemBuilder: (_, index) {
-          //               //               var item = types.entries.elementAt(index);
-          //               //               var label = item.key == MediaType.tv.name
-          //               //                   ? item.key.toUpperCase()
-          //               //                   : item.key.toProperCase();
-          //               //               var selected =
-          //               //                   item.value == null || item.value!;
-          //               //               return buildFilterChip(
-          //               //                 label,
-          //               //                 context,
-          //               //                 selected,
-          //               //                 (isSelected) {
-          //               //                   fvm.toggleMediaTypes(
-          //               //                       item.key, isSelected);
-          //               //                 },
-          //               //               );
-          //               //             },
-          //               //             padding: const EdgeInsets.only(right: 8.0),
-          //               //             separatorBuilder: (_, __) =>
-          //               //                 const SizedBox(width: 4.0),
-          //               //             itemCount: types.length,
-          //               //             scrollDirection: Axis.horizontal,
-          //               //           ),
-          //               //         ),
-          //               //       ],
-          //               //     ),
-          //               //   ),
-          //             ],
-          //           ),
-          //         ),
-          //       );
-          //     }
-          //   },
-          //   selector: (_, fvm) => Tuple3(
-          //     fvm.availableDepartments,
-          //     fvm.availableMediaTypes,
-          //     fvm.availableGenreNames,
-          //   ),
-          // ),
-          Selector<FilmographyViewModel, List<CombinedResult>>(
-            selector: (_, fvm) => fvm.results,
-            builder: (_, results, __) {
-              logIfDebug(results);
-              if (results.isEmpty) {
-                return const SliverToBoxAdapter(child: SizedBox.shrink());
-              } else {
-                // return ImplicitlyAnimatedList<CombinedResult>(
-                //   items: results,
-                //   itemBuilder: (context, animation, item, index) {
-                //     return SizeFadeTransition(
-                //       sizeFraction: 0.7,
-                //       curve: Curves.easeInOut,
-                //       animation: animation,
-                //       child: CombinedPosterTile(result: item),
-                //     );
-                //   },
-                //   insertDuration: const Duration(milliseconds: 300),
-                //   removeDuration: const Duration(milliseconds: 300),
-                //   areItemsTheSame: (a, b) => a.id == b.id,
-                // );
-                return SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (_, index) {
-                      var result = results[index];
-                      return CombinedPosterTile(result: result);
-                    },
-                    childCount: results.length,
-                  ),
-                );
-              }
-            },
-          ),
-        ],
+            const SliverPinnedHeader(child: _FilterBar()),
+            Selector<FilmographyViewModel, List<CombinedResult>>(
+              selector: (_, fvm) => fvm.results,
+              builder: (_, results, __) {
+                logIfDebug(results);
+                if (results.isEmpty) {
+                  return const SliverToBoxAdapter(child: SizedBox.shrink());
+                } else {
+                  return SliverFixedExtentList(
+                    delegate: SliverChildBuilderDelegate(
+                      (_, index) {
+                        var media = results[index];
+                        return CombinedPosterTile(result: media);
+                      },
+                      childCount: results.length,
+                    ),
+                    itemExtent: Constants.posterWidth / Constants.arPoster +
+                        Constants.posterVPadding * 2,
+                  );
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -350,7 +143,8 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
           return const SizedBox.shrink();
         } else {
           var fvm = context.read<FilmographyViewModel>();
-          return Padding(
+          return Container(
+            color: Colors.white,
             padding: EdgeInsets.symmetric(vertical: verticalPadding),
             child: Column(
               children: [
@@ -520,7 +314,8 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
         label: Text(
           label,
           style: TextStyle(
-            color: selected ? Colors.white : Theme.of(context).colorScheme.primary,
+            color:
+                selected ? Colors.white : Theme.of(context).colorScheme.primary,
           ),
         ),
         side: selected
@@ -565,8 +360,9 @@ class CombinedPosterTile extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    var deptJobsString =
-        context.read<FilmographyViewModel>().getDeptJobString(result.id);
+    final cvm = context.read<FilmographyViewModel>();
+    // var deptJobsString = cvm.getDeptJobString(result.id);
+    // var genreNamesString = cvm.getGenreNamesString(result.id);
     return PosterTile(
       onTap: () {
         if (isTv) {
@@ -596,18 +392,16 @@ class CombinedPosterTile extends StatelessWidget
         aspectRatio: Constants.arPoster,
         topRadius: 4.0,
         bottomRadius: 4.0,
-      ),
+      ) /*const SizedBox.shrink()*/,
       subtitle: Padding(
         padding: const EdgeInsets.only(top: 1.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
               children: [
-                Visibility(
-                  visible: result.mediaReleaseDate != null &&
-                      result.mediaReleaseDate!.isNotEmpty,
-                  child: Padding(
+                if (result.mediaReleaseDate.isNotNullNorEmpty)
+                  Padding(
                     padding: const EdgeInsets.only(right: 16.0),
                     child: Text(
                       getYearStringFromDate(result.mediaReleaseDate),
@@ -615,7 +409,6 @@ class CombinedPosterTile extends StatelessWidget
                       style: const TextStyle(fontSize: 15.0),
                     ),
                   ),
-                ),
                 if (result.voteAverage > 0.0)
                   Padding(
                     padding: const EdgeInsets.only(right: 16.0),
@@ -646,8 +439,10 @@ class CombinedPosterTile extends StatelessWidget
                     ),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(4.0),
-                      color:
-                          Theme.of(context).colorScheme.primaryContainer.withOpacity(0.4),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primaryContainer
+                          .withOpacity(0.4),
                     ),
                     child: Text(
                       'TV Series',
@@ -662,10 +457,7 @@ class CombinedPosterTile extends StatelessWidget
             ),
             if (result.genreIds.isNotEmpty)
               Text(
-                context.read<ConfigViewModel>().getGenreNamesFromIds(
-                      result.genreIds,
-                      isTv ? MediaType.tv : MediaType.movie,
-                    ),
+                result.genreNamesString,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
@@ -676,11 +468,11 @@ class CombinedPosterTile extends StatelessWidget
           ],
         ),
       ),
-      description: deptJobsString.isNotEmpty
+      description: result.deptJobsString.isNotEmpty
           ? Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: Text(
-                deptJobsString,
+                result.deptJobsString,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(

@@ -4,11 +4,14 @@ import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
+import 'package:sliver_tools/sliver_tools.dart';
 
 import '../architecture/config_view_model.dart';
 import '../constants.dart';
+import '../main.dart';
 import '../models/search.dart';
 import '../widgets/poster_tile.dart';
 
@@ -38,121 +41,245 @@ class _SearchPageChildState extends State<_SearchPageChild>
 
   Map<int, List<String?>> imageUrlToId = {};
 
-  // final TextEditingController _controller = TextEditingController();
-  String lastQuery = '';
-
   @override
   void initState() {
     logIfDebug('initState called');
     cvm = context.read<ConfigViewModel>();
     svm = context.read<SearchViewModel>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      svm.initializePaging();
+      svm.initializePaging(cvm.combinedGenres);
     });
     super.initState();
   }
 
+  bool get isPortrait => MediaQuery.orientationOf(context) == Orientation.portrait;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        // key: const PageStorageKey<String>('controllerA'),
-        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        slivers: [
-          const SliverAppBar(
-            floating: true,
-            pinned: true,
-            // snap: true,
-            // title: Column(
-            //   crossAxisAlignment: CrossAxisAlignment.start,
-            //   children: [
-            //     getAppbarTitle('Search movies'),
-            //     // Selector<SearchViewModel, int>(
-            //     //   builder: (_, count, __) => Visibility(
-            //     //     visible: count > 0,
-            //     //     child: getAppbarSubtitle('($count)'),
-            //     //   ),
-            //     //   selector: (_, svm) => svm.searchResult?.totalResults ?? 0,
-            //     // ),
-            //   ],
+      body: SafeArea(
+        child: CustomScrollView(
+          // key: const PageStorageKey<String>('controllerA'),
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          slivers: [
+            buildSliverSearchBar(),
+            buildCountSliver(),
+            // FutureBuilder(
+            //   future: Future.delayed(const Duration(milliseconds: 500)),
+            //   builder: (_, snapshot) {
+            //     logIfDebug('connectionState:${snapshot.connectionState}');
+            //     if (snapshot.connectionState == ConnectionState.done) {
+            //       return MultiSliver(
+            //         children: [
+            //           buildCountSliver(),
+            //         ],
+            //       );
+            //     } else {
+            //       return const SliverToBoxAdapter(
+            //         child: SizedBox(height: 8 + 8 + 14,),
+            //       );
+            //     }
+            //   },
             // ),
-            automaticallyImplyLeading: true,
-            toolbarHeight: 0,
-            elevation: 24,
-            bottom: SearchAppbar(),
-          ),
-          SliverPersistentHeader(
-            delegate: CountDelegate(),
-            pinned: true,
-          ),
-          PagedSliverList(
-            pagingController: svm.pagingController,
-            builderDelegate: PagedChildBuilderDelegate<BaseResult>(
-              itemBuilder: (_, media, index) {
-                logIfDebug('itemBuilder called with index:$index, $media');
-                var mediaType = media.mediaType;
-                logIfDebug('mediaType:$mediaType');
-                if (mediaType == MediaType.movie.name) {
-                  return MoviePosterTile(movie: media as CombinedResult);
-                } else if (mediaType == MediaType.person.name) {
-                  return PersonPosterTile(
-                    person: media as PersonResult,
-                    subtitle: media.knownForDepartment.isNotEmpty ||
-                            (media.gender != null && media.gender! > 0)
-                        ? Row(
-                            children: [
-                              if (media.knownForDepartment.isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 8.0),
-                                  child: Text(
-                                    media.knownForDepartment,
-                                    // textAlign: TextAlign.start,
-                                    style: const TextStyle(fontSize: 15.0),
-                                  ),
-                                ),
-                              if (media.gender != null && media.gender! > 0)
-                                Text(
-                                  '(${getGenderText(media.gender)})',
-                                  // textAlign: TextAlign.start,
-                                  style: const TextStyle(fontSize: 15.0),
-                                ),
-                            ],
-                          )
-                        : null,
-                    description: media.knownFor.isNotEmpty
-                        ? getRichText(context, media.knownFor)
-                        : null,
-                  );
-                } else if (mediaType == MediaType.tv.name) {
-                  return TvPosterTile(tv: media as CombinedResult);
-                }
-                return const SizedBox.shrink();
-              },
-              newPageProgressIndicatorBuilder: (_) => const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: SizedBox(
-                    width: 32,
-                    height: 32,
-                    child: CircularProgressIndicator(
-                      color: Colors.brown,
+            PagedSliverGrid(
+              pagingController: svm.pagingController,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: isPortrait ? 1 : 2,
+                mainAxisExtent: mainAxisExtent,
+              ),
+              builderDelegate: PagedChildBuilderDelegate<BaseResult>(
+                itemBuilder: (_, media, index) {
+                  logIfDebug('itemBuilder called with index:$index, $media');
+                  var mediaType = media.mediaType;
+                  logIfDebug('mediaType:$mediaType');
+                  // return const SizedBox.shrink();
+                  return getSearchViews(mediaType, media);
+                },
+                newPageProgressIndicatorBuilder: (_) => const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: SizedBox(
+                      width: 32,
+                      height: 32,
+                      child: CircularProgressIndicator(
+                        color: Colors.brown,
+                      ),
                     ),
                   ),
                 ),
+                noMoreItemsIndicatorBuilder: (_) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Text('You have reached the end!'),
+                    ),
+                  );
+                },
               ),
-              noMoreItemsIndicatorBuilder: (_) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text('You have reached the end!'),
-                  ),
-                );
-              },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
+  }
+
+  Widget getSearchViews(String? mediaType, BaseResult media) {
+    if (mediaType == MediaType.movie.name) {
+      return MoviePosterTile(movie: media as CombinedResult);
+    } else if (mediaType == MediaType.person.name) {
+      return PersonPosterTile(
+        person: media as PersonResult,
+        subtitle: media.knownForDepartment.isNotEmpty ||
+                (media.gender != null && media.gender! > 0)
+            ? Row(
+                children: [
+                  if (media.knownForDepartment.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Text(
+                        media.knownForDepartment,
+                        // textAlign: TextAlign.start,
+                        style: const TextStyle(fontSize: 15.0),
+                      ),
+                    ),
+                  if (media.gender != null && media.gender! > 0)
+                    Text(
+                      '(${getGenderText(media.gender)})',
+                      // textAlign: TextAlign.start,
+                      style: const TextStyle(fontSize: 15.0),
+                    ),
+                ],
+              )
+            : null,
+        description: media.knownFor.isNotEmpty
+            ? getRichText(context, media.knownFor)
+            : null,
+      );
+    } else if (mediaType == MediaType.tv.name) {
+      return TvPosterTile(tv: media as CombinedResult);
+    }
+    return const SizedBox.shrink();
+  }
+
+  SliverAppBar buildSliverSearchBar() {
+    BorderRadius borderRadius = BorderRadius.circular(isPortrait ? 30.0 : 48.0);
+    return SliverAppBar(
+      pinned: false,
+      automaticallyImplyLeading: false,
+      toolbarHeight: kToolbarHeight + 16,
+      elevation: 24,
+      title: SizedBox(
+        width: double.infinity,
+        height: kToolbarHeight - 4,
+        child: Center(
+          child: TextField(
+            focusNode: context.read<SearchViewModel>().focusNode,
+            controller: context.read<SearchViewModel>().controller,
+            onChanged: context.read<SearchViewModel>().onChanged,
+            decoration: InputDecoration(
+              focusedBorder: OutlineInputBorder(
+                borderRadius: borderRadius,
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
+                  width: 2.0,
+                ),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: borderRadius,
+                borderSide: const BorderSide(
+                  style: BorderStyle.none,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: borderRadius,
+                borderSide: const BorderSide(
+                  style: BorderStyle.none,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: borderRadius,
+                borderSide: const BorderSide(
+                  style: BorderStyle.none,
+                ),
+              ),
+              contentPadding: EdgeInsets.zero,
+              // isDense: true,
+              // constraints: const BoxConstraints.tightFor(width: double.maxFinite, height: kToolbarHeight - 4),
+              prefixIcon: IconButton(
+                onPressed: () => Navigator.pop(context),
+                // borderRadius: borderRadius,
+                icon: Icon(
+                  Icons.adaptive.arrow_back,
+                  // color: Theme.of(context).appBarTheme.iconTheme!.color!,
+                ),
+              ),
+              suffixIcon: Selector<SearchViewModel, String>(
+                selector: (_, svm) => svm.lastQuery,
+                builder: (_, query, __) => query.isEmpty
+                    ? const SizedBox.shrink()
+                    : IconButton(
+                        onPressed: () =>
+                            context.read<SearchViewModel>().clearQuery(),
+                        // borderRadius: borderRadius,
+                        icon: const Icon(
+                          Icons.clear_rounded,
+                          // color: Theme.of(context).appBarTheme.iconTheme!.color!,
+                        ),
+                      ),
+              ),
+              hintText: 'Search movies, TV, people',
+              hintStyle: TextStyle(fontSize: isPortrait ? 17/*.spMin*/ : 18/*.spMin*/),
+              filled: true,
+              fillColor: Theme.of(context)
+                  .colorScheme
+                  .primaryContainer
+                  .withOpacity(0.5),
+            ),
+            style: TextStyle(fontSize: isPortrait ? 17/*.spMin*/ : 18/*.spMin*/),
+            maxLines: 1,
+            // cursorHeight: 17.spMin,
+            textAlignVertical: TextAlignVertical.center,
+          ),
+        ),
+      ),
+    );
+  }
+
+  SliverPinnedHeader buildCountSliver() {
+    return SliverPinnedHeader(
+      child: Selector<SearchViewModel, int>(
+        selector: (_, svm) => svm.searchResult?.totalResults ?? 0,
+        builder: (_, count, __) {
+          if (count > 0) {
+            var countStr = applyCommaAndRound(count.toDouble(), 0, true, false);
+            return Container(
+              color: Colors.white,
+              padding: EdgeInsets.only(
+                top: 8,
+                bottom: 8,
+                left: isPortrait
+                    ? Constants.posterVPadding
+                    : Constants.posterVPadding * 2,
+              ),
+              child: Text(
+                'RESULTS ($countStr)',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
+        },
+      ),
+    );
+  }
+
+  double get mainAxisExtent {
+    return (Constants.posterWidth / Constants.arPoster) +
+            (Constants.posterVPadding * 2);
   }
 
   Widget getRichText(BuildContext context, List<CombinedResult> results) {
@@ -270,112 +397,92 @@ class _SearchPageChildState extends State<_SearchPageChild>
   }
 }
 
-class SearchAppbar extends StatefulWidget implements PreferredSizeWidget {
+class SearchAppbar extends StatelessWidget
+    with GenericFunctions
+    implements PreferredSizeWidget {
   const SearchAppbar({Key? key}) : super(key: key);
 
-  final height = kToolbarHeight + 8;
-
-  @override
-  State<SearchAppbar> createState() => _SearchAppbarState();
-
-  @override
-  Size get preferredSize => Size.fromHeight(height);
-}
-
-class _SearchAppbarState extends State<SearchAppbar> with GenericFunctions {
-  final TextEditingController _controller = TextEditingController();
-  String lastQuery = '';
-
-  bool isBackVisible = false /*true*/;
-
-  final focusNode = FocusNode();
-
-  onChanged(String query) {
-    logIfDebug('query:{$query}');
-    if (query != lastQuery) {
-      lastQuery = query;
-      context.read<SearchViewModel>().searchPagedMovies(query);
-    }
-  }
-
-  @override
-  void initState() {
-    // focusNode.addListener(() =>
-    //     setState(() => isBackVisible = !focusNode.hasFocus));
-    super.initState();
-  }
+  double get height => preferredSize.height;
 
   @override
   Widget build(BuildContext context) {
+    final isPortrait = MediaQuery.orientationOf(context) == Orientation.portrait;
+    BorderRadius borderRadius = BorderRadius.circular(isPortrait ? 30.0 : 48.0);
+    logIfDebug('build called - isPortrait:$isPortrait');
     return AppBar(
-      toolbarHeight: widget.height,
-      automaticallyImplyLeading: isBackVisible,
+      toolbarHeight: height,
+      automaticallyImplyLeading: context.read<SearchViewModel>().isBackVisible,
       title: SizedBox(
         width: double.infinity,
-        height: widget.height - 8,
+        height: height,
         child: Center(
           child: TextField(
-            focusNode: focusNode,
-            controller: _controller,
-            onChanged: onChanged,
+            focusNode: context.read<SearchViewModel>().focusNode,
+            controller: context.read<SearchViewModel>().controller,
+            onChanged: context.read<SearchViewModel>().onChanged,
             decoration: InputDecoration(
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(30.0),
+                borderRadius: borderRadius,
                 borderSide: BorderSide(
                   color: Theme.of(context).colorScheme.primary,
                   width: 2.0,
                 ),
               ),
               disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(30.0),
+                borderRadius: borderRadius,
                 borderSide: const BorderSide(
                   style: BorderStyle.none,
                 ),
               ),
               errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(30.0),
+                borderRadius: borderRadius,
                 borderSide: const BorderSide(
                   style: BorderStyle.none,
                 ),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(30.0),
+                borderRadius: borderRadius,
                 borderSide: const BorderSide(
                   style: BorderStyle.none,
                 ),
               ),
               contentPadding:
-                  const EdgeInsets.only(top: 10.0, bottom: 10.0, right: 16.0),
+                  const EdgeInsets.only(top: 10, bottom: 10, right: 10),
               // isDense: true,
               // constraints: BoxConstraints.tightFor(width: double.maxFinite, height: 80),
-              prefixIcon: InkWell(
-                onTap: () => Navigator.pop(context),
-                borderRadius: BorderRadius.circular(30.0),
-                child: const Icon(
-                  Icons.arrow_back_rounded,
+              prefixIcon: IconButton(
+                onPressed: () => Navigator.pop(context),
+                // borderRadius: borderRadius,
+                icon: Icon(
+                  Icons.adaptive.arrow_back,
                   // color: Theme.of(context).appBarTheme.iconTheme!.color!,
                 ),
               ),
-              suffixIcon: InkWell(
-                onTap: () {
-                  _controller.clear();
-                  onChanged(_controller.text);
-                },
-                borderRadius: BorderRadius.circular(30.0),
-                child: const Icon(
+              suffixIcon: IconButton(
+                onPressed: () => context.read<SearchViewModel>().clearQuery(),
+                // borderRadius: borderRadius,
+                icon: const Icon(
                   Icons.clear_rounded,
                   // color: Theme.of(context).appBarTheme.iconTheme!.color!,
                 ),
               ),
               hintText: 'Search movies, TV, people',
+              hintStyle: TextStyle(fontSize: isPortrait ? 16 : 18),
               filled: true,
-              fillColor: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5),
+              fillColor: Theme.of(context)
+                  .colorScheme
+                  .primaryContainer
+                  .withOpacity(0.5),
             ),
+            style: TextStyle(fontSize: isPortrait ? 16 : 18),
           ),
         ),
       ),
     );
   }
+
+  @override
+  Size get preferredSize => const Size.fromHeight((kToolbarHeight));
 }
 
 class CountDelegate extends SliverPersistentHeaderDelegate

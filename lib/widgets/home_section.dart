@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 import '../architecture/config_view_model.dart';
@@ -9,23 +10,11 @@ import '../architecture/home_view_model.dart';
 import '../constants.dart';
 import '../models/movie.dart';
 import '../models/search.dart';
+import '../pages/home_page.dart';
 import '../utilities/generic_functions.dart';
 import '../utilities/utilities.dart';
 
-enum SectionTitle {
-  nowPlaying('NOW PLAYING'),
-  trending('TRENDING'),
-  latest('LATEST'),
-  popular('POPULAR'),
-  topRated('TOP RATED'),
-  upcoming('COMING SOON'),
-  streaming('STREAMING'),
-  freeToWatch('FREE TO WATCH');
 
-  final String name;
-
-  const SectionTitle(this.name);
-}
 
 class BaseHomeSection extends StatelessWidget with Utilities, CommonFunctions {
   final String title;
@@ -47,19 +36,19 @@ class BaseHomeSection extends StatelessWidget with Utilities, CommonFunctions {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 36.0),
+      padding: EdgeInsets.only(top: 36.h),
       child: Stack(
         children: [
           /// This serves as the base card on which the content card is
           /// stacked. The fill constructor helps match its height with
           /// the height of the content card.
-          const Positioned.fill(
+          Positioned.fill(
             child: Card(
-              elevation: 5.0,
+              elevation: 5.h,
               color: Colors.white,
               surfaceTintColor: Colors.white,
               margin: EdgeInsets.zero,
-              shape: ContinuousRectangleBorder(),
+              shape: const ContinuousRectangleBorder(),
             ),
           ),
           IntrinsicWidth(
@@ -69,7 +58,7 @@ class BaseHomeSection extends StatelessWidget with Utilities, CommonFunctions {
                 getSectionSeparator(context),
                 getSectionTitleRow(),
                 ...children,
-                getSectionSeparator(context),
+                // getSectionSeparator(context),
               ],
             ),
           ),
@@ -84,23 +73,23 @@ class BaseHomeSection extends StatelessWidget with Utilities, CommonFunctions {
   //     );
 
   Widget getSectionTitleRow() => Padding(
-    padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.5,
-            // height: 1.1,
-          ),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.5,
+                // height: 1.1,
+              ),
+            ),
+            // if (showSeeAll) CompactTextButton(buttonText, onPressed: onPressed),
+          ],
         ),
-        // if (showSeeAll) CompactTextButton(buttonText, onPressed: onPressed),
-      ],
-    ),
-  );
+      );
 }
 
 class HomeSection extends StatefulWidget {
@@ -196,17 +185,17 @@ class _HomeSectionState extends State<HomeSection>
                       return const SizedBox.shrink();
                     } else {
                       return Padding(
-                        padding: const EdgeInsets.only(left: 16.0, top: 8.0),
+                        padding: EdgeInsets.only(left: 16, top: 8),
                         child: ToggleButtons(
-                          constraints: const BoxConstraints(
-                              minWidth: 0.0, minHeight: 0.0),
+                          constraints:
+                              const BoxConstraints(minWidth: 0, minHeight: 0),
                           borderRadius: BorderRadius.circular(16.0),
                           borderColor: Theme.of(context).colorScheme.primary,
                           // selectedColor: Theme.of(context).primaryColorDark,
                           // fillColor: Theme.of(context).primaryColorLight.withOpacity(0.2),
                           // highlightColor: Theme.of(context).primaryColor.withOpacity(0.5),
                           selectedBorderColor:
-                          Theme.of(context).colorScheme.primary,
+                              Theme.of(context).colorScheme.primary,
                           borderWidth: 0.5,
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           isSelected: widget.params.map((e) {
@@ -222,11 +211,11 @@ class _HomeSectionState extends State<HomeSection>
                             ...(widget.paramTitles ?? widget.params).map((e) {
                               return Padding(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 12.0, vertical: 5.0),
+                                    horizontal: 12, vertical: 5),
                                 child: Text(
                                   e,
                                   style: const TextStyle(
-                                    fontSize: 15.0,
+                                    fontSize: 15,
                                     // fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -281,17 +270,17 @@ class _HomeListViewState extends State<HomeListView>
   late final ratingIconSize = widget.isBigWidget ? 24.0 : 20.0;
   late final ratingFontSize = widget.isBigWidget ? 18.0 : 16.0;
   final separatorWidth = 10.0;
-  final borderWidth = 0.7;
+  // final borderWidth = 0.7;
 
   late final sizeFactorInt = sizeFactor.toInt();
-  late final totalBorderWidth =
-      (sizeFactorInt * 2 + (sizeFactor > sizeFactorInt ? 1 : 0)) * borderWidth;
+  // late final totalBorderWidth =
+  //     (sizeFactorInt * 2 + (sizeFactor > sizeFactorInt ? 1 : 0)) * borderWidth;
 
   late final sizeFactor = widget.isBigWidget ? bigFactor : smallFactor;
-  late final screenWidth = MediaQuery.of(context).size.width;
+  late final screenWidth = MediaQuery.sizeOf(context).width;
   late final deductibleWidth = listViewHorizontalPadding +
-      separatorWidth * sizeFactorInt +
-      totalBorderWidth;
+      separatorWidth * sizeFactorInt/* +
+      totalBorderWidth*/;
   late final posterWidth = (screenWidth - deductibleWidth) / sizeFactor;
   late final posterHeight = posterWidth /
       (widget.isBigWidget ? Constants.arBackdrop : Constants.arPoster);
@@ -333,7 +322,8 @@ class _HomeListViewState extends State<HomeListView>
 
   late final cardHeight = posterHeight +
       titleContainerHeight +
-      listViewVerticalPadding + listViewBottomPadding +
+      listViewVerticalPadding +
+      listViewBottomPadding +
       (isUpcoming || isLatest ? 0 : ratingContainerHeight) +
       yearContainerHeight;
 
@@ -342,38 +332,35 @@ class _HomeListViewState extends State<HomeListView>
   @override
   Widget build(BuildContext context) {
     logIfDebug(
-        'width:${MediaQuery.of(context).size.width}, deductible:$deductibleWidth, borderWidth: $totalBorderWidth');
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: screenWidth,
-          height: cardHeight,
-          child: ListView.separated(
-            // shrinkWrap: true,
-            physics: const ClampingScrollPhysics(),
-            padding: EdgeInsets.fromLTRB(
-                listViewHorizontalPadding,
-                listViewVerticalPadding, listViewHorizontalPadding, listViewBottomPadding),
-            itemBuilder: (_, index) {
-              var movie = widget.results[index];
-              if (index == 0) {
-                logIfDebug('${widget.sectionTitle.name} '
-                    'count:${widget.results.length}');
-              }
-
-              /// Have to stack the InkWell on top of the Card to make the
-              /// splash work, when there is an image in the card.
-              return getSectionItem(movie);
-            },
-            scrollDirection: Axis.horizontal,
-            itemCount: widget.results.length,
-            separatorBuilder: (BuildContext context, int index) {
-              return SizedBox(width: separatorWidth);
-            },
-          ),
+        'width:${MediaQuery.sizeOf(context).width}, deductible:$deductibleWidth');
+    return SizedBox(
+      width: MediaQuery.sizeOf(context).width,
+      height: cardHeight,
+      child: ListView.separated(
+        physics: const ClampingScrollPhysics(),
+        padding: EdgeInsets.fromLTRB(
+          listViewHorizontalPadding,
+          listViewVerticalPadding,
+          listViewHorizontalPadding,
+          listViewBottomPadding,
         ),
-      ],
+        itemBuilder: (_, index) {
+          var movie = widget.results[index];
+          if (index == 0) {
+            logIfDebug('${widget.sectionTitle.name} '
+                'count:${widget.results.length}');
+          }
+
+          /// Have to stack the InkWell on top of the Card to make the
+          /// splash work, when there is an image in the card.
+          return getSectionItem(movie);
+        },
+        scrollDirection: Axis.horizontal,
+        itemCount: widget.results.length,
+        separatorBuilder: (BuildContext context, int index) {
+          return SizedBox(width: separatorWidth);
+        },
+      ),
     );
   }
 

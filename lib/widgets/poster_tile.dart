@@ -1,26 +1,30 @@
+import 'package:cinema_scope/main.dart';
 import 'package:cinema_scope/models/search.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:flutter/material.dart';
+
+// import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 import '../architecture/config_view_model.dart';
 import '../constants.dart';
 import 'image_view.dart';
 
-class PosterTile extends StatelessWidget {
-  final double posterWidthRatio = 0.25;
+class PosterTile extends StatelessWidget with GenericFunctions {
   final Function()? onTap;
   final String title;
   final int titleMaxLines;
   final Widget poster;
   final Widget? subtitle, description;
+  final double posterWidth;
 
   const PosterTile({
     required this.title,
     this.titleMaxLines = 2,
     required this.poster,
+    this.posterWidth = Constants.posterWidth,
     this.subtitle,
     this.description,
     this.onTap,
@@ -29,22 +33,26 @@ class PosterTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IntrinsicHeight(
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
+    // final isPortrait = MediaQuery.orientationOf(context) == Orientation.portrait;
+    // logIfDebug('build called with isPortrait=$isPortrait');
+    return /*snapshot.connectionState == ConnectionState.done
+        ? */
+        Stack(
+      children: [
+        Ink(
+          padding: const EdgeInsets.all(Constants.posterVPadding),
+          // height:
+          //     posterWidth / Constants.arPoster + Constants.posterVPadding * 2,
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(
-                width: (MediaQuery.of(context).size.width) * posterWidthRatio,
-                // height: (MediaQuery.of(context).size.width) * 0.25 / Constants.arPoster,
+                width: posterWidth,
                 child: poster,
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
+                  padding: const EdgeInsets.only(left: Constants.posterVPadding),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,7 +76,15 @@ class PosterTile extends StatelessWidget {
             ],
           ),
         ),
-      ),
+        Positioned.fill(
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onTap,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -90,7 +106,7 @@ class MoviePosterTile extends StatelessWidget
           releaseDate: movie.mediaReleaseDate,
           overview: movie.overview,
           voteAverage: movie.voteAverage,
-        );;
+        );
       },
       title: movie.mediaTitle,
       poster: NetworkImageView(
@@ -144,10 +160,7 @@ class MoviePosterTile extends StatelessWidget
             ),
             if (movie.genreIds.isNotEmpty)
               Text(
-                context.read<ConfigViewModel>().getGenreNamesFromIds(
-                      movie.genreIds,
-                      MediaType.movie,
-                    ),
+                movie.genreNamesString,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
@@ -167,7 +180,7 @@ class MoviePosterTile extends StatelessWidget
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   fontSize: 14.0,
-                  height: 1.1,
+                  height: 1.2,
                 ),
               ),
             )
@@ -210,7 +223,8 @@ class TvPosterTile extends StatelessWidget
           children: [
             Row(
               children: [
-                if (tv.mediaReleaseDate != null && tv.mediaReleaseDate!.isNotEmpty)
+                if (tv.mediaReleaseDate != null &&
+                    tv.mediaReleaseDate!.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(right: 16.0),
                     child: Text(
@@ -260,7 +274,9 @@ class TvPosterTile extends StatelessWidget
                   ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(4.0),
-                    color: Theme.of(context).colorScheme.primaryContainer
+                    color: Theme.of(context)
+                        .colorScheme
+                        .primaryContainer
                         .withOpacity(0.6),
                   ),
                   child: Text(
@@ -297,10 +313,7 @@ class TvPosterTile extends StatelessWidget
             ),
             if (tv.genreIds.isNotEmpty)
               Text(
-                context.read<ConfigViewModel>().getGenreNamesFromIds(
-                      tv.genreIds,
-                      MediaType.tv,
-                    ),
+                tv.genreNamesString,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
@@ -320,7 +333,7 @@ class TvPosterTile extends StatelessWidget
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   fontSize: 14.0,
-                  height: 1.1,
+                  height: 1.2,
                 ),
               ),
             )
@@ -344,7 +357,6 @@ class PersonPosterTile extends StatelessWidget
     return PosterTile(
       onTap: () {
         context.unfocus();
-
         goToPersonPage(context, person);
       },
       title: person.name,

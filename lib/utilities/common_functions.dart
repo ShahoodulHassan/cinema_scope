@@ -11,21 +11,6 @@ import '../pages/tv_page.dart';
 import '../widgets/ink_well_overlay.dart';
 
 mixin CommonFunctions on Utilities {
-  @Deprecated('No need for a new slightly different method')
-  goToMoviePageByMovieResult(
-    BuildContext context,
-    MovieResult movie, {
-    String? destUrl,
-  }) =>
-      goToMoviePage(
-        context,
-        id: movie.id,
-        title: movie.movieTitle,
-        releaseDate: movie.releaseDate,
-        voteAverage: movie.voteAverage,
-        overview: movie.overview,
-      );
-
   goToMoviePage(
     BuildContext context, {
     required int id,
@@ -34,6 +19,7 @@ mixin CommonFunctions on Utilities {
     required double voteAverage,
     required String? overview,
     String? destUrl,
+    String? backdrop,
   }) {
     Navigator.push(
       context,
@@ -46,6 +32,7 @@ mixin CommonFunctions on Utilities {
             overview: overview,
             sourceUrl: null,
             destUrl: destUrl,
+            backdrop: backdrop,
             heroImageTag: ''),
       ),
     ).then((value) {});
@@ -146,9 +133,9 @@ mixin CommonFunctions on Utilities {
   }
 
   Widget getSectionSeparator(BuildContext context) => Container(
-    height: 1.0,
-    color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
-  );
+        height: 1.0,
+        color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+      );
 
   Color getScaffoldColor(BuildContext context) =>
       lighten2(Theme.of(context).colorScheme.primaryContainer, 75);
@@ -198,4 +185,21 @@ mixin CommonFunctions on Utilities {
 
   String departmentToRole(String department) =>
       Constants.departMap[department] ?? department;
+
+  /// Since I found the bug reported in
+  /// https://www.themoviedb.org/talk/63ea28b1a2e60200932b0343, I've decided to
+  /// not rely on the genre segregation made by the API.
+  String getGenreNamesFromIds(
+    List<MediaGenre> combinedGenres,
+    List<int> genreIds,
+    MediaType mediaType,
+  ) {
+    return (genreIds.map((id) {
+      var genres = combinedGenres
+          .where((genre) => genre.mediaType == mediaType && genre.id == id);
+      if (genres.isNotEmpty) return genres.first.name;
+    }).toList()
+          ..removeWhere((element) => element == null))
+        .join(', ');
+  }
 }

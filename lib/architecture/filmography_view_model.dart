@@ -16,7 +16,7 @@ enum FilterState { unselected, selected, forceSelected }
 class FilmographyViewModel extends ChangeNotifier
     with GenericFunctions, Utilities, CommonFunctions {
   late final CombinedCredits combinedCredits;
-  late final List<MediaGenre> combinedGenres;
+  late final List<MediaGenre> _combinedGenres;
 
   List<CombinedResult> _results = [];
 
@@ -27,6 +27,8 @@ class FilmographyViewModel extends ChangeNotifier
   final Map<int, Map<String, List<String>>> _mediaToDeptJobsMap = {};
 
   final Map<int, String> _mediaToDeptJobsStringMap = {};
+
+  final Map<int, String> _mediaToGenreNamesStringMap = {};
 
   final List<CombinedResult> _allResults = [];
 
@@ -42,7 +44,7 @@ class FilmographyViewModel extends ChangeNotifier
 
   initialize(CombinedCredits combinedCredits, List<MediaGenre> combinedGenres) {
     this.combinedCredits = combinedCredits;
-    this.combinedGenres = combinedGenres;
+    this._combinedGenres = combinedGenres;
     _processCombinedCredits();
   }
 
@@ -82,7 +84,21 @@ class FilmographyViewModel extends ChangeNotifier
     for (var key in _mediaToDeptJobsMap.keys) {
       _mediaToDeptJobsStringMap[key] = _attachDeptWithJobs(key);
     }
-    _results = _allResults;
+    // for (var result in _allResults) {
+    //   _mediaToGenreNamesStringMap[result.id] = getGenreNamesFromIds(
+    //     result.genreIds,
+    //     result.mediaType == MediaType.tv.name ? MediaType.tv : MediaType.movie,
+    //   );
+    // }
+    _results = _allResults.map((result) {
+      result.deptJobsString = getDeptJobString(result.id);
+      result.genreNamesString = getGenreNamesFromIds(
+        _combinedGenres,
+        result.genreIds,
+        result.mediaType == MediaType.tv.name ? MediaType.tv : MediaType.movie,
+      );
+      return result;
+    }).toList();
     await _prepareAllFilters();
     await _prepareAvailableFilters(notify: false);
     notifyListeners();
@@ -98,21 +114,22 @@ class FilmographyViewModel extends ChangeNotifier
       var genres = <String, FilterState>{};
       for (var result in _results) {
         for (var genreId in result.genreIds) {
-          logIfDebug('id:${result.id}, title:${result.mediaTitle}, mediaType:${result.mediaType}, checking genreId:$genreId');
+          logIfDebug(
+              'id:${result.id}, title:${result.mediaTitle}, mediaType:${result.mediaType}, checking genreId:$genreId');
           // var mediaGenre = combinedGenres.singleWhere((element) =>
           //     element.mediaType.name == result.mediaType &&
           //     element.id == genreId);
           MediaGenre? mediaGenre;
-          for (var genre in combinedGenres) {
-            var matched = genre.mediaType.name == result.mediaType &&
-                genre.id == genreId;
+          for (var genre in _combinedGenres) {
+            var matched =
+                genre.mediaType.name == result.mediaType && genre.id == genreId;
             if (matched) {
               mediaGenre = genre;
             }
           }
           if (mediaGenre != null) {
             genres[mediaGenre.name] =
-              availableGenreNames[mediaGenre.name] ?? FilterState.unselected;
+                availableGenreNames[mediaGenre.name] ?? FilterState.unselected;
           }
         }
 
@@ -164,7 +181,8 @@ class FilmographyViewModel extends ChangeNotifier
             types[key] = FilterState.forceSelected;
           }
         }
-        logIfDebug('_prepareAvailableFilters=>oldItem:$oldFilter, types:$types');
+        logIfDebug(
+            '_prepareAvailableFilters=>oldItem:$oldFilter, types:$types');
       }
       if (genres.length == 1) {
         var key = genres.entries.first.key;
@@ -208,7 +226,8 @@ class FilmographyViewModel extends ChangeNotifier
     for (var credit in _allResults) {
       // logIfDebug('title:${credit.mediaTitle}, mediaType:${credit.mediaType}');
       for (var genreId in credit.genreIds) {
-        logIfDebug('id:${credit.id}, title:${credit.mediaTitle}, mediaType:${credit.mediaType}, checking genreId:$genreId');
+        logIfDebug(
+            'id:${credit.id}, title:${credit.mediaTitle}, mediaType:${credit.mediaType}, checking genreId:$genreId');
         // var mediaGenre = combinedGenres.singleWhere((element) {
         //   var matched = element.mediaType.name == credit.mediaType &&
         //     element.id == genreId;
@@ -219,9 +238,9 @@ class FilmographyViewModel extends ChangeNotifier
         //   return matched;
         // });
         MediaGenre? mediaGenre;
-        for (var genre in combinedGenres) {
-          var matched = genre.mediaType.name == credit.mediaType &&
-              genre.id == genreId;
+        for (var genre in _combinedGenres) {
+          var matched =
+              genre.mediaType.name == credit.mediaType && genre.id == genreId;
           if (matched) {
             logIfDebug('mediaType:${genre.mediaType}, '
                 'genreId:$genreId vs id:${genre.id}');
@@ -262,7 +281,8 @@ class FilmographyViewModel extends ChangeNotifier
         FilterType.genre, item));
   }
 
-  filterResults(Tuple2<FilterType, MapEntry<String, FilterState>> oldFilter) async {
+  filterResults(
+      Tuple2<FilterType, MapEntry<String, FilterState>> oldFilter) async {
     /// Here, we reset the value to unselected if it was forceSelected
     /// earlier.
     if (availableDepartments.length == 1) {
@@ -396,4 +416,5 @@ class FilmographyViewModel extends ChangeNotifier
       return jobs.join(', ');
     }
   }
+
 }
