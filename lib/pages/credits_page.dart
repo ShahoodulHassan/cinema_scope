@@ -3,12 +3,15 @@ import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:provider/provider.dart';
-import 'package:sliver_tools/sliver_tools.dart';
 
 import '../architecture/filmography_view_model.dart';
+import '../constants.dart';
+import '../main.dart';
 import '../models/movie.dart';
 import '../widgets/poster_tile.dart';
+import '../widgets/sliver_obstruction_injector.dart';
 
 class CreditsPage extends MultiProvider {
   CreditsPage({
@@ -77,80 +80,106 @@ class _CreditsPageChildState extends State<_CreditsPageChild>
       child: Scaffold(
         body: NestedScrollView(
           // floatHeaderSlivers: true,
-          headerSliverBuilder: (_, __) {
+          headerSliverBuilder: (context, __) {
             return [
-              SliverAppBar(
-                floating: true,
-                pinned: true,
-                // snap: true,
-                title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(widget.title),
-                    Text(
-                      widget.name,
-                      style: const TextStyle(
-                        color: Colors.black87,
-                        fontSize: 16.0,
+              /// Helps make pinned / sticky headers inside a TabBarView
+              /// Followed the pattern mentioned in
+              /// https://gist.github.com/letsar/2e3cc98d328b3e84170abacf154e545f
+              SliverOverlapAbsorber(
+                handle:
+                    NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                sliver: SliverAppBar(
+                  floating: true,
+                  pinned: true,
+                  // snap: true,
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.title,
+                        style: Theme.of(context)
+                            .appBarTheme
+                            .titleTextStyle
+                            ?.copyWith(
+                              height: 1.2,
+                            ),
                       ),
-                    ),
-                  ],
-                ),
-                bottom: crew.isNotEmpty && cast.isNotEmpty
-                    ? TabBar(
-                        indicatorSize: TabBarIndicatorSize.tab,
-                        indicatorColor: Theme.of(context).colorScheme.primary,
-                        labelColor: Colors.black87,
-                        labelStyle: TextStyle(
-                          fontFamily: baseFontFamily,
-                          fontWeight: weightBold,
-                          letterSpacing: 1.0,
+                      Text(
+                        widget.name,
+                        style: const TextStyle(
+                          color: Colors.black87,
+                          fontSize: 16.0,
+                          height: 1.2,
                         ),
-                        tabs: tabs,
-                      )
-                    : null,
-                // bottom: const _FilterBar(),
+                      ),
+                    ],
+                  ),
+                  bottom: crew.isNotEmpty && cast.isNotEmpty
+                      ? TabBar(
+                          indicatorSize: TabBarIndicatorSize.tab,
+                          indicatorColor: kPrimary,
+                          labelColor: Colors.black87,
+                          labelStyle: TextStyle(
+                            fontWeight: weightBold,
+                            letterSpacing: 1.0,
+                          ),
+                          tabs: tabs,
+                        )
+                      : null,
+                  // bottom: const _FilterBar(),
+                ),
               ),
             ];
           },
-          body: TabBarView(children: [
-            if (cast.isNotEmpty)
-              CustomScrollView(
-                slivers: [
-                  getSliverTabData<Cast>(context),
-                ],
-              ),
-            if (crew.isNotEmpty)
-              CustomScrollView(
-                slivers: [
-                  /// Despite all efforts, I've not been able to make it pinned
-                  /// TODO Make it pinned
-                  // Selector<CreditsViewModel, Map<String, FilterState>>(
-                  //   selector: (_, cvm) => cvm.availableDepartments,
-                  //   builder: (_, filters, __) {
-                  //     return (filters.length <= 1)
-                  //         ? SliverToBoxAdapter(child: Container())
-                  //         : SliverPersistentHeader(
-                  //       delegate: _FilterDelegate(_FilterBar(filters)),
-                  //       pinned: true,
-                  //     );
-                  //   },
-                  // ),
-                  SliverPinnedHeader(
-                    child: Selector<CreditsViewModel,
-                        Map<String, FilterState>>(
-                      selector: (_, cvm) => cvm.availableDepartments,
-                      builder: (_, filters, __) {
-                        return (filters.length <= 1)
-                            ? Container()
-                            : _FilterBar(filters);
-                      },
-                    ),
+          body: Builder(
+            builder: (context) => TabBarView(
+              children: [
+                if (cast.isNotEmpty)
+                  CustomScrollView(
+                    slivers: [
+                      SliverObstructionInjector(
+                        handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                            context),
+                      ),
+                      getSliverTabData<Cast>(context),
+                    ],
                   ),
-                  getSliverTabData<Crew>(context),
-                ],
-              ),
-          ]),
+                if (crew.isNotEmpty)
+                  CustomScrollView(
+                    slivers: [
+                      SliverObstructionInjector(
+                        handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                            context),
+                      ),
+                      SliverStickyHeader(
+                        header: Selector<CreditsViewModel,
+                            Map<String, FilterState>>(
+                          selector: (_, cvm) => cvm.availableDepartments,
+                          builder: (_, filters, __) {
+                            return (filters.length <= 1)
+                                ? Container()
+                                : _FilterBar(filters);
+                          },
+                        ),
+                        sliver: getSliverTabData<Crew>(context),
+                      ),
+                      // SliverPinnedHeader(
+                      //   child:
+                      //       Selector<CreditsViewModel, Map<String, FilterState>>(
+                      //     selector: (_, cvm) => cvm.availableDepartments,
+                      //     builder: (_, filters, __) {
+                      //       return (filters.length <= 1)
+                      //           ? Container()
+                      //           : _FilterBar(filters);
+                      //     },
+                      //   ),
+                      // ),
+                      // getSliverTabData<Crew>(context),
+                    ],
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -168,32 +197,35 @@ class _CreditsPageChildState extends State<_CreditsPageChild>
         if (credits.isEmpty) {
           return const SliverToBoxAdapter(child: SizedBox.shrink());
         } else {
-          return SliverList(
+          return SliverFixedExtentList(
             delegate: SliverChildBuilderDelegate(
               (_, index) {
                 var person = credits[index];
                 return PersonPosterTile(
                   person: person,
-                  subtitle: person.gender != null && person.gender! > 0
-                      ? Row(
-                          children: [
-                            Text(
-                              getGenderText(person.gender),
-                              // textAlign: TextAlign.start,
-                              style: const TextStyle(fontSize: 15.0),
-                            ),
-                          ],
-                        )
-                      : null,
+                  subtitle: /*person.gender != null && person.gender! > 0
+                      ? */
+                      Row(
+                    children: [
+                      Text(
+                        getGenderText(person.gender),
+                        // textAlign: TextAlign.start,
+                        style: const TextStyle(
+                          fontSize: 15.0,
+                          height: 1.2,
+                        ),
+                      ),
+                    ],
+                  ) /*: null*/,
                   description: Text(
                     person is Cast
                         ? person.character
-                        : context
-                            .read<CreditsViewModel>()
-                            .getDeptJobString(person.id),
+                        : person is Crew
+                            ? person.jobs ?? ''
+                            : '',
                     style: const TextStyle(
-                      fontSize: 14.5,
-                      height: 1.3,
+                      fontSize: 15.0,
+                      height: 1.2,
                       color: Colors.black87,
                     ),
                     maxLines: 3,
@@ -203,33 +235,12 @@ class _CreditsPageChildState extends State<_CreditsPageChild>
               },
               childCount: credits.length,
             ),
+            itemExtent: Constants.posterWidth / Constants.arPoster +
+                Constants.posterVPadding * 2,
           );
         }
       },
     );
-  }
-}
-
-class _FilterDelegate extends SliverPersistentHeaderDelegate {
-  PreferredSizeWidget filterBar;
-
-  _FilterDelegate(this.filterBar);
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return filterBar;
-  }
-
-  @override
-  double get maxExtent => filterBar.preferredSize.height;
-
-  @override
-  double get minExtent => maxExtent;
-
-  @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
-    return false;
   }
 }
 
@@ -243,54 +254,42 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
       padding: EdgeInsets.symmetric(vertical: verticalPadding),
-      child: Column(
-        children: [
-          SizedBox(
-            height: rowHeight,
-            child: Row(
-              children: [
-                buildDepartmentsList(context, filters),
-              ],
-            ),
-          ),
-        ],
+      child: SizedBox(
+        height: rowHeight,
+        child: buildDepartmentsList(context, filters),
       ),
     );
   }
 
   Widget buildDepartmentsList(
       BuildContext context, Map<String, FilterState> depts) {
-    return Expanded(
-      child: buildListView(
-        context,
-        itemBuilder: (_, index) {
-          var item = depts.entries.elementAt(index);
-          var label = item.key;
-          var selected = item.value == FilterState.selected;
-          return buildFilterChip(
-            label,
-            context,
-            selected,
-            (isSelected) {
-              var currentlySelected = item.value == FilterState.selected;
-              if (isSelected != currentlySelected) {
-                context
-                    .read<CreditsViewModel>()
-                    .toggleDepartments(item, isSelected);
-              }
-            },
-          );
-        },
-        itemCount: depts.length,
-        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-      ),
+    return buildListView(
+      itemBuilder: (_, index) {
+        var item = depts.entries.elementAt(index);
+        var label = item.key;
+        var selected = item.value == FilterState.selected;
+        return buildFilterChip(
+          label,
+          selected,
+          (isSelected) {
+            var currentlySelected = item.value == FilterState.selected;
+            if (isSelected != currentlySelected) {
+              context
+                  .read<CreditsViewModel>()
+                  .toggleDepartments(item, isSelected);
+            }
+          },
+        );
+      },
+      itemCount: depts.length,
+      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
     );
   }
 
-  ListView buildListView(
-    BuildContext context, {
+  ListView buildListView({
     required NullableIndexedWidgetBuilder itemBuilder,
     required int itemCount,
     required EdgeInsetsGeometry padding,
@@ -310,7 +309,6 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
 
   Widget buildFilterChip(
     String label,
-    BuildContext context,
     bool selected,
     Function(bool) onSelected,
   ) {
@@ -318,15 +316,10 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
       label: Text(
         label,
         style: TextStyle(
-          color: selected ? Colors.white : Theme.of(context).colorScheme.primary,
+          color: selected ? Colors.white : kPrimary,
         ),
       ),
-      side: selected
-          ? null
-          : BorderSide(
-              color: Theme.of(context).colorScheme.primary,
-              width: 0.7,
-            ),
+      side: selected ? null : BorderSide(color: kPrimary, width: 0.7),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16.0),
       ),
@@ -339,7 +332,7 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
       //     : null,
       // visualDensity: VisualDensity(horizontal: 0.0, vertical: -1,),
       selected: selected,
-      selectedColor: Theme.of(context).colorScheme.primary.withOpacity(0.8),
+      selectedColor: kPrimary.withOpacity(0.8),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 0.0),
       labelPadding: const EdgeInsets.symmetric(horizontal: 4.0),
