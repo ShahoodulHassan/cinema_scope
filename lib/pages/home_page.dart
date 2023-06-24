@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../constants.dart';
+import '../widgets/frosted_app_bar.dart';
 
 enum SectionTitle {
   nowPlaying('NOW PLAYING'),
@@ -48,7 +49,7 @@ class _HomePageChild extends StatelessWidget
       backgroundColor: getScaffoldColor(context),
       body: CustomScrollView(
         slivers: [
-          SliverAppBar(
+          SliverFrostedAppBar(
             pinned: true,
             title: const Text('Cinema scope'),
             actions: [

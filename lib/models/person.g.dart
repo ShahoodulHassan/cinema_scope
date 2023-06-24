@@ -10,7 +10,6 @@ Person _$PersonFromJson(Map<String, dynamic> json) => Person(
       json['id'] as int,
       json['adult'] as bool,
       json['name'] as String,
-      json['known_for_department'] as String,
       (json['also_known_as'] as List<dynamic>).map((e) => e as String).toList(),
       json['biography'] as String,
       CombinedCredits.fromJson(
@@ -27,6 +26,7 @@ Person _$PersonFromJson(Map<String, dynamic> json) => Person(
               json['tagged_images'] as Map<String, dynamic>),
       popularity: (json['popularity'] as num?)?.toDouble(),
       gender: json['gender'] as int?,
+      knownForDepartment: json['known_for_department'] as String? ?? '',
       birthday: json['birthday'] as String?,
       deathday: json['deathday'] as String?,
       placeOfBirth: json['place_of_birth'] as String?,

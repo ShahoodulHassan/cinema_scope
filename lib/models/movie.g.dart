@@ -223,8 +223,6 @@ abstract class _$BaseCreditCWProxy {
 
   BaseCredit name(String name);
 
-  BaseCredit knownForDepartment(String knownForDepartment);
-
   BaseCredit originalName(String originalName);
 
   BaseCredit creditId(String creditId);
@@ -234,6 +232,8 @@ abstract class _$BaseCreditCWProxy {
   BaseCredit profilePath(String? profilePath);
 
   BaseCredit gender(int? gender);
+
+  BaseCredit knownForDepartment(String knownForDepartment);
 
   /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `BaseCredit(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
@@ -245,12 +245,12 @@ abstract class _$BaseCreditCWProxy {
     int? id,
     bool? adult,
     String? name,
-    String? knownForDepartment,
     String? originalName,
     String? creditId,
     double? popularity,
     String? profilePath,
     int? gender,
+    String? knownForDepartment,
   });
 }
 
@@ -270,10 +270,6 @@ class _$BaseCreditCWProxyImpl implements _$BaseCreditCWProxy {
   BaseCredit name(String name) => this(name: name);
 
   @override
-  BaseCredit knownForDepartment(String knownForDepartment) =>
-      this(knownForDepartment: knownForDepartment);
-
-  @override
   BaseCredit originalName(String originalName) =>
       this(originalName: originalName);
 
@@ -290,6 +286,10 @@ class _$BaseCreditCWProxyImpl implements _$BaseCreditCWProxy {
   BaseCredit gender(int? gender) => this(gender: gender);
 
   @override
+  BaseCredit knownForDepartment(String knownForDepartment) =>
+      this(knownForDepartment: knownForDepartment);
+
+  @override
 
   /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `BaseCredit(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
@@ -301,12 +301,12 @@ class _$BaseCreditCWProxyImpl implements _$BaseCreditCWProxy {
     Object? id = const $CopyWithPlaceholder(),
     Object? adult = const $CopyWithPlaceholder(),
     Object? name = const $CopyWithPlaceholder(),
-    Object? knownForDepartment = const $CopyWithPlaceholder(),
     Object? originalName = const $CopyWithPlaceholder(),
     Object? creditId = const $CopyWithPlaceholder(),
     Object? popularity = const $CopyWithPlaceholder(),
     Object? profilePath = const $CopyWithPlaceholder(),
     Object? gender = const $CopyWithPlaceholder(),
+    Object? knownForDepartment = const $CopyWithPlaceholder(),
   }) {
     return BaseCredit(
       id == const $CopyWithPlaceholder() || id == null
@@ -321,11 +321,6 @@ class _$BaseCreditCWProxyImpl implements _$BaseCreditCWProxy {
           ? _value.name
           // ignore: cast_nullable_to_non_nullable
           : name as String,
-      knownForDepartment == const $CopyWithPlaceholder() ||
-              knownForDepartment == null
-          ? _value.knownForDepartment
-          // ignore: cast_nullable_to_non_nullable
-          : knownForDepartment as String,
       originalName == const $CopyWithPlaceholder() || originalName == null
           ? _value.originalName
           // ignore: cast_nullable_to_non_nullable
@@ -346,6 +341,11 @@ class _$BaseCreditCWProxyImpl implements _$BaseCreditCWProxy {
           ? _value.gender
           // ignore: cast_nullable_to_non_nullable
           : gender as int?,
+      knownForDepartment: knownForDepartment == const $CopyWithPlaceholder() ||
+              knownForDepartment == null
+          ? _value.knownForDepartment
+          // ignore: cast_nullable_to_non_nullable
+          : knownForDepartment as String,
     );
   }
 }
@@ -363,8 +363,6 @@ abstract class _$CastCWProxy {
 
   Cast name(String name);
 
-  Cast knownForDepartment(String knownForDepartment);
-
   Cast originalName(String originalName);
 
   Cast creditId(String creditId);
@@ -381,6 +379,8 @@ abstract class _$CastCWProxy {
 
   Cast gender(int? gender);
 
+  Cast knownForDepartment(String knownForDepartment);
+
   /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `Cast(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
   /// Usage
@@ -391,7 +391,6 @@ abstract class _$CastCWProxy {
     int? id,
     bool? adult,
     String? name,
-    String? knownForDepartment,
     String? originalName,
     String? creditId,
     int? castId,
@@ -400,6 +399,7 @@ abstract class _$CastCWProxy {
     double? popularity,
     String? profilePath,
     int? gender,
+    String? knownForDepartment,
   });
 }
 
@@ -417,10 +417,6 @@ class _$CastCWProxyImpl implements _$CastCWProxy {
 
   @override
   Cast name(String name) => this(name: name);
-
-  @override
-  Cast knownForDepartment(String knownForDepartment) =>
-      this(knownForDepartment: knownForDepartment);
 
   @override
   Cast originalName(String originalName) => this(originalName: originalName);
@@ -447,6 +443,10 @@ class _$CastCWProxyImpl implements _$CastCWProxy {
   Cast gender(int? gender) => this(gender: gender);
 
   @override
+  Cast knownForDepartment(String knownForDepartment) =>
+      this(knownForDepartment: knownForDepartment);
+
+  @override
 
   /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `Cast(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
@@ -458,7 +458,6 @@ class _$CastCWProxyImpl implements _$CastCWProxy {
     Object? id = const $CopyWithPlaceholder(),
     Object? adult = const $CopyWithPlaceholder(),
     Object? name = const $CopyWithPlaceholder(),
-    Object? knownForDepartment = const $CopyWithPlaceholder(),
     Object? originalName = const $CopyWithPlaceholder(),
     Object? creditId = const $CopyWithPlaceholder(),
     Object? castId = const $CopyWithPlaceholder(),
@@ -467,6 +466,7 @@ class _$CastCWProxyImpl implements _$CastCWProxy {
     Object? popularity = const $CopyWithPlaceholder(),
     Object? profilePath = const $CopyWithPlaceholder(),
     Object? gender = const $CopyWithPlaceholder(),
+    Object? knownForDepartment = const $CopyWithPlaceholder(),
   }) {
     return Cast(
       id == const $CopyWithPlaceholder() || id == null
@@ -481,11 +481,6 @@ class _$CastCWProxyImpl implements _$CastCWProxy {
           ? _value.name
           // ignore: cast_nullable_to_non_nullable
           : name as String,
-      knownForDepartment == const $CopyWithPlaceholder() ||
-              knownForDepartment == null
-          ? _value.knownForDepartment
-          // ignore: cast_nullable_to_non_nullable
-          : knownForDepartment as String,
       originalName == const $CopyWithPlaceholder() || originalName == null
           ? _value.originalName
           // ignore: cast_nullable_to_non_nullable
@@ -518,6 +513,11 @@ class _$CastCWProxyImpl implements _$CastCWProxy {
           ? _value.gender
           // ignore: cast_nullable_to_non_nullable
           : gender as int?,
+      knownForDepartment: knownForDepartment == const $CopyWithPlaceholder() ||
+              knownForDepartment == null
+          ? _value.knownForDepartment
+          // ignore: cast_nullable_to_non_nullable
+          : knownForDepartment as String,
     );
   }
 }
@@ -535,8 +535,6 @@ abstract class _$CrewCWProxy {
 
   Crew name(String name);
 
-  Crew knownForDepartment(String knownForDepartment);
-
   Crew originalName(String originalName);
 
   Crew creditId(String creditId);
@@ -548,6 +546,8 @@ abstract class _$CrewCWProxy {
   Crew popularity(double? popularity);
 
   Crew gender(int? gender);
+
+  Crew knownForDepartment(String knownForDepartment);
 
   Crew profilePath(String? profilePath);
 
@@ -563,13 +563,13 @@ abstract class _$CrewCWProxy {
     int? id,
     bool? adult,
     String? name,
-    String? knownForDepartment,
     String? originalName,
     String? creditId,
     String? department,
     String? job,
     double? popularity,
     int? gender,
+    String? knownForDepartment,
     String? profilePath,
     String? jobs,
   });
@@ -591,10 +591,6 @@ class _$CrewCWProxyImpl implements _$CrewCWProxy {
   Crew name(String name) => this(name: name);
 
   @override
-  Crew knownForDepartment(String knownForDepartment) =>
-      this(knownForDepartment: knownForDepartment);
-
-  @override
   Crew originalName(String originalName) => this(originalName: originalName);
 
   @override
@@ -611,6 +607,10 @@ class _$CrewCWProxyImpl implements _$CrewCWProxy {
 
   @override
   Crew gender(int? gender) => this(gender: gender);
+
+  @override
+  Crew knownForDepartment(String knownForDepartment) =>
+      this(knownForDepartment: knownForDepartment);
 
   @override
   Crew profilePath(String? profilePath) => this(profilePath: profilePath);
@@ -630,13 +630,13 @@ class _$CrewCWProxyImpl implements _$CrewCWProxy {
     Object? id = const $CopyWithPlaceholder(),
     Object? adult = const $CopyWithPlaceholder(),
     Object? name = const $CopyWithPlaceholder(),
-    Object? knownForDepartment = const $CopyWithPlaceholder(),
     Object? originalName = const $CopyWithPlaceholder(),
     Object? creditId = const $CopyWithPlaceholder(),
     Object? department = const $CopyWithPlaceholder(),
     Object? job = const $CopyWithPlaceholder(),
     Object? popularity = const $CopyWithPlaceholder(),
     Object? gender = const $CopyWithPlaceholder(),
+    Object? knownForDepartment = const $CopyWithPlaceholder(),
     Object? profilePath = const $CopyWithPlaceholder(),
     Object? jobs = const $CopyWithPlaceholder(),
   }) {
@@ -653,11 +653,6 @@ class _$CrewCWProxyImpl implements _$CrewCWProxy {
           ? _value.name
           // ignore: cast_nullable_to_non_nullable
           : name as String,
-      knownForDepartment == const $CopyWithPlaceholder() ||
-              knownForDepartment == null
-          ? _value.knownForDepartment
-          // ignore: cast_nullable_to_non_nullable
-          : knownForDepartment as String,
       originalName == const $CopyWithPlaceholder() || originalName == null
           ? _value.originalName
           // ignore: cast_nullable_to_non_nullable
@@ -682,6 +677,11 @@ class _$CrewCWProxyImpl implements _$CrewCWProxy {
           ? _value.gender
           // ignore: cast_nullable_to_non_nullable
           : gender as int?,
+      knownForDepartment: knownForDepartment == const $CopyWithPlaceholder() ||
+              knownForDepartment == null
+          ? _value.knownForDepartment
+          // ignore: cast_nullable_to_non_nullable
+          : knownForDepartment as String,
       profilePath: profilePath == const $CopyWithPlaceholder()
           ? _value.profilePath
           // ignore: cast_nullable_to_non_nullable
@@ -1091,12 +1091,12 @@ BaseCredit _$BaseCreditFromJson(Map<String, dynamic> json) => BaseCredit(
       json['id'] as int,
       json['adult'] as bool,
       json['name'] as String,
-      json['known_for_department'] as String,
       json['original_name'] as String,
       json['credit_id'] as String,
       popularity: (json['popularity'] as num?)?.toDouble(),
       profilePath: json['profile_path'] as String?,
       gender: json['gender'] as int?,
+      knownForDepartment: json['known_for_department'] as String? ?? '',
     )..mediaType = json['media_type'] as String?;
 
 Map<String, dynamic> _$BaseCreditToJson(BaseCredit instance) =>
@@ -1117,7 +1117,6 @@ Cast _$CastFromJson(Map<String, dynamic> json) => Cast(
       json['id'] as int,
       json['adult'] as bool,
       json['name'] as String,
-      json['known_for_department'] as String,
       json['original_name'] as String,
       json['credit_id'] as String,
       json['cast_id'] as int,
@@ -1126,6 +1125,7 @@ Cast _$CastFromJson(Map<String, dynamic> json) => Cast(
       popularity: (json['popularity'] as num?)?.toDouble(),
       profilePath: json['profile_path'] as String?,
       gender: json['gender'] as int?,
+      knownForDepartment: json['known_for_department'] as String? ?? '',
     )..mediaType = json['media_type'] as String?;
 
 Map<String, dynamic> _$CastToJson(Cast instance) => <String, dynamic>{
@@ -1148,13 +1148,13 @@ Crew _$CrewFromJson(Map<String, dynamic> json) => Crew(
       json['id'] as int,
       json['adult'] as bool,
       json['name'] as String,
-      json['known_for_department'] as String,
       json['original_name'] as String,
       json['credit_id'] as String,
       json['department'] as String,
       json['job'] as String,
       popularity: (json['popularity'] as num?)?.toDouble(),
       gender: json['gender'] as int?,
+      knownForDepartment: json['known_for_department'] as String? ?? '',
       profilePath: json['profile_path'] as String?,
       jobs: json['jobs'] as String?,
     )..mediaType = json['media_type'] as String?;

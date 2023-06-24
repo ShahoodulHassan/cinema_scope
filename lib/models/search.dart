@@ -276,12 +276,12 @@ class BasePersonResult extends BaseResult {
   BasePersonResult(
     super.id,
     this.adult,
-    this.name,
-    this.knownForDepartment, {
+    this.name, {
     // super.mediaType,
     super.popularity,
     this.profilePath,
     this.gender,
+    this.knownForDepartment = '',
   });
 
   factory BasePersonResult.fromJson(Map<String, dynamic> json) =>
@@ -299,12 +299,12 @@ class PersonResult extends BasePersonResult {
     super.id,
     super.adult,
     super.name,
-    super.knownForDepartment,
     this.knownFor, {
     // super.mediaType,
     super.popularity,
     super.profilePath,
     super.gender,
+    super.knownForDepartment,
   });
 
   factory PersonResult.fromJson(Map<String, dynamic> json) =>

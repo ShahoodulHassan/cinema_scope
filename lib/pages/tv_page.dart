@@ -20,6 +20,7 @@ import '../utilities/utilities.dart';
 import '../widgets/base_section_sliver.dart';
 import '../widgets/compact_text_button.dart';
 import '../widgets/expandable_synopsis.dart';
+import '../widgets/frosted_app_bar.dart';
 import '../widgets/image_view.dart';
 import '../widgets/recommendations_section.dart';
 import 'media_details_page.dart';
@@ -93,16 +94,9 @@ class _TvPageChildState extends State<_TvPageChild>
       backgroundColor: getScaffoldColor(context),
       body: CustomScrollView(
         slivers: [
-          SliverAppBar(
-            // floating: true,
+          SliverFrostedAppBar.withSubtitle(
+            title: Text(widget.title),
             pinned: true,
-            // snap: true,
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(widget.title),
-              ],
-            ),
           ),
           Selector<TvViewModel,
               Tuple3<List<String>, Map<String, ThumbnailType>, String?>>(
@@ -805,6 +799,7 @@ class _TvCastPosterListView extends StatelessWidget
                 aspectRatio: aspectRatio,
                 topRadius: radius,
                 fit: BoxFit.fitWidth,
+                heroImageTag: '${cast.id}',
               ),
               Container(
                 padding: EdgeInsets.fromLTRB(

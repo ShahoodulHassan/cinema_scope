@@ -28,7 +28,6 @@ class Person extends BasePersonResult {
     super.id,
     super.adult,
     super.name,
-    super.knownForDepartment,
     this.alsoKnownAs,
     this.biography,
     // this.movieCredits,
@@ -39,6 +38,7 @@ class Person extends BasePersonResult {
     this.taggedImages, {
     super.popularity,
     super.gender,
+    super.knownForDepartment,
     this.birthday,
     this.deathday,
     this.placeOfBirth,

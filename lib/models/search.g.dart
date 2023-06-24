@@ -258,10 +258,10 @@ BasePersonResult _$BasePersonResultFromJson(Map<String, dynamic> json) =>
       json['id'] as int,
       json['adult'] as bool,
       json['name'] as String,
-      json['known_for_department'] as String,
       popularity: (json['popularity'] as num?)?.toDouble(),
       profilePath: json['profile_path'] as String?,
       gender: json['gender'] as int?,
+      knownForDepartment: json['known_for_department'] as String? ?? '',
     )..mediaType = json['media_type'] as String?;
 
 Map<String, dynamic> _$BasePersonResultToJson(BasePersonResult instance) =>
@@ -280,13 +280,13 @@ PersonResult _$PersonResultFromJson(Map<String, dynamic> json) => PersonResult(
       json['id'] as int,
       json['adult'] as bool,
       json['name'] as String,
-      json['known_for_department'] as String,
       (json['known_for'] as List<dynamic>)
           .map((e) => CombinedResult.fromJson(e as Map<String, dynamic>))
           .toList(),
       popularity: (json['popularity'] as num?)?.toDouble(),
       profilePath: json['profile_path'] as String?,
       gender: json['gender'] as int?,
+      knownForDepartment: json['known_for_department'] as String? ?? '',
     )..mediaType = json['media_type'] as String?;
 
 Map<String, dynamic> _$PersonResultToJson(PersonResult instance) =>

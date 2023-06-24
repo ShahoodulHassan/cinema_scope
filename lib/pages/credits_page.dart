@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cinema_scope/architecture/credits_view_model.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
@@ -5,11 +7,13 @@ import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:provider/provider.dart';
+import 'package:sliver_tools/sliver_tools.dart';
 
 import '../architecture/filmography_view_model.dart';
 import '../constants.dart';
 import '../main.dart';
 import '../models/movie.dart';
+import '../widgets/frosted_app_bar.dart';
 import '../widgets/poster_tile.dart';
 import '../widgets/sliver_obstruction_injector.dart';
 
@@ -85,50 +89,29 @@ class _CreditsPageChildState extends State<_CreditsPageChild>
               /// Helps make pinned / sticky headers inside a TabBarView
               /// Followed the pattern mentioned in
               /// https://gist.github.com/letsar/2e3cc98d328b3e84170abacf154e545f
-              SliverOverlapAbsorber(
+              /*SliverOverlapAbsorber(
                 handle:
                     NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-                sliver: SliverAppBar(
-                  floating: true,
-                  pinned: true,
-                  // snap: true,
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.title,
-                        style: Theme.of(context)
-                            .appBarTheme
-                            .titleTextStyle
-                            ?.copyWith(
-                              height: 1.2,
-                            ),
-                      ),
-                      Text(
-                        widget.name,
-                        style: const TextStyle(
-                          color: Colors.black87,
-                          fontSize: 16.0,
-                          height: 1.2,
+                sliver: */
+              SliverFrostedAppBar.withSubtitle(
+                title: Text(widget.title),
+                subtitle: Text(widget.name),
+                floating: true,
+                pinned: true,
+                bottom: crew.isNotEmpty && cast.isNotEmpty
+                    ? TabBar(
+                        indicatorSize: TabBarIndicatorSize.tab,
+                        indicatorColor: kPrimary,
+                        labelColor: Colors.black87,
+                        labelStyle: TextStyle(
+                          fontWeight: weightBold,
+                          letterSpacing: 1.0,
                         ),
-                      ),
-                    ],
-                  ),
-                  bottom: crew.isNotEmpty && cast.isNotEmpty
-                      ? TabBar(
-                          indicatorSize: TabBarIndicatorSize.tab,
-                          indicatorColor: kPrimary,
-                          labelColor: Colors.black87,
-                          labelStyle: TextStyle(
-                            fontWeight: weightBold,
-                            letterSpacing: 1.0,
-                          ),
-                          tabs: tabs,
-                        )
-                      : null,
-                  // bottom: const _FilterBar(),
-                ),
+                        tabs: tabs,
+                      )
+                    : null,
               ),
+              /*),*/
             ];
           },
           body: Builder(
@@ -137,22 +120,34 @@ class _CreditsPageChildState extends State<_CreditsPageChild>
                 if (cast.isNotEmpty)
                   CustomScrollView(
                     slivers: [
-                      SliverObstructionInjector(
-                        handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
-                            context),
-                      ),
+                      // SliverObstructionInjector(
+                      //   handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                      //       context),
+                      // ),
                       getSliverTabData<Cast>(context),
                     ],
                   ),
                 if (crew.isNotEmpty)
                   CustomScrollView(
                     slivers: [
-                      SliverObstructionInjector(
-                        handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
-                            context),
-                      ),
-                      SliverStickyHeader(
-                        header: Selector<CreditsViewModel,
+                      // SliverObstructionInjector(
+                      //   handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                      //       context),
+                      // ),
+                      // SliverStickyHeader(
+                      //   header: Selector<CreditsViewModel,
+                      //       Map<String, FilterState>>(
+                      //     selector: (_, cvm) => cvm.availableDepartments,
+                      //     builder: (_, filters, __) {
+                      //       return (filters.length <= 1)
+                      //           ? Container()
+                      //           : _FilterBar(filters);
+                      //     },
+                      //   ),
+                      //   sliver: getSliverTabData<Crew>(context),
+                      // ),
+                      SliverPinnedHeader(
+                        child: Selector<CreditsViewModel,
                             Map<String, FilterState>>(
                           selector: (_, cvm) => cvm.availableDepartments,
                           builder: (_, filters, __) {
@@ -161,20 +156,8 @@ class _CreditsPageChildState extends State<_CreditsPageChild>
                                 : _FilterBar(filters);
                           },
                         ),
-                        sliver: getSliverTabData<Crew>(context),
                       ),
-                      // SliverPinnedHeader(
-                      //   child:
-                      //       Selector<CreditsViewModel, Map<String, FilterState>>(
-                      //     selector: (_, cvm) => cvm.availableDepartments,
-                      //     builder: (_, filters, __) {
-                      //       return (filters.length <= 1)
-                      //           ? Container()
-                      //           : _FilterBar(filters);
-                      //     },
-                      //   ),
-                      // ),
-                      // getSliverTabData<Crew>(context),
+                      getSliverTabData<Crew>(context),
                     ],
                   ),
               ],
@@ -197,9 +180,14 @@ class _CreditsPageChildState extends State<_CreditsPageChild>
         if (credits.isEmpty) {
           return const SliverToBoxAdapter(child: SizedBox.shrink());
         } else {
-          return SliverFixedExtentList(
+          return SliverGrid(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: MediaQuery.sizeOf(context).width ~/ 340,
+              mainAxisExtent: Constants.posterWidth / Constants.arPoster +
+                  Constants.posterVPadding * 2,
+            ),
             delegate: SliverChildBuilderDelegate(
-              (_, index) {
+              (context, index) {
                 var person = credits[index];
                 return PersonPosterTile(
                   person: person,
@@ -235,8 +223,6 @@ class _CreditsPageChildState extends State<_CreditsPageChild>
               },
               childCount: credits.length,
             ),
-            itemExtent: Constants.posterWidth / Constants.arPoster +
-                Constants.posterVPadding * 2,
           );
         }
       },
@@ -245,8 +231,7 @@ class _CreditsPageChildState extends State<_CreditsPageChild>
 }
 
 class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
-  final double rowHeight = 46.0;
-  final double verticalPadding = 8.0;
+  final double rowHeight = 62.0;
 
   final Map<String, FilterState> filters;
 
@@ -254,13 +239,9 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Theme.of(context).scaffoldBackgroundColor,
-      padding: EdgeInsets.symmetric(vertical: verticalPadding),
-      child: SizedBox(
-        height: rowHeight,
-        child: buildDepartmentsList(context, filters),
-      ),
+    return SizedBox(
+      height: rowHeight,
+      child: buildDepartmentsList(context, filters),
     );
   }
 
@@ -342,5 +323,5 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size(0, rowHeight + verticalPadding * 2);
+  Size get preferredSize => Size(0, rowHeight);
 }

@@ -15,7 +15,13 @@ final navigatorKey = GlobalKey<NavigatorState>();
 /// Global application level context
 var appContext = navigatorKey.currentState!.overlay!.context;
 
-final Color kPrimary = Theme.of(appContext).colorScheme.primary;
+final ThemeData _kThemeData = Theme.of(appContext);
+
+final ColorScheme kColorScheme = _kThemeData.colorScheme;
+
+final Color kScaffoldBackgroundColor = _kThemeData.scaffoldBackgroundColor;
+final Color kPrimary = kColorScheme.primary;
+final Color kPrimaryContainer = kColorScheme.primaryContainer;
 
 void main() async {
   print('main called');
@@ -72,6 +78,7 @@ class MyApp extends StatelessWidget with GenericFunctions {
                   color: appBarItemColor,
                   fontSize: 22,
                   fontFamily: fontFamily,
+                  height: 1.2,
                   // fontWeight: FontWeight.bold,
                 ),
                 actionsIconTheme: IconThemeData(

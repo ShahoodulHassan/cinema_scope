@@ -30,6 +30,7 @@ import '../models/movie.dart';
 import '../widgets/base_section_sliver.dart';
 import '../widgets/compact_text_button.dart';
 import '../widgets/expandable_synopsis.dart';
+import '../widgets/frosted_app_bar.dart';
 import '../widgets/ink_well_overlay.dart';
 import '../widgets/recommendations_section.dart';
 import '../widgets/trailer_view.dart';
@@ -123,25 +124,9 @@ class _MoviePageChildState extends State<_MoviePageChild>
       backgroundColor: getScaffoldColor(context),
       body: CustomScrollView(
         slivers: [
-          SliverAppBar(
-            // floating: true,
+          SliverFrostedAppBar(
+            title: Text(widget.title),
             pinned: true,
-            // snap: true,
-            // flexibleSpace: backdrop.isNotNullNorEmpty ? NetworkImageView(
-            //   '$backdropBaseUrl$backdrop',
-            //   imageType: ImageType.backdrop,
-            //   aspectRatio: Constants.arBackdrop,
-            // ) : null,
-            // expandedHeight:
-            //     MediaQuery.sizeOf(context).width / Constants.arBackdrop - MediaQuery.paddingOf(context).top,
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.title,
-                ),
-              ],
-            ),
           ),
           MultiSliver(children: [
             Selector<MovieViewModel,
@@ -1040,6 +1025,7 @@ class _CastPosterListView extends StatelessWidget
                 aspectRatio: aspectRatio,
                 topRadius: radius,
                 fit: BoxFit.fitWidth,
+                heroImageTag: '${cast.id}',
               ),
               Container(
                 padding: EdgeInsets.fromLTRB(

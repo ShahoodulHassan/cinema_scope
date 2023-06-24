@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:age_calculator/age_calculator.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinema_scope/architecture/config_view_model.dart';
 import 'package:cinema_scope/constants.dart';
 import 'package:cinema_scope/models/movie.dart';
@@ -15,7 +14,6 @@ import 'package:cinema_scope/widgets/image_view.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:sliver_tools/sliver_tools.dart';
 import 'package:tuple/tuple.dart';
 
 import '../architecture/person_view_model.dart';
@@ -23,6 +21,7 @@ import '../models/search.dart';
 import '../utilities/generic_functions.dart';
 import '../widgets/base_section_sliver.dart';
 import '../widgets/compact_text_button.dart';
+import '../widgets/frosted_app_bar.dart';
 import '../widgets/home_section.dart';
 
 class PersonPage extends MultiProvider {
@@ -89,99 +88,170 @@ class _PersonPageChildState extends State<_PersonPageChild>
       backgroundColor: getScaffoldColor(context),
       body: CustomScrollView(
         slivers: [
-          SliverAppBar(
-            // floating: true,
+          SliverFrostedAppBar(
             pinned: true,
-            // snap: true,
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(widget.name),
-              ],
-            ),
+            title: Text(widget.name),
           ),
-          MultiSliver(
-            children: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 0.0, top: 24.0),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.40,
-                            // height: (MediaQuery.of(context).size.width * 0.40) /
-                            //     Constants.arProfile * 0.8,
-                            child: NetworkImageView(
-                              widget.profilePath,
-                              imageType: ImageType.profile,
-                              aspectRatio: Constants.arProfile * 1.15,
-                              topRadius: 4.0,
-                              bottomRadius: 4.0,
-                              fit: BoxFit.fitWidth,
-                              heroImageTag: '${widget.id}',
-                            ),
-                          ),
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          top: 16.0,
-                          right: 8.0,
-                          left: 8.0,
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              widget.name,
-                              style: const TextStyle(
-                                fontSize: 24.0,
-                                letterSpacing: 2.0,
-                                fontWeight: FontWeight.bold,
-                                // height: 1.1,
-                              ),
-                            ),
-                            AnimatedSize(
-                              duration: const Duration(milliseconds: 250),
-                              child: Selector<PersonViewModel, String?>(
-                                builder: (_, jobs, __) {
-                                  if (jobs == null || jobs.isEmpty) {
-                                    return const SizedBox.shrink();
-                                  }
-                                  return Text(
-                                    jobs,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      fontSize: 16.0,
-                                    ),
-                                  );
-                                },
-                                selector: (_, pvm) => pvm.jobs,
-                              ),
-                            ),
-                            const _ExternalIdsView(),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const _BiographySection(),
-              _FilmographySection(),
-              const _PersonalInfoSection(),
-              const ImagesSection<PersonViewModel>(),
-              const SliverToBoxAdapter(child: SizedBox(height: 16)),
-            ],
-          ),
+          MediaQuery.sizeOf(context).aspectRatio <= 1
+              ? buildIntroPortrait()
+              : buildIntroLandscape(),
+          const _BiographySection(),
+          _FilmographySection(),
+          const _PersonalInfoSection(),
+          const ImagesSection<PersonViewModel>(),
+          const SliverToBoxAdapter(child: SizedBox(height: 16)),
         ],
       ),
     );
   }
+
+  SliverToBoxAdapter buildIntroPortrait() {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.only(
+          top: 20.0,
+          right: 8.0,
+          left: 8.0,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            buildPhoto(context, widget.id, widget.profilePath),
+            Padding(
+              padding: const EdgeInsets.only(top: 16.0, right: 8.0, left: 8.0),
+              child: Column(
+                children: [
+                  buildName(widget.name),
+                  buildJobs(TextAlign.center),
+                ],
+              ),
+            ),
+            const Align(
+              alignment: AlignmentDirectional.topCenter,
+              child: _ExternalIdsView(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  SliverToBoxAdapter buildIntroLandscape() {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.only(
+          top: 20.0,
+          right: 16.0,
+          left: 16.0,
+        ),
+        child: Row(
+          // mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            buildPhoto(context, widget.id, widget.profilePath),
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        buildName(widget.name),
+                        buildJobs(TextAlign.start),
+                      ],
+                    ),
+                  ),
+                  const _ExternalIdsView(),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+Widget buildPhoto(BuildContext context, int id, String? imagePath) {
+  return Stack(
+    children: [
+      SizedBox(
+        width: 157.0,
+        child: NetworkImageView(
+          imagePath,
+          imageType: ImageType.profile,
+          imageQuality: ImageQuality.original,
+          aspectRatio: Constants.arProfile,
+          topRadius: 4.0,
+          bottomRadius: 4.0,
+          heroImageTag: '$id',
+        ),
+      ),
+      Positioned.fill(
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            onTap: imagePath != null
+                ? () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => ImagePage(
+                          images: [
+                            ImageDetail(
+                              Constants.arProfile,
+                              0,
+                              imagePath,
+                              0,
+                              0,
+                              0,
+                            ),
+                          ],
+                          initialPage: 0,
+                        ),
+                      ),
+                    );
+                  }
+                : null,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+Widget buildName(String name) {
+  return Text(
+    name,
+    style: const TextStyle(
+      fontSize: 24.0,
+      letterSpacing: 2.0,
+      fontWeight: FontWeight.bold,
+      // height: 1.1,
+    ),
+  );
+}
+
+Widget buildJobs(TextAlign textAlign) {
+  return AnimatedSize(
+    duration: const Duration(milliseconds: 250),
+    child: Selector<PersonViewModel, String?>(
+      builder: (_, jobs, __) {
+        if (jobs == null || jobs.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        return Text(
+          jobs,
+          textAlign: textAlign,
+          style: const TextStyle(
+            fontSize: 16.0,
+            height: 1.2,
+          ),
+        );
+      },
+      selector: (_, pvm) => pvm.jobs,
+    ),
+  );
 }
 
 class _ExternalIdsView extends StatelessWidget
@@ -198,9 +268,10 @@ class _ExternalIdsView extends StatelessWidget
           return const SizedBox.shrink();
         } else {
           return Padding(
-            padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
+            padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              // mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (externalIds!.imdbId != null)
                   getIconButton(
@@ -522,16 +593,18 @@ class ImagesSection<T extends BaseMediaViewModel> extends StatelessWidget
           return BaseSectionSliver(
             title: 'Images ($totalCount)',
             showSeeAll: showSeeAll,
-            onPressed: showSeeAll ? () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => ImagePage(
-                    images: images,
-                    initialPage: 0,
-                  ),
-                ),
-              );
-            } : null,
+            onPressed: showSeeAll
+                ? () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => ImagePage(
+                          images: images,
+                          initialPage: 0,
+                        ),
+                      ),
+                    );
+                  }
+                : null,
             children: [
               MyImageCardListView(images, trimmedCount),
             ],
@@ -554,7 +627,8 @@ class MyImageCardListView extends StatelessWidget
   final listViewHorizontalPadding = 16.0 - Constants.cardMargin;
 
   MyImageCardListView(
-    this._items, this._trimmedCount, {
+    this._items,
+    this._trimmedCount, {
     this.posterHeight = 150.0,
     this.radius = 4.0,
     super.key,
@@ -568,7 +642,8 @@ class MyImageCardListView extends StatelessWidget
 
     final listViewHeight = posterHeight + listViewVerticalPadding * 2;
 
-    final images = _items.take(_trimmedCount)
+    final images = _items
+        .take(_trimmedCount)
         .where((element) => element.imageType != ImageType.logo.name)
         .toList();
 

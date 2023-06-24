@@ -43,25 +43,42 @@ class TvCreditsViewModel extends ChangeNotifier
 
   _processCredits() async {
     for (var cast in credits.cast) {
-      _mediaDeptToJobsMap.putIfAbsent(
-          '${cast.id}${Department.acting.name}', () => []).addAll(
-          cast.roles.map((role) {
-            var count = role.episodeCount;
-            return '${role.character} ($count episode${count > 1 ? 's' : ''})';
-          }));
+      _mediaDeptToJobsMap
+          .putIfAbsent('${cast.id}${Department.acting.name}', () => [])
+          .addAll(cast.roles.map((role) {
+        var count = role.episodeCount;
+        return '${role.character} ($count episode${count > 1 ? 's' : ''})';
+      }));
       _allResults.add(cast);
       this.cast == null ? this.cast = [cast] : this.cast!.add(cast);
     }
 
     for (var crew in credits.crew) {
-      _mediaDeptToJobsMap.putIfAbsent(
-          '${crew.id}${crew.department}', () => []).addAll(
-          crew.jobs.map((job) {
-            var count = job.episodeCount;
-            return '${job.job} ($count episode${count > 1 ? 's' : ''})';
-          }));
+      _mediaDeptToJobsMap
+          .putIfAbsent('${crew.id}${crew.department}', () => [])
+          .addAll(crew.jobs.map((job) {
+        var count = job.episodeCount;
+        return '${job.job} ($count episode${count > 1 ? 's' : ''})';
+      }));
       _allResults.add(crew);
       this.crew == null ? this.crew = [crew] : this.crew!.add(crew);
+    }
+    if (cast != null) {
+      for (var tvCast in cast!) {
+        tvCast.deptJobsString = getDeptJobString(
+          tvCast.id,
+          Department.acting.name,
+        );
+      }
+    }
+
+    if (crew != null) {
+      for (var tvCrew in crew!) {
+        tvCrew.deptJobsString = getDeptJobString(
+          tvCrew.id,
+          tvCrew.department,
+        );
+      }
     }
     // _results = _allResults;
     await _prepareAllFilters();
@@ -152,21 +169,22 @@ class TvCreditsViewModel extends ChangeNotifier
   toggleDepartments(MapEntry<String, FilterState> item, bool isSelected) {
     availableDepartments =
         Map<String, FilterState>.from(availableDepartments).map(
-              (key, value) {
-            if (item.key == key) {
-              return MapEntry<String, FilterState>(key,
-                  (isSelected ? FilterState.selected : FilterState.unselected));
-            }
-            return MapEntry<String, FilterState>(key, FilterState.unselected);
-          },
-        );
+      (key, value) {
+        if (item.key == key) {
+          return MapEntry<String, FilterState>(key,
+              (isSelected ? FilterState.selected : FilterState.unselected));
+        }
+        return MapEntry<String, FilterState>(key, FilterState.unselected);
+      },
+    );
     _filterResults(item, isSelected);
   }
 
   _filterResults(MapEntry<String, FilterState> item, bool isSelected) async {
     if (isSelected) {
-      crew = List.from(_allResults.whereType<TvCrew>().where((element)
-      => element.department == item.key));
+      crew = List.from(_allResults
+          .whereType<TvCrew>()
+          .where((element) => element.department == item.key));
       // _results = List.from(_allResults.where((element) =>
       // element is TvCast || (element as TvCrew).department == item.key));
     } else {

@@ -4,13 +4,14 @@ import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:provider/provider.dart';
-import 'package:sliver_tools/sliver_tools.dart';
 import 'package:tuple/tuple.dart';
 
 import '../architecture/config_view_model.dart';
 import '../architecture/filmography_view_model.dart';
 import '../constants.dart';
+import '../widgets/frosted_app_bar.dart';
 import '../widgets/image_view.dart';
 import '../widgets/poster_tile.dart';
 
@@ -67,57 +68,52 @@ class _FilmographyPageChildState extends State<_FilmographyPageChild>
   Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: lighten2(Theme.of(context).primaryColorLight, 78),
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Filmography',
-                    style:
-                        Theme.of(context).appBarTheme.titleTextStyle?.copyWith(
-                              height: 1.2,
-                            ),
-                  ),
-                  Text(
-                    widget.name,
-                    style: const TextStyle(
-                      color: Colors.black87,
-                      fontSize: 16.0,
-                      height: 1.2,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                ],
-              ),
-              // bottom: const _FilterBar(),
-            ),
-            const SliverPinnedHeader(child: _FilterBar()),
-            Selector<FilmographyViewModel, List<CombinedResult>>(
-              selector: (_, fvm) => fvm.results,
-              builder: (_, results, __) {
-                logIfDebug(results);
-                if (results.isEmpty) {
-                  return const SliverToBoxAdapter(child: SizedBox.shrink());
-                } else {
-                  return SliverFixedExtentList(
-                    delegate: SliverChildBuilderDelegate(
-                      (_, index) {
-                        var media = results[index];
-                        return CombinedPosterTile(result: media);
-                      },
-                      childCount: results.length,
-                    ),
-                    itemExtent: Constants.posterWidth / Constants.arPoster +
+      body: CustomScrollView(
+        slivers: [
+          SliverFrostedAppBar.withSubtitle(
+            title: const Text('Filmography'),
+            subtitle: Text(widget.name),
+            floating: true,
+            pinned: true,
+            bottom: const _FilterBar(),
+          ),
+          Selector<FilmographyViewModel, List<CombinedResult>>(
+            selector: (_, fvm) => fvm.results,
+            builder: (_, results, __) {
+              logIfDebug(results);
+              if (results.isEmpty) {
+                return const SliverToBoxAdapter(child: SizedBox.shrink());
+              } else {
+                return SliverGrid(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: MediaQuery.sizeOf(context).width ~/ 340,
+                    mainAxisExtent:
+                    Constants.posterWidth / Constants.arPoster +
                         Constants.posterVPadding * 2,
-                  );
-                }
-              },
-            ),
-          ],
-        ),
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                      var media = results[index];
+                      return CombinedPosterTile(result: media);
+                    },
+                    childCount: results.length,
+                  ),
+                );
+                // return SliverFixedExtentList(
+                //   delegate: SliverChildBuilderDelegate(
+                //     (_, index) {
+                //       var media = results[index];
+                //       return CombinedPosterTile(result: media);
+                //     },
+                //     childCount: results.length,
+                //   ),
+                //   itemExtent: Constants.posterWidth / Constants.arPoster +
+                //       Constants.posterVPadding * 2,
+                // );
+              }
+            },
+          ),
+        ],
       ),
     );
   }
@@ -125,9 +121,14 @@ class _FilmographyPageChildState extends State<_FilmographyPageChild>
 
 class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
   final double rowHeight = 46.0;
+  final double? topPadding;
   final double verticalPadding = 8.0;
 
-  const _FilterBar({Key? key}) : super(key: key);
+  const _FilterBar({this.topPadding, Key? key}) : super(key: key);
+
+  @override
+  Size get preferredSize => Size(
+      0, rowHeight * 2 + verticalPadding + (topPadding ?? verticalPadding));
 
   @override
   Widget build(BuildContext context) {
@@ -144,8 +145,12 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
         } else {
           var fvm = context.read<FilmographyViewModel>();
           return Container(
-            color: Colors.white,
-            padding: EdgeInsets.symmetric(vertical: verticalPadding),
+            // color: kScaffoldBackgroundColor
+            //     .withOpacity(SliverFrostedAppBar.frostOpacity),
+            padding: EdgeInsets.only(
+              top: topPadding ?? verticalPadding,
+              bottom: verticalPadding,
+            ),
             child: Column(
               children: [
                 if (depts.isNotEmpty)
@@ -345,9 +350,6 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
       ),
     );
   }
-
-  @override
-  Size get preferredSize => Size(0, rowHeight * 2 + verticalPadding * 2);
 }
 
 class CombinedPosterTile extends StatelessWidget

@@ -390,13 +390,13 @@ class BaseCredit extends BasePersonResult {
     super.id,
     super.adult,
     super.name,
-    super.knownForDepartment,
     this.originalName,
     this.creditId, {
     // super.mediaType,
     super.popularity,
     super.profilePath,
     super.gender,
+    super.knownForDepartment,
   });
 
   factory BaseCredit.fromJson(Map<String, dynamic> json) =>
@@ -417,7 +417,6 @@ class Cast extends BaseCredit {
     super.id,
     super.adult,
     super.name,
-    super.knownForDepartment,
     super.originalName,
     super.creditId,
     this.castId,
@@ -426,6 +425,7 @@ class Cast extends BaseCredit {
     super.popularity,
     super.profilePath,
     super.gender,
+    super.knownForDepartment,
   });
 
   factory Cast.fromJson(Map<String, dynamic> json) => _$CastFromJson(json);
@@ -449,13 +449,13 @@ class Crew extends BaseCredit {
     super.id,
     super.adult,
     super.name,
-    super.knownForDepartment,
     super.originalName,
     super.creditId,
     this.department,
     this.job, {
     super.popularity,
     super.gender,
+    super.knownForDepartment,
     super.profilePath,
     this.jobs,
   });
@@ -656,7 +656,6 @@ class WatchProviderResult {
   }
 }
 
-
 /// Custom JSON serialization has to be implemented due to the unusual JSON
 /// structure as pointed out here:
 /// https://www.themoviedb.org/talk/63fba2e757176f008544a439
@@ -670,10 +669,10 @@ class WatchProviderResults {
   factory WatchProviderResults.fromJson(Map<String, dynamic> json) {
     String region = PrefUtil.getValue(Constants.pkRegion, 'US');
     return WatchProviderResults(
-        json[region] == null
-            ? null
-            : WatchProviderResult.fromJson(json[region] as Map<String, dynamic>),
-      );
+      json[region] == null
+          ? null
+          : WatchProviderResult.fromJson(json[region] as Map<String, dynamic>),
+    );
   }
 
   // factory WatchProviderResults.fromJson(Map<String, dynamic> json) =>

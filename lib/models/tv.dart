@@ -130,16 +130,18 @@ class Network {
 @JsonSerializable(fieldRename: FieldRename.snake)
 class BaseTvCredit extends BasePersonResult {
   int totalEpisodeCount;
+  String deptJobsString;
 
   BaseTvCredit(
     super.id,
     super.adult,
     super.name,
-    super.knownForDepartment,
     this.totalEpisodeCount, {
     super.popularity,
     super.profilePath,
     super.gender,
+    super.knownForDepartment,
+    this.deptJobsString = '',
   });
 
   factory BaseTvCredit.fromJson(Map<String, dynamic> json) =>
@@ -171,13 +173,14 @@ class TvCast extends BaseTvCredit {
     super.id,
     super.adult,
     super.name,
-    super.knownForDepartment,
     super.totalEpisodeCount,
     this.order,
     this.roles, {
     super.popularity,
     super.profilePath,
     super.gender,
+    super.knownForDepartment,
+    super.deptJobsString,
   });
 
   factory TvCast.fromJson(Map<String, dynamic> json) => _$TvCastFromJson(json);
@@ -195,13 +198,14 @@ class TvCrew extends BaseTvCredit {
     super.id,
     super.adult,
     super.name,
-    super.knownForDepartment,
     super.totalEpisodeCount,
     this.department,
     this.jobs, {
     super.popularity,
     super.profilePath,
     super.gender,
+    super.knownForDepartment,
+    super.deptJobsString,
   });
 
   factory TvCrew.fromJson(Map<String, dynamic> json) => _$TvCrewFromJson(json);

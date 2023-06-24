@@ -8,6 +8,8 @@ import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
 
+import '../main.dart';
+
 class ImagePage extends StatelessWidget {
   final List<ImageDetail> images;
   final int initialPage;
@@ -70,7 +72,7 @@ class ImagePage extends StatelessWidget {
   Widget getImageView(BuildContext context, ImageDetail image) {
     var imageType = image.imageType != null
         ? ImageType.values
-        .firstWhere((element) => element.name == image.imageType)
+            .firstWhere((element) => element.name == image.imageType)
         : ImageType.profile;
     return InteractiveViewer(
       child: Container(
@@ -105,7 +107,7 @@ class ImagePage extends StatelessWidget {
   PhotoView buildPhotoView(BuildContext context, ImageDetail image) {
     var imageType = image.imageType != null
         ? ImageType.values
-        .firstWhere((element) => element.name == image.imageType)
+            .firstWhere((element) => element.name == image.imageType)
         : ImageType.profile;
     return PhotoView(
       imageProvider: CachedNetworkImageProvider(getImageUrl(image, context)),
@@ -122,13 +124,12 @@ class ImagePage extends StatelessWidget {
                 imageType: imageType,
                 aspectRatio: image.aspectRatio,
                 imageQuality: placeholderQuality,
-                // heroImageTag: image.filePath,
               ),
               if (progress != null)
                 Center(
                   child: CircularProgressIndicator(
-                    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                    color: Theme.of(context).colorScheme.primary,
+                    backgroundColor: kPrimaryContainer,
+                    color: kPrimary,
                     value: progress.expectedTotalBytes != null
                         ? progress.cumulativeBytesLoaded /
                             progress.expectedTotalBytes!
@@ -145,7 +146,7 @@ class ImagePage extends StatelessWidget {
   String getImageUrl(ImageDetail image, BuildContext context) {
     var imageType = image.imageType != null
         ? ImageType.values
-        .firstWhere((element) => element.name == image.imageType)
+            .firstWhere((element) => element.name == image.imageType)
         : ImageType.profile;
     var imageUrl = image.filePath.contains('/http')
         ? image.filePath.replaceFirst('/http', 'http')

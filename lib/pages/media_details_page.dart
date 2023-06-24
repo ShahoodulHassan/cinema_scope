@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../architecture/config_view_model.dart';
 import '../models/movie.dart';
+import '../widgets/frosted_app_bar.dart';
 
 /// This page is meant to show the sub details of movie details
 /// T can be any model object which means that all possible objects would have
@@ -24,26 +25,10 @@ class MediaSubDetailsPage<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: Theme.of(context).appBarTheme.titleTextStyle?.copyWith(
-                    height: 1.2,
-                  ),
-            ),
-            Text(
-              name,
-              style: const TextStyle(
-                color: Colors.black87,
-                fontSize: 16.0,
-                height: 1.2,
-              ),
-            ),
-          ],
-        ),
+      extendBodyBehindAppBar: true,
+      appBar: FrostedAppBar.withSubtitle(
+        title: Text(title),
+        subtitle: Text(name),
       ),
       body: ListView.separated(
         itemBuilder: (_, index) {

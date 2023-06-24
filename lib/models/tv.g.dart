@@ -157,11 +157,12 @@ BaseTvCredit _$BaseTvCreditFromJson(Map<String, dynamic> json) => BaseTvCredit(
       json['id'] as int,
       json['adult'] as bool,
       json['name'] as String,
-      json['known_for_department'] as String,
       json['total_episode_count'] as int,
       popularity: (json['popularity'] as num?)?.toDouble(),
       profilePath: json['profile_path'] as String?,
       gender: json['gender'] as int?,
+      knownForDepartment: json['known_for_department'] as String? ?? '',
+      deptJobsString: json['dept_jobs_string'] as String? ?? '',
     )..mediaType = json['media_type'] as String?;
 
 Map<String, dynamic> _$BaseTvCreditToJson(BaseTvCredit instance) =>
@@ -175,6 +176,7 @@ Map<String, dynamic> _$BaseTvCreditToJson(BaseTvCredit instance) =>
       'name': instance.name,
       'gender': instance.gender,
       'total_episode_count': instance.totalEpisodeCount,
+      'dept_jobs_string': instance.deptJobsString,
     };
 
 AggregateCredits _$AggregateCreditsFromJson(Map<String, dynamic> json) =>
@@ -197,7 +199,6 @@ TvCast _$TvCastFromJson(Map<String, dynamic> json) => TvCast(
       json['id'] as int,
       json['adult'] as bool,
       json['name'] as String,
-      json['known_for_department'] as String,
       json['total_episode_count'] as int,
       json['order'] as int,
       (json['roles'] as List<dynamic>)
@@ -206,6 +207,8 @@ TvCast _$TvCastFromJson(Map<String, dynamic> json) => TvCast(
       popularity: (json['popularity'] as num?)?.toDouble(),
       profilePath: json['profile_path'] as String?,
       gender: json['gender'] as int?,
+      knownForDepartment: json['known_for_department'] as String? ?? '',
+      deptJobsString: json['dept_jobs_string'] as String? ?? '',
     )..mediaType = json['media_type'] as String?;
 
 Map<String, dynamic> _$TvCastToJson(TvCast instance) => <String, dynamic>{
@@ -218,6 +221,7 @@ Map<String, dynamic> _$TvCastToJson(TvCast instance) => <String, dynamic>{
       'name': instance.name,
       'gender': instance.gender,
       'total_episode_count': instance.totalEpisodeCount,
+      'dept_jobs_string': instance.deptJobsString,
       'order': instance.order,
       'roles': instance.roles,
     };
@@ -226,7 +230,6 @@ TvCrew _$TvCrewFromJson(Map<String, dynamic> json) => TvCrew(
       json['id'] as int,
       json['adult'] as bool,
       json['name'] as String,
-      json['known_for_department'] as String,
       json['total_episode_count'] as int,
       json['department'] as String,
       (json['jobs'] as List<dynamic>)
@@ -235,6 +238,8 @@ TvCrew _$TvCrewFromJson(Map<String, dynamic> json) => TvCrew(
       popularity: (json['popularity'] as num?)?.toDouble(),
       profilePath: json['profile_path'] as String?,
       gender: json['gender'] as int?,
+      knownForDepartment: json['known_for_department'] as String? ?? '',
+      deptJobsString: json['dept_jobs_string'] as String? ?? '',
     )..mediaType = json['media_type'] as String?;
 
 Map<String, dynamic> _$TvCrewToJson(TvCrew instance) => <String, dynamic>{
@@ -247,6 +252,7 @@ Map<String, dynamic> _$TvCrewToJson(TvCrew instance) => <String, dynamic>{
       'name': instance.name,
       'gender': instance.gender,
       'total_episode_count': instance.totalEpisodeCount,
+      'dept_jobs_string': instance.deptJobsString,
       'department': instance.department,
       'jobs': instance.jobs,
     };

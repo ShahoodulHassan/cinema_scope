@@ -1,6 +1,5 @@
 import 'package:cinema_scope/architecture/config_view_model.dart';
 import 'package:cinema_scope/constants.dart';
-import 'package:cinema_scope/main.dart';
 import 'package:cinema_scope/models/search.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
@@ -11,6 +10,7 @@ import 'package:provider/provider.dart';
 
 import '../architecture/media_list_view_model.dart';
 import '../models/movie.dart';
+import '../widgets/frosted_app_bar.dart';
 
 class MoviesListPage extends MultiProvider {
   MoviesListPage({
@@ -84,7 +84,8 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
     return title ?? 'Cinema scope';
   }
 
-  bool get isPortrait => MediaQuery.orientationOf(context) == Orientation.portrait;
+  bool get isPortrait =>
+      MediaQuery.orientationOf(context) == Orientation.portrait;
 
   @override
   Widget build(BuildContext context) {
@@ -92,38 +93,21 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          SliverAppBar(
-            // floating: true,
-            pinned: true,
-            // snap: true,
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  getAppbarTitle(),
-                  style: Theme.of(context).appBarTheme.titleTextStyle?.copyWith(
-                        height: 1.2,
-                      ),
-                ),
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 150),
-                  child: Selector<MediaListViewModel, int?>(
-                    builder: (_, count, __) {
-                      if (count == null) return const SizedBox.shrink();
-                      return Text(
-                        '(${applyCommaAndRoundNoZeroes(count.toDouble(), 0, true)})',
-                        style: const TextStyle(
-                          fontSize: 16.0,
-                          height: 1.2,
-                          fontWeight: FontWeight.normal,
-                        ),
-                      );
-                    },
-                    selector: (_, mlm) => mlm.searchResult?.totalResults,
-                  ),
-                ),
-              ],
+          SliverFrostedAppBar.withSubtitle(
+            title: Text(getAppbarTitle()),
+            subtitle: AnimatedSize(
+              duration: const Duration(milliseconds: 150),
+              child: Selector<MediaListViewModel, int?>(
+                builder: (_, count, __) {
+                  if (count == null) return const SizedBox.shrink();
+                  return Text(
+                    '(${applyCommaAndRoundNoZeroes(count.toDouble(), 0, true)})',
+                  );
+                },
+                selector: (_, mlm) => mlm.searchResult?.totalResults,
+              ),
             ),
+            pinned: true,
           ),
           PagedSliverGrid(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -171,5 +155,4 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
     return (Constants.posterWidth / Constants.arPoster) +
         (Constants.posterVPadding * 2);
   }
-
 }
