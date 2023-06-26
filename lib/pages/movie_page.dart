@@ -26,6 +26,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 import '../architecture/config_view_model.dart';
 import '../architecture/tv_view_model.dart';
 import '../constants.dart';
+import '../main.dart';
 import '../models/movie.dart';
 import '../widgets/base_section_sliver.dart';
 import '../widgets/compact_text_button.dart';
@@ -202,6 +203,7 @@ class _MoviePageChildState extends State<_MoviePageChild>
                       ),
                     ),
                     buildYearRow(context),
+                    // buildExternalLinks(),
                     buildTagline(),
                     ExpandableSynopsis(
                       widget.overview,
@@ -225,6 +227,50 @@ class _MoviePageChildState extends State<_MoviePageChild>
           ]),
         ],
       ),
+    );
+  }
+
+  Widget buildExternalLinks() {
+    return Selector<MovieViewModel, Tuple2<String?, String?>>(
+      selector: (_, mvm) => Tuple2(mvm.imdbId, mvm.homepage),
+      builder: (_, data, __) {
+        final imdbId = data.item1;
+        final homepage = data.item2;
+        return (imdbId.isNotNullNorEmpty || homepage.isNotNullNorEmpty)
+            ? Container(
+                color: Colors.yellow,
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (imdbId.isNotNullNorEmpty)
+                      getIconButton(
+                        context,
+                        const Icon(FontAwesomeIcons.imdb),
+                        () => openUrlString(
+                          '${Constants.imdbTitleUrl}$imdbId',
+                        ),
+                        color: kPrimary,
+                        // iconSize: 20.0,
+                      ),
+                    if (homepage.isNotNullNorEmpty)
+                      getIconButton(
+                        context,
+                        (homepage!.contains('netflix')
+                            ? Image.asset(
+                                'assets/icons/icons8_netflix_24.png',
+                                color: kPrimary,
+                              )
+                            : const Icon(Icons.link)),
+                        () => openUrlString(homepage),
+                        color: kPrimary,
+                        // iconSize: 20.0,
+                      ),
+                  ],
+                ),
+              )
+            : const SizedBox.shrink();
+      },
     );
   }
 
@@ -405,7 +451,7 @@ class _MoviePageChildState extends State<_MoviePageChild>
                           () => openUrlString(
                             '${Constants.imdbTitleUrl}$imdbId',
                           ),
-                          color: Theme.of(context).colorScheme.primary,
+                          color: kPrimary,
                         ),
                       if (homepage.isNotEmpty)
                         getIconButton(
@@ -413,11 +459,11 @@ class _MoviePageChildState extends State<_MoviePageChild>
                           (homepage.contains('netflix')
                               ? Image.asset(
                                   'assets/icons/icons8_netflix_24.png',
-                                  color: Theme.of(context).colorScheme.primary,
+                                  color: kPrimary,
                                 )
                               : const Icon(Icons.link)),
                           () => openUrlString(homepage),
-                          color: Theme.of(context).colorScheme.primary,
+                          color: kPrimary,
                         ),
                     ],
                   ),
@@ -526,8 +572,6 @@ class MoreByLeadActorSection<M extends Media, T extends MediaViewModel<M>>
 // }
 }
 
-// TODO implement PageView to show all streamers, if available
-// TODO make the streamer clickable
 class StreamersView<M extends Media, V extends MediaViewModel<M>>
     extends StatelessWidget with Utilities {
   final double maxIconSize = 64.0;
@@ -544,49 +588,88 @@ class StreamersView<M extends Media, V extends MediaViewModel<M>>
         if (streamers.isEmpty) {
           return const SizedBox.shrink();
         } else {
-          var streamer = streamers.first;
-          var width =
-              min(MediaQuery.of(context).size.width * 0.09, maxIconSize);
+          // final screenWidth = MediaQuery.sizeOf(context).width;
+          const width = 45.0;
+          const vPadding = 8.0;
           return Material(
             color: lighten2(Theme.of(context).colorScheme.tertiary, 60),
             child: InkWell(
               onTap: () =>
                   launchUrlString('https://www.themoviedb.org/$type/$id/watch'),
-              // highlightColor: Theme.of(context).highlightColor,
-              // splashColor: Theme.of(context).splashColor,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: SizedBox(
-                        width: width,
-                        child: NetworkImageView(
-                          streamer.logoPath,
-                          imageType: ImageType.logo,
-                          aspectRatio: Constants.arAvatar,
-                          topRadius: 4.0,
-                          bottomRadius: 4.0,
-                        ),
-                      ),
+              child: Center(
+                child: SizedBox(
+                  height: width + vPadding * 2,
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: vPadding,
                     ),
-                    Text(
-                      'Now streaming on\n${streamer.providerName}',
-                      style: const TextStyle(
-                        height: 1.15,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    itemBuilder: (_, index) {
+                      var streamer = streamers[index];
+                      return NetworkImageView(
+                        streamer.logoPath,
+                        imageType: ImageType.logo,
+                        aspectRatio: Constants.arAvatar,
+                        topRadius: 4.0,
+                        bottomRadius: 4.0,
+                      );
+                    },
+                    separatorBuilder: (_, index) => const SizedBox(
+                      width: 8.0,
                     ),
-                  ],
+                    itemCount: streamers.length,
+                    scrollDirection: Axis.horizontal,
+                  ),
                 ),
               ),
             ),
           );
+          // var streamer = streamers.first;
+          // return buildViewsOld(context, type, width, streamer);
         }
       },
+    );
+  }
+
+  Material buildViewsOld(
+      BuildContext context, String type, double width, WatchProvider streamer) {
+    return Material(
+      color: lighten2(Theme.of(context).colorScheme.tertiary, 60),
+      child: InkWell(
+        onTap: () =>
+            launchUrlString('https://www.themoviedb.org/$type/$id/watch'),
+        // highlightColor: Theme.of(context).highlightColor,
+        // splashColor: Theme.of(context).splashColor,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: SizedBox(
+                  width: width,
+                  child: NetworkImageView(
+                    streamer.logoPath,
+                    imageType: ImageType.logo,
+                    aspectRatio: Constants.arAvatar,
+                    topRadius: 4.0,
+                    bottomRadius: 4.0,
+                  ),
+                ),
+              ),
+              Text(
+                'Now streaming on\n${streamer.providerName}',
+                style: const TextStyle(
+                  height: 1.15,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
