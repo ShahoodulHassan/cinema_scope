@@ -147,6 +147,7 @@ class CombinedResult extends MediaResult {
   bool? video;
   String deptJobsString;
   String genreNamesString;
+  String dateString, yearString;
 
   CombinedResult(
     super.id,
@@ -170,6 +171,8 @@ class CombinedResult extends MediaResult {
     this.firstAirDate,
     this.deptJobsString = '',
     this.genreNamesString = '',
+    this.dateString = '',
+    this.yearString = '',
   });
 
   String get mediaTitle => name ?? title ?? '';

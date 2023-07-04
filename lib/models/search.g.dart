@@ -147,6 +147,8 @@ CombinedResult _$CombinedResultFromJson(Map<String, dynamic> json) =>
       firstAirDate: json['first_air_date'] as String?,
       deptJobsString: json['dept_jobs_string'] as String? ?? '',
       genreNamesString: json['genre_names_string'] as String? ?? '',
+      dateString: json['date_string'] as String? ?? '',
+      yearString: json['year_string'] as String? ?? '',
     );
 
 Map<String, dynamic> _$CombinedResultToJson(CombinedResult instance) =>
@@ -172,6 +174,8 @@ Map<String, dynamic> _$CombinedResultToJson(CombinedResult instance) =>
       'video': instance.video,
       'dept_jobs_string': instance.deptJobsString,
       'genre_names_string': instance.genreNamesString,
+      'date_string': instance.dateString,
+      'year_string': instance.yearString,
     };
 
 MovieResult _$MovieResultFromJson(Map<String, dynamic> json) => MovieResult(

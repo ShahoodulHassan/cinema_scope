@@ -162,6 +162,8 @@ class CombinedOfCast extends CombinedResult {
     super.firstAirDate,
     super.deptJobsString,
     super.genreNamesString,
+    super.dateString,
+    super.yearString,
     this.order,
     this.episodeCount,
   });
@@ -203,6 +205,8 @@ class CombinedOfCrew extends CombinedResult {
     super.firstAirDate,
     super.deptJobsString,
     super.genreNamesString,
+    super.dateString,
+    super.yearString,
     this.episodeCount,
   });
 

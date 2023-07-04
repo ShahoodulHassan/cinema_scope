@@ -155,6 +155,8 @@ CombinedOfCast _$CombinedOfCastFromJson(Map<String, dynamic> json) =>
       firstAirDate: json['first_air_date'] as String?,
       deptJobsString: json['dept_jobs_string'] as String? ?? '',
       genreNamesString: json['genre_names_string'] as String? ?? '',
+      dateString: json['date_string'] as String? ?? '',
+      yearString: json['year_string'] as String? ?? '',
       order: json['order'] as int?,
       episodeCount: json['episode_count'] as int?,
     );
@@ -182,6 +184,8 @@ Map<String, dynamic> _$CombinedOfCastToJson(CombinedOfCast instance) =>
       'video': instance.video,
       'dept_jobs_string': instance.deptJobsString,
       'genre_names_string': instance.genreNamesString,
+      'date_string': instance.dateString,
+      'year_string': instance.yearString,
       'character': instance.character,
       'credit_id': instance.creditId,
       'order': instance.order,
@@ -219,6 +223,8 @@ CombinedOfCrew _$CombinedOfCrewFromJson(Map<String, dynamic> json) =>
       firstAirDate: json['first_air_date'] as String?,
       deptJobsString: json['dept_jobs_string'] as String? ?? '',
       genreNamesString: json['genre_names_string'] as String? ?? '',
+      dateString: json['date_string'] as String? ?? '',
+      yearString: json['year_string'] as String? ?? '',
       episodeCount: json['episode_count'] as int?,
     );
 
@@ -245,6 +251,8 @@ Map<String, dynamic> _$CombinedOfCrewToJson(CombinedOfCrew instance) =>
       'video': instance.video,
       'dept_jobs_string': instance.deptJobsString,
       'genre_names_string': instance.genreNamesString,
+      'date_string': instance.dateString,
+      'year_string': instance.yearString,
       'department': instance.department,
       'job': instance.job,
       'credit_id': instance.creditId,

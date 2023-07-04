@@ -31,7 +31,11 @@ class PersonViewModel extends BaseMediaViewModel {
   CancelableOperation? _operation;
 
   fetchPersonWithDetail(int id, String name, List<CombinedResult>? knownFor) {
-    personWithKnownFor.knownFor = knownFor;
+    personWithKnownFor.knownFor = knownFor?.map((e) {
+      e.dateString = getReadableDate(e.mediaReleaseDate);
+      e.yearString = getYearStringFromDate(e.mediaReleaseDate);
+      return e;
+    }).toList();
     _operation = CancelableOperation<List<dynamic>>.fromFuture(
       Future.wait([
         api.getPersonWithDetail(id),
@@ -44,7 +48,11 @@ class PersonViewModel extends BaseMediaViewModel {
         } else if (value is PersonSearchResult) {
           for (var result in value.results) {
             if (result.id == id) {
-              personWithKnownFor.knownFor = result.knownFor;
+              personWithKnownFor.knownFor = result.knownFor.map((e) {
+                e.dateString = getReadableDate(e.mediaReleaseDate);
+                e.yearString = getYearStringFromDate(e.mediaReleaseDate);
+                return e;
+              }).toList();
               break;
             }
           }
@@ -72,9 +80,19 @@ class PersonViewModel extends BaseMediaViewModel {
   _compileKnownFor() async {
     var person = personWithKnownFor.person;
     if (person != null) {
+      final cast = person.combinedCredits.cast.map((e) {
+        e.dateString = getReadableDate(e.mediaReleaseDate);
+        e.yearString = getYearStringFromDate(e.mediaReleaseDate);
+        return e;
+      }).toList();
+      final crew = person.combinedCredits.crew.map((e) {
+        e.dateString = getReadableDate(e.mediaReleaseDate);
+        e.yearString = getYearStringFromDate(e.mediaReleaseDate);
+        return e;
+      }).toList();
       _knownForMediaResults = {};
       for (var item in knownFor) {
-        for (var mediaOfCast in person.combinedCredits.cast) {
+        for (var mediaOfCast in cast) {
           /// TODO 19/06/2023 This 'genreIds.isNotEmpty' has been added after
           /// experiencing an issue where when Judie Delpy was clicked in the
           /// cast of movie named 'Before Sunset', the cast included a
@@ -88,7 +106,7 @@ class PersonViewModel extends BaseMediaViewModel {
           }
         }
         if (!_knownForMediaResults!.containsKey(item.id)) {
-          for (var mediaOfCrew in person.combinedCredits.crew) {
+          for (var mediaOfCrew in crew) {
             if (item.id == mediaOfCrew.id) {
               _knownForMediaResults![item.id] = mediaOfCrew;
               break;
@@ -98,7 +116,7 @@ class PersonViewModel extends BaseMediaViewModel {
       }
       var popMap = <int, CombinedResult>{};
       if (person.knownForDepartment == Department.acting.name) {
-        for (var mediaOfCast in person.combinedCredits.cast) {
+        for (var mediaOfCast in cast) {
           // logIfDebug('getJob=>id:${mediaOfCast.id}, title:${mediaOfCast.title}, type:${MediaType.mediaOfCast.name}');
           bool isEligible = false;
           if (mediaOfCast.mediaType == MediaType.movie.name) {
@@ -111,7 +129,7 @@ class PersonViewModel extends BaseMediaViewModel {
           if (isEligible) popMap.putIfAbsent(mediaOfCast.id, () => mediaOfCast);
         }
       } else {
-        for (var mediaOfCrew in person.combinedCredits.crew) {
+        for (var mediaOfCrew in crew) {
           if (person.knownForDepartment == mediaOfCrew.department) {
             popMap.putIfAbsent(mediaOfCrew.id, () => mediaOfCrew);
           }

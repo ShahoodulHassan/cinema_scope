@@ -124,12 +124,11 @@ class MoviePosterTile extends StatelessWidget
             Row(
               children: [
                 Visibility(
-                  visible: movie.mediaReleaseDate != null &&
-                      movie.mediaReleaseDate!.isNotEmpty,
+                  visible: movie.yearString.isNotEmpty,
                   child: Padding(
                     padding: const EdgeInsets.only(right: 16.0),
                     child: Text(
-                      getYearStringFromDate(movie.mediaReleaseDate),
+                      movie.yearString,
                       textAlign: TextAlign.start,
                       style: const TextStyle(fontSize: 15.0),
                     ),
@@ -209,12 +208,42 @@ class TvPosterTile extends StatelessWidget
         voteAverage: tv.voteAverage,
       ),
       title: tv.mediaTitle,
-      poster: NetworkImageView(
-        tv.posterPath,
-        imageType: ImageType.poster,
-        aspectRatio: Constants.arPoster,
-        topRadius: 4.0,
-        bottomRadius: 4.0,
+      poster: Stack(
+        children: [
+          NetworkImageView(
+            tv.posterPath,
+            imageType: ImageType.poster,
+            aspectRatio: Constants.arPoster,
+            topRadius: 4.0,
+            bottomRadius: 4.0,
+          ),
+          Positioned(
+              top: 0.0,
+              right: 0.0,
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.black54,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(4.0),
+                    bottomLeft: Radius.circular(4.0),
+                  ),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0,
+                  vertical: 9.0,
+                ),
+                child: const Text(
+                  'TV',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12.0,
+                    // height: 1.0,
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
       subtitle: Padding(
         padding: const EdgeInsets.only(top: 1.0),
@@ -223,28 +252,15 @@ class TvPosterTile extends StatelessWidget
           children: [
             Row(
               children: [
-                if (tv.mediaReleaseDate != null &&
-                    tv.mediaReleaseDate!.isNotEmpty)
+                if (tv.yearString.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(right: 16.0),
                     child: Text(
-                      getYearStringFromDate(tv.mediaReleaseDate),
+                      tv.yearString,
                       textAlign: TextAlign.start,
                       style: const TextStyle(fontSize: 15.0),
                     ),
                   ),
-                // Visibility(
-                //   visible:
-                //       tv.firstAirDate != null && tv.firstAirDate!.isNotEmpty,
-                //   child: Padding(
-                //     padding: const EdgeInsets.only(right: 16.0),
-                //     child: Text(
-                //       getYearStringFromDate(tv.firstAirDate),
-                //       textAlign: TextAlign.start,
-                //       style: const TextStyle(fontSize: 15.0),
-                //     ),
-                //   ),
-                // ),
                 if (tv.voteAverage > 0.0)
                   Padding(
                     padding: const EdgeInsets.only(right: 16.0),
@@ -267,46 +283,22 @@ class TvPosterTile extends StatelessWidget
                       ],
                     ),
                   ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 4.0,
-                    vertical: 0.5,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4.0),
-                    color: Theme.of(context)
-                        .colorScheme
-                        .primaryContainer
-                        .withOpacity(0.6),
-                  ),
-                  child: Text(
-                    'TV Series',
-                    style: TextStyle(
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey.shade800,
-                    ),
-                  ),
-                ),
-                // Visibility(
-                //   visible: tv.voteAverage > 0.0,
-                //   child: Row(
-                //     children: [
-                //       Icon(
-                //         Icons.star_sharp,
-                //         size: 20.0,
-                //         color: Constants.ratingIconColor,
-                //       ),
-                //       Text(
-                //         ' ${applyCommaAndRound(
-                //           tv.voteAverage,
-                //           1,
-                //           false,
-                //           true,
-                //         )}',
-                //         style: const TextStyle(fontSize: 15.0),
-                //       ),
-                //     ],
+                // Container(
+                //   padding: const EdgeInsets.symmetric(
+                //     horizontal: 4.0,
+                //     vertical: 0.5,
+                //   ),
+                //   decoration: BoxDecoration(
+                //     borderRadius: BorderRadius.circular(4.0),
+                //     color: kPrimaryContainer.withOpacity(0.6),
+                //   ),
+                //   child: Text(
+                //     'TV Series',
+                //     style: TextStyle(
+                //       fontSize: 12.0,
+                //       fontWeight: FontWeight.bold,
+                //       color: Colors.grey.shade800,
+                //     ),
                 //   ),
                 // ),
               ],
