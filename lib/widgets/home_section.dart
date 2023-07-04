@@ -73,7 +73,7 @@ class BaseHomeSection extends StatelessWidget
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              getSectionSeparator(context),
+              sectionSeparator,
               getSectionTitleRow(),
               ...children,
               // getSectionSeparator(context),
@@ -322,8 +322,8 @@ class MediaPosterListView extends StatelessWidget
 
   late final titleContainerHeight = titleTextHeight + titleContainerPadding;
 
-  late final yearContainerHeight = max(yearTextHeight, ratingIconSize)
-      + ratingVerticalPadding * 2;
+  late final yearContainerHeight =
+      max(yearTextHeight, ratingIconSize) + ratingVerticalPadding * 2;
 
   late final subtitleHeight = subTitleLineHeight * yearFontSize * maxLines;
 
@@ -347,7 +347,8 @@ class MediaPosterListView extends StatelessWidget
   Widget build(BuildContext context) {
     logIfDebug('build called');
 
-    final posterHeight = (posterWidth - Constants.cardMargin * 2) / Constants.arPoster;
+    final posterHeight =
+        (posterWidth - Constants.cardMargin * 2) / Constants.arPoster;
 
     final listViewHeight = posterHeight +
         titleContainerHeight +
@@ -548,6 +549,9 @@ class MediaPosterListView extends StatelessWidget
     bool? isUpcoming,
     bool? isLatest,
   }) {
+    final yearString = isUpcoming.isNotNullAndTrue
+        ? media.dateString
+        : media.yearString;
     return Padding(
       padding: EdgeInsets.symmetric(
         vertical: ratingVerticalPadding,
@@ -557,30 +561,31 @@ class MediaPosterListView extends StatelessWidget
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
         children: [
-          Text(
-            isUpcoming.isNotNullAndTrue
-                ? getReadableDate(media.mediaReleaseDate)
-                : getYearStringFromDate(media.mediaReleaseDate),
-            style: yearStyle,
-            maxLines: 1,
-          ),
-          if (!isUpcoming.isNotNullAndTrue && !isLatest.isNotNullAndTrue)
-            Row(children: [
-              const SizedBox(width: 16.0),
-              FaIcon(
-                FontAwesomeIcons.solidStar,
-                size: ratingIconSize,
-                color: Colors.yellow.shade700,
+          if (yearString.isNotEmpty) ...[
+            Text(
+              yearString,
+              style: yearStyle,
+              maxLines: 1,
+            ),
+            const SizedBox(width: 16.0),
+          ],
+          if (media.voteAverage > 0 && !isUpcoming.isNotNullAndTrue
+          /* && !isLatest.isNotNullAndTrue*/
+              ) ...[
+            FaIcon(
+              FontAwesomeIcons.solidStar,
+              size: ratingIconSize,
+              color: Colors.yellow.shade700,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 1.0),
+              child: Text(
+                ' ${applyCommaAndRound(media.voteAverage, 1, false, true)}',
+                style: yearStyle,
+                maxLines: 1,
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 1.0),
-                child: Text(
-                  ' ${applyCommaAndRound(media.voteAverage, 1, false, true)}',
-                  style: yearStyle,
-                  maxLines: 1,
-                ),
-              ),
-            ]),
+            ),
+          ],
         ],
       ),
     );
