@@ -1,7 +1,9 @@
+import 'package:cinema_scope/models/similar_titles_params.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:flutter/material.dart';
 
 import '../constants.dart';
+import '../main.dart';
 import '../models/movie.dart';
 import '../models/search.dart';
 import '../pages/movie_page.dart';
@@ -66,6 +68,8 @@ mixin CommonFunctions on Utilities {
     List<Keyword>? keywords,
     List<Genre>? genres,
     int? mediaId,
+    SimilarTitlesParams? similarTitlesParams,
+    String? mediaTitle,
   }) {
     Navigator.push(
       context,
@@ -75,6 +79,8 @@ mixin CommonFunctions on Utilities {
           keywords: keywords,
           genres: genres,
           mediaId: mediaId,
+          similarTitlesParams: similarTitlesParams,
+          mediaTitle: mediaTitle,
         );
       }),
     );
@@ -104,21 +110,18 @@ mixin CommonFunctions on Utilities {
               },
               borderRadius: BorderRadius.circular(6.0),
               child: Chip(
-                backgroundColor: Theme.of(context)
-                    .colorScheme
-                    .primaryContainer
-                    .withOpacity(0.17),
+                backgroundColor: kPrimaryContainer.withOpacity(0.17),
                 padding: EdgeInsets.zero,
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 label: Text(
                   genre.name,
                   style: TextStyle(
                     fontSize: 14,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: kPrimary,
                   ),
                 ),
                 side: BorderSide(
-                  color: Theme.of(context).colorScheme.primary,
+                  color: kPrimary,
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(6.0),
@@ -132,16 +135,14 @@ mixin CommonFunctions on Utilities {
     );
   }
 
-  Widget getSectionSeparator(BuildContext context) => Container(
+  Widget get sectionSeparator => Container(
         height: 1.0,
-        color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+        color: kPrimary.withOpacity(0.6),
       );
 
-  Color getScaffoldColor(BuildContext context) =>
-      lighten2(Theme.of(context).colorScheme.primaryContainer, 75);
+  Color get scaffoldColor => lighten2(kPrimaryContainer, 75);
 
   Widget getIconButton(
-    BuildContext context,
     Widget icon,
     Function() onPressed, {
     Color? color,

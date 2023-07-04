@@ -1,6 +1,4 @@
 import 'package:cinema_scope/architecture/home_view_model.dart';
-import 'package:cinema_scope/models/movie.dart';
-import 'package:cinema_scope/pages/movies_list_page.dart';
 import 'package:cinema_scope/pages/search_page.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
@@ -46,7 +44,7 @@ class _HomePageChild extends StatelessWidget
     logIfDebug('build called');
     var homeSections = getHomeSections();
     return Scaffold(
-      backgroundColor: getScaffoldColor(context),
+      backgroundColor: scaffoldColor,
       body: CustomScrollView(
         slivers: [
           SliverFrostedAppBar(

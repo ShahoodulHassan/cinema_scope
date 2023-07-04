@@ -91,7 +91,7 @@ class _TvPageChildState extends State<_TvPageChild>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: getScaffoldColor(context),
+      backgroundColor: scaffoldColor,
       body: CustomScrollView(
         slivers: [
           SliverFrostedAppBar.withSubtitle(
@@ -401,7 +401,6 @@ class _TvPageChildState extends State<_TvPageChild>
                     children: [
                       if (imdbId.isNotEmpty)
                         getIconButton(
-                          context,
                           const Icon(FontAwesomeIcons.imdb),
                               () =>
                               openUrlString(
@@ -414,7 +413,6 @@ class _TvPageChildState extends State<_TvPageChild>
                         ),
                       if (homepage.isNotEmpty)
                         getIconButton(
-                          context,
                           (homepage.contains('netflix')
                               ? Image.asset(
                             'assets/icons/icons8_netflix_24.png',
@@ -506,22 +504,25 @@ class _CastCrewSection extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    return Selector<TvViewModel, Tuple2<List<TvCast>, List<TvCrew>>>(
-      selector: (_, tvm) => Tuple2(tvm.cast, tvm.creators ?? []),
+    return Selector<TvViewModel, Tuple3<List<TvCast>, int, List<TvCrew>>>(
+      selector: (_, tvm) => Tuple3(tvm.cast, tvm.crew.length, tvm.creators ?? []),
       builder: (_, tuple, __) {
-        if (tuple.item1.isEmpty && tuple.item2.isEmpty) {
+        final crewCount = tuple.item2;
+        if (tuple.item1.isEmpty && crewCount == 0) {
           return SliverToBoxAdapter(child: Container());
         }
         return BaseSectionSliver(
           title: 'Top billed cast',
+          showSeeAll: crewCount == 0,
+          onPressed: () => goToCreditsPage(context),
           children: [
             if (tuple.item1.isNotEmpty)
               _TvCastPosterListView(
                 items: tuple.item1.take(_maxCount).toList(),
               ),
-            if (tuple.item2.isNotEmpty)
-              getCrewSection(context, tuple.item2,
-                  'Creator${tuple.item2.length > 1 ? 's' : ''}'),
+            if (crewCount > 0)
+              getCrewSection(context, tuple.item3,
+                  'Creator${tuple.item3.length > 1 ? 's' : ''}'),
           ],
         );
         // return SliverPadding(
@@ -572,8 +573,9 @@ class _CastCrewSection extends StatelessWidget
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          getCreatorsTile(context, creators, label),
+          if (creators.isNotEmpty) getCreatorsTile(context, creators, label),
           CompactTextButton('Full cast & crew', onPressed: () {
             goToCreditsPage(context);
           }),

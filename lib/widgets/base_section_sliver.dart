@@ -42,12 +42,12 @@ class BaseSectionSliver extends StatelessWidget with Utilities, CommonFunctions 
           ),
           SliverToBoxAdapter(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                getSectionSeparator(context),
+                sectionSeparator,
                 getSectionTitleRow(),
                 ...children,
-                getSectionSeparator(context),
+                sectionSeparator,
               ],
             ),
           ),

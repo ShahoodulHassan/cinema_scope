@@ -1,5 +1,6 @@
 import 'package:cinema_scope/constants.dart';
 import 'package:cinema_scope/models/search.dart';
+import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -589,14 +590,18 @@ class RecommendationResult extends BaseSearchResult {
 }
 
 /// That's a custom object unrelated to what objects the API has to offer
-class RecommendationData {
+class RecommendationData with Utilities, GenericFunctions {
   final int mediaId;
   final CombinedResults result;
 
   RecommendationData(this.mediaId, this.result);
 
   List<CombinedResult> get recommendations =>
-      (result.results..removeWhere((element) => element.posterPath == null));
+      (result.results..removeWhere((element) => element.posterPath == null)..map((e) {
+        e.yearString = getYearStringFromDate(e.mediaReleaseDate);
+        e.dateString = getReadableDate(e.mediaReleaseDate);
+        return e;
+      }).toList());
 
   int get totalResults => result.totalResults;
 }

@@ -44,7 +44,7 @@ class FilmographyViewModel extends ChangeNotifier
 
   initialize(CombinedCredits combinedCredits, List<MediaGenre> combinedGenres) {
     this.combinedCredits = combinedCredits;
-    this._combinedGenres = combinedGenres;
+    _combinedGenres = combinedGenres;
     _processCombinedCredits();
   }
 

@@ -4,6 +4,7 @@ import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
@@ -52,7 +53,8 @@ class _SearchPageChildState extends State<_SearchPageChild>
     super.initState();
   }
 
-  bool get isPortrait => MediaQuery.orientationOf(context) == Orientation.portrait;
+  bool get isPortrait =>
+      MediaQuery.orientationOf(context) == Orientation.portrait;
 
   @override
   Widget build(BuildContext context) {
@@ -108,10 +110,11 @@ class _SearchPageChildState extends State<_SearchPageChild>
                   ),
                 ),
                 noMoreItemsIndicatorBuilder: (_) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Text('You have reached the end!'),
+                  return const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Text(
+                      'You have reached the end!',
+                      textAlign: TextAlign.center,
                     ),
                   );
                 },
@@ -228,14 +231,16 @@ class _SearchPageChildState extends State<_SearchPageChild>
                       ),
               ),
               hintText: 'Search movies, TV, people',
-              hintStyle: TextStyle(fontSize: isPortrait ? 17/*.spMin*/ : 18/*.spMin*/),
+              hintStyle: TextStyle(
+                  fontSize: isPortrait ? 17 /*.spMin*/ : 18 /*.spMin*/),
               filled: true,
               fillColor: Theme.of(context)
                   .colorScheme
                   .primaryContainer
                   .withOpacity(0.5),
             ),
-            style: TextStyle(fontSize: isPortrait ? 17/*.spMin*/ : 18/*.spMin*/),
+            style:
+                TextStyle(fontSize: isPortrait ? 17 /*.spMin*/ : 18 /*.spMin*/),
             maxLines: 1,
             // cursorHeight: 17.spMin,
             textAlignVertical: TextAlignVertical.center,
@@ -279,7 +284,7 @@ class _SearchPageChildState extends State<_SearchPageChild>
 
   double get mainAxisExtent {
     return (Constants.posterWidth / Constants.arPoster) +
-            (Constants.posterVPadding * 2);
+        (Constants.posterVPadding * 2);
   }
 
   Widget getRichText(BuildContext context, List<CombinedResult> results) {
@@ -406,7 +411,8 @@ class SearchAppbar extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    final isPortrait = MediaQuery.orientationOf(context) == Orientation.portrait;
+    final isPortrait =
+        MediaQuery.orientationOf(context) == Orientation.portrait;
     BorderRadius borderRadius = BorderRadius.circular(isPortrait ? 30.0 : 48.0);
     logIfDebug('build called - isPortrait:$isPortrait');
     return AppBar(

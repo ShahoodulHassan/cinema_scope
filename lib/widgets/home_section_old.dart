@@ -55,7 +55,7 @@ class BaseHomeSection extends StatelessWidget with Utilities, CommonFunctions {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                getSectionSeparator(context),
+                sectionSeparator,
                 getSectionTitleRow(),
                 ...children,
                 // getSectionSeparator(context),
