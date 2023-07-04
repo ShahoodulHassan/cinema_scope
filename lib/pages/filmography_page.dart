@@ -362,7 +362,7 @@ class CombinedPosterTile extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    final cvm = context.read<FilmographyViewModel>();
+    // final cvm = context.read<FilmographyViewModel>();
     // var deptJobsString = cvm.getDeptJobString(result.id);
     // var genreNamesString = cvm.getGenreNamesString(result.id);
     return PosterTile(
@@ -388,12 +388,43 @@ class CombinedPosterTile extends StatelessWidget
         }
       },
       title: result.mediaTitle,
-      poster: NetworkImageView(
-        result.posterPath,
-        imageType: ImageType.poster,
-        aspectRatio: Constants.arPoster,
-        topRadius: 4.0,
-        bottomRadius: 4.0,
+      poster: Stack(
+        children: [
+          NetworkImageView(
+            result.posterPath,
+            imageType: ImageType.poster,
+            aspectRatio: Constants.arPoster,
+            topRadius: 4.0,
+            bottomRadius: 4.0,
+          ),
+          if (isTv)
+            Positioned(
+              top: 0.0,
+              right: 0.0,
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.black54,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(4.0),
+                    bottomLeft: Radius.circular(4.0),
+                  ),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0,
+                  vertical: 9.0,
+                ),
+                child: const Text(
+                  'TV',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12.0,
+                    // height: 1.0,
+                  ),
+                ),
+              ),
+            ),
+        ],
       ) /*const SizedBox.shrink()*/,
       subtitle: Padding(
         padding: const EdgeInsets.only(top: 1.0),
@@ -406,7 +437,7 @@ class CombinedPosterTile extends StatelessWidget
                   Padding(
                     padding: const EdgeInsets.only(right: 16.0),
                     child: Text(
-                      getYearStringFromDate(result.mediaReleaseDate),
+                      result.yearString,
                       textAlign: TextAlign.start,
                       style: const TextStyle(fontSize: 15.0),
                     ),
@@ -431,28 +462,6 @@ class CombinedPosterTile extends StatelessWidget
                           style: const TextStyle(fontSize: 15.0),
                         ),
                       ],
-                    ),
-                  ),
-                if (isTv)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 4.0,
-                      vertical: 0.5,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4.0),
-                      color: Theme.of(context)
-                          .colorScheme
-                          .primaryContainer
-                          .withOpacity(0.4),
-                    ),
-                    child: Text(
-                      'TV Series',
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey.shade800,
-                      ),
                     ),
                   ),
               ],
