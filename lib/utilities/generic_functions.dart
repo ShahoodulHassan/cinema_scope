@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:math';
+import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -317,7 +317,7 @@ mixin GenericFunctions {
   }
 
   double roundDouble(double value, int places) {
-    double mod = pow(10.0, places) as double;
+    double mod = math.pow(10.0, places) as double;
     return ((value * mod).round().toDouble() / mod);
   }
 
@@ -398,4 +398,25 @@ extension NullBoolExtension on bool? {
   /// safe way.
   /// It applies on a nullable bool and returns a non-null bool
   bool get isNotNullAndTrue => this ?? false;
+}
+
+extension IterableExt on Iterable? {
+
+  bool get isNotNullNorEmpty => (this ?? []).isNotEmpty;
+
+  bool get isNullOrEmpty => (this ?? []).isEmpty;
+
+  bool get isNotNullButEmpty => this != null && this!.isEmpty;
+
+
+}
+
+extension IntIterableExt on Iterable<int> {
+
+  /// returns the max int from a list of integers
+  int get max => reduce(math.max);
+
+  /// returns the min int from a list of integers
+  int get min => reduce(math.min);
+
 }
