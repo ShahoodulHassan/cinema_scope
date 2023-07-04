@@ -5,6 +5,7 @@ import 'package:card_swiper/card_swiper.dart';
 import 'package:cinema_scope/architecture/movie_view_model.dart';
 import 'package:cinema_scope/models/configuration.dart';
 import 'package:cinema_scope/models/search.dart';
+import 'package:cinema_scope/models/similar_titles_params.dart';
 import 'package:cinema_scope/pages/credits_page.dart';
 import 'package:cinema_scope/pages/image_page.dart';
 import 'package:cinema_scope/pages/media_details_page.dart';
@@ -122,7 +123,7 @@ class _MoviePageChildState extends State<_MoviePageChild>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: getScaffoldColor(context),
+      backgroundColor: scaffoldColor,
       body: CustomScrollView(
         slivers: [
           SliverFrostedAppBar(
@@ -245,7 +246,6 @@ class _MoviePageChildState extends State<_MoviePageChild>
                   children: [
                     if (imdbId.isNotNullNorEmpty)
                       getIconButton(
-                        context,
                         const Icon(FontAwesomeIcons.imdb),
                         () => openUrlString(
                           '${Constants.imdbTitleUrl}$imdbId',
@@ -255,7 +255,6 @@ class _MoviePageChildState extends State<_MoviePageChild>
                       ),
                     if (homepage.isNotNullNorEmpty)
                       getIconButton(
-                        context,
                         (homepage!.contains('netflix')
                             ? Image.asset(
                                 'assets/icons/icons8_netflix_24.png',
@@ -446,7 +445,6 @@ class _MoviePageChildState extends State<_MoviePageChild>
                     children: [
                       if (imdbId.isNotEmpty)
                         getIconButton(
-                          context,
                           const Icon(FontAwesomeIcons.imdb),
                           () => openUrlString(
                             '${Constants.imdbTitleUrl}$imdbId',
@@ -455,7 +453,6 @@ class _MoviePageChildState extends State<_MoviePageChild>
                         ),
                       if (homepage.isNotEmpty)
                         getIconButton(
-                          context,
                           (homepage.contains('netflix')
                               ? Image.asset(
                                   'assets/icons/icons8_netflix_24.png',
@@ -690,14 +687,13 @@ class MoreByGenresSection<M extends Media, T extends MediaViewModel<M>>
           return SliverToBoxAdapter(child: Container());
         }
         return BaseSectionSliver(
-          title: 'More from similar genres',
+          title: 'Similar titles',
           children: [
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                'A carefully curated list of top rated titles of '
-                'the same era '
-                'having most of the similar genres',
+                'A carefully curated list of similar top rated titles from the same era'
+                /*' having most of the similar genres'*/,
                 style: TextStyle(
                   color: Colors.black87,
                   height: 1.2,
@@ -710,41 +706,32 @@ class MoreByGenresSection<M extends Media, T extends MediaViewModel<M>>
               radius: 4.0,
               listViewBottomPadding: 16.0,
             ),
-            // PosterCardListView(
-            //   items: list.take(_maxCount).toList(),
-            //   screenWidth: MediaQuery.of(context).size.width,
-            //   aspectRatio: Constants.arPoster,
-            //   onTap: (item) {
-            //     item.mediaType == MediaType.movie.name
-            //         ? goToMoviePage(
-            //             context,
-            //             id: item.id,
-            //             title: item.mediaTitle,
-            //             overview: item.overview,
-            //             releaseDate:
-            //                 item.mediaReleaseDate /*getReleaseDate(item)*/,
-            //             voteAverage: item.voteAverage,
-            //           )
-            //         : goToTvPage(
-            //             context,
-            //             id: item.id,
-            //             title: item.mediaTitle,
-            //             overview: item.overview,
-            //             releaseDate:
-            //                 item.mediaReleaseDate /*getReleaseDate(item)*/,
-            //             voteAverage: item.voteAverage,
-            //           );
-            //   },
-            // ),
             Container(
               alignment: Alignment.center,
               padding: const EdgeInsets.only(bottom: 8.0),
-              child: CompactTextButton('Explore all', onPressed: () {
-                // var pvm = context.read<PersonViewModel>();
-                // var person = pvm.personWithKnownFor.person;
-                // goToFilmographyPage(
-                //     context, person!.id, person.name, person.combinedCredits);
-              }),
+              child: list.length > _maxCount
+                  ? CompactTextButton(
+                      'Explore all',
+                      onPressed: () {
+                        final mvm = context.read<T>();
+                        final mediaType =
+                            mvm.isMovie ? MediaType.movie : MediaType.tv;
+                        goToMediaListPage(
+                          context,
+                          mediaType: mediaType,
+                          similarTitlesParams: SimilarTitlesParams(
+                            mediaId: mvm.media!.id,
+                            mediaType: mediaType,
+                            genrePairs: mvm.genrePairs,
+                            dateGte: mvm.dateGte,
+                            dateLte: mvm.dateLte,
+                            keywordsString: mvm.keywordsString,
+                          ),
+                          mediaTitle: mvm.getMediaTitle(),
+                        );
+                      },
+                    )
+                  : const SizedBox.shrink(),
             ),
           ],
         );
@@ -827,6 +814,8 @@ class _CastCrewSection extends StatelessWidget
         }
         return BaseSectionSliver(
           title: 'Top billed cast',
+          showSeeAll: tuple.item2.isEmpty,
+          onPressed: () => goToCreditsPage(context),
           children: [
             if (tuple.item1.isNotEmpty)
               _CastPosterListView(
@@ -863,7 +852,7 @@ class _CastCrewSection extends StatelessWidget
         .toList()
       ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase())));
 
-    if (directors.isEmpty && writers.isEmpty) return const SizedBox.shrink();
+    // if (directors.isEmpty && writers.isEmpty) return const SizedBox.shrink();
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),

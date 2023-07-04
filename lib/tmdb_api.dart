@@ -93,7 +93,7 @@ abstract class TmdbApi {
     @http.Query('primary_release_date.gte') String releaseDateGte,
     @http.Query('primary_release_date.lte') String releaseDateLte,
     // @http.Query('without_genres') String withoutGenres,
-    /*@http.Query("with_keywords") String withKeywords,*/
+    @http.Query("with_keywords") String withKeywords,
     /*@http.Query('primary_release_year') String primaryReleaseYear,*/ {
     @http.Query('language') String language = 'en-US',
     @http.Query('with_original_language') String originalLanguage = 'en',
@@ -346,7 +346,7 @@ abstract class TmdbApi {
     @http.Query('first_air_date.gte') String releaseDateGte,
     @http.Query('first_air_date.lte') String releaseDateLte,
     // @http.Query('without_genres') String withoutGenres,
-    /*@http.Query("with_keywords") String withKeywords,*/
+    @http.Query("with_keywords") String withKeywords,
     /*@http.Query('primary_release_year') String primaryReleaseYear,*/ {
     @http.Query('language') String language = 'en-US',
     @http.Query('with_original_language') String originalLanguage = 'en',

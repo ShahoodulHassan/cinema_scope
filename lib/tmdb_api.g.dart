@@ -292,7 +292,8 @@ class _TmdbApi implements TmdbApi {
   Future<CombinedResults> getMoreMoviesByGenres(
     withGenres,
     releaseDateGte,
-    releaseDateLte, {
+    releaseDateLte,
+    withKeywords, {
     language = 'en-US',
     originalLanguage = 'en',
     region = 'US',
@@ -307,6 +308,7 @@ class _TmdbApi implements TmdbApi {
       r'with_genres': withGenres,
       r'primary_release_date.gte': releaseDateGte,
       r'primary_release_date.lte': releaseDateLte,
+      r'with_keywords': withKeywords,
       r'language': language,
       r'with_original_language': originalLanguage,
       r'region': region,
@@ -1088,7 +1090,8 @@ class _TmdbApi implements TmdbApi {
   Future<CombinedResults> getMoreTvSeriesByGenres(
     withGenres,
     releaseDateGte,
-    releaseDateLte, {
+    releaseDateLte,
+    withKeywords, {
     language = 'en-US',
     originalLanguage = 'en',
     region = 'US',
@@ -1103,6 +1106,7 @@ class _TmdbApi implements TmdbApi {
       r'with_genres': withGenres,
       r'first_air_date.gte': releaseDateGte,
       r'first_air_date.lte': releaseDateLte,
+      r'with_keywords': withKeywords,
       r'language': language,
       r'with_original_language': originalLanguage,
       r'watch_region': region,

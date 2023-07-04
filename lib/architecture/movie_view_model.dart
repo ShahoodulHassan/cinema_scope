@@ -44,6 +44,15 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
 
   String? year;
 
+
+  /// Fields for Similar Titles
+  Set<String> genrePairs = {};
+  String keywordsString = '';
+  String dateGte = '';
+  String dateLte = '';
+
+
+
   List<Genre> get genres => media?.genres ?? [];
 
   List<String> get youtubeKeys => ((media?.videos.results
@@ -93,6 +102,8 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
     _operation = value;
   }
 
+  String getMediaTitle();
+
   compileImages() async {
     if (media != null) {
       var imageResult = media!.images;
@@ -103,7 +114,8 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
           .map((e) => e.copyWith.imageType(ImageType.backdrop.name)));
       images.addAll(imageResult.logos
           .map((e) => e.copyWith.imageType(ImageType.logo.name)));
-      this.images = images..removeWhere((element) => element.filePath.contains('.svg'));
+      this.images = images
+        ..removeWhere((element) => element.filePath.contains('.svg'));
       notifyListeners();
     }
   }
@@ -141,7 +153,11 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
               media.id != this.media?.id &&
               media.posterPath != null)
           .toSet()
-          .toList()
+          .map((e) {
+        e.dateString = getReadableDate(e.mediaReleaseDate);
+        e.yearString = getYearStringFromDate(e.mediaReleaseDate);
+        return e;
+      }).toList()
         ..sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
       if (moreByDirector.isNotEmpty) {
         this.moreByDirector = Tuple2(director, moreByDirector);
@@ -159,7 +175,11 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
               (media.order ?? 3) <= order &&
               media.id != this.media?.id &&
               media.posterPath != null)
-          .toList()
+          .map((e) {
+        e.dateString = getReadableDate(e.mediaReleaseDate);
+        e.yearString = getYearStringFromDate(e.mediaReleaseDate);
+        return e;
+      }).toList()
         ..sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
       // logIfDebug('moreByActor:$moreByActor');
       if (moreByActor.isNotEmpty) {
@@ -188,9 +208,9 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
         var totalDays = 365 * 10; // 10 years
         var daysForward = min(diffFromNow, (365 * 5));
         var daysBackward = totalDays - daysForward;
-        var dateLte = DateFormat('yyyy-MM-dd')
+        dateLte = DateFormat('yyyy-MM-dd')
             .format(date.add(Duration(days: daysForward)));
-        var dateGte = DateFormat('yyyy-MM-dd')
+        dateGte = DateFormat('yyyy-MM-dd')
             .format(date.subtract(Duration(days: daysBackward)));
 
         var year = getYearFromDate(releaseDate);
@@ -201,7 +221,6 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
             primaryYear = '$year|${year - 1}';
           }
 
-          Set<String> pairs = {};
           var genreIds = media!.genres.map((e) => e.id).toList();
           Set<int> excludedGenreIds = allGenres
               .where((element) => !genreIds.contains(element.id))
@@ -216,42 +235,48 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
               if (!isLast) {
                 var nextGenres = genreIds.sublist(i + 1);
                 for (int i = 0; i < nextGenres.length; i++) {
-                  pairs.add('$genre,${nextGenres[i]}');
+                  genrePairs.add('$genre,${nextGenres[i]}');
                 }
               }
             }
           } else if (genreIds.isNotEmpty) {
             /// In case of two genres, both will be joined by ,
             /// In case of one genre, it alone will be added to the pairs.
-            pairs.add(genreIds.join(','));
+            genrePairs.add(genreIds.join(','));
           }
 
-          // var keywords = media!.keywords.keywords.map((e) => e.id).join(',');
-          logIfDebug('genrePairs:$pairs');
+          keywordsString = this.keywords.map((e) => e.id).join('|');
+          logIfDebug('genrePairs:$genrePairs');
+          logIfDebug('keywords:$keywordsString');
+          logIfDebug('dateGte:$dateGte, dateLte:$dateLte');
 
-          if (pairs.isNotEmpty) {
-            var futures = pairs.map((pair) {
+          if (genrePairs.isNotEmpty) {
+            var futures = genrePairs.map((pair) {
               return media is Movie
                   ? api.getMoreMoviesByGenres(
                       pair,
                       dateGte,
                       dateLte,
+                      keywordsString,
                     )
                   : api.getMoreTvSeriesByGenres(
                       pair,
                       dateGte,
                       dateLte,
+                      keywordsString,
                     );
             }).toList();
 
             _moreByGenresOperation =
                 CancelableOperation<List<CombinedResults>>.fromFuture(
-              Future.wait(futures),
+              Future.wait<CombinedResults>(futures),
             ).then((results) async {
               /// Combine all results into one set
               /// (set would automatically remove duplicates)
               Set<CombinedResult> combinedResults = {};
+              logIfDebug('results size:${results.length}');
               for (var result in results) {
+                logIfDebug('result size:${result.results.length}');
                 combinedResults.addAll(result.results);
               }
 
@@ -261,6 +286,9 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
               moreByGenres = combinedResults.map((e) {
                 e.mediaType ??=
                     media is Movie ? MediaType.movie.name : MediaType.tv.name;
+                e.dateString = getReadableDate(e.mediaReleaseDate);
+                e.yearString = getYearStringFromDate(e.mediaReleaseDate);
+                logIfDebug('title:${e.mediaTitle}');
                 return e;
               }).toList()
                     ..removeWhere((element) => element.id == media?.id)
@@ -269,6 +297,8 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
                       return b.voteAverage.compareTo(a.voteAverage);
                     })*/
                   ;
+              logIfDebug('moreByGenres length:${moreByGenres?.length}');
+
               notifyListeners();
             });
           }
@@ -286,17 +316,17 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
     super.dispose();
   }
 
-  // set moreByLeadOperation(CancelableOperation value) {
-  //   _moreByLeadOperation = value;
-  // }
-  //
-  // set moreByGenresOperation(CancelableOperation value) {
-  //   _moreByGenresOperation = value;
-  // }
-  //
-  // set moreByDirectorOperation(CancelableOperation value) {
-  //   _moreByDirectorOperation = value;
-  // }
+// set moreByLeadOperation(CancelableOperation value) {
+//   _moreByLeadOperation = value;
+// }
+//
+// set moreByGenresOperation(CancelableOperation value) {
+//   _moreByGenresOperation = value;
+// }
+//
+// set moreByDirectorOperation(CancelableOperation value) {
+//   _moreByDirectorOperation = value;
+// }
 }
 
 class MovieViewModel extends MediaViewModel<Movie> {
@@ -413,6 +443,11 @@ class MovieViewModel extends MediaViewModel<Movie> {
       var actor = actors[Random().nextInt(actors.length)];
       fetchMoreByLeadActor<Cast>(actor, actor.order);
     }
+  }
+
+  @override
+  String getMediaTitle() {
+    return media!.movieTitle;
   }
 }
 

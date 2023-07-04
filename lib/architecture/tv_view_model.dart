@@ -146,4 +146,9 @@ class TvViewModel extends MediaViewModel<Tv> {
     year = years;
   }
 
+  @override
+  String getMediaTitle() {
+    return media!.name;
+  }
+
 }

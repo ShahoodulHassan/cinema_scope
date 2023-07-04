@@ -10,15 +10,18 @@ import 'package:provider/provider.dart';
 
 import '../architecture/media_list_view_model.dart';
 import '../models/movie.dart';
+import '../models/similar_titles_params.dart';
 import '../widgets/frosted_app_bar.dart';
 
 class MoviesListPage extends MultiProvider {
   MoviesListPage({
     super.key,
     required MediaType mediaType,
+    String? mediaTitle,
     List<Genre>? genres,
     List<Keyword>? keywords,
     int? mediaId,
+    SimilarTitlesParams? similarTitlesParams,
   }) : super(
             providers: [
               ChangeNotifierProvider(create: (_) => MediaListViewModel()),
@@ -28,6 +31,8 @@ class MoviesListPage extends MultiProvider {
               genres: genres,
               keywords: keywords,
               mediaId: mediaId,
+              similarTitlesParams: similarTitlesParams,
+              mediaTitle: mediaTitle,
             ));
 }
 
@@ -40,6 +45,8 @@ class _MoviesListPageChild extends StatefulWidget {
   final List<Keyword>? keywords;
   final MediaType mediaType;
   final int? mediaId;
+  final SimilarTitlesParams? similarTitlesParams;
+  final String? mediaTitle;
 
   const _MoviesListPageChild({
     Key? key,
@@ -52,6 +59,8 @@ class _MoviesListPageChild extends StatefulWidget {
     this.genres,
     this.keywords,
     this.mediaId,
+    this.similarTitlesParams,
+    this.mediaTitle,
   }) : super(key: key);
 
   @override
@@ -68,6 +77,7 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
           keywords: widget.keywords,
           mediaId: widget.mediaId,
           combinedGenres: context.read<ConfigViewModel>().combinedGenres,
+          similarTitlesParams: widget.similarTitlesParams,
         );
     super.initState();
   }
@@ -80,6 +90,8 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
       title = widget.genres!.first.name;
     } else if (widget.mediaId != null) {
       title = 'Recommendations';
+    } else if (widget.similarTitlesParams != null) {
+      title = 'Similar titles';
     }
     return title ?? 'Cinema scope';
   }
@@ -95,18 +107,20 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
         slivers: [
           SliverFrostedAppBar.withSubtitle(
             title: Text(getAppbarTitle()),
-            subtitle: AnimatedSize(
-              duration: const Duration(milliseconds: 150),
-              child: Selector<MediaListViewModel, int?>(
-                builder: (_, count, __) {
-                  if (count == null) return const SizedBox.shrink();
-                  return Text(
-                    '(${applyCommaAndRoundNoZeroes(count.toDouble(), 0, true)})',
-                  );
-                },
-                selector: (_, mlm) => mlm.searchResult?.totalResults,
-              ),
-            ),
+            subtitle: widget.similarTitlesParams != null
+                ? Text(widget.mediaTitle!)
+                : AnimatedSize(
+                    duration: const Duration(milliseconds: 150),
+                    child: Selector<MediaListViewModel, int?>(
+                      builder: (_, count, __) {
+                        if (count == null) return const SizedBox.shrink();
+                        return Text(
+                          '(${applyCommaAndRoundNoZeroes(count.toDouble(), 0, true)})',
+                        );
+                      },
+                      selector: (_, mlm) => mlm.searchResult?.totalResults,
+                    ),
+                  ),
             pinned: true,
           ),
           PagedSliverGrid(
@@ -137,10 +151,11 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
                 ),
               ),
               noMoreItemsIndicatorBuilder: (_) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text('You have reached the end!'),
+                return const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    'You have reached the end!',
+                    textAlign: TextAlign.center,
                   ),
                 );
               },

@@ -1,6 +1,8 @@
 import 'package:async/async.dart';
 import 'package:cinema_scope/architecture/search_view_model.dart';
+import 'package:cinema_scope/models/similar_titles_params.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
+import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
@@ -22,7 +24,15 @@ class MediaListViewModel extends ApiViewModel with Utilities, CommonFunctions {
 
   CancelableOperation? _operation;
 
-  MediaListViewModel() : _pagingController = PagingController(firstPageKey: 1);
+  static const firstPageKey = 1;
+
+  /// Map of page number & genrePairs
+  Map<int, Set<String>> genrePairsMap = {};
+
+  MediaListViewModel()
+      : _pagingController = PagingController(
+          firstPageKey: firstPageKey,
+        );
 
   initializePaging({
     required MediaType mediaType,
@@ -30,8 +40,12 @@ class MediaListViewModel extends ApiViewModel with Utilities, CommonFunctions {
     List<int>? genreIds,
     List<Keyword>? keywords,
     int? mediaId,
+    SimilarTitlesParams? similarTitlesParams,
   }) {
     _combinedGenres = combinedGenres;
+    if (similarTitlesParams != null) {
+      genrePairsMap[firstPageKey] = similarTitlesParams.genrePairs;
+    }
     _listener ??= (pageKey) {
       logIfDebug('page listener called for pageKey=$pageKey');
       if (keywords != null) {
@@ -41,10 +55,10 @@ class MediaListViewModel extends ApiViewModel with Utilities, CommonFunctions {
           keywords: keywords,
           page: pageKey,
         );
-      } else if (genreIds != null && genreIds.isNotEmpty) {
+      } else if (genreIds.isNotNullNorEmpty) {
         _discoverByGenre(
           mediaType: mediaType,
-          genreIds: genreIds,
+          genreIds: genreIds!,
           page: pageKey,
         );
       } else if (mediaId != null) {
@@ -53,24 +67,33 @@ class MediaListViewModel extends ApiViewModel with Utilities, CommonFunctions {
           mediaId: mediaId,
           page: pageKey,
         );
+      } else if (similarTitlesParams != null) {
+        _getSimilarTitles(similarTitlesParams, page: pageKey);
       }
     };
     _pagingController.addPageRequestListener(_listener!);
   }
 
   void _appendPageAndNotify(
-      MediaType mediaType, CombinedResults result, int page) {
+    MediaType mediaType,
+    CombinedResults result,
+    int page,
+  ) {
     searchResult = result;
     final isLastPage = result.totalPages == page;
     if (page == 1) _pagingController.itemList = <CombinedResult>[];
     var results = result.results.map((r) {
-      if (r.mediaType == null || r.mediaType!.isEmpty) {
-        r.mediaType = mediaType.name;
-      }
+      if (r.mediaType.isNullOrEmpty) r.mediaType = mediaType.name;
       r.genreNamesString = getGenreNamesFromIds(_combinedGenres, r.genreIds,
           r.mediaType == MediaType.tv.name ? MediaType.tv : MediaType.movie);
-      return r;
-    }).toList();
+      r.dateString = getReadableDate(r.mediaReleaseDate);
+      r.yearString = getYearStringFromDate(r.mediaReleaseDate);
+
+      /// This has been added especially for Similar Titles, in which case,
+      /// there is a chance of having duplicate items in the next pages and so,
+      /// we don't add those.
+      if (!(_pagingController.itemList ?? []).contains(r)) return r;
+    }).nonNulls.toList();
     if (isLastPage) {
       _pagingController.appendLastPage(results);
     } else {
@@ -134,6 +157,83 @@ class MediaListViewModel extends ApiViewModel with Utilities, CommonFunctions {
     ).then((result) {
       _appendPageAndNotify(mediaType, result, page);
     });
+  }
+
+  void _getSimilarTitles(
+    SimilarTitlesParams similarTitlesParams, {
+    int page = 1,
+  }) {
+    final mediaId = similarTitlesParams.mediaId;
+    final mediaType = similarTitlesParams.mediaType;
+    final genrePairs = genrePairsMap[page];
+    final dateGte = similarTitlesParams.dateGte;
+    final dateLte = similarTitlesParams.dateLte;
+    final keywordsString = similarTitlesParams.keywordsString;
+
+    if (genrePairs.isNotNullNorEmpty) {
+      final futures = genrePairs!.map((pair) {
+        return mediaType == MediaType.movie
+            ? api.getMoreMoviesByGenres(
+                pair,
+                dateGte,
+                dateLte,
+                keywordsString,
+                page: page,
+              )
+            : api.getMoreTvSeriesByGenres(
+                pair,
+                dateGte,
+                dateLte,
+                keywordsString,
+                page: page,
+              );
+      }).toList();
+
+      _operation = CancelableOperation<List<CombinedResults>>.fromFuture(
+        Future.wait<CombinedResults>(futures),
+      ).then((results) async {
+        /// These values are the same for each page iteration though
+        final totalPages = results.map((e) => e.totalPages).max;
+        final totalResults = results.map((e) => e.totalResults).max;
+        logIfDebug('totalPages:$totalPages, totalResults:$totalResults');
+
+        /// Combine all results into one set
+        /// (set would automatically remove duplicates)
+        Set<CombinedResult> combinedResults = {};
+        Set<String> reducedGenrePairs = {};
+        logIfDebug('results size:${results.length}');
+        for (int i = 0; i < results.length; i++) {
+          var result = results[i];
+          logIfDebug('result size:${result.results.length}');
+          combinedResults.addAll(result.results);
+
+          /// Add genre pairs, if there is a next page available for them
+          if (result.totalPages > page) {
+            reducedGenrePairs.add(genrePairs.elementAt(i));
+          }
+        }
+
+        /// If there is gonna be a next page, save genre pairs with reference to
+        /// next page number
+        if (totalPages > page) genrePairsMap[page + 1] = reducedGenrePairs;
+
+        /// Remove the
+        /// currently displayed movie from the list, append page and notify
+        /// listeners
+        var similarTitles = combinedResults.toList()
+          ..removeWhere((element) => element.id == mediaId);
+        logIfDebug('similarTitles length:${similarTitles.length}');
+
+        final newResults = CombinedResults(
+          page,
+          totalPages,
+          totalResults,
+          similarTitles,
+        );
+
+        _appendPageAndNotify(mediaType, newResults, page);
+      });
+    }
   }
 
   _disposePageController() {
