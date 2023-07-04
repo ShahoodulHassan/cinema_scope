@@ -13,8 +13,8 @@ class ExpandableSynopsis extends StatefulWidget {
 
   const ExpandableSynopsis(
     this.overview, {
-    this.maxLines = 6,
-    this.expanded = true,
+    this.maxLines = 8,
+    this.expanded = false,
     this.changeSize = true,
     this.horizontal = 16.0,
     this.vertical = 8.0,
