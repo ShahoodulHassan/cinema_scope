@@ -1,4 +1,7 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
@@ -28,19 +31,16 @@ class RecommendationsSection<M extends Media, T extends MediaViewModel<M>>
           return SliverToBoxAdapter(child: Container());
         } else {
           final bool isMovie = M.toString() == (Movie).toString();
-          const int itemsPerRow = 3;
-          const int rowCount = 2;
-          int itemsPerPage = itemsPerRow * rowCount;
 
-          final totalCount = data.recommendations.length;
-          final remainder = totalCount % itemsPerPage;
-          final itemCount = totalCount < itemsPerPage
-              ? totalCount
-              : totalCount ~/ itemsPerPage * itemsPerPage +
-                  (remainder > itemsPerRow ? remainder : 0);
+          const width = 190.0;
+          const height = width / Constants.arPoster;
+          const topPadding = 16.0;
+          const bottomPadding = 24.0;
+          const hPadding = 16.0;
+          final list = data.recommendations.take(15).toList();
           return BaseSectionSliver(
             title: 'Recommendations',
-            showSeeAll: data.totalResults > itemCount,
+            showSeeAll: data.totalResults > list.length,
             onPressed: () {
               var mediaType = isMovie ? MediaType.movie : MediaType.tv;
               goToMediaListPage(
@@ -50,14 +50,105 @@ class RecommendationsSection<M extends Media, T extends MediaViewModel<M>>
               );
             },
             children: [
-              _PosterGrid<M, T>(
-                data.recommendations,
-                itemsPerRow,
-                itemsPerPage,
-                remainder,
+              SizedBox(
+                height: height + topPadding + bottomPadding,
+                child: ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(
+                    hPadding,
+                    topPadding,
+                    hPadding,
+                    bottomPadding,
+                  ),
+                  itemBuilder: (_, index) {
+                    const radius = 12.0;
+                    final media = list[index];
+                    return Stack(
+                      children: [
+                        NetworkImageView(
+                          media.posterPath,
+                          imageType: ImageType.poster,
+                          imageQuality: ImageQuality.high,
+                          aspectRatio: Constants.arPoster,
+                          topRadius: radius,
+                          bottomRadius: radius,
+                        ),
+                        if (media.yearString.isNotEmpty ||
+                            media.voteAverage > 0 ||
+                            media.mediaType == MediaType.tv.name)
+                          buildYearRatingBlurredView(width, radius, media),
+                        Positioned.fill(
+                          child: Material(
+                            type: MaterialType.transparency,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(radius),
+                              onTap: () {
+                                if (M.toString() == (Movie).toString()) {
+                                  goToMoviePage(
+                                    context,
+                                    id: media.id,
+                                    title: media.mediaTitle,
+                                    releaseDate: media.releaseDate,
+                                    overview: media.overview,
+                                    voteAverage: media.voteAverage,
+                                  );
+                                } else if (M.toString() == (Tv).toString()) {
+                                  goToTvPage(
+                                    context,
+                                    id: media.id,
+                                    title: media.mediaTitle,
+                                    releaseDate: media.releaseDate,
+                                    overview: media.overview,
+                                    voteAverage: media.voteAverage,
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                  separatorBuilder: (_, index) {
+                    return const SizedBox(width: 8.0);
+                  },
+                  itemCount: list.length,
+                  scrollDirection: Axis.horizontal,
+                ),
               ),
             ],
           );
+
+          // const int itemsPerRow = 3;
+          // const int rowCount = 2;
+          // int itemsPerPage = itemsPerRow * rowCount;
+          //
+          // final totalCount = data.recommendations.length;
+          // final remainder = totalCount % itemsPerPage;
+          // final itemCount = totalCount < itemsPerPage
+          //     ? totalCount
+          //     : totalCount ~/ itemsPerPage * itemsPerPage +
+          //         (remainder > itemsPerRow ? remainder : 0);
+          // return BaseSectionSliver(
+          //   title: 'Recommendations',
+          //   showSeeAll: data.totalResults > itemCount,
+          //   onPressed: () {
+          //     var mediaType = isMovie ? MediaType.movie : MediaType.tv;
+          //     goToMediaListPage(
+          //       context,
+          //       mediaType: mediaType,
+          //       mediaId: data.mediaId,
+          //     );
+          //   },
+          //   children: [
+          //     _PosterGrid<M, T>(
+          //       data.recommendations,
+          //       itemsPerRow,
+          //       itemsPerPage,
+          //       remainder,
+          //     ),
+          //   ],
+          // );
+
           // return SliverPadding(
           //   padding: const EdgeInsets.symmetric(vertical: 12.0),
           //   sliver: SliverStack(
@@ -87,6 +178,83 @@ class RecommendationsSection<M extends Media, T extends MediaViewModel<M>>
       },
     );
   }
+
+  Positioned buildYearRatingBlurredView(
+      double width, double radius, CombinedResult media) {
+    return Positioned(
+      top: 0.0,
+      width: width,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.25),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(radius),
+            topRight: Radius.circular(radius),
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(radius),
+            topRight: Radius.circular(radius),
+          ),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12.0,
+                vertical: 12.0,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                // mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(
+                    media.yearString,
+                    style: const TextStyle(
+                      fontSize: 14.0,
+                      height: 1.2,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (media.voteAverage > 0)
+                    Row(
+                      children: [
+                        FaIcon(
+                          FontAwesomeIcons.solidStar,
+                          size: 14.0,
+                          color: Colors.yellow.shade700,
+                        ),
+                        const SizedBox(width: 1.0),
+                        Text(
+                          ' ${applyCommaAndRound(media.voteAverage, 1, false, true)}',
+                          style: const TextStyle(
+                            fontSize: 14.0,
+                            height: 1.2,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  if (media.mediaType == MediaType.tv.name)
+                    const Text(
+                      'TV',
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        height: 1.2,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _PosterGrid<M extends Media, T extends MediaViewModel<M>>
@@ -113,11 +281,11 @@ class _PosterGrid<M extends Media, T extends MediaViewModel<M>>
 
   late final BorderRadius _borderRadius = (_topRadius > 0 || _bottomRadius > 0)
       ? BorderRadius.only(
-    topRight: Radius.circular(_topRadius),
-    topLeft: Radius.circular(_topRadius),
-    bottomRight: Radius.circular(_bottomRadius),
-    bottomLeft: Radius.circular(_bottomRadius),
-  )
+          topRight: Radius.circular(_topRadius),
+          topLeft: Radius.circular(_topRadius),
+          bottomRight: Radius.circular(_bottomRadius),
+          bottomLeft: Radius.circular(_bottomRadius),
+        )
       : BorderRadius.zero;
 
   final _topPadding = 16.0;
@@ -128,12 +296,12 @@ class _PosterGrid<M extends Media, T extends MediaViewModel<M>>
   final _crossAxisSpacing = 5.0;
 
   _PosterGrid(
-      this._recommendations,
-      this._itemsPerRow,
-      this._itemsPerPage,
-      this._remainder, {
-        Key? key,
-      }) : super(key: key);
+    this._recommendations,
+    this._itemsPerRow,
+    this._itemsPerPage,
+    this._remainder, {
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +330,7 @@ class _PosterGrid<M extends Media, T extends MediaViewModel<M>>
             child: CompactTextButton(
               'PREV',
               onPressed:
-              (index > 0 ? () => mvm.recomPageIndex = index - 1 : null),
+                  (index > 0 ? () => mvm.recomPageIndex = index - 1 : null),
             ),
           ),
           Text(
@@ -206,10 +374,10 @@ class _PosterGrid<M extends Media, T extends MediaViewModel<M>>
         final destUrl = media.backdropPath == null
             ? null
             : context.read<ConfigViewModel>().getImageUrl(
-          ImageType.backdrop,
-          ImageQuality.high,
-          media.backdropPath!,
-        );
+                  ImageType.backdrop,
+                  ImageQuality.high,
+                  media.backdropPath!,
+                );
         return Card(
           color: Colors.white,
           surfaceTintColor: Colors.white,
@@ -221,9 +389,9 @@ class _PosterGrid<M extends Media, T extends MediaViewModel<M>>
           // remove the whitespace around the image.
           margin: const EdgeInsets.fromLTRB(1.5, 2.5, 1.8, 2.5),
           child:
-          // Column(
-          //   children: [
-          getImageView(titles, index, context, media, destUrl),
+              // Column(
+              //   children: [
+              getImageView(titles, index, context, media, destUrl),
           // Text(getYearStringFromDate(media.releaseDate), style: textStyle,),
           //   ],
           // ),
