@@ -80,16 +80,17 @@ class _ImagePageState extends State<ImagePage> with GenericFunctions {
                                 ?.copyWith(color: color),
                           ),
                           actions: [
-                            IconButton(
-                              icon: const FaIcon(
-                                FontAwesomeIcons.download,
-                                size: 22.0,
+                            if (Platform.isAndroid)
+                              IconButton(
+                                icon: const FaIcon(
+                                  FontAwesomeIcons.download,
+                                  size: 22.0,
+                                ),
+                                tooltip: 'Save to gallery',
+                                onPressed: () {
+                                  saveImage();
+                                },
                               ),
-                              tooltip: 'Save to gallery',
-                              onPressed: () {
-                                saveImage();
-                              },
-                            ),
                           ],
                           iconTheme:
                               appBarTheme.iconTheme?.copyWith(color: color),
@@ -135,6 +136,7 @@ class _ImagePageState extends State<ImagePage> with GenericFunctions {
   /// image.
   ///
   /// TODO 13/07/2023 Save operations should be performed via a WorkManager
+  /// TODO 13/07/2023 Needs testing for iOS and web
   void saveImage() async {
     final pageNum = _controller.page;
     if (pageNum != null) {
