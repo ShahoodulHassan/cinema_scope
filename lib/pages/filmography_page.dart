@@ -4,7 +4,6 @@ import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 
@@ -353,7 +352,7 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class CombinedPosterTile extends StatelessWidget
-    with Utilities, CommonFunctions, GenericFunctions {
+    with Utilities, GenericFunctions, CommonFunctions  {
   final CombinedResult result;
 
   const CombinedPosterTile({required this.result, Key? key}) : super(key: key);

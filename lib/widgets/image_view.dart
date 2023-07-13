@@ -2,15 +2,17 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinema_scope/architecture/config_view_model.dart';
-import 'package:flutter/foundation.dart';
+import 'package:cinema_scope/main.dart';
+import 'package:cinema_scope/utilities/common_functions.dart';
+import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:flutter/material.dart';
-import 'package:image_network/image_network.dart';
 import 'package:provider/provider.dart';
 
 import '../constants.dart';
 import '../utilities/generic_functions.dart';
 
-class NetworkImageView extends StatelessWidget with GenericFunctions {
+class NetworkImageView extends StatelessWidget
+    with GenericFunctions, Utilities, CommonFunctions {
   final String? imagePath;
 
   final ImageType imageType;
@@ -31,7 +33,7 @@ class NetworkImageView extends StatelessWidget with GenericFunctions {
   late final Widget loadingPlaceholder = Container(
     decoration: BoxDecoration(
       borderRadius: borderRadius,
-      color: Colors.black12,
+      color: kPrimary.lighten2(88),
     ),
   );
 

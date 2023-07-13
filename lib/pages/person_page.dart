@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:age_calculator/age_calculator.dart';
 import 'package:cinema_scope/architecture/config_view_model.dart';
 import 'package:cinema_scope/constants.dart';
@@ -23,6 +21,7 @@ import '../widgets/base_section_sliver.dart';
 import '../widgets/compact_text_button.dart';
 import '../widgets/frosted_app_bar.dart';
 import '../widgets/home_section.dart';
+import 'image_gallery_page.dart';
 
 class PersonPage extends MultiProvider {
   PersonPage({
@@ -71,7 +70,7 @@ class _PersonPageChild extends StatefulWidget {
 }
 
 class _PersonPageChildState extends State<_PersonPageChild>
-    with Utilities, CommonFunctions {
+    with Utilities, GenericFunctions, CommonFunctions {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback(
@@ -592,9 +591,8 @@ class ImagesSection<T extends BaseMediaViewModel> extends StatelessWidget
                 ? () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) => ImagePage(
+                        builder: (_) => ImageGalleryPage(
                           images: images,
-                          initialPage: 0,
                         ),
                       ),
                     );

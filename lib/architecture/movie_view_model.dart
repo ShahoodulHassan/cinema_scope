@@ -44,14 +44,11 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
 
   String? year;
 
-
   /// Fields for Similar Titles
   Set<String> genrePairs = {};
   String keywordsString = '';
   String dateGte = '';
   String dateLte = '';
-
-
 
   List<Genre> get genres => media?.genres ?? [];
 
@@ -248,7 +245,8 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
           keywordsString = this.keywords.map((e) => e.id).join('|');
           logIfDebug('genrePairs:$genrePairs');
           logIfDebug('keywords:$keywordsString');
-          logIfDebug('dateGte:$dateGte, dateLte:$dateLte');
+          logIfDebug(
+              'dateGte:$dateGte, dateLte:$dateLte, origLang:${media!.originalLanguage}');
 
           if (genrePairs.isNotEmpty) {
             var futures = genrePairs.map((pair) {
@@ -258,12 +256,16 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
                       dateGte,
                       dateLte,
                       keywordsString,
+                      language: media!.originalLanguage,
+                      originalLanguage: media!.originalLanguage,
                     )
                   : api.getMoreTvSeriesByGenres(
                       pair,
                       dateGte,
                       dateLte,
                       keywordsString,
+                      language: media!.originalLanguage,
+                      originalLanguage: media!.originalLanguage,
                     );
             }).toList();
 

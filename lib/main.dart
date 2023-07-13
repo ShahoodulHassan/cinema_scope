@@ -23,6 +23,10 @@ final Color kScaffoldBackgroundColor = _kThemeData.scaffoldBackgroundColor;
 final Color kPrimary = kColorScheme.primary;
 final Color kPrimaryContainer = kColorScheme.primaryContainer;
 
+final Color kBackgroundColor = kPrimary.lighten2(88);
+
+final double kScaffoldPaddingTop = MediaQuery.paddingOf(appContext).top;
+
 void main() async {
   print('main called');
   WidgetsFlutterBinding.ensureInitialized();

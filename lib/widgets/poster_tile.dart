@@ -1,12 +1,8 @@
-import 'package:cinema_scope/main.dart';
 import 'package:cinema_scope/models/search.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:flutter/material.dart';
-
-// import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:provider/provider.dart';
 
 import '../architecture/config_view_model.dart';
 import '../constants.dart';
@@ -90,7 +86,7 @@ class PosterTile extends StatelessWidget with GenericFunctions {
 }
 
 class MoviePosterTile extends StatelessWidget
-    with Utilities, CommonFunctions, GenericFunctions {
+    with Utilities, GenericFunctions, CommonFunctions {
   final CombinedResult movie;
 
   const MoviePosterTile({required this.movie, Key? key}) : super(key: key);
@@ -191,7 +187,7 @@ class MoviePosterTile extends StatelessWidget
 // TODO See if it can be merged with MoviePosterTile to form a MediaPosterTile
 // TODO Show Tv specific properties like year range, episode count etc. as well
 class TvPosterTile extends StatelessWidget
-    with Utilities, CommonFunctions, GenericFunctions {
+    with Utilities, GenericFunctions, CommonFunctions {
   final CombinedResult tv;
 
   const TvPosterTile({required this.tv, Key? key}) : super(key: key);
@@ -335,7 +331,7 @@ class TvPosterTile extends StatelessWidget
 }
 
 class PersonPosterTile extends StatelessWidget
-    with Utilities, CommonFunctions, GenericFunctions {
+    with Utilities, GenericFunctions, CommonFunctions {
   final BasePersonResult person;
   final Widget? subtitle;
   final Widget? description;

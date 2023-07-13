@@ -6,7 +6,6 @@ import 'package:cinema_scope/widgets/image_view.dart';
 import 'package:cinema_scope/widgets/ink_well_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../constants.dart';
 import '../models/movie.dart';
@@ -47,11 +46,18 @@ class ImageGalleryPage extends StatelessWidget with GenericFunctions {
 
   List<Widget> getStickySlivers() {
     final color = Colors.white.withOpacity(0.85);
-    var profiles = images.where((image) => image.imageType == ImageType.profile.name).toList();
-    var posters = images.where((image) => image.imageType == ImageType.poster.name).toList();
-    var backdrops =
-        images.where((image) => image.imageType == ImageType.backdrop.name).toList();
-    var logos = images.where((image) => image.imageType == ImageType.logo.name).toList();
+    var profiles = images
+        .where((image) => image.imageType == ImageType.profile.name)
+        .toList();
+    var posters = images
+        .where((image) => image.imageType == ImageType.poster.name)
+        .toList();
+    var backdrops = images
+        .where((image) => image.imageType == ImageType.backdrop.name)
+        .toList();
+    var logos = images
+        .where((image) => image.imageType == ImageType.logo.name)
+        .toList();
     logIfDebug(
         'posterCount:${posters.length}, backdropCount:${backdrops.length}, logoCount:${logos.length}');
 
@@ -179,10 +185,7 @@ class ImageGalleryPage extends StatelessWidget with GenericFunctions {
     Color? backgroundColor,
   }) {
     return SliverPadding(
-      padding: const EdgeInsets.only(
-        left: padding,
-        right: padding,
-      ),
+      padding: const EdgeInsets.only(left: padding, right: padding),
       sliver: SliverGrid.builder(
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: maxCrossAxisExtent,

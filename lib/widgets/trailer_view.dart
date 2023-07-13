@@ -80,7 +80,7 @@ class _TrailerViewChildState extends RouteAwareState<_TrailerViewChild>
   @override
   void initState() {
     super.initState();
-    cvm = context.read<ConfigViewModel>()..addListener(_stateListener);
+    cvm = context.read<ConfigViewModel>()..addListener(_appStateListener);
     yvm = context.read<YoutubeViewModel>();
     // mvm = context.read<MovieViewModel>();
   }
@@ -98,7 +98,7 @@ class _TrailerViewChildState extends RouteAwareState<_TrailerViewChild>
     ]);
   }
 
-  void _stateListener() {
+  void _appStateListener() {
     logIfDebug('stateListener state:${cvm.appState}');
     if (cvm.appState == AppLifecycleState.paused) {
       yvm.pause();
@@ -153,7 +153,7 @@ class _TrailerViewChildState extends RouteAwareState<_TrailerViewChild>
     // yvm.disposeController();
     logIfDebug('after controller dispose called');
     // mvm.removeListener(_routeListener);
-    cvm.removeListener(_stateListener);
+    cvm.removeListener(_appStateListener);
     super.dispose();
   }
 }

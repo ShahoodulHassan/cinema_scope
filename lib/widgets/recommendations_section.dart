@@ -19,7 +19,7 @@ import 'compact_text_button.dart';
 import 'image_view.dart';
 
 class RecommendationsSection<M extends Media, T extends MediaViewModel<M>>
-    extends StatelessWidget with Utilities, CommonFunctions, GenericFunctions {
+    extends StatelessWidget with Utilities, GenericFunctions, CommonFunctions {
   const RecommendationsSection({Key? key}) : super(key: key);
 
   @override
@@ -258,7 +258,7 @@ class RecommendationsSection<M extends Media, T extends MediaViewModel<M>>
 }
 
 class _PosterGrid<M extends Media, T extends MediaViewModel<M>>
-    extends StatelessWidget with Utilities, CommonFunctions {
+    extends StatelessWidget with Utilities, GenericFunctions, CommonFunctions {
   final List<CombinedResult> _recommendations;
   final int _itemsPerRow;
   final int _itemsPerPage;
@@ -479,7 +479,7 @@ class _PosterGrid<M extends Media, T extends MediaViewModel<M>>
 }
 
 class _RecommendationsView<M extends Media, T extends MediaViewModel<M>>
-    extends StatelessWidget with Utilities, CommonFunctions {
+    extends StatelessWidget with Utilities, GenericFunctions, CommonFunctions {
   final int mediaId;
   final List<CombinedResult> recommendations;
   final int totalRecomCount;
@@ -568,7 +568,7 @@ class _RecommendationsView<M extends Media, T extends MediaViewModel<M>>
 }
 
 class _SliverPosterGrid<M extends Media, T extends MediaViewModel<M>>
-    extends StatelessWidget with Utilities, CommonFunctions {
+    extends StatelessWidget with Utilities, GenericFunctions, CommonFunctions {
   final int itemsPerRow;
   final int itemsPerPage;
   final double _topRadius = 12.0;
