@@ -1,3 +1,4 @@
+import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
@@ -5,7 +6,8 @@ import '../utilities/common_functions.dart';
 import '../utilities/utilities.dart';
 import 'compact_text_button.dart';
 
-class BaseSectionSliver extends StatelessWidget with Utilities, CommonFunctions {
+class BaseSectionSliver extends StatelessWidget
+    with Utilities, GenericFunctions, CommonFunctions {
   final String title;
   final List<Widget> children;
 
@@ -57,21 +59,28 @@ class BaseSectionSliver extends StatelessWidget with Utilities, CommonFunctions 
   }
 
   Widget getSectionTitleRow() => Padding(
-    padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.5,
-            // height: 1.1,
-          ),
+        padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.5,
+                  // height: 1.1,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (showSeeAll) ...[
+              const SizedBox(width: 4.0),
+              CompactTextButton(buttonText, onPressed: onPressed),
+            ]
+          ],
         ),
-        if (showSeeAll) CompactTextButton(buttonText, onPressed: onPressed),
-      ],
-    ),
-  );
+      );
 }
