@@ -51,7 +51,10 @@ dependencies:
   infinite_scroll_pagination: ^3.2.0
   expandable_text: ^2.3.0
   cached_network_image: ^3.2.3
-  youtube_player_flutter: ^8.1.2
+  youtube_player_flutter:
+    git:
+      url: http://github.com/ShahoodulHassan/youtube_player_flutter/
+      path: packages/youtube_player_flutter
   google_fonts: ^4.0.1
   video_thumbnail: ^0.5.3
   card_swiper: ^2.0.4
@@ -72,6 +75,9 @@ dependencies:
   flutter_screenutil: ^5.8.3
   flutter_layout_grid: ^2.0.3
   flutter_sticky_header: ^0.6.5
+  flutter_cache_manager: ^3.3.1
+  gallery_saver: ^2.3.2
+  external_path: ^1.0.3
 
 dev_dependencies:
   flutter_test:
