@@ -16,8 +16,33 @@ import 'package:flutter/services.dart';
 
 const double _kLeadingWidth =
     kToolbarHeight; // So the leading button is square.
-const double _kMaxTitleTextScaleFactor = 1.34; // TODO(perc): Add link to Material spec when available, https://github.com/flutter/flutter/issues/58769.
+const double _kMaxTitleTextScaleFactor =
+    1.34; // TODO(perc): Add link to Material spec when available, https://github.com/flutter/flutter/issues/58769.
+
 const double kFrostOpacity = 0.70;
+
+/// This may be used as a wrapper for any other widgets that want to have the
+/// same amount of frost effect.
+///
+/// [NOTE] Always use [kFrostOpacity] for the background color of that widget
+/// to get the frost effect.
+class FrostFilter extends StatelessWidget {
+
+  final Widget child;
+
+  const FrostFilter(this.child, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: child,
+      ),
+    );
+  }
+}
+
 
 // Bottom justify the toolbarHeight child which may overflow the top.
 class _ToolbarContainerLayout extends SingleChildLayoutDelegate {
@@ -229,26 +254,24 @@ class FrostedAppBar extends StatefulWidget implements PreferredSizeWidget {
   }) {
     return FrostedAppBar(
       key: key,
-      title: Builder(
-          builder: (context) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (title != null) title,
-                if (subtitle != null)
-                  DefaultTextStyle(
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+      title: Builder(builder: (context) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (title != null) title,
+            if (subtitle != null)
+              DefaultTextStyle(
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                       height: 1.2,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    child: subtitle,
-                  ),
-              ],
-            );
-          }
-      ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                child: subtitle,
+              ),
+          ],
+        );
+      }),
       leading: leading,
       automaticallyImplyLeading: automaticallyImplyLeading,
       flexibleSpace: flexibleSpace,
@@ -1231,15 +1254,12 @@ class _FrostedAppBarState extends State<FrostedAppBar> {
           shape: widget.shape ?? appBarTheme.shape ?? defaults.shape,
           child: Semantics(
             explicitChildNodes: true,
-            child: ClipRRect(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                // Creates a material widget to prevent the flexibleSpace from
-                // obscuring the ink splashes produced by appBar children.
-                child: Material(
-                  type: MaterialType.transparency,
-                  child: appBar,
-                ),
+            child: FrostFilter(
+              // Creates a material widget to prevent the flexibleSpace from
+              // obscuring the ink splashes produced by appBar children.
+              Material(
+                type: MaterialType.transparency,
+                child: appBar,
               ),
             ),
           ),
@@ -1845,26 +1865,24 @@ class SliverFrostedAppBar extends StatefulWidget {
   }) {
     return SliverFrostedAppBar(
       key: key,
-      title: Builder(
-        builder: (context) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (title != null) title,
-              if (subtitle != null)
-                DefaultTextStyle(
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        height: 1.2,
-                      ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  child: subtitle,
-                ),
-            ],
-          );
-        }
-      ),
+      title: Builder(builder: (context) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (title != null) title,
+            if (subtitle != null)
+              DefaultTextStyle(
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      height: 1.2,
+                    ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                child: subtitle,
+              ),
+          ],
+        );
+      }),
       leading: leading,
       automaticallyImplyLeading: automaticallyImplyLeading,
       flexibleSpace: flexibleSpace,
