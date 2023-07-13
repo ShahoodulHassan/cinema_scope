@@ -1,6 +1,8 @@
 import 'package:cinema_scope/models/similar_titles_params.dart';
+import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../constants.dart';
 import '../main.dart';
@@ -12,7 +14,7 @@ import '../pages/person_page.dart';
 import '../pages/tv_page.dart';
 import '../widgets/ink_well_overlay.dart';
 
-mixin CommonFunctions on Utilities {
+mixin CommonFunctions on Utilities, GenericFunctions {
   goToMoviePage(
     BuildContext context, {
     required int id,
@@ -140,7 +142,7 @@ mixin CommonFunctions on Utilities {
         color: kPrimary.withOpacity(0.6),
       );
 
-  Color get scaffoldColor => lighten2(kPrimaryContainer, 75);
+  Color get scaffoldColor => kPrimaryContainer.lighten2(75);
 
   Widget getIconButton(
     Widget icon,
@@ -202,5 +204,12 @@ mixin CommonFunctions on Utilities {
     }).toList()
           ..removeWhere((element) => element == null))
         .join(', ');
+  }
+
+  openImdbParentalGuide(String imdbId) {
+    openUrlString(
+      '${Constants.imdbTitleUrl}$imdbId/parentalguide',
+      launchMode: LaunchMode.inAppWebView,
+    );
   }
 }
