@@ -1,15 +1,16 @@
 import 'package:async/async.dart';
 import 'package:cinema_scope/architecture/search_view_model.dart';
 import 'package:cinema_scope/models/movie.dart';
+import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 
 import '../constants.dart';
 import '../models/person.dart';
 import '../models/search.dart';
+import 'config_view_model.dart';
 
 abstract class BaseMediaViewModel extends ApiViewModel with Utilities {
   List<ImageDetail>? images;
-
 }
 
 class PersonViewModel extends BaseMediaViewModel {
@@ -70,7 +71,11 @@ class PersonViewModel extends BaseMediaViewModel {
       List<ImageDetail> allImages = [];
       var profileImages = person?.images?.profiles ?? [];
       var taggedImages = person?.taggedImages?.results ?? [];
-      allImages.addAll(profileImages);
+      allImages.addAll(profileImages.map((e) {
+        e.imageType =
+            e.imageType.isNullOrEmpty ? ImageType.profile.name : e.imageType;
+        return e;
+      }));
       allImages.addAll(taggedImages);
       images = allImages;
       notifyListeners();
@@ -176,8 +181,6 @@ class PersonViewModel extends BaseMediaViewModel {
               : ((value2 is CombinedOfCrew) ? value2.episodeCount ?? 1 : 1);
           return ((pop2) * epCount2).compareTo((pop1) * epCount1);
         }));
-
-
 
       for (var media in sortedMap.values) {
         if (_knownForMediaResults!.length < 10) {
