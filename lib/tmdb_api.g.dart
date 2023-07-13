@@ -301,7 +301,7 @@ class _TmdbApi implements TmdbApi {
     includeAdult = 'false',
     page = 1,
     voteAverage = 6.1,
-    voteCount = 100,
+    voteCount = 50,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
@@ -1099,7 +1099,7 @@ class _TmdbApi implements TmdbApi {
     includeAdult = 'false',
     page = 1,
     voteAverage = 6.1,
-    voteCount = 100,
+    voteCount = 50,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{

@@ -102,7 +102,7 @@ abstract class TmdbApi {
     @http.Query('include_adult') String includeAdult = 'false',
     @http.Query("page") int page = 1,
     @http.Query("vote_average.gte") double voteAverage = 6.1,
-    @http.Query("vote_count.gte") int voteCount = 100,
+    @http.Query("vote_count.gte") int voteCount = 50,
   });
 
   /// https://api.themoviedb.org/3/search/movie?
@@ -355,7 +355,7 @@ abstract class TmdbApi {
     @http.Query('include_adult') String includeAdult = 'false',
     @http.Query("page") int page = 1,
     @http.Query("vote_average.gte") double voteAverage = 6.1,
-    @http.Query("vote_count.gte") int voteCount = 100,
+    @http.Query("vote_count.gte") int voteCount = 50,
   });
 
   @http.GET("/tv/on_the_air")
