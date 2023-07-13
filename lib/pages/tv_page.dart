@@ -11,6 +11,7 @@ import '../architecture/config_view_model.dart';
 import '../architecture/movie_view_model.dart';
 import '../architecture/tv_view_model.dart';
 import '../constants.dart';
+import '../main.dart';
 import '../models/configuration.dart';
 import '../models/movie.dart';
 import '../models/tv.dart';
@@ -36,18 +37,18 @@ class TvPage extends MultiProvider {
     required String? overview,
     required String heroImageTag,
   }) : super(
-      providers: [
-        ChangeNotifierProvider(create: (_) => TvViewModel()),
-        // ChangeNotifierProvider(create: (_) => YoutubeViewModel()),
-      ],
-      child: _TvPageChild(
-        id,
-        title,
-        year,
-        voteAverage,
-        overview,
-        heroImageTag,
-      ));
+            providers: [
+              ChangeNotifierProvider(create: (_) => TvViewModel()),
+              // ChangeNotifierProvider(create: (_) => YoutubeViewModel()),
+            ],
+            child: _TvPageChild(
+              id,
+              title,
+              year,
+              voteAverage,
+              overview,
+              heroImageTag,
+            ));
 }
 
 class _TvPageChild extends StatefulWidget {
@@ -57,14 +58,15 @@ class _TvPageChild extends StatefulWidget {
   final String? year, overview;
   final double voteAverage;
 
-  const _TvPageChild(this.id,
-      this.title,
-      this.year,
-      this.voteAverage,
-      this.overview,
-      this.heroImageTag, {
-        Key? key,
-      }) : super(key: key);
+  const _TvPageChild(
+    this.id,
+    this.title,
+    this.year,
+    this.voteAverage,
+    this.overview,
+    this.heroImageTag, {
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<_TvPageChild> createState() => _TvPageChildState();
@@ -82,14 +84,163 @@ class _TvPageChildState extends State<_TvPageChild>
     tvm = context.read<TvViewModel>()
       ..getTvWithDetail(
         widget.id,
-        context
-            .read<ConfigViewModel>()
-            .combinedGenres,
+        context.read<ConfigViewModel>().combinedGenres,
       );
   }
 
   @override
   Widget build(BuildContext context) {
+    return MediaQuery.sizeOf(context).width > 800
+        ? buildLandscapeView()
+        : buildPortraitView();
+  }
+
+  Widget buildLandscapeView() {
+    return Row(
+      children: [
+        SizedBox(
+          width: 390.0,
+          child: Scaffold(
+            body: CustomScrollView(
+              slivers: [
+                SliverFrostedAppBar(
+                  title: Text(
+                    widget.title,
+                    style:
+                        Theme.of(context).appBarTheme.titleTextStyle?.copyWith(
+                              fontSize: 18.0,
+                            ),
+                  ),
+                  leading: BackButton(
+                    style: IconButton.styleFrom(
+                      iconSize: 22.0,
+                    ),
+                  ),
+                  toolbarHeight: 40.0,
+                  pinned: true,
+                ),
+                Selector<TvViewModel,
+                    Tuple3<List<String>, Map<String, ThumbnailType>, String?>>(
+                  builder: (_, tuple, __) {
+                    logIfDebug('isPinned, thumbnails:$tuple');
+                    var height = 390.0 * 9 / 16;
+                    if (tuple.item3 != null && tuple.item1.isNotEmpty) {
+                      return SliverPersistentHeader(
+                        delegate: TrailerDelegate(
+                          mediaType: MediaType.tv,
+                          extent: height,
+                          initialVideoId: tuple.item3!,
+                          youtubeKeys: tuple.item1,
+                        ),
+                        pinned: true,
+                      );
+                    } else {
+                      return SliverPersistentHeader(
+                        delegate: ImageDelegate(
+                          // backdropBaseUrl,
+                          mediaType: MediaType.tv,
+                          extent: tuple.item2.isEmpty ? 0 : height,
+                          thumbMap: tuple.item2,
+                        ),
+                        pinned: false,
+                      );
+                    }
+                  },
+                  selector: (_, mvm) {
+                    logIfDebug(
+                        'isPinned, selector called with:${mvm.youtubeKeys}');
+                    return Tuple3<List<String>, Map<String, ThumbnailType>,
+                        String?>(
+                      mvm.youtubeKeys,
+                      mvm.thumbMap,
+                      mvm.initialVideoId,
+                    );
+                  },
+                ),
+                Selector<TvViewModel, String?>(
+                  selector: (_, tvm) => tvm.initialVideoId,
+                  builder: (_, id, __) {
+                    return SliverToBoxAdapter(
+                      child: StreamersView<Tv, TvViewModel>(id: widget.id),
+                    );
+                  },
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 8.0, bottom: 0.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        buildGenresAndLinks(),
+                      ],
+                    ),
+                  ),
+                ),
+                const _MediaInfoSection(),
+                const KeywordsSection<Tv, TvViewModel>(),
+                const SliverToBoxAdapter(child: SizedBox(height: 16)),
+              ],
+            ),
+          ),
+        ),
+        Expanded(
+          child: Scaffold(
+            body: CustomScrollView(
+              slivers: [
+                const SliverFrostedAppBar(
+                  automaticallyImplyLeading: false,
+                  toolbarHeight: 0.0,
+                  pinned: true,
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 16.0, bottom: 0.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // const SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Text(
+                            widget.title,
+                            textAlign: TextAlign.start,
+                            // maxLines: 2,
+                            style: const TextStyle(
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                              height: 1.1,
+                            ),
+                          ),
+                        ),
+                        buildYearRow(),
+                        buildEpisodesRow(context),
+                        buildTagline(),
+                        ExpandableSynopsis(
+                          widget.overview,
+                          changeSize: false,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const _CastCrewSection(),
+                const ImagesSection<TvViewModel>(),
+                const RecommendationsSection<Tv, TvViewModel>(),
+                const MoreByDirectorSection<Tv, TvViewModel>(),
+                const MoreByLeadActorSection<Tv, TvViewModel>(),
+                const SimilarTitlesSection<Tv, TvViewModel>(),
+                const SliverToBoxAdapter(child: SizedBox(height: 16)),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildPortraitView() {
     return Scaffold(
       backgroundColor: scaffoldColor,
       body: CustomScrollView(
@@ -102,10 +253,7 @@ class _TvPageChildState extends State<_TvPageChild>
               Tuple3<List<String>, Map<String, ThumbnailType>, String?>>(
             builder: (_, tuple, __) {
               logIfDebug('isPinned, thumbnails:$tuple');
-              var height = MediaQuery
-                  .of(context)
-                  .size
-                  .width * 9 / 16;
+              var height = MediaQuery.of(context).size.width * 9 / 16;
               if (tuple.item3 != null && tuple.item1.isNotEmpty) {
                 return SliverPersistentHeader(
                   delegate: TrailerDelegate(
@@ -194,8 +342,9 @@ class _TvPageChildState extends State<_TvPageChild>
           // const ReviewsSection(),
           const MoreByDirectorSection<Tv, TvViewModel>(),
           const MoreByLeadActorSection<Tv, TvViewModel>(),
-          const MoreByGenresSection<Tv, TvViewModel>(),
+          const SimilarTitlesSection<Tv, TvViewModel>(),
           const KeywordsSection<Tv, TvViewModel>(),
+          const SliverToBoxAdapter(child: SizedBox(height: 16)),
         ],
       ),
     );
@@ -223,11 +372,10 @@ class _TvPageChildState extends State<_TvPageChild>
             );
           }
         },
-        selector: (_, tvm) =>
-            Tuple2<String?, double?>(
-              tvm.year,
-              tvm.voteAverage,
-            ),
+        selector: (_, tvm) => Tuple2<String?, double?>(
+          tvm.year,
+          tvm.voteAverage,
+        ),
       ),
     );
   }
@@ -256,11 +404,10 @@ class _TvPageChildState extends State<_TvPageChild>
             );
           }
         },
-        selector: (_, tvm) =>
-            Tuple2<int?, int?>(
-              tvm.media?.numberOfSeasons,
-              tvm.media?.numberOfEpisodes,
-            ),
+        selector: (_, tvm) => Tuple2<int?, int?>(
+          tvm.media?.numberOfSeasons,
+          tvm.media?.numberOfEpisodes,
+        ),
       ),
     );
   }
@@ -291,7 +438,7 @@ class _TvPageChildState extends State<_TvPageChild>
           Text(
             ' ${applyCommaAndRound(voteAverage, 1, false, true)}'
             // '   (${applyCommaAndRoundNoZeroes(movie.voteCount * 1.0, 0, true)})'
-                '',
+            '',
             style: const TextStyle(
               // fontWeight: FontWeight.normal,
               fontSize: 16.0,
@@ -322,9 +469,7 @@ class _TvPageChildState extends State<_TvPageChild>
       padding: const EdgeInsets.only(right: 16.0),
       child: Container(
         decoration: BoxDecoration(
-          border: Border.all(color: Theme
-              .of(context)
-              .primaryColorDark),
+          border: Border.all(color: Theme.of(context).primaryColorDark),
           borderRadius: BorderRadius.circular(8.0),
         ),
         padding: const EdgeInsets.symmetric(
@@ -334,9 +479,7 @@ class _TvPageChildState extends State<_TvPageChild>
         child: Text(
           certification,
           style: TextStyle(
-            color: Theme
-                .of(context)
-                .primaryColorDark,
+            color: Theme.of(context).primaryColorDark,
             fontSize: 14.0,
             fontWeight: FontWeight.bold,
             // fontStyle: FontStyle.italic,
@@ -354,19 +497,19 @@ class _TvPageChildState extends State<_TvPageChild>
           return tagline == null || tagline.isEmpty
               ? const SizedBox.shrink()
               : Padding(
-            padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
-            child: Text(
-              '"$tagline"',
-              textAlign: TextAlign.start,
-              style: GoogleFonts.literata(
-                textStyle: const TextStyle(
-                  fontSize: 18.0,
-                  // fontWeight: FontWeight.bold,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ),
-          );
+                  padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
+                  child: Text(
+                    '"$tagline"',
+                    textAlign: TextAlign.start,
+                    style: GoogleFonts.literata(
+                      textStyle: const TextStyle(
+                        fontSize: 18.0,
+                        // fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ),
+                );
         },
         selector: (_, tvm) => tvm.tagline,
       ),
@@ -377,12 +520,11 @@ class _TvPageChildState extends State<_TvPageChild>
     return AnimatedSize(
       duration: animDuration,
       child: Selector<TvViewModel, Tuple3<String?, String?, List<Genre>?>>(
-        selector: (_, tvm) =>
-            Tuple3<String?, String?, List<Genre>>(
-              tvm.imdbId,
-              tvm.homepage,
-              tvm.genres,
-            ),
+        selector: (_, tvm) => Tuple3<String?, String?, List<Genre>>(
+          tvm.imdbId,
+          tvm.homepage,
+          tvm.genres,
+        ),
         builder: (_, tuple, __) {
           logIfDebug('builder called with tv:$tuple');
           var imdbId = tuple.item1 ?? '';
@@ -402,31 +544,44 @@ class _TvPageChildState extends State<_TvPageChild>
                       if (imdbId.isNotEmpty)
                         getIconButton(
                           const Icon(FontAwesomeIcons.imdb),
-                              () =>
-                              openUrlString(
-                                '${Constants.imdbTitleUrl}$imdbId',
-                              ),
-                          color: Theme
-                              .of(context)
-                              .colorScheme
-                              .primary,
+                          () => openUrlString(
+                            '${Constants.imdbTitleUrl}$imdbId',
+                          ),
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       if (homepage.isNotEmpty)
                         getIconButton(
                           (homepage.contains('netflix')
                               ? Image.asset(
-                            'assets/icons/icons8_netflix_24.png',
-                            color: Theme
-                                .of(context)
-                                .colorScheme
-                                .primary,
-                          )
+                                  'assets/icons/icons8_netflix_24.png',
+                                  color: Theme.of(context).colorScheme.primary,
+                                )
                               : const Icon(Icons.link)),
-                              () => openUrlString(homepage),
-                          color: Theme
-                              .of(context)
-                              .colorScheme
-                              .primary,
+                          () => openUrlString(homepage),
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      if (imdbId.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(4.0),
+                            onTap: () => openImdbParentalGuide(imdbId),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6.0,
+                                vertical: 4.0,
+                              ),
+                              child: Text(
+                                'iMDb PG',
+                                style: TextStyle(
+                                  color: kPrimary,
+                                  fontWeight: FontWeight.bold,
+                                  height: 1.2,
+                                  fontSize: 12.5,
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
                     ],
                   ),
@@ -505,7 +660,8 @@ class _CastCrewSection extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     return Selector<TvViewModel, Tuple3<List<TvCast>, int, List<TvCrew>>>(
-      selector: (_, tvm) => Tuple3(tvm.cast, tvm.crew.length, tvm.creators ?? []),
+      selector: (_, tvm) =>
+          Tuple3(tvm.cast, tvm.crew.length, tvm.creators ?? []),
       builder: (_, tuple, __) {
         final crewCount = tuple.item2;
         if (tuple.item1.isEmpty && crewCount == 0) {
@@ -568,8 +724,8 @@ class _CastCrewSection extends StatelessWidget
     );
   }
 
-  Widget getCrewSection(BuildContext context, List<TvCrew> creators,
-      String label) {
+  Widget getCrewSection(
+      BuildContext context, List<TvCrew> creators, String label) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Column(
@@ -584,8 +740,8 @@ class _CastCrewSection extends StatelessWidget
     );
   }
 
-  Widget getCreatorsTile(BuildContext context, List<TvCrew> creators,
-      String label) {
+  Widget getCreatorsTile(
+      BuildContext context, List<TvCrew> creators, String label) {
     if (creators.isEmpty) return const SizedBox.shrink();
     return Material(
       color: Colors.transparent,
@@ -629,7 +785,8 @@ class _CastCrewSection extends StatelessWidget
     );
   }
 
-  void goToCreditsPage(BuildContext context, {
+  void goToCreditsPage(
+    BuildContext context, {
     AggregateCredits? credits,
     String? title,
   }) {
@@ -776,12 +933,12 @@ class _TvCastPosterListView extends StatelessWidget
   }
 
   Widget buildItemView(
-      BuildContext context,
-      TvCast cast, {
-        required double cardMargin,
-        required double nameContainerHeight,
-        required double characterContainerHeight,
-      }) {
+    BuildContext context,
+    TvCast cast, {
+    required double cardMargin,
+    required double nameContainerHeight,
+    required double characterContainerHeight,
+  }) {
     return Stack(
       children: [
         Card(
@@ -827,9 +984,7 @@ class _TvCastPosterListView extends StatelessWidget
                 ),
                 // height: characterContainerHeight,
                 child: Text(
-                  cast.roles
-                      .map((e) => e.character)
-                      .join(', '),
+                  cast.roles.map((e) => e.character).join(', '),
                   maxLines: maxLines,
                   overflow: TextOverflow.ellipsis,
                   style: characterStyle,
@@ -844,8 +999,7 @@ class _TvCastPosterListView extends StatelessWidget
                 ),
                 // height: episodeContainerHeight,
                 child: Text(
-                  '${cast.totalEpisodeCount} episode${cast
-                      .totalEpisodeCount > 1 ? 's' : ''}',
+                  '${cast.totalEpisodeCount} episode${cast.totalEpisodeCount > 1 ? 's' : ''}',
                   maxLines: episodeMaxLines,
                   overflow: TextOverflow.ellipsis,
                   style: episodeStyle,
@@ -869,194 +1023,6 @@ class _TvCastPosterListView extends StatelessWidget
           ),
         ),
       ],
-    );
-  }
-}
-
-class _CastListView<T extends BaseTvCredit> extends StatelessWidget
-    with Utilities, CommonFunctions {
-  final List<T> credits;
-  final double screenWidth;
-
-  _CastListView(this.credits, this.screenWidth, {Key? key}) : super(key: key);
-
-  final separatorWidth = 10.0;
-
-  final listViewHorizontalPadding = 16.0;
-
-  final listViewVerticalPadding = 16.0;
-
-  final cardCount = 2.5;
-
-  late final deductibleWidth =
-      listViewHorizontalPadding + separatorWidth * cardCount.toInt();
-
-  late final posterWidth = (screenWidth - deductibleWidth) / cardCount;
-
-  final aspectRatio = Constants.arProfile / 0.87;
-
-  late final posterHeight = posterWidth / aspectRatio;
-
-  final maxLines = 2;
-
-  final episodeMaxLines = 1;
-
-  final textHorizPadding = 8.0;
-
-  // final nameTopPadding = 8.0;
-  //
-  // final nameBottomPadding = 0.0;
-  //
-  // final characterTopPadding = 0.0;
-  //
-  // final characterBottomPadding = 8.0;
-
-  final descriptionVertPadding = 8.0;
-
-  final nameStyle = const TextStyle(
-    fontSize: 14.0,
-    fontWeight: FontWeight.bold,
-    height: 1.2,
-  );
-
-  final characterStyle = const TextStyle(
-    fontSize: 14.0,
-    height: 1.2,
-  );
-
-  final episodeStyle = const TextStyle(
-    fontSize: 14.0,
-    height: 1.8,
-    color: Colors.black54,
-  );
-
-  final topRadius = 4.0;
-
-  final bottomRadius = 0.0;
-
-  /// This offset is being added to escape the "A RenderFlex overflowed by 0.200
-  /// pixels on the bottom." error. Seems like every line has this height offset
-  /// of 0.2.
-  final lineOffset = 0.2;
-
-  late final nameHeight = nameStyle.height! * nameStyle.fontSize! * maxLines +
-      (maxLines * lineOffset);
-
-  late final characterHeight =
-      characterStyle.height! * characterStyle.fontSize! * maxLines +
-          (maxLines * lineOffset);
-
-  late final episodeHeight =
-      episodeStyle.height! * episodeStyle.fontSize! * episodeMaxLines +
-          (episodeMaxLines * lineOffset);
-
-  // late final nameContainerHeight =
-  //     nameHeight + nameTopPadding + nameBottomPadding;
-  //
-  // late final characterContainerHeight =
-  //     characterHeight + characterTopPadding + characterBottomPadding;
-
-  late final descriptionContainerHeight =
-      nameHeight + characterHeight + episodeHeight + descriptionVertPadding * 2;
-
-  late final cardHeight =
-      posterHeight + /*nameContainerHeight + characterContainerHeight*/
-          descriptionContainerHeight;
-
-  late final viewHeight = cardHeight + listViewVerticalPadding * 2;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: screenWidth,
-      height: viewHeight,
-      child: ListView.separated(
-        // primary: false,
-        itemBuilder: (_, index) {
-          var person = credits[index];
-          return Stack(
-            children: [
-              Card(
-                surfaceTintColor: Colors.white,
-                elevation: 4.0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(topRadius),
-                ),
-                margin: EdgeInsets.zero,
-                child: SizedBox(
-                  width: posterWidth,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      NetworkImageView(
-                        person.profilePath,
-                        imageType: ImageType.profile,
-                        aspectRatio: aspectRatio,
-                        topRadius: topRadius,
-                        bottomRadius: bottomRadius,
-                        fit: BoxFit.fitWidth,
-                        heroImageTag: '${person.id}',
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(descriptionVertPadding),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              person.name,
-                              maxLines: maxLines,
-                              overflow: TextOverflow.ellipsis,
-                              style: nameStyle,
-                            ),
-                            Text(
-                              (person is TvCast
-                                  ? person.roles
-                                  .map((e) => e.character)
-                                  .join(', ')
-                                  : (person as TvCrew)
-                                  .jobs
-                                  .map((e) => e.job)
-                                  .join(', ')),
-                              maxLines: maxLines,
-                              overflow: TextOverflow.ellipsis,
-                              style: characterStyle,
-                            ),
-                            Text(
-                              '${person.totalEpisodeCount} episode${person
-                                  .totalEpisodeCount > 1 ? 's' : ''}',
-                              maxLines: episodeMaxLines,
-                              overflow: TextOverflow.ellipsis,
-                              style: episodeStyle,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned.fill(
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(topRadius),
-                    onTap: () {
-                      goToPersonPage(context, person);
-                    },
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-        separatorBuilder: (_, index) => SizedBox(width: separatorWidth),
-        padding: EdgeInsets.symmetric(
-          horizontal: listViewHorizontalPadding,
-          vertical: listViewVerticalPadding,
-        ),
-        scrollDirection: Axis.horizontal,
-        itemCount: credits.length,
-      ),
     );
   }
 }
@@ -1110,37 +1076,37 @@ class _MediaInfoSection extends StatelessWidget
           onTap: tv.spokenLanguages.length <= 1
               ? null
               : () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) {
-              return MediaSubDetailsPage<LanguageConfig>(
-                  list: tv.spokenLanguages,
-                  title: 'Spoken languages',
-                  name: tv.name);
-            }));
-          }),
+                  Navigator.push(context, MaterialPageRoute(builder: (_) {
+                    return MediaSubDetailsPage<LanguageConfig>(
+                        list: tv.spokenLanguages,
+                        title: 'Spoken languages',
+                        name: tv.name);
+                  }));
+                }),
       if (tv.productionCountries.isNotEmpty)
         getSubSection('Produced in', tv.productionCountries.first.name,
             onTap: tv.productionCountries.length <= 1
                 ? null
                 : () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) {
-                return MediaSubDetailsPage<ProductionCountry>(
-                    list: tv.productionCountries,
-                    title: 'Production countries',
-                    name: tv.name);
-              }));
-            }),
+                    Navigator.push(context, MaterialPageRoute(builder: (_) {
+                      return MediaSubDetailsPage<ProductionCountry>(
+                          list: tv.productionCountries,
+                          title: 'Production countries',
+                          name: tv.name);
+                    }));
+                  }),
       if (tv.productionCompanies.isNotEmpty)
         getSubSection('Production by', tv.productionCompanies.first.name,
             onTap: tv.productionCompanies.length <= 1
                 ? null
                 : () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) {
-                return MediaSubDetailsPage<ProductionCompany>(
-                    list: tv.productionCompanies,
-                    title: 'Production companies',
-                    name: tv.name);
-              }));
-            }),
+                    Navigator.push(context, MaterialPageRoute(builder: (_) {
+                      return MediaSubDetailsPage<ProductionCompany>(
+                          list: tv.productionCompanies,
+                          title: 'Production companies',
+                          name: tv.name);
+                    }));
+                  }),
     ];
   }
 

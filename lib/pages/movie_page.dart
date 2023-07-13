@@ -122,6 +122,165 @@ class _MoviePageChildState extends State<_MoviePageChild>
 
   @override
   Widget build(BuildContext context) {
+    return MediaQuery.sizeOf(context).width > 800
+        ? buildLandscapeView()
+        : buildPortraitView();
+  }
+
+  Widget buildLandscapeView() {
+    return Row(
+      children: [
+        SizedBox(
+          width: 390.0,
+          child: Scaffold(
+            body: CustomScrollView(
+              slivers: [
+                SliverFrostedAppBar(
+                  title: Text(
+                    widget.title,
+                    style:
+                        Theme.of(context).appBarTheme.titleTextStyle?.copyWith(
+                              fontSize: 18.0,
+                            ),
+                  ),
+                  leading: BackButton(
+                    style: IconButton.styleFrom(
+                      iconSize: 22.0,
+                    ),
+                  ),
+                  toolbarHeight: 40.0,
+                  pinned: true,
+                ),
+                Selector<MovieViewModel,
+                    Tuple3<List<String>, Map<String, ThumbnailType>, String?>>(
+                  builder: (_, tuple, __) {
+                    var height = 390.0 * 9 / 16;
+                    logIfDebug('isPinned, $height, thumbnails:$tuple');
+                    if (tuple.item3 != null && tuple.item1.isNotEmpty) {
+                      return SliverPersistentHeader(
+                        delegate: TrailerDelegate(
+                          mediaType: MediaType.movie,
+                          extent: height,
+                          initialVideoId: tuple.item3!,
+                          youtubeKeys: tuple.item1,
+                        ),
+                        pinned: true,
+                      );
+                    } else {
+                      return SliverPersistentHeader(
+                        delegate: ImageDelegate(
+                          // backdropBaseUrl,
+                          mediaType: MediaType.movie,
+                          extent: tuple.item2.isEmpty ? 0 : height,
+                          thumbMap: tuple.item2,
+                        ),
+                        pinned: false,
+                      );
+                    }
+                  },
+                  selector: (_, mvm) {
+                    logIfDebug(
+                        'isPinned, selector called with:${mvm.youtubeKeys}');
+                    return Tuple3<List<String>, Map<String, ThumbnailType>,
+                        String?>(
+                      mvm.youtubeKeys,
+                      mvm.thumbMap,
+                      mvm.initialVideoId,
+                    );
+                  },
+                ),
+                Selector<MovieViewModel, String?>(
+                  selector: (_, tvm) => tvm.initialVideoId,
+                  builder: (_, id, __) {
+                    return SliverToBoxAdapter(
+                      child: StreamersView<Movie, MovieViewModel>(
+                        id: widget.id,
+                      ),
+                    );
+                  },
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 8.0, bottom: 0.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        buildGenresAndLinks(),
+                      ],
+                    ),
+                  ),
+                ),
+                const _MediaInfoSection(),
+                const KeywordsSection<Movie, MovieViewModel>(),
+                const SliverToBoxAdapter(child: SizedBox(height: 16)),
+              ],
+            ),
+          ),
+        ),
+        // Container(
+        //   width: 0.5,
+        //   color: kPrimary,
+        // ),
+        Expanded(
+          child: Scaffold(
+            body: CustomScrollView(
+              slivers: [
+                const SliverFrostedAppBar(
+                  automaticallyImplyLeading: false,
+                  toolbarHeight: 0.0,
+                  pinned: true,
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 16.0, bottom: 0.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // const SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Text(
+                            widget.title,
+                            textAlign: TextAlign.start,
+                            // maxLines: 2,
+                            style: const TextStyle(
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                              height: 1.2,
+                            ),
+                          ),
+                        ),
+                        buildYearRow(context),
+                        // buildExternalLinks(),
+                        buildTagline(),
+                        ExpandableSynopsis(
+                          widget.overview,
+                          changeSize: false,
+                        ),
+                        // buildGenresAndLinks(),
+                      ],
+                    ),
+                  ),
+                ),
+                const _CastCrewSection(),
+                const ImagesSection<MovieViewModel>(),
+                const RecommendationsSection<Movie, MovieViewModel>(),
+                const ReviewsSection(),
+                const MoreByDirectorSection<Movie, MovieViewModel>(),
+                const MoreByLeadActorSection<Movie, MovieViewModel>(),
+                const SimilarTitlesSection<Movie, MovieViewModel>(),
+                const SliverToBoxAdapter(child: SizedBox(height: 16)),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildPortraitView() {
     return Scaffold(
       backgroundColor: scaffoldColor,
       body: CustomScrollView(
@@ -199,7 +358,7 @@ class _MoviePageChildState extends State<_MoviePageChild>
                         style: const TextStyle(
                           fontSize: 24.0,
                           fontWeight: FontWeight.bold,
-                          height: 1.1,
+                          height: 1.2,
                         ),
                       ),
                     ),
@@ -222,7 +381,7 @@ class _MoviePageChildState extends State<_MoviePageChild>
             const ReviewsSection(),
             const MoreByDirectorSection<Movie, MovieViewModel>(),
             const MoreByLeadActorSection<Movie, MovieViewModel>(),
-            const MoreByGenresSection<Movie, MovieViewModel>(),
+            const SimilarTitlesSection<Movie, MovieViewModel>(),
             const KeywordsSection<Movie, MovieViewModel>(),
             const SliverToBoxAdapter(child: SizedBox(height: 16)),
           ]),
@@ -462,6 +621,29 @@ class _MoviePageChildState extends State<_MoviePageChild>
                           () => openUrlString(homepage),
                           color: kPrimary,
                         ),
+                      if (imdbId.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(4.0),
+                            onTap: () => openImdbParentalGuide(imdbId),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6.0,
+                                vertical: 4.0,
+                              ),
+                              child: Text(
+                                'iMDb PG',
+                                style: TextStyle(
+                                  color: kPrimary,
+                                  fontWeight: FontWeight.bold,
+                                  height: 1.2,
+                                  fontSize: 12.5,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -569,9 +751,56 @@ class MoreByLeadActorSection<M extends Media, T extends MediaViewModel<M>>
 // }
 }
 
+class ImdbParentalGuide<M extends Media, V extends MediaViewModel<M>>
+    extends StatelessWidget with GenericFunctions, Utilities, CommonFunctions {
+  const ImdbParentalGuide({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<V, String?>(
+      builder: (_, imdbId, __) {
+        return imdbId.isNullOrEmpty
+            ? const SizedBox.shrink()
+            : InkWell(
+                onTap: () => openImdbParentalGuide(imdbId!),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'iMDb Parental Guide',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              height: 1.2,
+                              fontWeight: FontWeight.bold,
+                              color: kPrimary,
+                            ),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 14.0,
+                        color: kPrimary,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+      },
+      selector: (_, mvm) {
+        if (mvm is MovieViewModel) {
+          return (mvm as MovieViewModel).imdbId;
+        } else if (mvm is TvViewModel) {
+          return (mvm as TvViewModel).imdbId;
+        }
+        return null;
+      },
+    );
+  }
+}
+
 class StreamersView<M extends Media, V extends MediaViewModel<M>>
     extends StatelessWidget with Utilities {
-  final double maxIconSize = 64.0;
+  // final double maxIconSize = 64.0;
   final int id;
 
   const StreamersView({required this.id, Key? key}) : super(key: key);
@@ -585,11 +814,12 @@ class StreamersView<M extends Media, V extends MediaViewModel<M>>
         if (streamers.isEmpty) {
           return const SizedBox.shrink();
         } else {
+          final ar = MediaQuery.sizeOf(context).aspectRatio;
           // final screenWidth = MediaQuery.sizeOf(context).width;
-          const width = 45.0;
-          const vPadding = 8.0;
+          final width = ar > 1.0 ? 36.0 : 45.0;
+          final vPadding = ar > 1.0 ? 6.0 : 8.0;
           return Material(
-            color: lighten2(Theme.of(context).colorScheme.tertiary, 60),
+            color: Theme.of(context).colorScheme.tertiary.lighten2(60),
             child: InkWell(
               onTap: () =>
                   launchUrlString('https://www.themoviedb.org/$type/$id/watch'),
@@ -598,8 +828,8 @@ class StreamersView<M extends Media, V extends MediaViewModel<M>>
                   height: width + vPadding * 2,
                   child: ListView.separated(
                     shrinkWrap: true,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ar > 1.0 ? 12.0 : 16.0,
                       vertical: vPadding,
                     ),
                     itemBuilder: (_, index) {
@@ -612,8 +842,8 @@ class StreamersView<M extends Media, V extends MediaViewModel<M>>
                         bottomRadius: 4.0,
                       );
                     },
-                    separatorBuilder: (_, index) => const SizedBox(
-                      width: 8.0,
+                    separatorBuilder: (_, index) => SizedBox(
+                      width: ar > 1.0 ? 6.0 : 8.0,
                     ),
                     itemCount: streamers.length,
                     scrollDirection: Axis.horizontal,
@@ -628,54 +858,13 @@ class StreamersView<M extends Media, V extends MediaViewModel<M>>
       },
     );
   }
-
-  Material buildViewsOld(
-      BuildContext context, String type, double width, WatchProvider streamer) {
-    return Material(
-      color: lighten2(Theme.of(context).colorScheme.tertiary, 60),
-      child: InkWell(
-        onTap: () =>
-            launchUrlString('https://www.themoviedb.org/$type/$id/watch'),
-        // highlightColor: Theme.of(context).highlightColor,
-        // splashColor: Theme.of(context).splashColor,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: SizedBox(
-                  width: width,
-                  child: NetworkImageView(
-                    streamer.logoPath,
-                    imageType: ImageType.logo,
-                    aspectRatio: Constants.arAvatar,
-                    topRadius: 4.0,
-                    bottomRadius: 4.0,
-                  ),
-                ),
-              ),
-              Text(
-                'Now streaming on\n${streamer.providerName}',
-                style: const TextStyle(
-                  height: 1.15,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
 
-class MoreByGenresSection<M extends Media, T extends MediaViewModel<M>>
+class SimilarTitlesSection<M extends Media, T extends MediaViewModel<M>>
     extends StatelessWidget with GenericFunctions, Utilities, CommonFunctions {
   final int _maxCount = 20;
 
-  const MoreByGenresSection({Key? key}) : super(key: key);
+  const SimilarTitlesSection({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -692,8 +881,7 @@ class MoreByGenresSection<M extends Media, T extends MediaViewModel<M>>
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                'A carefully curated list of similar top rated titles from the same era'
-                /*' having most of the similar genres'*/,
+                'A carefully curated list of similar top rated titles from the same era' /*' having most of the similar genres'*/,
                 style: TextStyle(
                   color: Colors.black87,
                   height: 1.2,
@@ -1687,7 +1875,6 @@ class ReviewsListView extends StatelessWidget with GenericFunctions {
                   InkWellOverlay(
                     onTap: imagePath.isNotNullNorEmpty
                         ? () {
-                            logIfDebug('Avatar clicked');
                             Navigator.of(context)
                                 .push(MaterialPageRoute(builder: (_) {
                               return ImagePage(
@@ -1750,35 +1937,33 @@ class ReviewsListView extends StatelessWidget with GenericFunctions {
           ),
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (review.authorDetails.rating != null)
                   getRatingRow(review.authorDetails.rating!.toInt()),
                 Expanded(
                   child: Padding(
                     padding: EdgeInsets.only(
+                      right: scrollbarPadding,
                       top: reviewTopPadding,
                       bottom: reviewBottomPadding,
                     ),
-                    child: Padding(
-                      padding: EdgeInsets.only(right: scrollbarPadding),
-                      child: Scrollbar(
+                    child: Scrollbar(
+                      controller: controller,
+                      thumbVisibility: true,
+                      thickness: 4.0,
+                      child: SingleChildScrollView(
                         controller: controller,
-                        thumbVisibility: true,
-                        thickness: 4.0,
-                        child: SingleChildScrollView(
-                          controller: controller,
-                          physics: const ClampingScrollPhysics(),
-                          padding: EdgeInsets.only(
-                            left: textHorizPadding,
-                            right: textHorizPadding - scrollbarPadding,
-                          ),
-                          child: Text(
-                            review.content,
-                            // maxLines: maxLines,
-                            // overflow: TextOverflow.ellipsis,
-                            style: reviewTextStyle,
-                          ),
+                        physics: const ClampingScrollPhysics(),
+                        padding: EdgeInsets.only(
+                          left: textHorizPadding,
+                          right: textHorizPadding - scrollbarPadding,
+                        ),
+                        child: Text(
+                          review.content,
+                          // maxLines: maxLines,
+                          // overflow: TextOverflow.ellipsis,
+                          style: reviewTextStyle,
                         ),
                       ),
                     ),
@@ -1844,298 +2029,6 @@ class ReviewsListView extends StatelessWidget with GenericFunctions {
   }
 }
 
-@Deprecated('Old version')
-class ReviewsListViewOld extends StatelessWidget with GenericFunctions {
-  final List<Review> reviews;
-  final double screenWidth;
-
-  ReviewsListViewOld(this.reviews, this.screenWidth, {Key? key})
-      : super(key: key);
-
-  final separatorWidth = 10.0;
-
-  final listViewHorizontalPadding = 16.0;
-
-  final listViewTopPadding = 16.0;
-
-  final listViewBottomPadding = 24.0;
-
-  final cardCount = 1.25;
-
-  late final deductibleWidth = listViewHorizontalPadding +
-      separatorWidth * (cardCount > 1 ? cardCount.toInt() : 0);
-
-  late final sectionWidth = (screenWidth - deductibleWidth) / cardCount;
-
-  final aspectRatio = Constants.arAvatar;
-
-  late final posterHeight = sectionWidth / aspectRatio;
-
-  final avatarSize = 50.0;
-
-  final maxLines = 12;
-
-  final textHorizPadding = 16.0;
-
-  final ratingBottomPadding = 8.0;
-
-  final nameTopPadding = 8.0;
-
-  final nameBottomPadding = 0.0;
-
-  final reviewTopPadding = 0.0;
-
-  final reviewBottomPadding = 16.0;
-
-  final authorVerticalPadding = 16.0;
-
-  final nameStyle = const TextStyle(
-    fontSize: 16.0,
-    fontWeight: FontWeight.bold,
-    height: 1.2,
-    decoration: TextDecoration.underline,
-  );
-
-  final reviewTextStyle = const TextStyle(
-    fontSize: 14.0,
-    height: 1.2,
-  );
-
-  final dateTextStyle = const TextStyle(
-    color: Colors.black54,
-    fontSize: 12.0,
-    height: 1.2,
-  );
-
-  final topRadius = 4.0;
-
-  late final bottomRadius = topRadius;
-
-  final ratingIconSize = 18.0;
-
-  late final nameHeight = nameStyle.height! * nameStyle.fontSize! * maxLines;
-
-  late final reviewHeight =
-      reviewTextStyle.height! * reviewTextStyle.fontSize! * maxLines;
-
-  late final nameContainerHeight =
-      nameHeight + nameTopPadding + nameBottomPadding;
-
-  late final reviewContainerHeight =
-      reviewHeight + reviewTopPadding + reviewBottomPadding;
-
-  late final authorContainerHeight = avatarSize + authorVerticalPadding * 2;
-
-  late final ratingContainerHeight = ratingIconSize + ratingBottomPadding;
-
-  late final cardHeight = authorContainerHeight +
-      /*posterHeight + nameContainerHeight + */ reviewContainerHeight +
-      ratingContainerHeight;
-
-  /// This 0.8 is being to escape the "A RenderFlex overflowed by 0.800
-  /// pixels on the bottom." error. The error is being caused by not
-  /// assigning any height to the name and character test widgets.
-  /// However, assigning height, especially to name text widget makes it
-  /// expand to two lines no matter if name is actually on one line only,
-  /// thereby showing an extra blank line between home snd tasks.
-  /* + 0.8*/
-
-  @override
-  Widget build(BuildContext context) {
-    final viewHeight = cardHeight + listViewTopPadding + listViewBottomPadding;
-    return SizedBox(
-      height: viewHeight,
-      child: ListView.separated(
-        itemBuilder: (_, index) {
-          final review = reviews[index];
-          final imagePath = review.authorDetails.avatarPath;
-          return buildItemView(imagePath, context, review);
-        },
-        separatorBuilder: (_, index) => SizedBox(width: separatorWidth),
-        padding: EdgeInsets.fromLTRB(
-          listViewHorizontalPadding,
-          listViewTopPadding,
-          listViewHorizontalPadding,
-          listViewBottomPadding,
-        ),
-        scrollDirection: Axis.horizontal,
-        itemCount: reviews.length,
-      ),
-    );
-  }
-
-  Card buildItemView(String? imagePath, BuildContext context, Review review) {
-    return Card(
-      color: Colors.white,
-      surfaceTintColor: Colors.white,
-      elevation: 4.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(topRadius),
-      ),
-      margin: EdgeInsets.zero,
-      child: SizedBox(
-        width: sectionWidth - 40,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.all(authorVerticalPadding),
-              child: SizedBox(
-                // width: avatarSize,
-                height: avatarSize,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    InkWellOverlay(
-                      onTap: imagePath.isNotNullNorEmpty
-                          ? () {
-                              logIfDebug('Avatar clicked');
-                              Navigator.of(context)
-                                  .push(MaterialPageRoute(builder: (_) {
-                                return ImagePage(
-                                  images: [
-                                    ImageDetail(
-                                      Constants.arProfile,
-                                      0,
-                                      imagePath ?? '',
-                                      0,
-                                      0,
-                                      0,
-                                    ),
-                                  ],
-                                  initialPage: 0,
-                                );
-                              }));
-                            }
-                          : null,
-                      borderRadius: BorderRadius.circular(avatarSize),
-                      child: NetworkImageView(
-                        imagePath,
-                        imageType: ImageType.profile,
-                        imageQuality: ImageQuality.original,
-                        aspectRatio: aspectRatio,
-                        topRadius: avatarSize,
-                        bottomRadius: avatarSize,
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          left: 8.0,
-                          right: 8.0,
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            InkWellOverlay(
-                              child: Text(
-                                review.author,
-                                maxLines: 1,
-                                style: nameStyle,
-                              ),
-                              onTap: () {
-                                logIfDebug('${review.author} clicked');
-                              },
-                            ),
-                            Text(
-                              getReadableDate(review.createdAt),
-                              style: dateTextStyle,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (review.authorDetails.rating != null)
-                    getRatingRow(review.authorDetails.rating!.toInt()),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        top: reviewTopPadding,
-                        bottom: reviewBottomPadding,
-                      ),
-                      child: Stack(
-                        alignment: Alignment.bottomCenter,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 4.0),
-                            child: Scrollbar(
-                              thumbVisibility: true,
-                              thickness: 4.0,
-                              child: SingleChildScrollView(
-                                physics: const ClampingScrollPhysics(),
-                                padding: EdgeInsets.only(
-                                  left: textHorizPadding,
-                                  right: textHorizPadding - 4.0,
-                                ),
-                                child: Text(
-                                  review.content,
-                                  // maxLines: maxLines,
-                                  // overflow: TextOverflow.ellipsis,
-                                  style: reviewTextStyle,
-                                ),
-                              ),
-                            ),
-                          ),
-                          // Container(
-                          //   color: Colors.white60,
-                          //   height: 24.0,
-                          // )
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget getRatingRow(int rating) {
-    var icons = List<Icon>.filled(
-      rating,
-      Icon(
-        Icons.star_sharp,
-        size: ratingIconSize,
-        color: Constants.ratingIconColor,
-      ),
-      growable: true,
-    );
-    if (rating < 10) {
-      icons.insertAll(
-        rating,
-        List<Icon>.filled(
-          10 - rating,
-          Icon(
-            Icons.star_outline_sharp,
-            size: ratingIconSize,
-          ),
-        ),
-      );
-    }
-    return Padding(
-      padding: EdgeInsets.only(
-        left: textHorizPadding,
-        right: textHorizPadding,
-        bottom: ratingBottomPadding,
-      ),
-      child: Row(
-        children: icons,
-      ),
-    );
-  }
-}
 
 /// This widget showcases the implementation of a GridView in a PageView
 /// The implementation was successful but the page scrolling was annoyingly
@@ -2338,7 +2231,8 @@ class ImageDelegate extends SliverPersistentHeaderDelegate
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
-    logIfDebug('isPinned, extent:$extent');
+    logIfDebug(
+        'isPinned, extent:$extent, width:${MediaQuery.sizeOf(context).width}');
     _context ??= context;
     return extent == 0
         ? const SizedBox.shrink()
@@ -2506,7 +2400,7 @@ class TrailerDelegate extends SliverPersistentHeaderDelegate
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
-    logIfDebug('isPinned, build called');
+    logIfDebug('isPinned, build called $extent');
     return child;
   }
 
