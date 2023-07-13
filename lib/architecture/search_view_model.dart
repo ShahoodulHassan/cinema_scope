@@ -88,13 +88,15 @@ class SearchViewModel extends ApiViewModel with Utilities, CommonFunctions {
     if (page == 1) _pagingController.itemList = <BaseResult>[];
     var results = (result?.results ?? <BaseResult>[]).map((result) {
       if (result is CombinedResult) {
-        (result).genreNamesString = getGenreNamesFromIds(
+        result.genreNamesString = getGenreNamesFromIds(
           _combinedGenres,
           result.genreIds,
           result.mediaType == MediaType.tv.name
               ? MediaType.tv
               : MediaType.movie,
         );
+        result.dateString = getReadableDate(result.mediaReleaseDate);
+        result.yearString = getYearStringFromDate(result.mediaReleaseDate);
       }
       return result;
     }).toList();

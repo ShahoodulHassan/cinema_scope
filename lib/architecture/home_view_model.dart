@@ -3,11 +3,12 @@ import 'dart:math';
 import 'package:cinema_scope/architecture/search_view_model.dart';
 import 'package:cinema_scope/constants.dart';
 import 'package:cinema_scope/models/movie.dart';
+import 'package:cinema_scope/utilities/utilities.dart';
 
 import '../models/search.dart';
 import '../pages/home_page.dart';
 
-class HomeViewModel extends ApiViewModel {
+class HomeViewModel extends ApiViewModel with Utilities {
   CombinedResults? latestMoviesResult;
   CombinedResults? popularMoviesResult;
   CombinedResults? topRatedMoviesResult;
@@ -43,7 +44,8 @@ class HomeViewModel extends ApiViewModel {
   }
 
   double getSectionOffset(SectionTitle title) {
-    return sectionOffsets[title] ?? sectionOffsets.putIfAbsent(title, () => 0.0);
+    return sectionOffsets[title] ??
+        sectionOffsets.putIfAbsent(title, () => 0.0);
   }
 
   setSectionOffset(SectionTitle title, double offset) async {
@@ -80,6 +82,8 @@ class HomeViewModel extends ApiViewModel {
           : await api.getLatestTvShows(dateGte, dateLte);
       latestMoviesResult = result.copyWith.results(result.results.map((e) {
         e.mediaType ??= type;
+        e.dateString = getReadableDate(e.mediaReleaseDate);
+        e.yearString = getYearStringFromDate(e.mediaReleaseDate);
         return e;
       }).toList()
         ..removeWhere((element) => element.posterPath == null));
@@ -97,6 +101,8 @@ class HomeViewModel extends ApiViewModel {
       var result = await api.getPopularMovies(type);
       popularMoviesResult = result.copyWith.results(result.results.map((e) {
         e.mediaType ??= type;
+        e.dateString = getReadableDate(e.mediaReleaseDate);
+        e.yearString = getYearStringFromDate(e.mediaReleaseDate);
         return e;
       }).toList());
       notifyListeners();
@@ -111,6 +117,8 @@ class HomeViewModel extends ApiViewModel {
       var result = await api.getTopRatedMovies(type);
       topRatedMoviesResult = result.copyWith.results(result.results.map((e) {
         e.mediaType ??= type;
+        e.dateString = getReadableDate(e.mediaReleaseDate);
+        e.yearString = getYearStringFromDate(e.mediaReleaseDate);
         return e;
       }).toList());
       notifyListeners();
@@ -131,10 +139,10 @@ class HomeViewModel extends ApiViewModel {
     var type = (mediaType ?? MediaType.movie).name;
     var param = sectionParamMap[SectionTitle.upcoming];
     if (type != param) {
-    /// We add two page long upcoming movies
-    await _getDiscoverUpcoming(type);
-    await _getDiscoverUpcoming(type, page: 2);
-    // await _getDiscoverUpcoming(type, page: 3);
+      /// We add two page long upcoming movies
+      await _getDiscoverUpcoming(type);
+      await _getDiscoverUpcoming(type, page: 2);
+      // await _getDiscoverUpcoming(type, page: 3);
     }
   }
 
@@ -159,11 +167,15 @@ class HomeViewModel extends ApiViewModel {
             dateLte,
             page: page,
           );
-    var modified = result.copyWith.results((result.results..shuffle()).map((e) {
+    var modified = result.copyWith.results((result.results
+          ..removeWhere((element) => element.posterPath == null)
+          ..shuffle())
+        .map((e) {
       e.mediaType ??= type;
+      e.dateString = getReadableDate(e.mediaReleaseDate);
+      e.yearString = getYearStringFromDate(e.mediaReleaseDate);
       return e;
-    }).toList()
-      ..removeWhere((element) => element.posterPath == null));
+    }).toList());
     // logIfDebug(result.results.first.movieTitle);
     if (page > 1) {
       var allItems = upcomingMoviesResult?.results ?? [];
@@ -187,8 +199,13 @@ class HomeViewModel extends ApiViewModel {
   _getTrending(String timeWindow, {int page = 1}) async {
     var result =
         await api.getTrending(MediaType.all.name, timeWindow, page: page);
-    var modified = result.copyWith.results(result.results
-      ..removeWhere((element) => element.mediaType == MediaType.person.name));
+    var modified = result.copyWith.results((result.results
+      ..removeWhere((element) => element.mediaType == MediaType.person.name))
+      .map((e) {
+        e.dateString = getReadableDate(e.mediaReleaseDate);
+        e.yearString = getYearStringFromDate(e.mediaReleaseDate);
+        return e;
+      }).toList());
     if (page == 1) {
       sectionParamMap[SectionTitle.trending] = timeWindow;
       trendingResult = modified;
@@ -219,6 +236,8 @@ class HomeViewModel extends ApiViewModel {
       //     : await api.getOnTheAir();
       nowPlayingResult = result.copyWith.results(result.results.map((e) {
         e.mediaType ??= type;
+        e.dateString = getReadableDate(e.mediaReleaseDate);
+        e.yearString = getYearStringFromDate(e.mediaReleaseDate);
         return e;
       }).toList());
       notifyListeners();
@@ -250,6 +269,8 @@ class HomeViewModel extends ApiViewModel {
     streamingResult = result.copyWith
         .results((combined..shuffle()).take(maxItemCount).map((e) {
       e.mediaType ??= type;
+      e.dateString = getReadableDate(e.mediaReleaseDate);
+      e.yearString = getYearStringFromDate(e.mediaReleaseDate);
       return e;
     }).toList());
     notifyListeners();
@@ -278,6 +299,8 @@ class HomeViewModel extends ApiViewModel {
     freeMediaResult = result.copyWith
         .results((combined..shuffle()).take(maxItemCount).map((e) {
       e.mediaType ??= type;
+      e.dateString = getReadableDate(e.mediaReleaseDate);
+      e.yearString = getYearStringFromDate(e.mediaReleaseDate);
       return e;
     }).toList());
     notifyListeners();
