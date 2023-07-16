@@ -91,7 +91,8 @@ mixin CommonFunctions on Utilities, GenericFunctions {
   /// This method expects a non-empty list of genres
   Widget getGenreView<M extends Media>(List<Genre> genres) {
     // final genres = movie.genres;
-    var isTv = M.toString() == MediaType.tv.name;
+    var isTv = M.toString().toLowerCase() == MediaType.tv.name;
+
     return Padding(
       padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
       child: SizedBox(
