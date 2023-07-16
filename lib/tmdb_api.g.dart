@@ -247,7 +247,7 @@ class _TmdbApi implements TmdbApi {
     language = 'en-US',
     region = 'US',
     sortBy = 'vote_average.desc',
-    includeAdult = 'true',
+    includeAdult = 'false',
     page = 1,
     voteAverage = 6.1,
     voteCount = 100,
@@ -298,7 +298,7 @@ class _TmdbApi implements TmdbApi {
     originalLanguage = 'en',
     region = 'US',
     sortBy = 'vote_average.desc',
-    includeAdult = 'true',
+    includeAdult = 'false',
     page = 1,
     voteAverage = 6.1,
     voteCount = 50,
@@ -348,7 +348,7 @@ class _TmdbApi implements TmdbApi {
     query, {
     page = 1,
     language = 'en',
-    includeAdult = 'true',
+    includeAdult = 'false',
     region = 'US',
   }) async {
     const _extra = <String, dynamic>{};
@@ -389,7 +389,7 @@ class _TmdbApi implements TmdbApi {
     query, {
     page = 1,
     language = 'en',
-    includeAdult = 'true',
+    includeAdult = 'false',
     region = 'US',
   }) async {
     const _extra = <String, dynamic>{};
@@ -430,7 +430,7 @@ class _TmdbApi implements TmdbApi {
     query, {
     page = 1,
     language = 'en',
-    includeAdult = 'true',
+    includeAdult = 'false',
     region = 'US',
   }) async {
     const _extra = <String, dynamic>{};
@@ -474,7 +474,7 @@ class _TmdbApi implements TmdbApi {
     language = 'en-US',
     region = 'US',
     sortBy = 'release_date.desc',
-    includeAdult = 'true',
+    includeAdult = 'false',
     withLanguage = 'en',
   }) async {
     const _extra = <String, dynamic>{};
@@ -630,7 +630,7 @@ class _TmdbApi implements TmdbApi {
     language = 'en-US',
     region = 'US',
     sortBy = 'popularity.desc',
-    includeAdult = 'true',
+    includeAdult = 'false',
     originalLanguage = 'en',
     releaseType = '3|2',
   }) async {
@@ -747,7 +747,7 @@ class _TmdbApi implements TmdbApi {
     language = 'en-US',
     region = 'US',
     sortBy = 'popularity.desc',
-    includeAdult = 'true',
+    includeAdult = 'false',
     releaseType = 3,
     originalLanguage = '',
   }) async {
@@ -796,7 +796,7 @@ class _TmdbApi implements TmdbApi {
     watchRegion = 'US',
     withMonetizationTypes = 'flatrate',
     sortBy = 'popularity.desc',
-    includeAdult = 'true',
+    includeAdult = 'false',
     originalLanguage = '',
   }) async {
     const _extra = <String, dynamic>{};
@@ -842,7 +842,7 @@ class _TmdbApi implements TmdbApi {
     watchRegion = 'US',
     withMonetizationTypes = 'free|ads',
     sortBy = 'popularity.desc',
-    includeAdult = 'true',
+    includeAdult = 'false',
     originalLanguage = '',
   }) async {
     const _extra = <String, dynamic>{};
@@ -889,7 +889,7 @@ class _TmdbApi implements TmdbApi {
     language = 'en-US',
     region = 'US',
     sortBy = 'popularity.desc',
-    includeAdult = 'true',
+    includeAdult = 'false',
     originalLanguage = 'en',
   }) async {
     const _extra = <String, dynamic>{};
@@ -936,7 +936,7 @@ class _TmdbApi implements TmdbApi {
     language = 'en-US',
     region = 'US',
     sortBy = 'popularity.desc',
-    includeAdult = 'true',
+    includeAdult = 'false',
     originalLanguage = 'en',
   }) async {
     const _extra = <String, dynamic>{};
@@ -1096,7 +1096,7 @@ class _TmdbApi implements TmdbApi {
     originalLanguage = 'en',
     region = 'US',
     sortBy = 'vote_average.desc',
-    includeAdult = 'true',
+    includeAdult = 'false',
     page = 1,
     voteAverage = 6.1,
     voteCount = 50,
@@ -1184,7 +1184,7 @@ class _TmdbApi implements TmdbApi {
     language = 'en-US',
     region = 'US',
     sortBy = 'popularity.desc',
-    includeAdult = 'true',
+    includeAdult = 'false',
     timezone = '',
     originalLanguage = '',
   }) async {
@@ -1233,7 +1233,7 @@ class _TmdbApi implements TmdbApi {
     language = 'en-US',
     region = 'US',
     sortBy = 'popularity.desc',
-    includeAdult = 'true',
+    includeAdult = 'false',
     originalLanguage = 'en',
   }) async {
     const _extra = <String, dynamic>{};
@@ -1280,7 +1280,7 @@ class _TmdbApi implements TmdbApi {
     language = 'en-US',
     region = 'US',
     sortBy = 'first_air_date.desc',
-    includeAdult = 'true',
+    includeAdult = 'false',
     withLanguage = 'en',
   }) async {
     const _extra = <String, dynamic>{};
