@@ -75,7 +75,7 @@ abstract class TmdbApi {
     @http.Query('language') String language = 'en-US',
     @http.Query('region') String region = 'US',
     @http.Query('sort_by') String sortBy = 'vote_average.desc',
-    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query('include_adult') String includeAdult = 'true',
     @http.Query("page") int page = 1,
     @http.Query("vote_average.gte") double voteAverage = 6.1,
     @http.Query("vote_count.gte") int voteCount = 100,
@@ -99,7 +99,7 @@ abstract class TmdbApi {
     @http.Query('with_original_language') String originalLanguage = 'en',
     @http.Query('region') String region = 'US',
     @http.Query('sort_by') String sortBy = 'vote_average.desc',
-    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query('include_adult') String includeAdult = 'true',
     @http.Query("page") int page = 1,
     @http.Query("vote_average.gte") double voteAverage = 6.1,
     @http.Query("vote_count.gte") int voteCount = 50,
@@ -114,7 +114,7 @@ abstract class TmdbApi {
     @http.Query("query") String query, {
     @http.Query("page") int page = 1,
     @http.Query('language') String language = 'en',
-    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query('include_adult') String includeAdult = 'true',
     @http.Query('region') String region = 'US',
   });
 
@@ -127,7 +127,7 @@ abstract class TmdbApi {
     @http.Query("query") String query, {
     @http.Query("page") int page = 1,
     @http.Query('language') String language = 'en',
-    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query('include_adult') String includeAdult = 'true',
     @http.Query('region') String region = 'US',
   });
 
@@ -140,7 +140,7 @@ abstract class TmdbApi {
     @http.Query("query") String query, {
     @http.Query("page") int page = 1,
     @http.Query('language') String language = 'en',
-    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query('include_adult') String includeAdult = 'true',
     @http.Query('region') String region = 'US',
   });
 
@@ -157,7 +157,7 @@ abstract class TmdbApi {
       @http.Query('language') String language = 'en-US',
       @http.Query('region') String region = 'US',
       @http.Query('sort_by') String sortBy = 'release_date.desc',
-      @http.Query('include_adult') String includeAdult = 'false',
+      @http.Query('include_adult') String includeAdult = 'true',
       @http.Query('with_original_language') String withLanguage = 'en'});
 
   @http.GET("/{media_type}/popular")
@@ -199,7 +199,7 @@ abstract class TmdbApi {
     @http.Query('language') String language = 'en-US',
     @http.Query('region') String region = 'US',
     @http.Query('sort_by') String sortBy = 'popularity.desc',
-    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query('include_adult') String includeAdult = 'true',
     @http.Query('with_original_language') String originalLanguage = 'en',
     @http.Query('with_release_type') String releaseType = '3|2',
   });
@@ -228,7 +228,7 @@ abstract class TmdbApi {
     @http.Query('language') String language = 'en-US',
     @http.Query('region') String region = 'US',
     @http.Query('sort_by') String sortBy = 'popularity.desc',
-    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query('include_adult') String includeAdult = 'true',
     @http.Query('with_release_type') int releaseType = 3,
     @http.Query('with_original_language') String originalLanguage = '',
   });
@@ -247,7 +247,7 @@ abstract class TmdbApi {
     @http.Query('with_watch_monetization_types')
         String withMonetizationTypes = 'flatrate',
     @http.Query('sort_by') String sortBy = 'popularity.desc',
-    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query('include_adult') String includeAdult = 'true',
     @http.Query('with_original_language') String originalLanguage = '',
   });
 
@@ -264,7 +264,7 @@ abstract class TmdbApi {
         @http.Query('with_watch_monetization_types')
         String withMonetizationTypes = 'free|ads',
         @http.Query('sort_by') String sortBy = 'popularity.desc',
-        @http.Query('include_adult') String includeAdult = 'false',
+        @http.Query('include_adult') String includeAdult = 'true',
         @http.Query('with_original_language') String originalLanguage = '',
       });
 
@@ -282,7 +282,7 @@ abstract class TmdbApi {
     @http.Query('language') String language = 'en-US',
     @http.Query('region') String region = 'US',
     @http.Query('sort_by') String sortBy = 'popularity.desc',
-    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query('include_adult') String includeAdult = 'true',
     @http.Query('with_original_language') String originalLanguage = 'en',
   });
 
@@ -295,7 +295,7 @@ abstract class TmdbApi {
     @http.Query('language') String language = 'en-US',
     @http.Query('region') String region = 'US',
     @http.Query('sort_by') String sortBy = 'popularity.desc',
-    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query('include_adult') String includeAdult = 'true',
     @http.Query('with_original_language') String originalLanguage = 'en',
   });
 
@@ -352,7 +352,7 @@ abstract class TmdbApi {
     @http.Query('with_original_language') String originalLanguage = 'en',
     @http.Query('watch_region') String region = 'US',
     @http.Query('sort_by') String sortBy = 'vote_average.desc',
-    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query('include_adult') String includeAdult = 'true',
     @http.Query("page") int page = 1,
     @http.Query("vote_average.gte") double voteAverage = 6.1,
     @http.Query("vote_count.gte") int voteCount = 50,
@@ -376,7 +376,7 @@ abstract class TmdbApi {
     @http.Query('language') String language = 'en-US',
     @http.Query('region') String region = 'US',
     @http.Query('sort_by') String sortBy = 'popularity.desc',
-    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query('include_adult') String includeAdult = 'true',
     @http.Query('timezone') String timezone = '',
     @http.Query('with_original_language') String originalLanguage = '',
   });
@@ -398,7 +398,7 @@ abstract class TmdbApi {
     @http.Query('language') String language = 'en-US',
     @http.Query('region') String region = 'US',
     @http.Query('sort_by') String sortBy = 'popularity.desc',
-    @http.Query('include_adult') String includeAdult = 'false',
+    @http.Query('include_adult') String includeAdult = 'true',
     @http.Query('with_original_language') String originalLanguage = 'en',
     // @http.Query('with_release_type') String releaseType = '3|2',
   });
@@ -416,6 +416,6 @@ abstract class TmdbApi {
       @http.Query('language') String language = 'en-US',
       @http.Query('region') String region = 'US',
       @http.Query('sort_by') String sortBy = 'first_air_date.desc',
-      @http.Query('include_adult') String includeAdult = 'false',
+      @http.Query('include_adult') String includeAdult = 'true',
       @http.Query('with_original_language') String withLanguage = 'en'});
 }
