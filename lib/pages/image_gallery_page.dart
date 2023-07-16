@@ -45,7 +45,6 @@ class ImageGalleryPage extends StatelessWidget with GenericFunctions {
   }
 
   List<Widget> getStickySlivers() {
-    final color = Colors.white.withOpacity(0.85);
     var profiles = images
         .where((image) => image.imageType == ImageType.profile.name)
         .toList();
@@ -59,7 +58,7 @@ class ImageGalleryPage extends StatelessWidget with GenericFunctions {
         .where((image) => image.imageType == ImageType.logo.name)
         .toList();
     logIfDebug(
-        'posterCount:${posters.length}, backdropCount:${backdrops.length}, logoCount:${logos.length}');
+        'profileCount:${profiles.length}, posterCount:${posters.length}, backdropCount:${backdrops.length}, logoCount:${logos.length}');
 
     List<Widget> slivers = [];
 
@@ -78,21 +77,6 @@ class ImageGalleryPage extends StatelessWidget with GenericFunctions {
       );
     }
 
-    if (posters.isNotEmpty) {
-      slivers.add(
-        SliverStickyHeader(
-          header: buildHeader('POSTERS (${posters.length})'),
-          sliver: buildImageView(
-            posters,
-            maxCrossAxisExtent: 80.0,
-            pastIndices: profiles.length,
-            baseImageType: ImageType.poster,
-            aspectRatio: Constants.arPoster,
-          ),
-        ),
-      );
-    }
-
     if (backdrops.isNotEmpty) {
       slivers.add(
         SliverStickyHeader(
@@ -100,12 +84,30 @@ class ImageGalleryPage extends StatelessWidget with GenericFunctions {
           sliver: buildImageView(
             backdrops,
             maxCrossAxisExtent: 150.0,
-            pastIndices: posters.length + profiles.length,
+            pastIndices: profiles.length,
             baseImageType: ImageType.backdrop,
             aspectRatio: Constants.arBackdrop,
           ),
         ),
       );
+    }
+
+    if (posters.isNotEmpty) {
+      slivers.add(
+        SliverStickyHeader(
+          header: buildHeader('POSTERS (${posters.length})'),
+          sliver: buildImageView(
+            posters,
+            maxCrossAxisExtent: 80.0,
+            pastIndices: profiles.length + backdrops.length,
+            baseImageType: ImageType.poster,
+            aspectRatio: Constants.arPoster,
+          ),
+        ),
+      );
+    }
+
+
       // slivers.add(
       //   SliverStickyHeader(
       //     header: buildHeader('BACKDROPS HORIZONTAL (${backdrops.length})'),
@@ -155,7 +157,6 @@ class ImageGalleryPage extends StatelessWidget with GenericFunctions {
       //     ),
       //   ),
       // );
-    }
 
     if (logos.isNotEmpty) {
       slivers.add(
@@ -173,6 +174,7 @@ class ImageGalleryPage extends StatelessWidget with GenericFunctions {
       );
     }
 
+    logIfDebug('sliver count:${slivers.length}');
     return slivers;
   }
 

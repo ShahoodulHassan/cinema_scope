@@ -69,6 +69,7 @@ class _MoviesListPageChild extends StatefulWidget {
 
 class _MoviesListPageChildState extends State<_MoviesListPageChild>
     with GenericFunctions, Utilities {
+
   @override
   void initState() {
     context.read<MediaListViewModel>().initializePaging(

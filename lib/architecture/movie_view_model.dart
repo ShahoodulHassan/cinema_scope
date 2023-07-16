@@ -105,10 +105,10 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
     if (media != null) {
       var imageResult = media!.images;
       List<ImageDetail> images = [];
-      images.addAll(imageResult.posters
-          .map((e) => e.copyWith.imageType(ImageType.poster.name)));
       images.addAll(imageResult.backdrops
           .map((e) => e.copyWith.imageType(ImageType.backdrop.name)));
+      images.addAll(imageResult.posters
+          .map((e) => e.copyWith.imageType(ImageType.poster.name)));
       images.addAll(imageResult.logos
           .map((e) => e.copyWith.imageType(ImageType.logo.name)));
       this.images = images
