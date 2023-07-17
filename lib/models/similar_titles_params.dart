@@ -17,6 +17,8 @@ class SimilarTitlesParams {
   /// Keyword ids separated by pipe '|'
   final String keywordsString;
 
+  final String originalLanguage;
+
   SimilarTitlesParams({
     required this.mediaId,
     required this.mediaType,
@@ -24,6 +26,7 @@ class SimilarTitlesParams {
     required this.dateGte,
     required this.dateLte,
     required this.keywordsString,
+    required this.originalLanguage,
   }) : assert(
           mediaType == MediaType.movie || mediaType == MediaType.tv,
           'Only movie and tv media titles are allowed!',
