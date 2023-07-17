@@ -247,7 +247,7 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
           logIfDebug('keywords:$keywordsString');
           logIfDebug(
               'dateGte:$dateGte, dateLte:$dateLte, origLang:${media!.originalLanguage}');
-
+          final origLang = media!.originalLanguage;
           if (genrePairs.isNotEmpty) {
             var futures = genrePairs.map((pair) {
               return media is Movie
@@ -256,16 +256,16 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
                       dateGte,
                       dateLte,
                       keywordsString,
-                      language: media!.originalLanguage,
-                      originalLanguage: media!.originalLanguage,
+                      originalLanguage:
+                          origLang.startsWith('en') ? origLang : '$origLang|en',
                     )
                   : api.getMoreTvSeriesByGenres(
                       pair,
                       dateGte,
                       dateLte,
                       keywordsString,
-                      language: media!.originalLanguage,
-                      originalLanguage: media!.originalLanguage,
+                      originalLanguage:
+                          origLang.startsWith('en') ? origLang : '$origLang|en',
                     );
             }).toList();
 

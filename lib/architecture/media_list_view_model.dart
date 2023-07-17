@@ -82,18 +82,25 @@ class MediaListViewModel extends ApiViewModel with Utilities, CommonFunctions {
     searchResult = result;
     final isLastPage = result.totalPages == page;
     if (page == 1) _pagingController.itemList = <CombinedResult>[];
-    var results = result.results.map((r) {
-      if (r.mediaType.isNullOrEmpty) r.mediaType = mediaType.name;
-      r.genreNamesString = getGenreNamesFromIds(_combinedGenres, r.genreIds,
-          r.mediaType == MediaType.tv.name ? MediaType.tv : MediaType.movie);
-      r.dateString = getReadableDate(r.mediaReleaseDate);
-      r.yearString = getYearStringFromDate(r.mediaReleaseDate);
+    var results = result.results
+        .map((r) {
+          if (r.mediaType.isNullOrEmpty) r.mediaType = mediaType.name;
+          r.genreNamesString = getGenreNamesFromIds(
+              _combinedGenres,
+              r.genreIds,
+              r.mediaType == MediaType.tv.name
+                  ? MediaType.tv
+                  : MediaType.movie);
+          r.dateString = getReadableDate(r.mediaReleaseDate);
+          r.yearString = getYearStringFromDate(r.mediaReleaseDate);
 
-      /// This has been added especially for Similar Titles, in which case,
-      /// there is a chance of having duplicate items in the next pages and so,
-      /// we don't add those.
-      if (!(_pagingController.itemList ?? []).contains(r)) return r;
-    }).nonNulls.toList();
+          /// This has been added especially for Similar Titles, in which case,
+          /// there is a chance of having duplicate items in the next pages and so,
+          /// we don't add those.
+          if (!(_pagingController.itemList ?? []).contains(r)) return r;
+        })
+        .nonNulls
+        .toList();
     if (isLastPage) {
       _pagingController.appendLastPage(results);
     } else {
@@ -169,6 +176,7 @@ class MediaListViewModel extends ApiViewModel with Utilities, CommonFunctions {
     final dateGte = similarTitlesParams.dateGte;
     final dateLte = similarTitlesParams.dateLte;
     final keywordsString = similarTitlesParams.keywordsString;
+    final origLang = similarTitlesParams.originalLanguage;
 
     if (genrePairs.isNotNullNorEmpty) {
       final futures = genrePairs!.map((pair) {
@@ -179,6 +187,8 @@ class MediaListViewModel extends ApiViewModel with Utilities, CommonFunctions {
                 dateLte,
                 keywordsString,
                 page: page,
+                originalLanguage:
+                    origLang.startsWith('en') ? origLang : '$origLang|en',
               )
             : api.getMoreTvSeriesByGenres(
                 pair,
@@ -186,6 +196,8 @@ class MediaListViewModel extends ApiViewModel with Utilities, CommonFunctions {
                 dateLte,
                 keywordsString,
                 page: page,
+                originalLanguage:
+                    origLang.startsWith('en') ? origLang : '$origLang|en',
               );
       }).toList();
 
