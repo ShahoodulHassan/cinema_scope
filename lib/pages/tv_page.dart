@@ -209,8 +209,9 @@ class _TvPageChildState extends State<_TvPageChild>
                             // maxLines: 2,
                             style: const TextStyle(
                               fontSize: 24.0,
-                              fontWeight: FontWeight.bold,
-                              height: 1.1,
+                              fontWeight: FontWeightExt.semibold,
+                              height: 1.2,
+                              color: Colors.black87,
                             ),
                           ),
                         ),
@@ -317,8 +318,9 @@ class _TvPageChildState extends State<_TvPageChild>
                         // maxLines: 2,
                         style: const TextStyle(
                           fontSize: 24.0,
-                          fontWeight: FontWeight.bold,
-                          height: 1.1,
+                          fontWeight: FontWeightExt.semibold,
+                          height: 1.2,
+                          color: Colors.black87,
                         ),
                       ),
                     ),
@@ -481,7 +483,7 @@ class _TvPageChildState extends State<_TvPageChild>
           style: TextStyle(
             color: Theme.of(context).primaryColorDark,
             fontSize: 14.0,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeightExt.semibold,
             // fontStyle: FontStyle.italic,
           ),
         ),
@@ -547,7 +549,7 @@ class _TvPageChildState extends State<_TvPageChild>
                           () => openUrlString(
                             '${Constants.imdbTitleUrl}$imdbId',
                           ),
-                          color: Theme.of(context).colorScheme.primary,
+                          color: kPrimary,
                         ),
                       if (homepage.isNotEmpty)
                         getIconButton(
@@ -575,7 +577,7 @@ class _TvPageChildState extends State<_TvPageChild>
                                 'iMDb PG',
                                 style: TextStyle(
                                   color: kPrimary,
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: FontWeightExt.semibold,
                                   height: 1.2,
                                   fontSize: 12.5,
                                 ),
@@ -766,7 +768,7 @@ class _CastCrewSection extends StatelessWidget
                 label,
                 style: const TextStyle(
                   fontSize: 15.0,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeightExt.semibold,
                   letterSpacing: 1.5,
                 ),
               ),
@@ -801,25 +803,7 @@ class _CastCrewSection extends StatelessWidget
     }));
   }
 
-  Widget getSectionTitleRow(bool showSeeAll, Function()? onPressed) =>
-      const Padding(
-        padding: EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Top billed cast' /*.toUpperCase()*/,
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.5,
-                // height: 1.1,
-              ),
-            ),
-            // if (showSeeAll) CompactTextButton('All cast', onPressed: onPressed),
-          ],
-        ),
-      );
+
 }
 
 class _TvCastPosterListView extends StatelessWidget
@@ -854,7 +838,7 @@ class _TvCastPosterListView extends StatelessWidget
 
   final nameStyle = const TextStyle(
     fontSize: 14.0,
-    fontWeight: FontWeight.bold,
+    fontWeight: FontWeightExt.semibold,
     height: 1.2,
   );
 

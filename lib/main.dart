@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget with GenericFunctions {
     // var primarySwatch = Colors.amber;
     var primaryColor = getColorFromHexCode('#452665'); // 174378
     var appBarItemColor = Colors.black87;
-    var fontFamily = GoogleFonts.poppins().fontFamily;
+    var fontFamily = 'Poppins';
     return AppLifecycleManager(
       child: DynamicColorBuilder(
         builder: (light, dark) {

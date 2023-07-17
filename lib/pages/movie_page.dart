@@ -247,8 +247,9 @@ class _MoviePageChildState extends State<_MoviePageChild>
                             // maxLines: 2,
                             style: const TextStyle(
                               fontSize: 24.0,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeightExt.semibold,
                               height: 1.2,
+                              color: Colors.black87,
                             ),
                           ),
                         ),
@@ -357,8 +358,9 @@ class _MoviePageChildState extends State<_MoviePageChild>
                         // maxLines: 2,
                         style: const TextStyle(
                           fontSize: 24.0,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeightExt.semibold,
                           height: 1.2,
+                          color: Colors.black87,
                         ),
                       ),
                     ),
@@ -542,7 +544,7 @@ class _MoviePageChildState extends State<_MoviePageChild>
           style: TextStyle(
             color: Theme.of(context).colorScheme.primary,
             fontSize: 14.0,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeightExt.semibold,
             // fontStyle: FontStyle.italic,
           ),
         ),
@@ -636,7 +638,7 @@ class _MoviePageChildState extends State<_MoviePageChild>
                                 'iMDb PG',
                                 style: TextStyle(
                                   color: kPrimary,
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: FontWeightExt.semibold,
                                   height: 1.2,
                                   fontSize: 12.5,
                                 ),
@@ -751,52 +753,6 @@ class MoreByLeadActorSection<M extends Media, T extends MediaViewModel<M>>
 // }
 }
 
-class ImdbParentalGuide<M extends Media, V extends MediaViewModel<M>>
-    extends StatelessWidget with GenericFunctions, Utilities, CommonFunctions {
-  const ImdbParentalGuide({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Selector<V, String?>(
-      builder: (_, imdbId, __) {
-        return imdbId.isNullOrEmpty
-            ? const SizedBox.shrink()
-            : InkWell(
-                onTap: () => openImdbParentalGuide(imdbId!),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'iMDb Parental Guide',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              height: 1.2,
-                              fontWeight: FontWeight.bold,
-                              color: kPrimary,
-                            ),
-                      ),
-                      Icon(
-                        Icons.arrow_forward_ios_rounded,
-                        size: 14.0,
-                        color: kPrimary,
-                      ),
-                    ],
-                  ),
-                ),
-              );
-      },
-      selector: (_, mvm) {
-        if (mvm is MovieViewModel) {
-          return (mvm as MovieViewModel).imdbId;
-        } else if (mvm is TvViewModel) {
-          return (mvm as TvViewModel).imdbId;
-        }
-        return null;
-      },
-    );
-  }
-}
 
 class StreamersView<M extends Media, V extends MediaViewModel<M>>
     extends StatelessWidget with Utilities {
@@ -914,6 +870,7 @@ class SimilarTitlesSection<M extends Media, T extends MediaViewModel<M>>
                             dateGte: mvm.dateGte,
                             dateLte: mvm.dateLte,
                             keywordsString: mvm.keywordsString,
+                            originalLanguage: mvm.media!.originalLanguage,
                           ),
                           mediaTitle: mvm.getMediaTitle(),
                         );
@@ -1105,7 +1062,7 @@ class _CastCrewSection extends StatelessWidget
                 label,
                 style: const TextStyle(
                   fontSize: 15.0,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeightExt.semibold,
                   letterSpacing: 1.5,
                 ),
               ),
@@ -1192,7 +1149,7 @@ class _CastPosterListView extends StatelessWidget
 
   final nameStyle = const TextStyle(
     fontSize: 14.0,
-    fontWeight: FontWeight.bold,
+    fontWeight: FontWeightExt.semibold,
     height: 1.2,
   );
 
@@ -1610,8 +1567,7 @@ class KeywordsSection<M extends Media, VM extends MediaViewModel<M>>
 
   Chip getKeywordChip(BuildContext context, Keyword keyword) {
     return Chip(
-      backgroundColor:
-          Theme.of(context).colorScheme.primaryContainer.withOpacity(0.17),
+      backgroundColor: kPrimary.withOpacity(0.07),
       padding: EdgeInsets.zero,
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       label: Text(
@@ -1619,11 +1575,11 @@ class KeywordsSection<M extends Media, VM extends MediaViewModel<M>>
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
           fontSize: 14,
-          color: Theme.of(context).colorScheme.primary,
+          color: kPrimary,
         ),
       ),
       side: BorderSide(
-        color: Theme.of(context).colorScheme.primary,
+        color: kPrimary,
       ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(6.0),
@@ -1767,7 +1723,7 @@ class ReviewsListView extends StatelessWidget with GenericFunctions {
 
   final nameStyle = const TextStyle(
     fontSize: 16.0,
-    fontWeight: FontWeight.bold,
+    fontWeight: FontWeightExt.semibold,
     height: 1.2,
     decoration: TextDecoration.underline,
   );

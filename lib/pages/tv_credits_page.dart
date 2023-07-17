@@ -183,7 +183,7 @@ class _TvCreditsPageChildState extends State<_TvCreditsPageChild>
                       Text(
                         getGenderText(person.gender),
                         // textAlign: TextAlign.start,
-                        style: const TextStyle(fontSize: 15.0, height: 1.2),
+                        style: const TextStyle(fontSize: 15.0),
                       ),
                     ],
                   ),

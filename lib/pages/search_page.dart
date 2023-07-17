@@ -59,6 +59,7 @@ class _SearchPageChildState extends State<_SearchPageChild>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: CustomScrollView(
           // key: const PageStorageKey<String>('controllerA'),
@@ -157,6 +158,9 @@ class _SearchPageChildState extends State<_SearchPageChild>
         description: media.knownFor.isNotEmpty
             ? getRichText(context, media.knownFor)
             : null,
+        /// It has been set as false to all clicking the rich text links of
+        /// person's media titles
+        overlay: false,
       );
     } else if (mediaType == MediaType.tv.name) {
       return TvPosterTile(tv: media as CombinedResult);
@@ -183,7 +187,7 @@ class _SearchPageChildState extends State<_SearchPageChild>
               focusedBorder: OutlineInputBorder(
                 borderRadius: borderRadius,
                 borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.primary,
+                  color: kPrimary,
                   width: 2.0,
                 ),
               ),
@@ -234,10 +238,7 @@ class _SearchPageChildState extends State<_SearchPageChild>
               hintStyle: TextStyle(
                   fontSize: isPortrait ? 17 /*.spMin*/ : 18 /*.spMin*/),
               filled: true,
-              fillColor: Theme.of(context)
-                  .colorScheme
-                  .primaryContainer
-                  .withOpacity(0.5),
+              fillColor: kPrimary.withOpacity(0.07),
             ),
             style:
                 TextStyle(fontSize: isPortrait ? 17 /*.spMin*/ : 18 /*.spMin*/),
@@ -269,7 +270,8 @@ class _SearchPageChildState extends State<_SearchPageChild>
               child: Text(
                 'RESULTS ($countStr)',
                 style: const TextStyle(
-                  fontWeight: FontWeight.bold,
+                  fontSize: 15.0,
+                  fontWeight: FontWeightExt.semibold,
                   color: Colors.black87,
                 ),
               ),
@@ -288,7 +290,7 @@ class _SearchPageChildState extends State<_SearchPageChild>
   }
 
   Widget getRichText(BuildContext context, List<CombinedResult> results) {
-    // logIfDebug('titles:${results.join(', ')}');
+    logIfDebug('titles:${results.map((e) => e.mediaTitle)..join(', ')}');
     List<InlineSpan> spans = [];
     for (var result in results) {
       spans.add(TextSpan(
@@ -302,6 +304,7 @@ class _SearchPageChildState extends State<_SearchPageChild>
         ),
         recognizer: TapGestureRecognizer()
           ..onTap = () {
+          logIfDebug('${result.mediaTitle} clicked');
             if (result.mediaType == MediaType.movie.name) {
               goToMoviePage(
                 context,
@@ -325,8 +328,8 @@ class _SearchPageChildState extends State<_SearchPageChild>
       ));
       if (result != results.last) spans.add(const TextSpan(text: ', '));
     }
-    return RichText(
-      text: TextSpan(
+    return Text.rich(
+      TextSpan(
         children: spans,
         style: const TextStyle(
           fontSize: 14.5,

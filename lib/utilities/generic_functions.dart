@@ -293,10 +293,13 @@ mixin GenericFunctions {
   int currentTimeMillis() => DateTime.now().millisecondsSinceEpoch;
 
   @Deprecated('Only placed here for help')
-  String getFormattedDate(int millis, {bool seconds = false}) {
+  String getFormattedDateOld(int millis, {bool seconds = false}) {
     return DateFormat('yyyy-MM-dd')
         .format(DateTime.fromMillisecondsSinceEpoch(millis));
   }
+
+  String getFormattedDate(DateTime dateTime) =>
+      DateFormat('yyyy-MM-dd').format(dateTime);
 
   String getFormattedNow() => DateFormat('yyyy-MM-dd').format(DateTime.now());
 
@@ -437,4 +440,12 @@ extension ColorExt on Color {
     return Color.fromARGB(alpha, red + ((255 - red) * p).round(),
         green + ((255 - green) * p).round(), blue + ((255 - blue) * p).round());
   }
+}
+
+extension FontWeightExt on FontWeight {
+
+  static const FontWeight light = FontWeight.w300;
+  static const FontWeight medium = FontWeight.w500;
+  static const FontWeight semibold = FontWeight.w600;
+
 }

@@ -68,7 +68,7 @@ class BaseSectionSliver extends StatelessWidget
                 title,
                 style: const TextStyle(
                   fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeightExt.semibold,
                   letterSpacing: 1.5,
                   // height: 1.1,
                 ),

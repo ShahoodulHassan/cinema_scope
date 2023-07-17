@@ -15,6 +15,7 @@ class PosterTile extends StatelessWidget with GenericFunctions {
   final Widget poster;
   final Widget? subtitle, description;
   final double posterWidth;
+  final bool overlay;
 
   const PosterTile({
     required this.title,
@@ -24,6 +25,7 @@ class PosterTile extends StatelessWidget with GenericFunctions {
     this.subtitle,
     this.description,
     this.onTap,
+    this.overlay = true,
     Key? key,
   }) : super(key: key);
 
@@ -31,55 +33,64 @@ class PosterTile extends StatelessWidget with GenericFunctions {
   Widget build(BuildContext context) {
     // final isPortrait = MediaQuery.orientationOf(context) == Orientation.portrait;
     // logIfDebug('build called with isPortrait=$isPortrait');
+    final content = Ink(
+      padding: const EdgeInsets.all(Constants.posterVPadding),
+      // height:
+      //     posterWidth / Constants.arPoster + Constants.posterVPadding * 2,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(
+            width: posterWidth,
+            child: poster,
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(left: Constants.posterVPadding),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    maxLines: titleMaxLines,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      height: 1.2,
+                      fontSize: 16.0,
+                      fontWeight: FontWeightExt.semibold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  if (subtitle != null) subtitle!,
+                  if (description != null) description!,
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
+    );
     return /*snapshot.connectionState == ConnectionState.done
         ? */
         Stack(
       children: [
-        Ink(
-          padding: const EdgeInsets.all(Constants.posterVPadding),
-          // height:
-          //     posterWidth / Constants.arPoster + Constants.posterVPadding * 2,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(
-                width: posterWidth,
-                child: poster,
+        overlay
+            ? content
+            : InkWell(
+                onTap: onTap,
+                child: content,
               ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: Constants.posterVPadding),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        maxLines: titleMaxLines,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          height: 1.2,
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      if (subtitle != null) subtitle!,
-                      if (description != null) description!,
-                    ],
-                  ),
-                ),
-              )
-            ],
-          ),
-        ),
-        Positioned.fill(
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: onTap,
+        if (overlay)
+          Positioned.fill(
+            child: Material(
+              type: MaterialType.transparency,
+              // color: Colors.transparent,
+              child: InkWell(
+                onTap: onTap,
+              ),
             ),
           ),
-        ),
       ],
     );
   }
@@ -126,7 +137,10 @@ class MoviePosterTile extends StatelessWidget
                     child: Text(
                       movie.yearString,
                       textAlign: TextAlign.start,
-                      style: const TextStyle(fontSize: 15.0),
+                      style: const TextStyle(
+                        fontSize: 15.0,
+                        height: 1.2,
+                      ),
                     ),
                   ),
                 ),
@@ -214,31 +228,31 @@ class TvPosterTile extends StatelessWidget
             bottomRadius: 4.0,
           ),
           Positioned(
-              top: 0.0,
-              right: 0.0,
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: Colors.black54,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(4.0),
-                    bottomLeft: Radius.circular(4.0),
-                  ),
+            top: 0.0,
+            right: 0.0,
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.black54,
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(4.0),
+                  bottomLeft: Radius.circular(4.0),
                 ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8.0,
-                  vertical: 9.0,
-                ),
-                child: const Text(
-                  'TV',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12.0,
-                    // height: 1.0,
-                  ),
+              ),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8.0,
+                vertical: 9.0,
+              ),
+              child: const Text(
+                'TV',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeightExt.semibold,
+                  fontSize: 12.0,
+                  // height: 1.0,
                 ),
               ),
             ),
+          ),
         ],
       ),
       subtitle: Padding(
@@ -335,10 +349,15 @@ class PersonPosterTile extends StatelessWidget
   final BasePersonResult person;
   final Widget? subtitle;
   final Widget? description;
+  final bool overlay;
 
-  const PersonPosterTile(
-      {required this.person, this.subtitle, this.description, Key? key})
-      : super(key: key);
+  const PersonPosterTile({
+    required this.person,
+    this.subtitle,
+    this.description,
+    this.overlay = true,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -368,6 +387,7 @@ class PersonPosterTile extends StatelessWidget
               child: description,
             )
           : null,
+      overlay: overlay,
     );
   }
 }

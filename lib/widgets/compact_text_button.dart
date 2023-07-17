@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../utilities/generic_functions.dart';
+
 class CompactTextButton extends StatelessWidget {
 
   final String title;
@@ -28,7 +30,7 @@ class CompactTextButton extends StatelessWidget {
         title.toUpperCase(),
         style: const TextStyle(
           fontSize: 16.0,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeightExt.semibold,
           // color: Theme.of(context).colorScheme.primary,
           // height: 1.1,
         ),

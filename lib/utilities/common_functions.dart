@@ -113,7 +113,7 @@ mixin CommonFunctions on Utilities, GenericFunctions {
               },
               borderRadius: BorderRadius.circular(6.0),
               child: Chip(
-                backgroundColor: kPrimaryContainer.withOpacity(0.17),
+                backgroundColor: kPrimary.withOpacity(0.07),
                 padding: EdgeInsets.zero,
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 label: Text(

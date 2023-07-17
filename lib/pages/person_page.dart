@@ -225,7 +225,8 @@ Widget buildName(String name) {
     style: const TextStyle(
       fontSize: 24.0,
       letterSpacing: 2.0,
-      fontWeight: FontWeight.bold,
+      fontWeight: FontWeightExt.semibold,
+      color: Colors.black87,
       // height: 1.1,
     ),
   );
