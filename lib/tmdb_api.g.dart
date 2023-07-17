@@ -789,6 +789,57 @@ class _TmdbApi implements TmdbApi {
   }
 
   @override
+  Future<CombinedResults> getLastYearTopRatedMovies(
+    dateFrom,
+    dateTo, {
+    page = 1,
+    language = 'en',
+    region = 'US',
+    sortBy = 'vote_average.desc',
+    includeAdult = 'false',
+    voteAverage = 6.1,
+    voteCount = 50,
+    withLanguage = 'en',
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'primary_release_date.gte': dateFrom,
+      r'primary_release_date.lte': dateTo,
+      r'page': page,
+      r'language': language,
+      r'region': region,
+      r'sort_by': sortBy,
+      r'include_adult': includeAdult,
+      r'vote_average.gte': voteAverage,
+      r'vote_count.gte': voteCount,
+      r'with_original_language': withLanguage,
+    };
+    final _headers = <String, dynamic>{
+      r'Content-Type': 'application/json;charset=utf-8',
+      r'Authorization':
+          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYzdiNTdjNTY2ZThhZjk0MTE1YmIyYzBkOTEwZjYxMCIsInN1YiI6IjVhMGE3MDk5YzNhMzY4MjE4YTAxMTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.uyDhjXOvRNfjg_gJFPkSfAuT-F-MFmWVwPoEUftgq1g',
+    };
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CombinedResults>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/json;charset=utf-8',
+    )
+            .compose(
+              _dio.options,
+              '/discover/movie',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CombinedResults.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
   Future<CombinedResults> discoverStreamingMedia(
     mediaType, {
     page = 1,
@@ -1292,6 +1343,57 @@ class _TmdbApi implements TmdbApi {
       r'region': region,
       r'sort_by': sortBy,
       r'include_adult': includeAdult,
+      r'with_original_language': withLanguage,
+    };
+    final _headers = <String, dynamic>{
+      r'Content-Type': 'application/json;charset=utf-8',
+      r'Authorization':
+          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYzdiNTdjNTY2ZThhZjk0MTE1YmIyYzBkOTEwZjYxMCIsInN1YiI6IjVhMGE3MDk5YzNhMzY4MjE4YTAxMTc2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.uyDhjXOvRNfjg_gJFPkSfAuT-F-MFmWVwPoEUftgq1g',
+    };
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CombinedResults>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/json;charset=utf-8',
+    )
+            .compose(
+              _dio.options,
+              '/discover/tv',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CombinedResults.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<CombinedResults> getLastYearTopRatedTvShows(
+    firstAirDateFrom,
+    firstAirDateTo, {
+    page = 1,
+    language = 'en',
+    region = 'US',
+    sortBy = 'vote_average.desc',
+    includeAdult = 'false',
+    voteAverage = 6.1,
+    voteCount = 50,
+    withLanguage = 'en',
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'first_air_date.gte': firstAirDateFrom,
+      r'first_air_date.lte': firstAirDateTo,
+      r'page': page,
+      r'language': language,
+      r'region': region,
+      r'sort_by': sortBy,
+      r'include_adult': includeAdult,
+      r'vote_average.gte': voteAverage,
+      r'vote_count.gte': voteCount,
       r'with_original_language': withLanguage,
     };
     final _headers = <String, dynamic>{

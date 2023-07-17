@@ -233,6 +233,25 @@ abstract class TmdbApi {
     @http.Query('with_original_language') String originalLanguage = '',
   });
 
+  /// http://api.themoviedb.org/3/discover/movie?
+  /// api_key=ec7b57c566e8af94115bb2c0d910f610&region=US&language=us
+  /// &with_original_language=en&sort_by=vote_average.desc&page=1
+  /// &vote_average.gte=6.1&vote_count.gte=50&primary_release_date.gte=2022-01-01
+  /// &primary_release_date.lte=2022-12-31
+  @http.GET("/discover/movie")
+  @http.Headers(headerMap)
+  Future<CombinedResults> getLastYearTopRatedMovies(
+      @http.Query('primary_release_date.gte') String dateFrom,
+      @http.Query('primary_release_date.lte') String dateTo,
+      {@http.Query('page') int page = 1,
+        @http.Query('language') String language = 'en',
+        @http.Query('region') String region = 'US',
+        @http.Query('sort_by') String sortBy = 'vote_average.desc',
+        @http.Query('include_adult') String includeAdult = 'false',
+        @http.Query("vote_average.gte") double voteAverage = 6.1,
+        @http.Query("vote_count.gte") int voteCount = 50,
+        @http.Query('with_original_language') String withLanguage = 'en'});
+
   ///https://api.themoviedb.org//3/discover/movie?
   ///api_key=ec7b57c566e8af94115bb2c0d910f610
   ///&with_watch_monetization_types=flatrate&watch_region=US
@@ -418,4 +437,25 @@ abstract class TmdbApi {
       @http.Query('sort_by') String sortBy = 'first_air_date.desc',
       @http.Query('include_adult') String includeAdult = 'false',
       @http.Query('with_original_language') String withLanguage = 'en'});
+
+
+  /// http://api.themoviedb.org/3/discover/tv?
+  /// api_key=ec7b57c566e8af94115bb2c0d910f610&region=US&language=us
+  /// &with_original_language=en&sort_by=vote_average.desc&page=1
+  /// &vote_average.gte=6.1&vote_count.gte=50&first_air_date.gte=2022-01-01
+  /// &first_air_date.lte=2022-12-31
+  @http.GET("/discover/tv")
+  @http.Headers(headerMap)
+  Future<CombinedResults> getLastYearTopRatedTvShows(
+      @http.Query('first_air_date.gte') String firstAirDateFrom,
+      @http.Query('first_air_date.lte') String firstAirDateTo,
+      {@http.Query('page') int page = 1,
+        @http.Query('language') String language = 'en',
+        @http.Query('region') String region = 'US',
+        @http.Query('sort_by') String sortBy = 'vote_average.desc',
+        @http.Query('include_adult') String includeAdult = 'false',
+        @http.Query("vote_average.gte") double voteAverage = 6.1,
+        @http.Query("vote_count.gte") int voteCount = 50,
+        @http.Query('with_original_language') String withLanguage = 'en'});
+
 }
