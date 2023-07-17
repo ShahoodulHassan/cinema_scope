@@ -17,6 +17,8 @@ class HomeViewModel extends ApiViewModel with Utilities {
   CombinedResults? nowPlayingResult;
   CombinedResults? streamingResult;
   CombinedResults? freeMediaResult;
+  CombinedResults? currentYearTopRatedResult;
+  CombinedResults? lastYearTopRatedResult;
 
   Map<SectionTitle, String> sectionParamMap = {};
 
@@ -40,6 +42,10 @@ class HomeViewModel extends ApiViewModel with Utilities {
         return streamingResult;
       case SectionTitle.freeToWatch:
         return freeMediaResult;
+      case SectionTitle.currentYearTopRated:
+        return currentYearTopRatedResult;
+      case SectionTitle.lastYearTopRated:
+        return lastYearTopRatedResult;
     }
   }
 
@@ -193,6 +199,7 @@ class HomeViewModel extends ApiViewModel with Utilities {
       /// We add two page long upcoming movies and TV shows
       await _getTrending(window);
       await _getTrending(window, page: 2);
+      notifyListeners();
     }
   }
 
@@ -200,12 +207,13 @@ class HomeViewModel extends ApiViewModel with Utilities {
     var result =
         await api.getTrending(MediaType.all.name, timeWindow, page: page);
     var modified = result.copyWith.results((result.results
-      ..removeWhere((element) => element.mediaType == MediaType.person.name))
-      .map((e) {
-        e.dateString = getReadableDate(e.mediaReleaseDate);
-        e.yearString = getYearStringFromDate(e.mediaReleaseDate);
-        return e;
-      }).toList());
+          ..removeWhere(
+              (element) => element.mediaType == MediaType.person.name))
+        .map((e) {
+      e.dateString = getReadableDate(e.mediaReleaseDate);
+      e.yearString = getYearStringFromDate(e.mediaReleaseDate);
+      return e;
+    }).toList());
     if (page == 1) {
       sectionParamMap[SectionTitle.trending] = timeWindow;
       trendingResult = modified;
@@ -215,7 +223,6 @@ class HomeViewModel extends ApiViewModel with Utilities {
       modified.results = allItems;
       trendingResult = modified;
     }
-    notifyListeners();
   }
 
   getNowPlaying(MediaType? mediaType) async {
@@ -305,5 +312,125 @@ class HomeViewModel extends ApiViewModel with Utilities {
     }).toList());
     notifyListeners();
     // }
+  }
+
+  /// Fetches current year top rated titles,
+  /// having 'en' language, sorted by vote count (desc),
+  getCurrentYearTopMedia(MediaType? mediaType) async {
+    String type = (mediaType ?? MediaType.movie).name;
+    sectionParamMap[SectionTitle.currentYearTopRated] = type;
+
+    final voteAverage = type == MediaType.movie.name ? 6.7 : 7.5;
+    const itemsPerPage = 20;
+    const maxItemCount = 30;
+    int pagesToFetch = (maxItemCount ~/ itemsPerPage) * 2;
+
+    List<CombinedResult> combined = [];
+    final currentYear = DateTime.now().year;
+    var dateFrom = getFormattedDate(DateTime(currentYear, 1, 1));
+    var dateTo = getFormattedPastDate(1);
+    logIfDebug('dateRange:$dateFrom, $dateTo');
+    var result = type == MediaType.movie.name
+        ? await api.getLastYearTopRatedMovies(
+            dateFrom,
+            dateTo,
+            voteAverage: voteAverage,
+          )
+        : await api.getLastYearTopRatedTvShows(
+            dateFrom,
+            dateTo,
+            voteAverage: voteAverage,
+          );
+    combined.addAll(result.results);
+
+    if (result.totalPages > 1) {
+      int maxPageCount = min(pagesToFetch, result.totalPages);
+      for (int i = 2; i <= maxPageCount; i++) {
+        var res = type == MediaType.movie.name
+            ? await api.getLastYearTopRatedMovies(
+                dateFrom,
+                dateTo,
+                voteAverage: voteAverage,
+                page: i,
+              )
+            : await api.getLastYearTopRatedTvShows(
+                dateFrom,
+                dateTo,
+                voteAverage: voteAverage,
+                page: i,
+              );
+        combined.addAll(res.results);
+      }
+    }
+    logIfDebug('currentYearTopRated:${combined.length}');
+
+    currentYearTopRatedResult = result.copyWith
+        .results((combined..shuffle()).take(maxItemCount).map((e) {
+      e.mediaType ??= type;
+      e.dateString = getReadableDate(e.mediaReleaseDate);
+      e.yearString = getYearStringFromDate(e.mediaReleaseDate);
+      return e;
+    }).toList());
+    notifyListeners();
+  }
+
+  /// Fetches last year top rated titles,
+  /// having 'en' language, sorted by vote count (desc),
+  getLastYearTopMedia(MediaType? mediaType) async {
+    String type = (mediaType ?? MediaType.movie).name;
+    sectionParamMap[SectionTitle.lastYearTopRated] = type;
+
+    final voteAverage = type == MediaType.movie.name ? 6.7 : 7.5;
+    const itemsPerPage = 20;
+    const maxItemCount = 50;
+    int pagesToFetch = (maxItemCount ~/ itemsPerPage) * 2;
+
+    List<CombinedResult> combined = [];
+    final lastYear = DateTime.now().year - 1;
+    var dateFrom = getFormattedDate(DateTime(lastYear, 1, 1));
+    var dateTo = getFormattedDate(DateTime(lastYear, 12, 31));
+    logIfDebug('dateRange:$dateFrom, $dateTo');
+    var result = type == MediaType.movie.name
+        ? await api.getLastYearTopRatedMovies(
+            dateFrom,
+            dateTo,
+            voteAverage: voteAverage,
+          )
+        : await api.getLastYearTopRatedTvShows(
+            dateFrom,
+            dateTo,
+            voteAverage: voteAverage,
+          );
+    combined.addAll(result.results);
+
+    if (result.totalPages > 1) {
+      int maxPageCount = min(pagesToFetch, result.totalPages);
+      for (int i = 2; i <= maxPageCount; i++) {
+        var res = type == MediaType.movie.name
+            ? await api.getLastYearTopRatedMovies(
+                dateFrom,
+                dateTo,
+                voteAverage: voteAverage,
+                page: i,
+              )
+            : await api.getLastYearTopRatedTvShows(
+                dateFrom,
+                dateTo,
+                voteAverage: voteAverage,
+                page: i,
+              );
+        combined.addAll(res.results);
+      }
+    }
+    logIfDebug('lastYearTopRated:${combined.length}');
+
+    lastYearTopRatedResult = result.copyWith
+        .results((combined..shuffle()).take(maxItemCount).map((e) {
+      e.mediaType ??= type;
+      e.dateString = getReadableDate(e.mediaReleaseDate);
+      e.yearString = getYearStringFromDate(e.mediaReleaseDate);
+      return e;
+    }).toList());
+    notifyListeners();
   }
 }

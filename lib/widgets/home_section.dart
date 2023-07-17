@@ -1,12 +1,11 @@
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinema_scope/main.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/widgets/image_view.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
-// import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 import '../architecture/config_view_model.dart';
@@ -55,25 +54,36 @@ class BaseHomeSection extends StatelessWidget
   Widget build(BuildContext context) {
     logIfDebug('build called');
     return Padding(
-      padding: const EdgeInsets.only(top: 36),
+      padding: const EdgeInsets.only(top: 48),
       child: Stack(
         children: [
           /// This serves as the base card on which the content card is
           /// stacked. The fill constructor helps match its height with
           /// the height of the content card.
           const Positioned.fill(
-            child: Card(
-              elevation: 1,
-              color: Colors.white,
-              surfaceTintColor: Colors.white,
-              margin: EdgeInsets.zero,
-              shape: ContinuousRectangleBorder(),
+            child: Padding(
+              padding: EdgeInsets.only(left: 16.0),
+              child: Card(
+                elevation: 8,
+                color: Colors.white,
+                surfaceTintColor: Colors.white,
+                margin: EdgeInsets.zero,
+                shape: ContinuousRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(24.0),
+                    bottomLeft: Radius.circular(24.0),
+                  ),
+                  // side: BorderSide(
+                  //   color: kPrimary,
+                  // ),
+                ),
+              ),
             ),
           ),
           Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              sectionSeparator,
+              // sectionSeparator,
               getSectionTitleRow(),
               ...children,
               // getSectionSeparator(context),
@@ -90,17 +100,18 @@ class BaseHomeSection extends StatelessWidget
   //     );
 
   Widget getSectionTitleRow() => Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+        padding: const EdgeInsets.fromLTRB(32, 16, 32, 0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               title,
               style: const TextStyle(
-                fontSize: 18.0,
+                fontSize: 20.0,
                 fontWeight: FontWeight.bold,
-                letterSpacing: 1.5,
-                // height: 1.1,
+                // letterSpacing: 1.0,
+                color: Colors.black87,
+                // height: 1.2,
               ),
             ),
             // if (showSeeAll) CompactTextButton(buttonText, onPressed: onPressed),
@@ -115,14 +126,14 @@ class HomeSection extends StatefulWidget {
   final MediaType? mediaType;
   final TimeWindow? timeWindow;
   final List<String> params;
-  final List<String>? paramTitles;
+  final List<String> paramTitles;
 
   const HomeSection(
     this.sectionTitle, {
     this.mediaType,
     this.timeWindow,
     this.params = const <String>[],
-    this.paramTitles,
+    required this.paramTitles,
     Key? key,
     this.isBigWidget = false,
   }) : super(key: key);
@@ -179,6 +190,12 @@ class _HomeSectionState extends State<HomeSection>
       case SectionTitle.freeToWatch:
         hvm.getFreeMedia(value as MediaType?);
         break;
+      case SectionTitle.currentYearTopRated:
+        hvm.getCurrentYearTopMedia(value as MediaType?);
+        break;
+      case SectionTitle.lastYearTopRated:
+        hvm.getLastYearTopMedia(value as MediaType?);
+        break;
     }
   }
 
@@ -203,45 +220,57 @@ class _HomeSectionState extends State<HomeSection>
                       return const SizedBox.shrink();
                     } else {
                       return Padding(
-                        padding: const EdgeInsets.only(left: 16, top: 8),
-                        child: ToggleButtons(
-                          constraints: const BoxConstraints(
-                            minWidth: 0,
-                            minHeight: 0,
+                        padding: const EdgeInsets.only(left: 32, top: 8),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16.0),
                           ),
-                          borderRadius: BorderRadius.circular(16.0),
-                          borderColor: Theme.of(context).colorScheme.primary,
-                          // selectedColor: Theme.of(context).primaryColorDark,
-                          // fillColor: Theme.of(context).primaryColorLight.withOpacity(0.2),
-                          // highlightColor: Theme.of(context).primaryColor.withOpacity(0.5),
-                          selectedBorderColor:
-                              Theme.of(context).colorScheme.primary,
-                          borderWidth: 0.5,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          isSelected: widget.params.map((e) {
-                            return e == param;
-                          }).toList(),
-                          onPressed: (index) {
-                            getResult(
-                              widget.sectionTitle,
-                              param: widget.params[index],
-                            );
-                          },
-                          children: [
-                            ...(widget.paramTitles ?? widget.params).map((e) {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 5),
-                                child: Text(
-                                  e,
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    // fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              );
+                          child: ToggleButtons(
+                            constraints: const BoxConstraints(
+                              minWidth: 0,
+                              minHeight: 0,
+                            ),
+                            borderRadius: BorderRadius.circular(16.0),
+                            borderColor: kPrimary,
+                            selectedColor: kPrimary,
+                            // fillColor: kPrimary.lighten2(55),
+                            // highlightColor: Theme.of(context).primaryColor.withOpacity(0.5),
+                            selectedBorderColor: kPrimary,
+                            borderWidth: 0.8,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            isSelected: widget.params.map((e) {
+                              return e == param;
                             }).toList(),
-                          ],
+                            onPressed: (index) {
+                              getResult(
+                                widget.sectionTitle,
+                                param: widget.params[index],
+                              );
+                            },
+                            children: [
+                              ...(widget.paramTitles).map((e) {
+                                final selected = widget.params[
+                                        widget.paramTitles.indexOf(e)] ==
+                                    param;
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 5,
+                                  ),
+                                  child: Text(
+                                    e,
+                                    style: TextStyle(
+                                      fontSize: 15.5,
+                                      fontWeight:
+                                          selected ? FontWeight.w500 : null,
+                                      // height: 1.2,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ],
+                          ),
                         ),
                       );
                     }
@@ -251,7 +280,11 @@ class _HomeSectionState extends State<HomeSection>
                 items: result.results,
                 isUpcoming: widget.sectionTitle == SectionTitle.upcoming,
                 isLatest: widget.sectionTitle == SectionTitle.latest,
+                listViewLeftPadding: 32.0,
+                listViewBottomPadding: 16.0,
               ),
+              // Center(child: CompactTextButton('EXPLORE ALL', onPressed: () {})),
+              const SizedBox(height: 6.0),
             ],
           );
         }
@@ -268,6 +301,8 @@ class MediaPosterListView extends StatelessWidget
   final double posterWidth;
   final double radius;
   final double listViewBottomPadding;
+  final double listViewLeftPadding;
+  final double listViewRightPadding;
   final String Function(CombinedResult item)? subtitle;
 
   final titleContainerPadding = 8.0;
@@ -283,8 +318,6 @@ class MediaPosterListView extends StatelessWidget
 
   final listViewTopPadding = 16.0;
 
-  final listViewHorizontalPadding = 16.0 - Constants.cardMargin;
-
   final subtitleTopPadding = 0.0;
 
   late final subtitleBottomPadding = ratingVerticalPadding;
@@ -296,7 +329,7 @@ class MediaPosterListView extends StatelessWidget
 // final separatorWidth = 10.w;
 
   late final titleStyle = TextStyle(
-    fontWeight: FontWeight.bold,
+    fontWeight: FontWeightExt.semibold,
     fontSize: titleFontSize,
     height: titleLineHeight,
   );
@@ -337,6 +370,8 @@ class MediaPosterListView extends StatelessWidget
     this.posterWidth = 155.0,
     this.radius = 6.0,
     this.listViewBottomPadding = 24.0,
+    this.listViewLeftPadding = 16.0,
+    this.listViewRightPadding = 16.0,
     this.subtitle,
     this.isUpcoming,
     this.isLatest,
@@ -379,9 +414,9 @@ class MediaPosterListView extends StatelessWidget
         },
         physics: const ClampingScrollPhysics(),
         padding: EdgeInsets.fromLTRB(
-          listViewHorizontalPadding,
+          listViewLeftPadding - Constants.cardMargin,
           listViewTopPadding,
-          listViewHorizontalPadding,
+          listViewRightPadding - Constants.cardMargin,
           listViewBottomPadding,
         ),
         itemCount: items.length,
@@ -549,9 +584,8 @@ class MediaPosterListView extends StatelessWidget
     bool? isUpcoming,
     bool? isLatest,
   }) {
-    final yearString = isUpcoming.isNotNullAndTrue
-        ? media.dateString
-        : media.yearString;
+    final yearString =
+        isUpcoming.isNotNullAndTrue ? media.dateString : media.yearString;
     return Padding(
       padding: EdgeInsets.symmetric(
         vertical: ratingVerticalPadding,
@@ -570,7 +604,7 @@ class MediaPosterListView extends StatelessWidget
             const SizedBox(width: 16.0),
           ],
           if (media.voteAverage > 0 && !isUpcoming.isNotNullAndTrue
-          /* && !isLatest.isNotNullAndTrue*/
+              /* && !isLatest.isNotNullAndTrue*/
               ) ...[
             FaIcon(
               FontAwesomeIcons.solidStar,

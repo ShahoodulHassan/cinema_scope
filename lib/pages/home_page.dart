@@ -1,4 +1,5 @@
 import 'package:cinema_scope/architecture/home_view_model.dart';
+import 'package:cinema_scope/main.dart';
 import 'package:cinema_scope/pages/search_page.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
@@ -18,7 +19,9 @@ enum SectionTitle {
   topRated('TOP RATED'),
   upcoming('COMING SOON'),
   streaming('STREAMING'),
-  freeToWatch('FREE TO WATCH');
+  freeToWatch('FREE TO WATCH'),
+  currentYearTopRated('BEST OF THIS YEAR'),
+  lastYearTopRated('BEST OF LAST YEAR');
 
   final String name;
 
@@ -44,7 +47,7 @@ class _HomePageChild extends StatelessWidget
     logIfDebug('build called');
     var homeSections = getHomeSections();
     return Scaffold(
-      backgroundColor: scaffoldColor,
+      backgroundColor: kPrimary.lighten2(75),
       body: CustomScrollView(
         slivers: [
           SliverFrostedAppBar(
@@ -69,9 +72,7 @@ class _HomePageChild extends StatelessWidget
               child: section,
             ),
           ),
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 24.0),
-          )
+          const SliverToBoxAdapter(child: SizedBox(height: 48.0)),
         ],
       ),
     );
@@ -115,6 +116,22 @@ class _HomePageChild extends StatelessWidget
       ),
       HomeSection(
         SectionTitle.latest,
+        params: [MediaType.movie.name, MediaType.tv.name],
+        paramTitles: const [
+          'Movie',
+          'TV show',
+        ],
+      ),
+      HomeSection(
+        SectionTitle.currentYearTopRated,
+        params: [MediaType.movie.name, MediaType.tv.name],
+        paramTitles: const [
+          'Movie',
+          'TV show',
+        ],
+      ),
+      HomeSection(
+        SectionTitle.lastYearTopRated,
         params: [MediaType.movie.name, MediaType.tv.name],
         paramTitles: const [
           'Movie',
