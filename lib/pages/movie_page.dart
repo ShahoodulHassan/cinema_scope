@@ -122,9 +122,118 @@ class _MoviePageChildState extends State<_MoviePageChild>
 
   @override
   Widget build(BuildContext context) {
-    return MediaQuery.sizeOf(context).width > 800
+    return MediaQuery.sizeOf(context).width > 750
         ? buildLandscapeView()
         : buildPortraitView();
+  }
+
+  Widget buildPortraitView() {
+    return Scaffold(
+      backgroundColor: scaffoldColor,
+      body: CustomScrollView(
+        slivers: [
+          SliverFrostedAppBar(
+            title: Text(widget.title),
+            pinned: true,
+          ),
+          Selector<MovieViewModel,
+              Tuple3<List<String>, Map<String, ThumbnailType>, String?>>(
+            builder: (_, tuple, __) {
+              logIfDebug('isPinned, thumbnails:$tuple');
+              var height = MediaQuery.sizeOf(context).width * 9 / 16;
+              if (tuple.item3 != null && tuple.item1.isNotEmpty) {
+                return SliverPersistentHeader(
+                  delegate: TrailerDelegate(
+                    mediaType: MediaType.movie,
+                    extent: height,
+                    initialVideoId: tuple.item3!,
+                    youtubeKeys: tuple.item1,
+                  ),
+                  pinned: true,
+                );
+              } else {
+                return SliverPersistentHeader(
+                  delegate: ImageDelegate(
+                    // backdropBaseUrl,
+                    mediaType: MediaType.movie,
+                    extent: tuple.item2.isEmpty ? 0 : height,
+                    thumbMap: tuple.item2,
+                  ),
+                  pinned: false,
+                );
+              }
+            },
+            selector: (_, mvm) {
+              logIfDebug('isPinned, selector called with:${mvm.youtubeKeys}');
+              return Tuple3<List<String>, Map<String, ThumbnailType>,
+                  String?>(
+                mvm.youtubeKeys,
+                mvm.thumbMap,
+                mvm.initialVideoId,
+              );
+            },
+          ),
+          Selector<MovieViewModel, String?>(
+            selector: (_, tvm) => tvm.initialVideoId,
+            builder: (_, id, __) {
+              if (id != null && id.isNotEmpty) {
+                return SliverPinnedHeader(
+                  child: StreamersView<Movie, MovieViewModel>(id: widget.id),
+                );
+              } else {
+                return SliverToBoxAdapter(
+                  child: StreamersView<Movie, MovieViewModel>(id: widget.id),
+                );
+              }
+            },
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 16.0, bottom: 0.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text(
+                      widget.title,
+                      textAlign: TextAlign.start,
+                      // maxLines: 2,
+                      style: const TextStyle(
+                        fontSize: 24.0,
+                        fontWeight: FontWeightExt.semibold,
+                        height: 1.2,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+                  buildYearRow(context),
+                  // buildExternalLinks(),
+                  buildTagline(),
+                  ExpandableSynopsis(
+                    widget.overview,
+                    changeSize: false,
+                  ),
+                  buildGenresAndLinks(),
+                ],
+              ),
+            ),
+          ),
+          const _CastCrewSection(),
+          const SimilarTitlesSection<Movie, MovieViewModel>(),
+          const RecommendationsSection<Movie, MovieViewModel>(),
+          const MoreByDirectorSection<Movie, MovieViewModel>(),
+          const MoreByLeadActorSection<Movie, MovieViewModel>(),
+          const ImagesSection<MovieViewModel>(),
+          const _MediaInfoSection(),
+          const KeywordsSection<Movie, MovieViewModel>(),
+          const ReviewsSection(),
+          const SliverToBoxAdapter(child: SizedBox(height: 16)),
+        ],
+      ),
+    );
   }
 
   Widget buildLandscapeView() {
@@ -266,129 +375,18 @@ class _MoviePageChildState extends State<_MoviePageChild>
                   ),
                 ),
                 const _CastCrewSection(),
-                const ImagesSection<MovieViewModel>(),
+                const SimilarTitlesSection<Movie, MovieViewModel>(),
                 const RecommendationsSection<Movie, MovieViewModel>(),
-                const ReviewsSection(),
                 const MoreByDirectorSection<Movie, MovieViewModel>(),
                 const MoreByLeadActorSection<Movie, MovieViewModel>(),
-                const SimilarTitlesSection<Movie, MovieViewModel>(),
+                const ImagesSection<MovieViewModel>(),
+                const ReviewsSection(),
                 const SliverToBoxAdapter(child: SizedBox(height: 16)),
               ],
             ),
           ),
         ),
       ],
-    );
-  }
-
-  Widget buildPortraitView() {
-    return Scaffold(
-      backgroundColor: scaffoldColor,
-      body: CustomScrollView(
-        slivers: [
-          SliverFrostedAppBar(
-            title: Text(widget.title),
-            pinned: true,
-          ),
-          MultiSliver(children: [
-            Selector<MovieViewModel,
-                Tuple3<List<String>, Map<String, ThumbnailType>, String?>>(
-              builder: (_, tuple, __) {
-                logIfDebug('isPinned, thumbnails:$tuple');
-                var height = MediaQuery.sizeOf(context).width * 9 / 16;
-                if (tuple.item3 != null && tuple.item1.isNotEmpty) {
-                  return SliverPersistentHeader(
-                    delegate: TrailerDelegate(
-                      mediaType: MediaType.movie,
-                      extent: height,
-                      initialVideoId: tuple.item3!,
-                      youtubeKeys: tuple.item1,
-                    ),
-                    pinned: true,
-                  );
-                } else {
-                  return SliverPersistentHeader(
-                    delegate: ImageDelegate(
-                      // backdropBaseUrl,
-                      mediaType: MediaType.movie,
-                      extent: tuple.item2.isEmpty ? 0 : height,
-                      thumbMap: tuple.item2,
-                    ),
-                    pinned: false,
-                  );
-                }
-              },
-              selector: (_, mvm) {
-                logIfDebug('isPinned, selector called with:${mvm.youtubeKeys}');
-                return Tuple3<List<String>, Map<String, ThumbnailType>,
-                    String?>(
-                  mvm.youtubeKeys,
-                  mvm.thumbMap,
-                  mvm.initialVideoId,
-                );
-              },
-            ),
-            Selector<MovieViewModel, String?>(
-              selector: (_, tvm) => tvm.initialVideoId,
-              builder: (_, id, __) {
-                if (id != null && id.isNotEmpty) {
-                  return SliverPinnedHeader(
-                    child: StreamersView<Movie, MovieViewModel>(id: widget.id),
-                  );
-                } else {
-                  return SliverToBoxAdapter(
-                    child: StreamersView<Movie, MovieViewModel>(id: widget.id),
-                  );
-                }
-              },
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 16.0, bottom: 0.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // const SizedBox(height: 8),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Text(
-                        widget.title,
-                        textAlign: TextAlign.start,
-                        // maxLines: 2,
-                        style: const TextStyle(
-                          fontSize: 24.0,
-                          fontWeight: FontWeightExt.semibold,
-                          height: 1.2,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ),
-                    buildYearRow(context),
-                    // buildExternalLinks(),
-                    buildTagline(),
-                    ExpandableSynopsis(
-                      widget.overview,
-                      changeSize: false,
-                    ),
-                    buildGenresAndLinks(),
-                  ],
-                ),
-              ),
-            ),
-            const _CastCrewSection(),
-            const ImagesSection<MovieViewModel>(),
-            const _MediaInfoSection(),
-            const RecommendationsSection<Movie, MovieViewModel>(),
-            const ReviewsSection(),
-            const MoreByDirectorSection<Movie, MovieViewModel>(),
-            const MoreByLeadActorSection<Movie, MovieViewModel>(),
-            const SimilarTitlesSection<Movie, MovieViewModel>(),
-            const KeywordsSection<Movie, MovieViewModel>(),
-            const SliverToBoxAdapter(child: SizedBox(height: 16)),
-          ]),
-        ],
-      ),
     );
   }
 

@@ -90,7 +90,7 @@ class _TvPageChildState extends State<_TvPageChild>
 
   @override
   Widget build(BuildContext context) {
-    return MediaQuery.sizeOf(context).width > 800
+    return MediaQuery.sizeOf(context).width > 750
         ? buildLandscapeView()
         : buildPortraitView();
   }
@@ -227,11 +227,11 @@ class _TvPageChildState extends State<_TvPageChild>
                   ),
                 ),
                 const _CastCrewSection(),
-                const ImagesSection<TvViewModel>(),
+                const SimilarTitlesSection<Tv, TvViewModel>(),
                 const RecommendationsSection<Tv, TvViewModel>(),
                 const MoreByDirectorSection<Tv, TvViewModel>(),
                 const MoreByLeadActorSection<Tv, TvViewModel>(),
-                const SimilarTitlesSection<Tv, TvViewModel>(),
+                const ImagesSection<TvViewModel>(),
                 const SliverToBoxAdapter(child: SizedBox(height: 16)),
               ],
             ),
@@ -338,13 +338,13 @@ class _TvPageChildState extends State<_TvPageChild>
             ),
           ),
           const _CastCrewSection(),
-          const ImagesSection<TvViewModel>(),
-          const _MediaInfoSection(),
+          const SimilarTitlesSection<Tv, TvViewModel>(),
           const RecommendationsSection<Tv, TvViewModel>(),
-          // const ReviewsSection(),
           const MoreByDirectorSection<Tv, TvViewModel>(),
           const MoreByLeadActorSection<Tv, TvViewModel>(),
-          const SimilarTitlesSection<Tv, TvViewModel>(),
+          const ImagesSection<TvViewModel>(),
+          const _MediaInfoSection(),
+          // const ReviewsSection(),
           const KeywordsSection<Tv, TvViewModel>(),
           const SliverToBoxAdapter(child: SizedBox(height: 16)),
         ],

@@ -107,7 +107,7 @@ class _HomePageChild extends StatelessWidget
         ],
       ),
       HomeSection(
-        SectionTitle.freeToWatch,
+        SectionTitle.latest,
         params: [MediaType.movie.name, MediaType.tv.name],
         paramTitles: const [
           'Movie',
@@ -115,7 +115,7 @@ class _HomePageChild extends StatelessWidget
         ],
       ),
       HomeSection(
-        SectionTitle.latest,
+        SectionTitle.upcoming,
         params: [MediaType.movie.name, MediaType.tv.name],
         paramTitles: const [
           'Movie',
@@ -139,7 +139,7 @@ class _HomePageChild extends StatelessWidget
         ],
       ),
       HomeSection(
-        SectionTitle.topRated,
+        SectionTitle.freeToWatch,
         params: [MediaType.movie.name, MediaType.tv.name],
         paramTitles: const [
           'Movie',
@@ -147,13 +147,14 @@ class _HomePageChild extends StatelessWidget
         ],
       ),
       HomeSection(
-        SectionTitle.upcoming,
+        SectionTitle.topRated,
         params: [MediaType.movie.name, MediaType.tv.name],
         paramTitles: const [
           'Movie',
           'TV show',
         ],
       ),
+
     ];
   }
 
