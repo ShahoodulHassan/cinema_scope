@@ -2,6 +2,7 @@ import 'package:cinema_scope/models/similar_titles_params.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../constants.dart';
@@ -208,9 +209,19 @@ mixin CommonFunctions on Utilities, GenericFunctions {
   }
 
   openImdbParentalGuide(String imdbId) {
-    openUrlString(
-      '${Constants.imdbTitleUrl}$imdbId/parentalguide',
-      launchMode: LaunchMode.inAppWebView,
+    var options = ChromeSafariBrowserClassOptions(
+      android: AndroidChromeCustomTabsOptions(
+        shareState: CustomTabsShareState.SHARE_STATE_OFF,
+        toolbarBackgroundColor: kPrimaryContainer,
+      ),
+      ios: IOSSafariOptions(barCollapsingEnabled: true),
     );
+    ChromeSafariBrowser().open(
+        url: Uri.parse('${Constants.imdbTitleUrl}$imdbId/parentalguide'),
+        options: options);
+    // openUrlString(
+    //   '${Constants.imdbTitleUrl}$imdbId/parentalguide',
+    //   launchMode: LaunchMode.inAppWebView,
+    // );
   }
 }
