@@ -4,7 +4,6 @@ import 'package:async/async.dart';
 import 'package:cinema_scope/architecture/config_view_model.dart';
 import 'package:cinema_scope/architecture/person_view_model.dart';
 import 'package:cinema_scope/models/search.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:tuple/tuple.dart';
 
