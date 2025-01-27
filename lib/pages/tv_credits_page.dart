@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
@@ -9,7 +7,6 @@ import 'package:provider/provider.dart';
 import '../architecture/filmography_view_model.dart';
 import '../architecture/tv_credits_view_model.dart';
 import '../constants.dart';
-import '../main.dart';
 import '../models/tv.dart';
 import '../widgets/frosted_app_bar.dart';
 import '../widgets/poster_tile.dart';
@@ -89,6 +86,13 @@ class _TvCreditsPageChildState extends State<_TvCreditsPageChild>
                 pinned: true,
                 title: Text(widget.title),
                 subtitle: Text(widget.name),
+                actions: [
+                  IconButton(
+                    tooltip: 'Search',
+                    onPressed: () => openSearchPage(context),
+                    icon: const Icon(Icons.search_rounded),
+                  ),
+                ],
                 bottom: crew.isNotEmpty && cast.isNotEmpty
                     ? TabBar(
                         indicatorSize: TabBarIndicatorSize.tab,
@@ -208,29 +212,6 @@ class _TvCreditsPageChildState extends State<_TvCreditsPageChild>
   }
 }
 
-class _FilterDelegate extends SliverPersistentHeaderDelegate {
-  PreferredSizeWidget filterBar;
-
-  _FilterDelegate(this.filterBar);
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return filterBar;
-  }
-
-  @override
-  double get maxExtent => filterBar.preferredSize.height;
-
-  @override
-  double get minExtent => maxExtent;
-
-  @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
-    return false;
-  }
-}
-
 class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
   final double rowHeight = 62.0;
   final double verticalPadding = 8.0;
@@ -325,7 +306,7 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
       //     : null,
       // visualDensity: VisualDensity(horizontal: 0.0, vertical: -1,),
       selected: selected,
-      selectedColor: Theme.of(context).colorScheme.primary.withOpacity(0.8),
+      selectedColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 0.0),
       labelPadding: const EdgeInsets.symmetric(horizontal: 4.0),

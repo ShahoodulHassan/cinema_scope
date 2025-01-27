@@ -28,7 +28,7 @@ class FilmographyViewModel extends ChangeNotifier
 
   final Map<int, String> _mediaToDeptJobsStringMap = {};
 
-  final Map<int, String> _mediaToGenreNamesStringMap = {};
+  // final Map<int, String> _mediaToGenreNamesStringMap = {};
 
   final List<CombinedResult> _allResults = [];
 

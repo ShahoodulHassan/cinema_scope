@@ -7,7 +7,7 @@ part of 'person.dart';
 // **************************************************************************
 
 Person _$PersonFromJson(Map<String, dynamic> json) => Person(
-      json['id'] as int,
+      (json['id'] as num).toInt(),
       json['adult'] as bool,
       json['name'] as String,
       (json['also_known_as'] as List<dynamic>).map((e) => e as String).toList(),
@@ -25,7 +25,7 @@ Person _$PersonFromJson(Map<String, dynamic> json) => Person(
           : TaggedImageResult.fromJson(
               json['tagged_images'] as Map<String, dynamic>),
       popularity: (json['popularity'] as num?)?.toDouble(),
-      gender: json['gender'] as int?,
+      gender: (json['gender'] as num?)?.toInt(),
       knownForDepartment: json['known_for_department'] as String? ?? '',
       birthday: json['birthday'] as String?,
       deathday: json['deathday'] as String?,
@@ -61,7 +61,7 @@ ExternalIds _$ExternalIdsFromJson(Map<String, dynamic> json) => ExternalIds(
       freebaseMid: json['freebase_mid'] as String?,
       freebaseId: json['freebase_id'] as String?,
       imdbId: json['imdb_id'] as String?,
-      tvrageId: json['tvrage_id'] as int?,
+      tvrageId: (json['tvrage_id'] as num?)?.toInt(),
       wikidataId: json['wikidata_id'] as String?,
       facebookId: json['facebook_id'] as String?,
       instagramId: json['instagram_id'] as String?,
@@ -127,15 +127,15 @@ Map<String, dynamic> _$TvCreditsToJson(TvCredits instance) => <String, dynamic>{
 
 CombinedOfCast _$CombinedOfCastFromJson(Map<String, dynamic> json) =>
     CombinedOfCast(
-      json['id'] as int,
+      (json['id'] as num).toInt(),
       json['overview'] as String,
       json['character'] as String,
       json['credit_id'] as String,
       genreIds: (json['genre_ids'] as List<dynamic>?)
-              ?.map((e) => e as int)
+              ?.map((e) => (e as num).toInt())
               .toList() ??
           const <int>[],
-      voteCount: json['vote_count'] as int? ?? 0,
+      voteCount: (json['vote_count'] as num?)?.toInt() ?? 0,
       voteAverage: (json['vote_average'] as num?)?.toDouble() ?? 0.0,
       originalLanguage: json['original_language'] as String? ?? '',
       mediaType: json['media_type'] as String?,
@@ -157,8 +157,8 @@ CombinedOfCast _$CombinedOfCastFromJson(Map<String, dynamic> json) =>
       genreNamesString: json['genre_names_string'] as String? ?? '',
       dateString: json['date_string'] as String? ?? '',
       yearString: json['year_string'] as String? ?? '',
-      order: json['order'] as int?,
-      episodeCount: json['episode_count'] as int?,
+      order: (json['order'] as num?)?.toInt(),
+      episodeCount: (json['episode_count'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$CombinedOfCastToJson(CombinedOfCast instance) =>
@@ -194,16 +194,16 @@ Map<String, dynamic> _$CombinedOfCastToJson(CombinedOfCast instance) =>
 
 CombinedOfCrew _$CombinedOfCrewFromJson(Map<String, dynamic> json) =>
     CombinedOfCrew(
-      json['id'] as int,
+      (json['id'] as num).toInt(),
       json['overview'] as String,
       json['department'] as String,
       json['credit_id'] as String,
       json['job'] as String,
       genreIds: (json['genre_ids'] as List<dynamic>?)
-              ?.map((e) => e as int)
+              ?.map((e) => (e as num).toInt())
               .toList() ??
           const <int>[],
-      voteCount: json['vote_count'] as int? ?? 0,
+      voteCount: (json['vote_count'] as num?)?.toInt() ?? 0,
       voteAverage: (json['vote_average'] as num?)?.toDouble() ?? 0.0,
       originalLanguage: json['original_language'] as String? ?? '',
       mediaType: json['media_type'] as String?,
@@ -225,7 +225,7 @@ CombinedOfCrew _$CombinedOfCrewFromJson(Map<String, dynamic> json) =>
       genreNamesString: json['genre_names_string'] as String? ?? '',
       dateString: json['date_string'] as String? ?? '',
       yearString: json['year_string'] as String? ?? '',
-      episodeCount: json['episode_count'] as int?,
+      episodeCount: (json['episode_count'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$CombinedOfCrewToJson(CombinedOfCrew instance) =>
@@ -260,7 +260,7 @@ Map<String, dynamic> _$CombinedOfCrewToJson(CombinedOfCrew instance) =>
     };
 
 MovieOfCast _$MovieOfCastFromJson(Map<String, dynamic> json) => MovieOfCast(
-      json['id'] as int,
+      (json['id'] as num).toInt(),
       json['overview'] as String,
       json['original_title'] as String,
       json['title'] as String,
@@ -268,17 +268,17 @@ MovieOfCast _$MovieOfCastFromJson(Map<String, dynamic> json) => MovieOfCast(
       json['character'] as String,
       json['credit_id'] as String,
       genreIds: (json['genre_ids'] as List<dynamic>?)
-              ?.map((e) => e as int)
+              ?.map((e) => (e as num).toInt())
               .toList() ??
           const <int>[],
-      voteCount: json['vote_count'] as int? ?? 0,
+      voteCount: (json['vote_count'] as num?)?.toInt() ?? 0,
       voteAverage: (json['vote_average'] as num?)?.toDouble() ?? 0.0,
       originalLanguage: json['original_language'] as String? ?? '',
       popularity: (json['popularity'] as num?)?.toDouble(),
       posterPath: json['poster_path'] as String?,
       releaseDate: json['release_date'] as String?,
       backdropPath: json['backdrop_path'] as String?,
-      order: json['order'] as int?,
+      order: (json['order'] as num?)?.toInt(),
       adult: json['adult'] as bool?,
     )..mediaType = json['media_type'] as String?;
 
@@ -305,7 +305,7 @@ Map<String, dynamic> _$MovieOfCastToJson(MovieOfCast instance) =>
     };
 
 MovieOfCrew _$MovieOfCrewFromJson(Map<String, dynamic> json) => MovieOfCrew(
-      json['id'] as int,
+      (json['id'] as num).toInt(),
       json['overview'] as String,
       json['original_title'] as String,
       json['title'] as String,
@@ -314,10 +314,10 @@ MovieOfCrew _$MovieOfCrewFromJson(Map<String, dynamic> json) => MovieOfCrew(
       json['credit_id'] as String,
       json['job'] as String,
       genreIds: (json['genre_ids'] as List<dynamic>?)
-              ?.map((e) => e as int)
+              ?.map((e) => (e as num).toInt())
               .toList() ??
           const <int>[],
-      voteCount: json['vote_count'] as int? ?? 0,
+      voteCount: (json['vote_count'] as num?)?.toInt() ?? 0,
       voteAverage: (json['vote_average'] as num?)?.toDouble() ?? 0.0,
       originalLanguage: json['original_language'] as String? ?? '',
       popularity: (json['popularity'] as num?)?.toDouble(),
@@ -350,7 +350,7 @@ Map<String, dynamic> _$MovieOfCrewToJson(MovieOfCrew instance) =>
     };
 
 TvOfCast _$TvOfCastFromJson(Map<String, dynamic> json) => TvOfCast(
-      json['id'] as int,
+      (json['id'] as num).toInt(),
       json['overview'] as String,
       (json['origin_country'] as List<dynamic>)
           .map((e) => e as String)
@@ -360,10 +360,10 @@ TvOfCast _$TvOfCastFromJson(Map<String, dynamic> json) => TvOfCast(
       json['character'] as String,
       json['credit_id'] as String,
       genreIds: (json['genre_ids'] as List<dynamic>?)
-              ?.map((e) => e as int)
+              ?.map((e) => (e as num).toInt())
               .toList() ??
           const <int>[],
-      voteCount: json['vote_count'] as int? ?? 0,
+      voteCount: (json['vote_count'] as num?)?.toInt() ?? 0,
       voteAverage: (json['vote_average'] as num?)?.toDouble() ?? 0.0,
       originalLanguage: json['original_language'] as String? ?? '',
       popularity: (json['popularity'] as num?)?.toDouble(),
@@ -371,7 +371,7 @@ TvOfCast _$TvOfCastFromJson(Map<String, dynamic> json) => TvOfCast(
       backdropPath: json['backdrop_path'] as String?,
       firstAirDate: json['first_air_date'] as String?,
       adult: json['adult'] as bool?,
-      episodeCount: json['episode_count'] as int?,
+      episodeCount: (json['episode_count'] as num?)?.toInt(),
     )..mediaType = json['media_type'] as String?;
 
 Map<String, dynamic> _$TvOfCastToJson(TvOfCast instance) => <String, dynamic>{
@@ -396,7 +396,7 @@ Map<String, dynamic> _$TvOfCastToJson(TvOfCast instance) => <String, dynamic>{
     };
 
 TvOfCrew _$TvOfCrewFromJson(Map<String, dynamic> json) => TvOfCrew(
-      json['id'] as int,
+      (json['id'] as num).toInt(),
       json['overview'] as String,
       (json['origin_country'] as List<dynamic>)
           .map((e) => e as String)
@@ -407,10 +407,10 @@ TvOfCrew _$TvOfCrewFromJson(Map<String, dynamic> json) => TvOfCrew(
       json['job'] as String,
       json['credit_id'] as String,
       genreIds: (json['genre_ids'] as List<dynamic>?)
-              ?.map((e) => e as int)
+              ?.map((e) => (e as num).toInt())
               .toList() ??
           const <int>[],
-      voteCount: json['vote_count'] as int? ?? 0,
+      voteCount: (json['vote_count'] as num?)?.toInt() ?? 0,
       voteAverage: (json['vote_average'] as num?)?.toDouble() ?? 0.0,
       originalLanguage: json['original_language'] as String? ?? '',
       popularity: (json['popularity'] as num?)?.toDouble(),
@@ -418,7 +418,7 @@ TvOfCrew _$TvOfCrewFromJson(Map<String, dynamic> json) => TvOfCrew(
       backdropPath: json['backdrop_path'] as String?,
       firstAirDate: json['first_air_date'] as String?,
       adult: json['adult'] as bool?,
-      episodeCount: json['episode_count'] as int?,
+      episodeCount: (json['episode_count'] as num?)?.toInt(),
     )..mediaType = json['media_type'] as String?;
 
 Map<String, dynamic> _$TvOfCrewToJson(TvOfCrew instance) => <String, dynamic>{
@@ -457,9 +457,9 @@ Map<String, dynamic> _$PersonImageResultToJson(PersonImageResult instance) =>
 
 TaggedImageResult _$TaggedImageResultFromJson(Map<String, dynamic> json) =>
     TaggedImageResult(
-      json['page'] as int,
-      json['total_pages'] as int,
-      json['total_results'] as int,
+      (json['page'] as num).toInt(),
+      (json['total_pages'] as num).toInt(),
+      (json['total_results'] as num).toInt(),
       (json['results'] as List<dynamic>)
           .map((e) => TaggedImage.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -475,11 +475,11 @@ Map<String, dynamic> _$TaggedImageResultToJson(TaggedImageResult instance) =>
 
 TaggedImage _$TaggedImageFromJson(Map<String, dynamic> json) => TaggedImage(
       (json['aspect_ratio'] as num).toDouble(),
-      json['height'] as int,
+      (json['height'] as num).toInt(),
       json['file_path'] as String,
       (json['vote_average'] as num).toDouble(),
-      json['vote_count'] as int,
-      json['width'] as int,
+      (json['vote_count'] as num).toInt(),
+      (json['width'] as num).toInt(),
       json['id'] as String,
       json['media_type'] as String,
       BaseResult.fromJson(json['media'] as Map<String, dynamic>),

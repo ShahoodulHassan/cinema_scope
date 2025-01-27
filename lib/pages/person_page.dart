@@ -90,6 +90,13 @@ class _PersonPageChildState extends State<_PersonPageChild>
           SliverFrostedAppBar(
             pinned: true,
             title: Text(widget.name),
+            actions: [
+              IconButton(
+                tooltip: 'Search',
+                onPressed: () => openSearchPage(context),
+                icon: const Icon(Icons.search_rounded),
+              ),
+            ],
           ),
           MediaQuery.sizeOf(context).aspectRatio <= 1
               ? buildIntroPortrait()
@@ -452,7 +459,7 @@ class _PersonalInfoSection extends StatelessWidget
               padding: const EdgeInsets.symmetric(vertical: 2.0),
               child: Container(
                 height: 0.20,
-                color: Theme.of(context).primaryColor.withOpacity(0.7),
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.7),
               ),
             ),
             itemCount: person.alsoKnownAs.length,

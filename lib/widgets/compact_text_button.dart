@@ -14,12 +14,12 @@ class CompactTextButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       style: ButtonStyle(
-        padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+        padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
           const EdgeInsets.symmetric(vertical: 4.0, horizontal: 6.0),
         ),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        minimumSize: MaterialStateProperty.all<Size>(Size.zero),
-        shape: MaterialStateProperty.all<OutlinedBorder>(
+        minimumSize: WidgetStateProperty.all<Size>(Size.zero),
+        shape: WidgetStateProperty.all<OutlinedBorder>(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(4.0),
           ),

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:cinema_scope/architecture/movie_view_model.dart';
@@ -135,6 +133,13 @@ class _MoviePageChildState extends State<_MoviePageChild>
           SliverFrostedAppBar(
             title: Text(widget.title),
             pinned: true,
+            actions: [
+              IconButton(
+                tooltip: 'Search',
+                onPressed: () => openSearchPage(context),
+                icon: const Icon(Icons.search_rounded),
+              ),
+            ],
           ),
           Selector<MovieViewModel,
               Tuple3<List<String>, Map<String, ThumbnailType>, String?>>(
@@ -165,8 +170,7 @@ class _MoviePageChildState extends State<_MoviePageChild>
             },
             selector: (_, mvm) {
               logIfDebug('isPinned, selector called with:${mvm.youtubeKeys}');
-              return Tuple3<List<String>, Map<String, ThumbnailType>,
-                  String?>(
+              return Tuple3<List<String>, Map<String, ThumbnailType>, String?>(
                 mvm.youtubeKeys,
                 mvm.thumbMap,
                 mvm.initialVideoId,
@@ -252,6 +256,13 @@ class _MoviePageChildState extends State<_MoviePageChild>
                               fontSize: 18.0,
                             ),
                   ),
+                  actions: [
+                    IconButton(
+                      tooltip: 'Search',
+                      onPressed: () => openSearchPage(context),
+                      icon: const Icon(Icons.search_rounded),
+                    ),
+                  ],
                   leading: BackButton(
                     style: IconButton.styleFrom(
                       iconSize: 22.0,
@@ -605,8 +616,9 @@ class _MoviePageChildState extends State<_MoviePageChild>
                       if (imdbId.isNotEmpty)
                         getIconButton(
                           const Icon(FontAwesomeIcons.imdb),
-                          () => openUrlString(
+                          () => openImdbParentalGuide(
                             '${Constants.imdbTitleUrl}$imdbId',
+                            prefersDeepLink: true,
                           ),
                           color: kPrimary,
                         ),
@@ -626,7 +638,9 @@ class _MoviePageChildState extends State<_MoviePageChild>
                           padding: const EdgeInsets.symmetric(horizontal: 4.0),
                           child: InkWell(
                             borderRadius: BorderRadius.circular(4.0),
-                            onTap: () => openImdbParentalGuide(imdbId),
+                            onTap: () => openImdbParentalGuide(
+                              '${Constants.imdbTitleUrl}$imdbId/parentalguide',
+                            ),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 6.0,
@@ -750,7 +764,6 @@ class MoreByLeadActorSection<M extends Media, T extends MediaViewModel<M>>
 //   );
 // }
 }
-
 
 class StreamersView<M extends Media, V extends MediaViewModel<M>>
     extends StatelessWidget with Utilities {
@@ -1565,7 +1578,7 @@ class KeywordsSection<M extends Media, VM extends MediaViewModel<M>>
 
   Chip getKeywordChip(BuildContext context, Keyword keyword) {
     return Chip(
-      backgroundColor: kPrimary.withOpacity(0.07),
+      backgroundColor: kPrimary.withValues(alpha: 0.07),
       padding: EdgeInsets.zero,
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       label: Text(
@@ -1982,7 +1995,6 @@ class ReviewsListView extends StatelessWidget with GenericFunctions {
     );
   }
 }
-
 
 /// This widget showcases the implementation of a GridView in a PageView
 /// The implementation was successful but the page scrolling was annoyingly

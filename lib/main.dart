@@ -1,11 +1,10 @@
+import 'package:cinema_scope/architecture/app_provider.dart';
 import 'package:cinema_scope/pages/home_page.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:cinema_scope/widgets/app_lifecycle_manager.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import 'architecture/config_view_model.dart';
@@ -28,15 +27,27 @@ final Color kBackgroundColor = kPrimary.lighten2(88);
 final double kScaffoldPaddingTop = MediaQuery.paddingOf(appContext).top;
 
 void main() async {
-  print('main called');
+  debugPrint('main called');
   WidgetsFlutterBinding.ensureInitialized();
   await PrefUtil.init();
   // await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await AppInfo.init();
-  runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(
-        create: (_) => ConfigViewModel()..checkConfigurations()),
-  ], child: MyApp()));
+  runApp(MyProviders());
+}
+
+class MyProviders extends MultiProvider {
+  MyProviders({super.key})
+      : super(
+          providers: [
+            ChangeNotifierProvider(
+              create: (_) => ConfigViewModel()..checkConfigurations(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => AppProvider(),
+            ),
+          ],
+          child: MyApp(),
+        );
 }
 
 final RouteObserver<ModalRoute<void>> routeObserver =
@@ -47,11 +58,11 @@ class MyApp extends StatelessWidget with GenericFunctions {
 
   late final primarySwatch = buildMaterialColor(getColorFromHexCode('#895EA0'));
 
-  late final _defaultLightColorScheme =
-      ColorScheme.fromSeed(seedColor: getColorFromHexCode('#895EA0'));
-
-  late final _defaultDarkColorScheme = ColorScheme.fromSwatch(
-      primarySwatch: primarySwatch, brightness: Brightness.dark);
+  // late final _defaultLightColorScheme =
+  //     ColorScheme.fromSeed(seedColor: getColorFromHexCode('#895EA0'));
+  //
+  // late final _defaultDarkColorScheme = ColorScheme.fromSwatch(
+  //     primarySwatch: primarySwatch, brightness: Brightness.dark);
 
   @override
   Widget build(BuildContext context) {
@@ -69,14 +80,14 @@ class MyApp extends StatelessWidget with GenericFunctions {
             title: 'Cinema scope',
             theme: ThemeData(
               colorSchemeSeed: primaryColor,
-              highlightColor: primaryColor.withOpacity(0.10),
-              splashColor: primaryColor.withOpacity(0.10),
+              highlightColor: primaryColor.withValues(alpha: 0.10),
+              splashColor: primaryColor.withValues(alpha: 0.10),
               useMaterial3: true,
               fontFamily: fontFamily,
               scrollbarTheme: Theme.of(context).scrollbarTheme.copyWith(
-                thumbColor: const MaterialStatePropertyAll(Colors.black26),
-                radius: const Radius.circular(12.0),
-              ),
+                    thumbColor: const WidgetStatePropertyAll(Colors.black26),
+                    radius: const Radius.circular(12.0),
+                  ),
               appBarTheme: AppBarTheme(
                 titleTextStyle: TextStyle(
                   color: appBarItemColor,
@@ -96,7 +107,9 @@ class MyApp extends StatelessWidget with GenericFunctions {
             navigatorObservers: [routeObserver],
             builder: (ctx, child) {
               return MediaQuery(
-                data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: const TextScaler.linear(1.0),
+                ),
                 child: child!,
               );
             },

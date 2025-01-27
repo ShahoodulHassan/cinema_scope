@@ -579,8 +579,8 @@ class FrostedAppBar extends StatefulWidget implements PreferredSizeWidget {
   /// overall theme's brightness is [Brightness.light], and [ColorScheme.surface]
   /// if the overall theme's brightness is [Brightness.dark].
   ///
-  /// If this color is a [MaterialStateColor] it will be resolved against
-  /// [MaterialState.scrolledUnder] when the content of the app's
+  /// If this color is a [WidgetStateColor] it will be resolved against
+  /// [WidgetState.scrolledUnder] when the content of the app's
   /// primary scrollable overlaps the app bar.
   /// {@endtemplate}
   ///
@@ -878,11 +878,11 @@ class _FrostedAppBarState extends State<FrostedAppBar> {
     }
   }
 
-  Color _resolveColor(Set<MaterialState> states, Color? widgetColor,
+  Color _resolveColor(Set<WidgetState> states, Color? widgetColor,
       Color? themeColor, Color defaultColor) {
-    return MaterialStateProperty.resolveAs<Color?>(widgetColor, states) ??
-        MaterialStateProperty.resolveAs<Color?>(themeColor, states) ??
-        MaterialStateProperty.resolveAs<Color>(defaultColor, states);
+    return WidgetStateProperty.resolveAs<Color?>(widgetColor, states) ??
+        WidgetStateProperty.resolveAs<Color?>(themeColor, states) ??
+        WidgetStateProperty.resolveAs<Color>(defaultColor, states);
   }
 
   SystemUiOverlayStyle _systemOverlayStyleForBrightness(Brightness brightness,
@@ -914,9 +914,9 @@ class _FrostedAppBarState extends State<FrostedAppBar> {
 
     final FlexibleSpaceBarSettings? settings =
         context.dependOnInheritedWidgetOfExactType<FlexibleSpaceBarSettings>();
-    final Set<MaterialState> states = <MaterialState>{
+    final Set<WidgetState> states = <WidgetState>{
       if (settings?.isScrolledUnder ?? _scrolledUnder)
-        MaterialState.scrolledUnder,
+        WidgetState.scrolledUnder,
     };
 
     final bool hasDrawer = scaffold?.hasDrawer ?? false;
@@ -943,7 +943,7 @@ class _FrostedAppBarState extends State<FrostedAppBar> {
         widget.elevation ?? appBarTheme.elevation ?? defaults.elevation!;
 
     final double effectiveElevation =
-        states.contains(MaterialState.scrolledUnder)
+        states.contains(WidgetState.scrolledUnder)
             ? widget.scrolledUnderElevation ??
                 appBarTheme.scrolledUnderElevation ??
                 defaults.scrolledUnderElevation ??
@@ -977,11 +977,11 @@ class _FrostedAppBarState extends State<FrostedAppBar> {
               .transform(widget.toolbarOpacity);
       if (titleTextStyle?.color != null) {
         titleTextStyle = titleTextStyle!
-            .copyWith(color: titleTextStyle.color!.withOpacity(opacity));
+            .copyWith(color: titleTextStyle.color!.withValues(alpha: opacity));
       }
       if (toolbarTextStyle?.color != null) {
         toolbarTextStyle = toolbarTextStyle!
-            .copyWith(color: toolbarTextStyle.color!.withOpacity(opacity));
+            .copyWith(color: toolbarTextStyle.color!.withValues(alpha: opacity));
       }
       overallIconTheme = overallIconTheme.copyWith(
         opacity: opacity * (overallIconTheme.opacity ?? 1.0),
@@ -1085,16 +1085,9 @@ class _FrostedAppBarState extends State<FrostedAppBar> {
       // Set maximum text scale factor to [_kMaxTitleTextScaleFactor] for the
       // title to keep the visual hierarchy the same even with larger font
       // sizes. To opt out, wrap the [title] widget in a [MediaQuery] widget
-      // with [MediaQueryData.textScaleFactor] set to
-      // `MediaQuery.textScaleFactorOf(context)`.
-      final MediaQueryData mediaQueryData = MediaQuery.of(context);
-      title = MediaQuery(
-        data: mediaQueryData.copyWith(
-          textScaleFactor: math.min(
-            mediaQueryData.textScaleFactor,
-            _kMaxTitleTextScaleFactor,
-          ),
-        ),
+      // with a different `TextScaler`.
+      title = MediaQuery.withClampedTextScaling(
+        maxScaleFactor: _kMaxTitleTextScaleFactor,
         child: title,
       );
     }
@@ -1240,7 +1233,7 @@ class _FrostedAppBarState extends State<FrostedAppBar> {
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: overlayStyle,
         child: Material(
-          color: backgroundColor.withOpacity(kFrostOpacity),
+          color: backgroundColor.withValues(alpha: kFrostOpacity),
           elevation: effectiveElevation,
           type: widget.forceMaterialTransparency
               ? MaterialType.transparency
@@ -1886,6 +1879,7 @@ class SliverFrostedAppBar extends StatefulWidget {
       leading: leading,
       automaticallyImplyLeading: automaticallyImplyLeading,
       flexibleSpace: flexibleSpace,
+      actions: actions,
       bottom: bottom,
       elevation: elevation,
       scrolledUnderElevation: scrolledUnderElevation,

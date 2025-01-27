@@ -2,8 +2,7 @@ import 'package:cinema_scope/models/similar_titles_params.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
 
 import '../constants.dart';
 import '../main.dart';
@@ -114,7 +113,7 @@ mixin CommonFunctions on Utilities, GenericFunctions {
               },
               borderRadius: BorderRadius.circular(6.0),
               child: Chip(
-                backgroundColor: kPrimary.withOpacity(0.07),
+                backgroundColor: kPrimary.withValues(alpha: 0.07),
                 padding: EdgeInsets.zero,
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 label: Text(
@@ -141,7 +140,7 @@ mixin CommonFunctions on Utilities, GenericFunctions {
 
   Widget get sectionSeparator => Container(
         height: 1.0,
-        color: kPrimary.withOpacity(0.6),
+        color: kPrimary.withValues(alpha: 0.6),
       );
 
   Color get scaffoldColor => kPrimaryContainer.lighten2(75);
@@ -208,20 +207,30 @@ mixin CommonFunctions on Utilities, GenericFunctions {
         .join(', ');
   }
 
-  openImdbParentalGuide(String imdbId) {
-    var options = ChromeSafariBrowserClassOptions(
-      android: AndroidChromeCustomTabsOptions(
-        shareState: CustomTabsShareState.SHARE_STATE_OFF,
-        toolbarBackgroundColor: kPrimaryContainer,
-      ),
-      ios: IOSSafariOptions(barCollapsingEnabled: true),
-    );
-    ChromeSafariBrowser().open(
-        url: Uri.parse('${Constants.imdbTitleUrl}$imdbId/parentalguide'),
-        options: options);
-    // openUrlString(
-    //   '${Constants.imdbTitleUrl}$imdbId/parentalguide',
-    //   launchMode: LaunchMode.inAppWebView,
-    // );
+  openImdbParentalGuide(String urlString, {bool prefersDeepLink = false}) {
+    try {
+      launchUrl(
+        Uri.parse(urlString),
+        prefersDeepLink: prefersDeepLink,
+        customTabsOptions: CustomTabsOptions(
+          colorSchemes: CustomTabsColorSchemes.defaults(
+            toolbarColor: kPrimaryContainer,
+          ),
+          shareState: CustomTabsShareState.off,
+          urlBarHidingEnabled: false,
+          showTitle: true,
+          closeButton: CustomTabsCloseButton(
+            icon: CustomTabsCloseButtonIcons.back,
+          ),
+        ),
+        safariVCOptions: SafariViewControllerOptions(
+          preferredBarTintColor: kPrimaryContainer,
+          barCollapsingEnabled: true,
+          dismissButtonStyle: SafariViewControllerDismissButtonStyle.close,
+        ),
+      );
+    } on Exception catch (e) {
+      logIfDebug(e.toString());
+    }
   }
 }

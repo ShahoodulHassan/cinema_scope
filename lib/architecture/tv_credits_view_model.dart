@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tuple/tuple.dart';
 
 import '../constants.dart';
-import '../models/movie.dart';
 import '../models/tv.dart';
 import '../utilities/common_functions.dart';
 import '../utilities/generic_functions.dart';

@@ -4,7 +4,6 @@ import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
@@ -49,6 +48,7 @@ class _SearchPageChildState extends State<_SearchPageChild>
     svm = context.read<SearchViewModel>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       svm.initializePaging(cvm.combinedGenres);
+      svm.focusNode.requestFocus();
     });
     super.initState();
   }
@@ -180,9 +180,9 @@ class _SearchPageChildState extends State<_SearchPageChild>
         height: kToolbarHeight - 4,
         child: Center(
           child: TextField(
-            focusNode: context.read<SearchViewModel>().focusNode,
-            controller: context.read<SearchViewModel>().controller,
-            onChanged: context.read<SearchViewModel>().onChanged,
+            focusNode: svm.focusNode,
+            controller: svm.controller,
+            onChanged: svm.onChanged,
             decoration: InputDecoration(
               focusedBorder: OutlineInputBorder(
                 borderRadius: borderRadius,
@@ -238,7 +238,7 @@ class _SearchPageChildState extends State<_SearchPageChild>
               hintStyle: TextStyle(
                   fontSize: isPortrait ? 17 /*.spMin*/ : 18 /*.spMin*/),
               filled: true,
-              fillColor: kPrimary.withOpacity(0.07),
+              fillColor: kPrimary.withValues(alpha: 0.07),
             ),
             style:
                 TextStyle(fontSize: isPortrait ? 17 /*.spMin*/ : 18 /*.spMin*/),
@@ -481,7 +481,7 @@ class SearchAppbar extends StatelessWidget
               fillColor: Theme.of(context)
                   .colorScheme
                   .primaryContainer
-                  .withOpacity(0.5),
+                  .withValues(alpha: 0.5),
             ),
             style: TextStyle(fontSize: isPortrait ? 16 : 18),
           ),

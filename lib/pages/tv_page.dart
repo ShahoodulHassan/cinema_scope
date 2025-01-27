@@ -111,6 +111,13 @@ class _TvPageChildState extends State<_TvPageChild>
                               fontSize: 18.0,
                             ),
                   ),
+                  actions: [
+                    IconButton(
+                      tooltip: 'Search',
+                      onPressed: () => openSearchPage(context),
+                      icon: const Icon(Icons.search_rounded),
+                    ),
+                  ],
                   leading: BackButton(
                     style: IconButton.styleFrom(
                       iconSize: 22.0,
@@ -249,6 +256,13 @@ class _TvPageChildState extends State<_TvPageChild>
           SliverFrostedAppBar.withSubtitle(
             title: Text(widget.title),
             pinned: true,
+            actions: [
+              IconButton(
+                tooltip: 'Search',
+                onPressed: () => openSearchPage(context),
+                icon: const Icon(Icons.search_rounded),
+              ),
+            ],
           ),
           Selector<TvViewModel,
               Tuple3<List<String>, Map<String, ThumbnailType>, String?>>(
@@ -546,8 +560,9 @@ class _TvPageChildState extends State<_TvPageChild>
                       if (imdbId.isNotEmpty)
                         getIconButton(
                           const Icon(FontAwesomeIcons.imdb),
-                          () => openUrlString(
+                          () => openImdbParentalGuide(
                             '${Constants.imdbTitleUrl}$imdbId',
+                            prefersDeepLink: true,
                           ),
                           color: kPrimary,
                         ),
@@ -567,7 +582,9 @@ class _TvPageChildState extends State<_TvPageChild>
                           padding: const EdgeInsets.symmetric(horizontal: 4.0),
                           child: InkWell(
                             borderRadius: BorderRadius.circular(4.0),
-                            onTap: () => openImdbParentalGuide(imdbId),
+                            onTap: () => openImdbParentalGuide(
+                              '${Constants.imdbTitleUrl}$imdbId/parentalguide',
+                            ),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 6.0,
@@ -802,8 +819,6 @@ class _CastCrewSection extends StatelessWidget
       );
     }));
   }
-
-
 }
 
 class _TvCastPosterListView extends StatelessWidget

@@ -10,7 +10,7 @@ import '../widgets/frosted_app_bar.dart';
 /// This page is meant to show the sub details of movie details
 /// T can be any model object which means that all possible objects would have
 /// to be dealt with in the code that links the models with the UI.
-class MediaSubDetailsPage<T> extends StatelessWidget {
+class MediaSubDetailsPage<T> extends StatelessWidget with GenericFunctions {
   final String title; // Page title
   final String name; // Movie name
   final List<T> list;
@@ -29,6 +29,13 @@ class MediaSubDetailsPage<T> extends StatelessWidget {
       appBar: FrostedAppBar.withSubtitle(
         title: Text(title),
         subtitle: Text(name),
+        actions: [
+          IconButton(
+            tooltip: 'Search',
+            onPressed: () => openSearchPage(context),
+            icon: const Icon(Icons.search_rounded),
+          ),
+        ],
       ),
       body: ListView.separated(
         itemBuilder: (_, index) {

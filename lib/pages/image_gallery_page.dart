@@ -21,8 +21,8 @@ class ImageGalleryPage extends StatelessWidget with GenericFunctions {
 
   @override
   Widget build(BuildContext context) {
-    final appBarTheme = Theme.of(context).appBarTheme;
-    final color = Colors.white.withOpacity(0.85);
+    // final appBarTheme = Theme.of(context).appBarTheme;
+    // final color = Colors.white.withOpacity(0.85);
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -240,7 +240,7 @@ class ImageGalleryPage extends StatelessWidget with GenericFunctions {
           top: kScaffoldPaddingTop, // 20.0
           bottom: 8.0,
         ),
-        color: kScaffoldBackgroundColor.withOpacity(kFrostOpacity),
+        color: kScaffoldBackgroundColor.withValues(alpha: kFrostOpacity),
         child: Text(
           title,
           style: Theme.of(appContext).textTheme.bodyLarge?.copyWith(

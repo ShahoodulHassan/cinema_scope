@@ -1,3 +1,6 @@
+import 'package:cinema_scope/utilities/generic_functions.dart';
+import 'package:copy_with_extension/copy_with_extension.dart';
+import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import '../constants.dart';
@@ -48,6 +51,7 @@ class PersonSearchResult extends BaseSearchResult {
 
 /// Custom fromJson had to be implemented to cater for the different sub classes
 /// of BaseResult that may be found inside the 'results' variable.
+@CopyWith()
 @JsonSerializable(fieldRename: FieldRename.snake)
 class MultiSearchResult extends BaseSearchResult {
   List<BaseResult> results;
@@ -138,7 +142,7 @@ class MediaResult extends BaseResult {
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)
-class CombinedResult extends MediaResult {
+class CombinedResult extends MediaResult with GenericFunctions {
   /// It has been made nullable after a bug where movie id 272803 has no
   /// release_date field (in search endpoint)
   String? releaseDate, firstAirDate;
@@ -183,8 +187,10 @@ class CombinedResult extends MediaResult {
 
   /*mediaType == MediaType.tv.name ? firstAirDate : releaseDate;*/
 
-  factory CombinedResult.fromJson(Map<String, dynamic> json) =>
-      _$CombinedResultFromJson(json);
+  factory CombinedResult.fromJson(Map<String, dynamic> json) {
+    if (json['overview'] == null) debugPrint('json:$json');
+    return _$CombinedResultFromJson(json);
+  }
 
   @override
   Map<String, dynamic> toJson() => _$CombinedResultToJson(this);

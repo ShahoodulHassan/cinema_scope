@@ -123,6 +123,13 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
                     ),
                   ),
             pinned: true,
+            actions: [
+              IconButton(
+                tooltip: 'Search',
+                onPressed: () => openSearchPage(context),
+                icon: const Icon(Icons.search_rounded),
+              ),
+            ],
           ),
           PagedSliverGrid(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

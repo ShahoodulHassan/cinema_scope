@@ -1,11 +1,8 @@
-import 'dart:ui';
-
 import 'package:cinema_scope/architecture/credits_view_model.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:provider/provider.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
@@ -15,7 +12,6 @@ import '../main.dart';
 import '../models/movie.dart';
 import '../widgets/frosted_app_bar.dart';
 import '../widgets/poster_tile.dart';
-import '../widgets/sliver_obstruction_injector.dart';
 
 class CreditsPage extends MultiProvider {
   CreditsPage({
@@ -98,6 +94,13 @@ class _CreditsPageChildState extends State<_CreditsPageChild>
                 subtitle: Text(widget.name),
                 floating: true,
                 pinned: true,
+                actions: [
+                  IconButton(
+                    tooltip: 'Search',
+                    onPressed: () => openSearchPage(context),
+                    icon: const Icon(Icons.search_rounded),
+                  ),
+                ],
                 bottom: crew.isNotEmpty && cast.isNotEmpty
                     ? TabBar(
                         indicatorSize: TabBarIndicatorSize.tab,
@@ -313,7 +316,7 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
       //     : null,
       // visualDensity: VisualDensity(horizontal: 0.0, vertical: -1,),
       selected: selected,
-      selectedColor: kPrimary.withOpacity(0.8),
+      selectedColor: kPrimary.withValues(alpha: 0.8),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 0.0),
       labelPadding: const EdgeInsets.symmetric(horizontal: 4.0),

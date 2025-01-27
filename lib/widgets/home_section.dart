@@ -399,7 +399,9 @@ class MediaPosterListView extends StatelessWidget
         'bottom padding:$listViewBottomPadding, '
         'view height:$listViewHeight');
     return SizedBox(
-      height: listViewHeight,
+      /// TODO 27/01/2025 Investigate this offset of 1 that has to be added
+      /// after upgradation of libraries.
+      height: listViewHeight + 1,
       child: ListView.builder(
         itemBuilder: (_, index) {
           // logIfDebug('MyListView itemBuilder called');

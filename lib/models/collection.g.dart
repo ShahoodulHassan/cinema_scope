@@ -7,7 +7,7 @@ part of 'collection.dart';
 // **************************************************************************
 
 Collection _$CollectionFromJson(Map<String, dynamic> json) => Collection(
-      json['id'] as int,
+      (json['id'] as num).toInt(),
       json['name'] as String,
       json['overview'] as String,
       (json['parts'] as List<dynamic>)
@@ -30,8 +30,10 @@ Map<String, dynamic> _$CollectionToJson(Collection instance) =>
 CollectionPart _$CollectionPartFromJson(Map<String, dynamic> json) =>
     CollectionPart(
       json['adult'] as bool,
-      (json['genre_ids'] as List<dynamic>).map((e) => e as int).toList(),
-      json['id'] as int,
+      (json['genre_ids'] as List<dynamic>)
+          .map((e) => (e as num).toInt())
+          .toList(),
+      (json['id'] as num).toInt(),
       json['original_language'] as String,
       json['original_title'] as String,
       json['overview'] as String,
@@ -40,7 +42,7 @@ CollectionPart _$CollectionPartFromJson(Map<String, dynamic> json) =>
       json['title'] as String,
       json['video'] as bool,
       (json['vote_average'] as num).toDouble(),
-      json['vote_count'] as int,
+      (json['vote_count'] as num).toInt(),
       backdropPath: json['backdrop_path'] as String?,
       posterPath: json['poster_path'] as String?,
     );

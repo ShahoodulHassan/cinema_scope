@@ -709,7 +709,7 @@ Media _$MediaFromJson(Map<String, dynamic> json) => Media(
       (json['genres'] as List<dynamic>)
           .map((e) => Genre.fromJson(e as Map<String, dynamic>))
           .toList(),
-      json['id'] as int,
+      (json['id'] as num).toInt(),
       json['original_language'] as String,
       (json['popularity'] as num).toDouble(),
       (json['production_companies'] as List<dynamic>)
@@ -720,7 +720,7 @@ Media _$MediaFromJson(Map<String, dynamic> json) => Media(
           .toList(),
       json['status'] as String,
       (json['vote_average'] as num).toDouble(),
-      json['vote_count'] as int,
+      (json['vote_count'] as num).toInt(),
       VideoResult.fromJson(json['videos'] as Map<String, dynamic>),
       CombinedResults.fromJson(json['recommendations'] as Map<String, dynamic>),
       ImageResult.fromJson(json['images'] as Map<String, dynamic>),
@@ -764,7 +764,7 @@ Movie _$MovieFromJson(Map<String, dynamic> json) => Movie(
       (json['genres'] as List<dynamic>)
           .map((e) => Genre.fromJson(e as Map<String, dynamic>))
           .toList(),
-      json['id'] as int,
+      (json['id'] as num).toInt(),
       json['original_language'] as String,
       (json['popularity'] as num).toDouble(),
       (json['production_companies'] as List<dynamic>)
@@ -775,7 +775,7 @@ Movie _$MovieFromJson(Map<String, dynamic> json) => Movie(
           .toList(),
       json['status'] as String,
       (json['vote_average'] as num).toDouble(),
-      json['vote_count'] as int,
+      (json['vote_count'] as num).toInt(),
       VideoResult.fromJson(json['videos'] as Map<String, dynamic>),
       CombinedResults.fromJson(json['recommendations'] as Map<String, dynamic>),
       ImageResult.fromJson(json['images'] as Map<String, dynamic>),
@@ -785,8 +785,8 @@ Movie _$MovieFromJson(Map<String, dynamic> json) => Movie(
           : WatchProviders.fromJson(
               json['watch/providers'] as Map<String, dynamic>),
       json['original_title'] as String,
-      json['budget'] as int,
-      json['revenue'] as int,
+      (json['budget'] as num).toInt(),
+      (json['revenue'] as num).toInt(),
       (json['spoken_languages'] as List<dynamic>)
           .map((e) => LanguageConfig.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -807,7 +807,7 @@ Movie _$MovieFromJson(Map<String, dynamic> json) => Movie(
           ? null
           : BaseCollection.fromJson(
               json['belongs_to_collection'] as Map<String, dynamic>),
-      runtime: json['runtime'] as int?,
+      runtime: (json['runtime'] as num?)?.toInt(),
       imdbId: json['imdb_id'] as String?,
     );
 
@@ -850,7 +850,7 @@ Map<String, dynamic> _$MovieToJson(Movie instance) => <String, dynamic>{
 
 BaseCollection _$BaseCollectionFromJson(Map<String, dynamic> json) =>
     BaseCollection(
-      json['id'] as int,
+      (json['id'] as num).toInt(),
       json['name'] as String,
       posterPath: json['poster_path'] as String?,
       backdropPath: json['backdrop_path'] as String?,
@@ -865,7 +865,7 @@ Map<String, dynamic> _$BaseCollectionToJson(BaseCollection instance) =>
     };
 
 Genre _$GenreFromJson(Map<String, dynamic> json) => Genre(
-      json['id'] as int,
+      (json['id'] as num).toInt(),
       json['name'] as String,
     );
 
@@ -876,7 +876,7 @@ Map<String, dynamic> _$GenreToJson(Genre instance) => <String, dynamic>{
 
 ProductionCompany _$ProductionCompanyFromJson(Map<String, dynamic> json) =>
     ProductionCompany(
-      json['id'] as int,
+      (json['id'] as num).toInt(),
       json['name'] as String,
       logoPath: json['logo_path'] as String?,
       originCountry: json['origin_country'] as String?,
@@ -919,7 +919,7 @@ Video _$VideoFromJson(Map<String, dynamic> json) => Video(
       json['name'] as String,
       json['key'] as String,
       json['site'] as String,
-      json['size'] as int,
+      (json['size'] as num).toInt(),
       json['type'] as String,
       json['official'] as bool,
       json['published_at'] as String,
@@ -960,11 +960,11 @@ Map<String, dynamic> _$ImageResultToJson(ImageResult instance) =>
 
 ImageDetail _$ImageDetailFromJson(Map<String, dynamic> json) => ImageDetail(
       (json['aspect_ratio'] as num).toDouble(),
-      json['height'] as int,
+      (json['height'] as num).toInt(),
       json['file_path'] as String,
       (json['vote_average'] as num).toDouble(),
-      json['vote_count'] as int,
-      json['width'] as int,
+      (json['vote_count'] as num).toInt(),
+      (json['width'] as num).toInt(),
       iso6391: json['iso_639_1'] as String?,
       imageType: json['image_type'] as String?,
     );
@@ -983,9 +983,9 @@ Map<String, dynamic> _$ImageDetailToJson(ImageDetail instance) =>
 
 CombinedResults _$CombinedResultsFromJson(Map<String, dynamic> json) =>
     CombinedResults(
-      json['page'] as int,
-      json['total_pages'] as int,
-      json['total_results'] as int,
+      (json['page'] as num).toInt(),
+      (json['total_pages'] as num).toInt(),
+      (json['total_results'] as num).toInt(),
       (json['results'] as List<dynamic>)
           .map((e) => CombinedResult.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -1000,12 +1000,12 @@ Map<String, dynamic> _$CombinedResultsToJson(CombinedResults instance) =>
     };
 
 ReviewResult _$ReviewResultFromJson(Map<String, dynamic> json) => ReviewResult(
-      json['page'] as int,
+      (json['page'] as num).toInt(),
       (json['results'] as List<dynamic>)
           .map((e) => Review.fromJson(e as Map<String, dynamic>))
           .toList(),
-      json['total_pages'] as int,
-      json['total_results'] as int,
+      (json['total_pages'] as num).toInt(),
+      (json['total_results'] as num).toInt(),
     );
 
 Map<String, dynamic> _$ReviewResultToJson(ReviewResult instance) =>
@@ -1064,7 +1064,7 @@ Map<String, dynamic> _$KeywordResultToJson(KeywordResult instance) =>
     };
 
 Keyword _$KeywordFromJson(Map<String, dynamic> json) => Keyword(
-      json['id'] as int,
+      (json['id'] as num).toInt(),
       json['name'] as String,
     );
 
@@ -1088,14 +1088,14 @@ Map<String, dynamic> _$CreditsToJson(Credits instance) => <String, dynamic>{
     };
 
 BaseCredit _$BaseCreditFromJson(Map<String, dynamic> json) => BaseCredit(
-      json['id'] as int,
+      (json['id'] as num).toInt(),
       json['adult'] as bool,
       json['name'] as String,
       json['original_name'] as String,
       json['credit_id'] as String,
       popularity: (json['popularity'] as num?)?.toDouble(),
       profilePath: json['profile_path'] as String?,
-      gender: json['gender'] as int?,
+      gender: (json['gender'] as num?)?.toInt(),
       knownForDepartment: json['known_for_department'] as String? ?? '',
     )..mediaType = json['media_type'] as String?;
 
@@ -1114,17 +1114,17 @@ Map<String, dynamic> _$BaseCreditToJson(BaseCredit instance) =>
     };
 
 Cast _$CastFromJson(Map<String, dynamic> json) => Cast(
-      json['id'] as int,
+      (json['id'] as num).toInt(),
       json['adult'] as bool,
       json['name'] as String,
       json['original_name'] as String,
       json['credit_id'] as String,
-      json['cast_id'] as int,
+      (json['cast_id'] as num).toInt(),
       json['character'] as String,
-      json['order'] as int,
+      (json['order'] as num).toInt(),
       popularity: (json['popularity'] as num?)?.toDouble(),
       profilePath: json['profile_path'] as String?,
-      gender: json['gender'] as int?,
+      gender: (json['gender'] as num?)?.toInt(),
       knownForDepartment: json['known_for_department'] as String? ?? '',
     )..mediaType = json['media_type'] as String?;
 
@@ -1145,7 +1145,7 @@ Map<String, dynamic> _$CastToJson(Cast instance) => <String, dynamic>{
     };
 
 Crew _$CrewFromJson(Map<String, dynamic> json) => Crew(
-      json['id'] as int,
+      (json['id'] as num).toInt(),
       json['adult'] as bool,
       json['name'] as String,
       json['original_name'] as String,
@@ -1153,7 +1153,7 @@ Crew _$CrewFromJson(Map<String, dynamic> json) => Crew(
       json['department'] as String,
       json['job'] as String,
       popularity: (json['popularity'] as num?)?.toDouble(),
-      gender: json['gender'] as int?,
+      gender: (json['gender'] as num?)?.toInt(),
       knownForDepartment: json['known_for_department'] as String? ?? '',
       profilePath: json['profile_path'] as String?,
       jobs: json['jobs'] as String?,
@@ -1176,7 +1176,7 @@ Map<String, dynamic> _$CrewToJson(Crew instance) => <String, dynamic>{
     };
 
 MediaGenre _$MediaGenreFromJson(Map<String, dynamic> json) => MediaGenre(
-      json['id'] as int,
+      (json['id'] as num).toInt(),
       json['name'] as String,
       $enumDecode(_$MediaTypeEnumMap, json['media_type']),
     );
@@ -1226,7 +1226,7 @@ ReleaseDate _$ReleaseDateFromJson(Map<String, dynamic> json) => ReleaseDate(
       json['certification'] as String,
       json['iso_639_1'] as String,
       json['release_date'] as String,
-      json['type'] as int,
+      (json['type'] as num).toInt(),
       note: json['note'] as String?,
     );
 
@@ -1269,9 +1269,9 @@ Map<String, dynamic> _$AlternativeTitleToJson(AlternativeTitle instance) =>
 RecommendationResult _$RecommendationResultFromJson(
         Map<String, dynamic> json) =>
     RecommendationResult(
-      json['page'] as int,
-      json['total_pages'] as int,
-      json['total_results'] as int,
+      (json['page'] as num).toInt(),
+      (json['total_pages'] as num).toInt(),
+      (json['total_results'] as num).toInt(),
       (json['results'] as List<dynamic>)
           .map((e) => CombinedResult.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -1288,9 +1288,9 @@ Map<String, dynamic> _$RecommendationResultToJson(
 
 WatchProvider _$WatchProviderFromJson(Map<String, dynamic> json) =>
     WatchProvider(
-      json['provider_id'] as int,
+      (json['provider_id'] as num).toInt(),
       json['provider_name'] as String,
-      json['display_priority'] as int,
+      (json['display_priority'] as num).toInt(),
       logoPath: json['logo_path'] as String?,
     );
 

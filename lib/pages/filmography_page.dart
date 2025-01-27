@@ -75,6 +75,13 @@ class _FilmographyPageChildState extends State<_FilmographyPageChild>
             floating: true,
             pinned: true,
             bottom: const _FilterBar(),
+            actions: [
+              IconButton(
+                tooltip: 'Search',
+                onPressed: () => openSearchPage(context),
+                icon: const Icon(Icons.search_rounded),
+              ),
+            ],
           ),
           Selector<FilmographyViewModel, List<CombinedResult>>(
             selector: (_, fvm) => fvm.results,
@@ -187,7 +194,7 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
         height: 30.0,
         width: 4.0,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(16.0),
         ),
       ),
@@ -340,7 +347,7 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
         //     : null,
         // visualDensity: VisualDensity(horizontal: 0.0, vertical: -1,),
         selected: selected,
-        selectedColor: Theme.of(context).primaryColor.withOpacity(0.8),
+        selectedColor: Theme.of(context).primaryColor.withValues(alpha: 0.8),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 0.0),
         labelPadding: const EdgeInsets.symmetric(horizontal: 4.0),

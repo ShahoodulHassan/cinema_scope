@@ -196,6 +196,8 @@ class HomeViewModel extends ApiViewModel with Utilities {
     var window = (timeWindow ?? TimeWindow.day).name;
     var param = sectionParamMap[SectionTitle.trending];
     if (window != param) {
+      trendingResult = null;
+
       /// We add two page long upcoming movies and TV shows
       await _getTrending(window);
       await _getTrending(window, page: 2);
@@ -206,14 +208,30 @@ class HomeViewModel extends ApiViewModel with Utilities {
   _getTrending(String timeWindow, {int page = 1}) async {
     var result =
         await api.getTrending(MediaType.all.name, timeWindow, page: page);
-    var modified = result.copyWith.results((result.results
+    var results = (result.results
           ..removeWhere(
               (element) => element.mediaType == MediaType.person.name))
         .map((e) {
-      e.dateString = getReadableDate(e.mediaReleaseDate);
-      e.yearString = getYearStringFromDate(e.mediaReleaseDate);
-      return e;
-    }).toList());
+      final result = e as CombinedResult;
+      result.dateString = getReadableDate(result.mediaReleaseDate);
+      result.yearString = getYearStringFromDate(result.mediaReleaseDate);
+      return result;
+    }).toList();
+    var modified = CombinedResults(
+      result.page,
+      result.totalPages,
+      result.totalResults,
+      results,
+    );
+    // if (trendingResult == null || trendingResult!.results.isEmpty) {
+    //   sectionParamMap[SectionTitle.trending] = timeWindow;
+    //   trendingResult = modified;
+    // } else {
+    //   var allItems = trendingResult?.results ?? [];
+    //   allItems.addAll(modified.results);
+    //   modified.results = allItems;
+    //   trendingResult = modified;
+    // }
     if (page == 1) {
       sectionParamMap[SectionTitle.trending] = timeWindow;
       trendingResult = modified;

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math' as math;
 
+import 'package:cinema_scope/pages/search_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -132,7 +133,7 @@ mixin GenericFunctions {
   MaterialColor buildMaterialColor(Color color) {
     List strengths = <double>[.05];
     Map<int, Color> swatch = {};
-    final int r = color.red, g = color.green, b = color.blue;
+    final int r = color.r.toInt(), g = color.g.toInt(), b = color.b.toInt();
 
     for (int i = 1; i < 10; i++) {
       strengths.add(0.1 * i);
@@ -250,6 +251,13 @@ mixin GenericFunctions {
           ),
         ),
       ),
+    );
+  }
+
+  openSearchPage(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => SearchPage()),
     );
   }
 
@@ -430,22 +438,23 @@ extension ColorExt on Color {
     assert(1 <= percent && percent <= 100);
     var f = 1 - percent / 100;
     return Color.fromARGB(
-        alpha, (red * f).round(), (green * f).round(), (blue * f).round());
+        a.toInt(), (r * f).round(), (g * f).round(), (b * f).round());
   }
 
   /// Lighten a color by [percent] amount (100 = white)
   Color lighten2([int percent = 10]) {
     assert(1 <= percent && percent <= 100);
     var p = percent / 100;
-    return Color.fromARGB(alpha, red + ((255 - red) * p).round(),
-        green + ((255 - green) * p).round(), blue + ((255 - blue) * p).round());
+    return Color.fromARGB(
+        a.toInt(),
+        r.toInt() + ((255 - r) * p).round(),
+        g.toInt() + ((255 - g.toInt()) * p).round(),
+        b.toInt() + ((255 - b.toInt()) * p).round());
   }
 }
 
 extension FontWeightExt on FontWeight {
-
   static const FontWeight light = FontWeight.w300;
   static const FontWeight medium = FontWeight.w500;
   static const FontWeight semibold = FontWeight.w600;
-
 }

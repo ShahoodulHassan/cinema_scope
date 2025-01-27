@@ -9,7 +9,7 @@ import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:gallery_saver/gallery_saver.dart';
+import 'package:gal/gal.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
@@ -50,7 +50,7 @@ class _ImagePageState extends State<ImagePage> with GenericFunctions {
   @override
   Widget build(BuildContext context) {
     final appBarTheme = Theme.of(context).appBarTheme;
-    final color = Colors.white.withOpacity(0.85);
+    final color = Colors.white.withValues(alpha: 0.85);
     return Scaffold(
       body: CustomScrollView(
         physics: const NeverScrollableScrollPhysics(),
@@ -156,8 +156,13 @@ class _ImagePageState extends State<ImagePage> with GenericFunctions {
           if (await imageFile.exists()) {
             serveFreshToast('Image already saved!');
           } else {
-            await GallerySaver.saveImage(cacheFile.path, albumName: albumName);
-            serveFreshToast('Image saved to gallery!');
+            bool hasPermission = await Gal.requestAccess(toAlbum: true);
+            if (hasPermission) {
+              await Gal.putImage(cacheFile.path, album: albumName);
+              serveFreshToast('Image saved to gallery!');
+            } else {
+              serveFreshToast('Permission is required for saving image.');
+            }
           }
         } else {
           serveFreshToast('Error saving image!');
@@ -194,7 +199,7 @@ class _ImagePageState extends State<ImagePage> with GenericFunctions {
         : ImageType.profile;
     return PhotoView(
       imageProvider: CachedNetworkImageProvider(getImageUrl(image)),
-      onTapDown: (_, details, value) => toggleFullscreen(),
+      onTapUp: (_, details, value) => toggleFullscreen(),
       maxScale: PhotoViewComputedScale.contained * 4.0,
       minScale: PhotoViewComputedScale.contained * 1.0,
       loadingBuilder: (_, progress) {

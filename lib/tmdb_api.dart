@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:retrofit/error_logger.dart';
 import 'package:retrofit/http.dart' as http;
 
 import 'models/configuration.dart';
@@ -206,7 +207,7 @@ abstract class TmdbApi {
 
   @http.GET("/trending/{media_type}/{time_window}")
   @http.Headers(headerMap)
-  Future<CombinedResults> getTrending(@http.Path("media_type") String mediaType,
+  Future<MultiSearchResult> getTrending(@http.Path("media_type") String mediaType,
       @http.Path("time_window") String timeWindow,
       {@http.Query("page") int page = 1});
 

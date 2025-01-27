@@ -1,6 +1,5 @@
 import 'package:cinema_scope/architecture/home_view_model.dart';
 import 'package:cinema_scope/main.dart';
-import 'package:cinema_scope/pages/search_page.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
@@ -56,13 +55,7 @@ class _HomePageChild extends StatelessWidget
             actions: [
               IconButton(
                 tooltip: 'Search',
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => SearchPage()),
-                    // MaterialPageRoute(builder: (_) => MoviesListPage(mediaType: MediaType.movie, genres: [Genre(10749, 'Romance')],)),
-                  );
-                },
+                onPressed: () => openSearchPage(context),
                 icon: const Icon(Icons.search_rounded),
               ),
             ],
