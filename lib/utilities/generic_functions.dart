@@ -5,7 +5,6 @@ import 'package:cinema_scope/pages/search_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
@@ -131,9 +130,14 @@ mixin GenericFunctions {
       Color(int.parse(hexCode.replaceFirst('#', '0xFF')));
 
   MaterialColor buildMaterialColor(Color color) {
-    List strengths = <double>[.05];
+    List<double> strengths = <double>[.05];
     Map<int, Color> swatch = {};
-    final int r = color.r.toInt(), g = color.g.toInt(), b = color.b.toInt();
+
+    // Convert `r`, `g`, `b`, and `a` from 0.0-1.0 range to 0-255 range
+    final int alpha = (color.a * 255).round();
+    final int red = (color.r * 255).round();
+    final int green = (color.g * 255).round();
+    final int blue = (color.b * 255).round();
 
     for (int i = 1; i < 10; i++) {
       strengths.add(0.1 * i);
@@ -141,13 +145,17 @@ mixin GenericFunctions {
     for (var strength in strengths) {
       final double ds = 0.5 - strength;
       swatch[(strength * 1000).round()] = Color.fromRGBO(
-        r + ((ds < 0 ? r : (255 - r)) * ds).round(),
-        g + ((ds < 0 ? g : (255 - g)) * ds).round(),
-        b + ((ds < 0 ? b : (255 - b)) * ds).round(),
+        red + ((ds < 0 ? red : (255 - red)) * ds).round(),
+        green + ((ds < 0 ? green : (255 - green)) * ds).round(),
+        blue + ((ds < 0 ? blue : (255 - blue)) * ds).round(),
         1,
       );
     }
-    return MaterialColor(color.value, swatch);
+
+    // Compute 32-bit color value from a, r, g, and b
+    int colorValue = (alpha << 24) | (red << 16) | (green << 8) | blue;
+
+    return MaterialColor(colorValue, swatch);
   }
 
   Future<bool?> showBooleanDialog(
@@ -437,19 +445,38 @@ extension ColorExt on Color {
   Color darken2([int percent = 10]) {
     assert(1 <= percent && percent <= 100);
     var f = 1 - percent / 100;
+
+    // Convert `a`, `r`, `g`, and `b` to the 0-255 range
+    int alpha = (a * 255).round();
+    int red = (r * 255).round();
+    int green = (g * 255).round();
+    int blue = (b * 255).round();
+
     return Color.fromARGB(
-        a.toInt(), (r * f).round(), (g * f).round(), (b * f).round());
+      alpha,
+      (red * f).round(),
+      (green * f).round(),
+      (blue * f).round(),
+    );
   }
 
   /// Lighten a color by [percent] amount (100 = white)
   Color lighten2([int percent = 10]) {
     assert(1 <= percent && percent <= 100);
     var p = percent / 100;
+
+    // Convert `a`, `r`, `g`, and `b` to the 0-255 range
+    int alpha = (a * 255).round();
+    int red = (r * 255).round();
+    int green = (g * 255).round();
+    int blue = (b * 255).round();
+
     return Color.fromARGB(
-        a.toInt(),
-        r.toInt() + ((255 - r) * p).round(),
-        g.toInt() + ((255 - g.toInt()) * p).round(),
-        b.toInt() + ((255 - b.toInt()) * p).round());
+      alpha,
+      red + ((255 - red) * p).round(),
+      green + ((255 - green) * p).round(),
+      blue + ((255 - blue) * p).round(),
+    );
   }
 }
 
