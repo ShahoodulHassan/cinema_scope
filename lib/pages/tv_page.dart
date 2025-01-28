@@ -574,7 +574,10 @@ class _TvPageChildState extends State<_TvPageChild>
                                   color: Theme.of(context).colorScheme.primary,
                                 )
                               : const Icon(Icons.link)),
-                          () => openUrlString(homepage),
+                          () => openImdbParentalGuide(
+                            homepage,
+                            prefersDeepLink: true,
+                          ),
                           color: Theme.of(context).colorScheme.primary,
                         ),
                       if (imdbId.isNotEmpty)

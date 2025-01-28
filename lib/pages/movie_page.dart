@@ -630,7 +630,10 @@ class _MoviePageChildState extends State<_MoviePageChild>
                                   color: kPrimary,
                                 )
                               : const Icon(Icons.link)),
-                          () => openUrlString(homepage),
+                          () => openImdbParentalGuide(
+                            homepage,
+                            prefersDeepLink: true,
+                          ),
                           color: kPrimary,
                         ),
                       if (imdbId.isNotEmpty)
