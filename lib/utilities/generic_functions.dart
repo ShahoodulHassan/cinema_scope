@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:cinema_scope/pages/search_page.dart';
+import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,7 +15,6 @@ import 'package:vibration/vibration.dart';
 
 import '../constants.dart';
 import '../widgets/boolean_dialog.dart';
-import 'app_info.dart';
 
 mixin GenericFunctions {
   logIfDebug(Object? object) {
