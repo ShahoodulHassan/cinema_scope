@@ -3,7 +3,6 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  dynamic_color
   flutter_inappwebview_windows
   gal
   permission_handler_windows

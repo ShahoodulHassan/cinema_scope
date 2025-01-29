@@ -3,7 +3,6 @@ import 'package:cinema_scope/pages/home_page.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:cinema_scope/widgets/app_lifecycle_manager.dart';
-import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -72,57 +71,53 @@ class MyApp extends StatelessWidget with GenericFunctions {
     var appBarItemColor = Colors.black87;
     var fontFamily = 'Poppins';
     return AppLifecycleManager(
-      child: DynamicColorBuilder(
-        builder: (light, dark) {
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            navigatorKey: navigatorKey,
-            title: 'Cinema scope',
-            theme: ThemeData(
-              colorSchemeSeed: primaryColor,
-              highlightColor: primaryColor.withValues(alpha: 0.10),
-              splashColor: primaryColor.withValues(alpha: 0.10),
-              useMaterial3: true,
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        navigatorKey: navigatorKey,
+        title: 'Cinema scope',
+        theme: ThemeData(
+          colorSchemeSeed: primaryColor,
+          highlightColor: primaryColor.withValues(alpha: 0.10),
+          splashColor: primaryColor.withValues(alpha: 0.10),
+          useMaterial3: true,
+          fontFamily: fontFamily,
+          scrollbarTheme: Theme.of(context).scrollbarTheme.copyWith(
+            thumbColor: const WidgetStatePropertyAll(Colors.black26),
+            radius: const Radius.circular(12.0),
+          ),
+          appBarTheme: AppBarTheme(
+            titleTextStyle: TextStyle(
+              color: appBarItemColor,
+              fontSize: 22,
               fontFamily: fontFamily,
-              scrollbarTheme: Theme.of(context).scrollbarTheme.copyWith(
-                    thumbColor: const WidgetStatePropertyAll(Colors.black26),
-                    radius: const Radius.circular(12.0),
-                  ),
-              appBarTheme: AppBarTheme(
-                titleTextStyle: TextStyle(
-                  color: appBarItemColor,
-                  fontSize: 22,
-                  fontFamily: fontFamily,
-                  height: 1.2,
-                  // fontWeight: FontWeight.bold,
-                ),
-                actionsIconTheme: IconThemeData(
-                  color: appBarItemColor,
-                ),
-                iconTheme: IconThemeData(
-                  color: appBarItemColor,
-                ),
-              ),
+              height: 1.2,
+              // fontWeight: FontWeight.bold,
             ),
-            navigatorObservers: [routeObserver],
-            builder: (ctx, child) {
-              return MediaQuery(
-                data: MediaQuery.of(context).copyWith(
-                  textScaler: const TextScaler.linear(1.0),
-                ),
-                child: child!,
-              );
-            },
-            home: Selector<ConfigViewModel, bool>(
-              builder: (_, isConfigComplete, __) {
-                logIfDebug('isConfigComplete:$isConfigComplete');
-                return isConfigComplete ? HomePage() : const SizedBox.shrink();
-              },
-              selector: (_, cvm) => cvm.isConfigComplete,
+            actionsIconTheme: IconThemeData(
+              color: appBarItemColor,
             ),
-            // home: const MyHomePage(title: 'Cinema scope'),
+            iconTheme: IconThemeData(
+              color: appBarItemColor,
+            ),
+          ),
+        ),
+        navigatorObservers: [routeObserver],
+        builder: (ctx, child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: const TextScaler.linear(1.0),
+            ),
+            child: child!,
           );
         },
+        home: Selector<ConfigViewModel, bool>(
+          builder: (_, isConfigComplete, __) {
+            logIfDebug('isConfigComplete:$isConfigComplete');
+            return isConfigComplete ? HomePage() : const SizedBox.shrink();
+          },
+          selector: (_, cvm) => cvm.isConfigComplete,
+        ),
+        // home: const MyHomePage(title: 'Cinema scope'),
       ),
     );
   }
