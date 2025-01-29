@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinema_scope/architecture/config_view_model.dart';
 import 'package:cinema_scope/models/movie.dart';
+import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/widgets/image_view.dart';
 import 'package:external_path/external_path.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gal/gal.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
@@ -80,16 +82,14 @@ class _ImagePageState extends State<ImagePage> with GenericFunctions {
                                 ?.copyWith(color: color),
                           ),
                           actions: [
-                            if (Platform.isAndroid)
+                            if (Platform.isAndroid || Platform.isIOS)
                               IconButton(
                                 icon: const FaIcon(
                                   FontAwesomeIcons.download,
                                   size: 22.0,
                                 ),
                                 tooltip: 'Save to gallery',
-                                onPressed: () {
-                                  saveImage();
-                                },
+                                onPressed: () => saveImage(),
                               ),
                           ],
                           iconTheme:
@@ -145,27 +145,10 @@ class _ImagePageState extends State<ImagePage> with GenericFunctions {
         final cacheFile = await DefaultCacheManager().getSingleFile(url);
         logIfDebug('cacheFile:${cacheFile.path}');
         const albumName = 'Cinema scope';
-        final galleryPath =
-            await ExternalPath.getExternalStoragePublicDirectory(
-                ExternalPath.DIRECTORY_PICTURES);
-        if (galleryPath.isNotEmpty) {
-          var filename = Uri.parse(cacheFile.path).pathSegments.last;
-          var imagePath = '$galleryPath/$albumName/$filename';
-          logIfDebug('imagePath:$imagePath');
-          File imageFile = File(imagePath);
-          if (await imageFile.exists()) {
-            serveFreshToast('Image already saved!');
-          } else {
-            bool hasPermission = await Gal.requestAccess(toAlbum: true);
-            if (hasPermission) {
-              await Gal.putImage(cacheFile.path, album: albumName);
-              serveFreshToast('Image saved to gallery!');
-            } else {
-              serveFreshToast('Permission is required for saving image.');
-            }
-          }
-        } else {
-          serveFreshToast('Error saving image!');
+        if (Platform.isAndroid) {
+          await _saveImageToGalleryAndroid(cacheFile.path, albumName);
+        } else if (Platform.isIOS) {
+          await _saveImageToGalleryIos(cacheFile.path, albumName);
         }
       } else {
         serveFreshToast('Error saving image!');
@@ -173,6 +156,100 @@ class _ImagePageState extends State<ImagePage> with GenericFunctions {
     } else {
       serveFreshToast('Error saving image!');
     }
+  }
+
+  Future<void> _saveImageToGalleryAndroid(
+    String inputImagePath,
+    String albumName,
+  ) async {
+    try {
+      final galleryPath = await ExternalPath.getExternalStoragePublicDirectory(
+        ExternalPath.DIRECTORY_PICTURES,
+      );
+      if (galleryPath.isNotEmpty) {
+        var filename = Uri.parse(inputImagePath).pathSegments.last;
+        var imagePath = '$galleryPath/$albumName/$filename';
+        logIfDebug('imagePath:$imagePath');
+        File imageFile = File(imagePath);
+        if (await imageFile.exists()) {
+          serveFreshToast('Image already saved!');
+        } else {
+          bool hasPermission = await Gal.requestAccess(toAlbum: true);
+          final photosStatus = await Permission.photos.status;
+          logIfDebug('hasAccess:$hasPermission, status:$photosStatus');
+
+          if (hasPermission) {
+            try {
+              await Gal.putImage(inputImagePath, album: albumName);
+              serveFreshToast('Image saved to gallery!');
+            } on GalException catch (e) {
+              logIfDebug('Gal error:${e.type.message}');
+              serveFreshToast('Image save error!');
+            }
+          } else {
+            if (photosStatus.isPermanentlyDenied) {
+              if (mounted) {
+                showOpenSettingsDialog();
+              }
+            } else {
+              serveFreshToast('Permission is required for saving images');
+            }
+          }
+        }
+      } else {
+        serveFreshToast('Error saving image!');
+      }
+    } on Exception catch (e) {
+      logIfDebug(e.toString());
+    }
+  }
+
+  Future<void> _saveImageToGalleryIos(
+    String inputImagePath,
+    String albumName,
+  ) async {
+    try {
+      var hasPermission = await Gal.requestAccess(toAlbum: true);
+      final photosStatus = await Permission.photos.status;
+      logIfDebug('hasAccess:$hasPermission, status:$photosStatus');
+
+      if (hasPermission) {
+        try {
+          await Gal.putImage(inputImagePath, album: albumName);
+          serveFreshToast('Image saved to gallery!');
+        } on GalException catch (e) {
+          logIfDebug('Gal error:${e.type.message}');
+          serveFreshToast('Image save error!');
+        }
+      } else {
+        if (photosStatus.isPermanentlyDenied) {
+          if (mounted) {
+            showOpenSettingsDialog();
+          }
+        } else {
+          serveFreshToast('Permission is required for saving images');
+        }
+      }
+    } on Exception catch (e) {
+      logIfDebug(e.toString());
+      serveFreshToast('Image save error!');
+    }
+  }
+
+  showOpenSettingsDialog() {
+    showBooleanDialog(
+      context,
+      'Permission required',
+      '${AppInfo.appName} requires permission to add photos to the '
+          'gallery.\n\n'
+          'Please grant the relevant permission in System settings',
+      positiveButtonTitle: 'Settings',
+      negativeButtonTitle: 'Cancel',
+    ).then((consent) async {
+      if (consent != null && consent) {
+        await openAppSettings();
+      }
+    });
   }
 
   void toggleFullscreen() {
