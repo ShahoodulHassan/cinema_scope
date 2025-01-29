@@ -17,6 +17,30 @@ allprojects {
         mavenCentral()
     }
 
+    /// [Without this, it doesn't build on a Mac]
+    /// Ensure ALL modules (including pub.dev dependencies) use Java 17
+    subprojects {
+        afterEvaluate { project ->
+            if (project.hasProperty('android')) {
+                project.android {
+                    compileOptions {
+                        sourceCompatibility JavaVersion.VERSION_17
+                        targetCompatibility JavaVersion.VERSION_17
+                    }
+                }
+            }
+        }
+    }
+
+    /// [Addresses the following build error on Mac]
+    /// Could not determine the dependencies of task ':app:compileDebugKotlin'.
+    /// > Unknown Kotlin JVM target: 21
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions {
+            jvmTarget = "17"
+        }
+    }
+
     // This code is where all the magic happens and fixes the error.
     subprojects {
         // To fix the namespace error caused by external packages.
@@ -30,21 +54,10 @@ allprojects {
                 }
             }
 
-            /// To fix the error caused by gallery_saver_updated not using Java 17
-            /// https://stackoverflow.com/a/79175616/7983864
-            if (project.plugins.hasPlugin("com.android.application")
-                    || project.plugins.hasPlugin("com.android.library")) {
-
-                if (project.name == "gallery_saver_updated") {
-                    project.android.compileOptions {
-                        sourceCompatibility = JavaVersion.VERSION_17
-                        targetCompatibility = JavaVersion.VERSION_17
-                    }
-                }
-            }
         }
     }
     // This code is where all the magic happens and fixes the error.
+
 }
 
 rootProject.buildDir = '../build'
