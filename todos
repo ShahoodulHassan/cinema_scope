@@ -2,3 +2,9 @@
 2. iMDb web scraping to get rating and PG information.
 3. Implement light and dark modes.
 4. Make the app fully adaptive and responsive.
+5. Settings screen:
+    i) Toggle adult content
+    ii) Selection of region
+    iii) Selection of language
+    iv) Quality of images
+    v)
