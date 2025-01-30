@@ -1,4 +1,4 @@
-import 'package:cinema_scope/architecture/app_provider.dart';
+import 'package:cinema_scope/providers/app_provider.dart';
 import 'package:cinema_scope/pages/home_page.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
@@ -6,7 +6,7 @@ import 'package:cinema_scope/widgets/app_lifecycle_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'architecture/config_view_model.dart';
+import 'providers/configuration_provider.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -39,7 +39,7 @@ class MyProviders extends MultiProvider {
       : super(
           providers: [
             ChangeNotifierProvider(
-              create: (_) => ConfigViewModel()..checkConfigurations(),
+              create: (_) => ConfigurationProvider()..checkConfigurations(),
             ),
             ChangeNotifierProvider(
               create: (_) => AppProvider(),
@@ -110,7 +110,7 @@ class MyApp extends StatelessWidget with GenericFunctions {
             child: child!,
           );
         },
-        home: Selector<ConfigViewModel, bool>(
+        home: Selector<ConfigurationProvider, bool>(
           builder: (_, isConfigComplete, __) {
             logIfDebug('isConfigComplete:$isConfigComplete');
             return isConfigComplete ? HomePage() : const SizedBox.shrink();

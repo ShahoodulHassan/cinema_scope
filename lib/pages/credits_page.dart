@@ -1,4 +1,4 @@
-import 'package:cinema_scope/architecture/credits_view_model.dart';
+import 'package:cinema_scope/providers/credits_provider.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
-import '../architecture/filmography_view_model.dart';
+import '../providers/filmography_provider.dart';
 import '../constants.dart';
 import '../main.dart';
 import '../models/movie.dart';
@@ -22,7 +22,7 @@ class CreditsPage extends MultiProvider {
     String? title,
   }) : super(
             providers: [
-              ChangeNotifierProvider(create: (_) => CreditsViewModel(credits)),
+              ChangeNotifierProvider(create: (_) => CreditsProvider(credits)),
             ],
             child: _CreditsPageChild(
               id: id,
@@ -70,7 +70,7 @@ class _CreditsPageChildState extends State<_CreditsPageChild>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(
-        (_) => context.read<CreditsViewModel>().initialize());
+        (_) => context.read<CreditsProvider>().initialize());
   }
 
   @override
@@ -150,7 +150,7 @@ class _CreditsPageChildState extends State<_CreditsPageChild>
                       //   sliver: getSliverTabData<Crew>(context),
                       // ),
                       SliverPinnedHeader(
-                        child: Selector<CreditsViewModel,
+                        child: Selector<CreditsProvider,
                             Map<String, FilterState>>(
                           selector: (_, cvm) => cvm.availableDepartments,
                           builder: (_, filters, __) {
@@ -171,9 +171,9 @@ class _CreditsPageChildState extends State<_CreditsPageChild>
     );
   }
 
-  Selector<CreditsViewModel, List<T>> getSliverTabData<T extends BaseCredit>(
+  Selector<CreditsProvider, List<T>> getSliverTabData<T extends BaseCredit>(
       BuildContext context) {
-    return Selector<CreditsViewModel, List<T>>(
+    return Selector<CreditsProvider, List<T>>(
       selector: (_, cvm) {
         return T.toString() == (Cast).toString()
             ? (cvm.cast as List<T>)
@@ -262,7 +262,7 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
             var currentlySelected = item.value == FilterState.selected;
             if (isSelected != currentlySelected) {
               context
-                  .read<CreditsViewModel>()
+                  .read<CreditsProvider>()
                   .toggleDepartments(item, isSelected);
             }
           },

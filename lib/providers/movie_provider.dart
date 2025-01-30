@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:async/async.dart';
-import 'package:cinema_scope/architecture/config_view_model.dart';
-import 'package:cinema_scope/architecture/person_view_model.dart';
+import 'package:cinema_scope/providers/configuration_provider.dart';
+import 'package:cinema_scope/providers/person_provider.dart';
 import 'package:cinema_scope/models/search.dart';
 import 'package:intl/intl.dart';
 import 'package:tuple/tuple.dart';
@@ -12,7 +12,7 @@ import '../models/movie.dart';
 import '../models/person.dart';
 import '../models/tv.dart';
 
-abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
+abstract class MediaProvider<T extends Media> extends BaseMediaProvider {
   late final List<MediaGenre> allGenres;
 
   bool isMovie = T.toString() == (Movie).toString();
@@ -330,7 +330,7 @@ abstract class MediaViewModel<T extends Media> extends BaseMediaViewModel {
 // }
 }
 
-class MovieViewModel extends MediaViewModel<Movie> {
+class MovieViewModel extends MediaProvider<Movie> {
   // Movie? movie;
 
   String? get runtime {

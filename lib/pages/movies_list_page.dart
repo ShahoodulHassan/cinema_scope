@@ -1,4 +1,4 @@
-import 'package:cinema_scope/architecture/config_view_model.dart';
+import 'package:cinema_scope/providers/configuration_provider.dart';
 import 'package:cinema_scope/constants.dart';
 import 'package:cinema_scope/models/search.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 
-import '../architecture/media_list_view_model.dart';
+import '../providers/media_list_provider.dart';
 import '../models/movie.dart';
 import '../models/similar_titles_params.dart';
 import '../widgets/frosted_app_bar.dart';
@@ -24,7 +24,7 @@ class MoviesListPage extends MultiProvider {
     SimilarTitlesParams? similarTitlesParams,
   }) : super(
             providers: [
-              ChangeNotifierProvider(create: (_) => MediaListViewModel()),
+              ChangeNotifierProvider(create: (_) => MediaListProvider()),
             ],
             child: _MoviesListPageChild(
               mediaType: mediaType,
@@ -72,12 +72,12 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
 
   @override
   void initState() {
-    context.read<MediaListViewModel>().initializePaging(
+    context.read<MediaListProvider>().initializePaging(
           mediaType: widget.mediaType,
           genreIds: widget.genres?.map((e) => e.id).toList(),
           keywords: widget.keywords,
           mediaId: widget.mediaId,
-          combinedGenres: context.read<ConfigViewModel>().combinedGenres,
+          combinedGenres: context.read<ConfigurationProvider>().combinedGenres,
           similarTitlesParams: widget.similarTitlesParams,
         );
     super.initState();
@@ -112,7 +112,7 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
                 ? Text(widget.mediaTitle!)
                 : AnimatedSize(
                     duration: const Duration(milliseconds: 150),
-                    child: Selector<MediaListViewModel, int?>(
+                    child: Selector<MediaListProvider, int?>(
                       builder: (_, count, __) {
                         if (count == null) return const SizedBox.shrink();
                         return Text(
@@ -139,7 +139,7 @@ class _MoviesListPageChildState extends State<_MoviesListPageChild>
             // itemExtent: Constants.posterWidth / Constants.arPoster +
             //     Constants.posterVPadding * 2,
             pagingController:
-                context.read<MediaListViewModel>().pagingController,
+                context.read<MediaListProvider>().pagingController,
             builderDelegate: PagedChildBuilderDelegate<CombinedResult>(
               itemBuilder: (_, media, index) {
                 return media.mediaType == MediaType.movie.name

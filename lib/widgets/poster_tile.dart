@@ -4,7 +4,7 @@ import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:flutter/material.dart';
 
-import '../architecture/config_view_model.dart';
+import '../providers/configuration_provider.dart';
 import '../constants.dart';
 import 'image_view.dart';
 

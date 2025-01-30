@@ -5,10 +5,10 @@ import 'package:async/async.dart';
 import '../constants.dart';
 import '../models/movie.dart';
 import '../models/tv.dart';
-import 'config_view_model.dart';
-import 'movie_view_model.dart';
+import 'configuration_provider.dart';
+import 'movie_provider.dart';
 
-class TvViewModel extends MediaViewModel<Tv> {
+class TvProvider extends MediaProvider<Tv> {
 
   String? certification;
 

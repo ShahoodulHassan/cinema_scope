@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:cinema_scope/architecture/search_view_model.dart';
+import 'package:cinema_scope/providers/search_provider.dart';
 import 'package:cinema_scope/constants.dart';
 import 'package:cinema_scope/models/movie.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
@@ -8,7 +8,7 @@ import 'package:cinema_scope/utilities/utilities.dart';
 import '../models/search.dart';
 import '../pages/home_page.dart';
 
-class HomeViewModel extends ApiViewModel with Utilities {
+class HomeProvider extends ApiProvider with Utilities {
   CombinedResults? latestMoviesResult;
   CombinedResults? popularMoviesResult;
   CombinedResults? topRatedMoviesResult;

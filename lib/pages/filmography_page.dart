@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 
-import '../architecture/config_view_model.dart';
-import '../architecture/filmography_view_model.dart';
+import '../providers/configuration_provider.dart';
+import '../providers/filmography_provider.dart';
 import '../constants.dart';
 import '../widgets/frosted_app_bar.dart';
 import '../widgets/image_view.dart';
@@ -22,7 +22,7 @@ class FilmographyPage extends MultiProvider {
     required String name,
   }) : super(
             providers: [
-              ChangeNotifierProvider(create: (_) => FilmographyViewModel()),
+              ChangeNotifierProvider(create: (_) => FilmographyProvider()),
             ],
             child: _FilmographyPageChild(
               id: id,
@@ -49,16 +49,16 @@ class _FilmographyPageChild extends StatefulWidget {
 
 class _FilmographyPageChildState extends State<_FilmographyPageChild>
     with GenericFunctions, Utilities, CommonFunctions {
-  late final FilmographyViewModel fvm;
+  late final FilmographyProvider fvm;
 
   @override
   void initState() {
     super.initState();
-    fvm = context.read<FilmographyViewModel>();
+    fvm = context.read<FilmographyProvider>();
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => fvm.initialize(
         widget.combinedCredits,
-        context.read<ConfigViewModel>().combinedGenres,
+        context.read<ConfigurationProvider>().combinedGenres,
       ),
     );
   }
@@ -83,7 +83,7 @@ class _FilmographyPageChildState extends State<_FilmographyPageChild>
               ),
             ],
           ),
-          Selector<FilmographyViewModel, List<CombinedResult>>(
+          Selector<FilmographyProvider, List<CombinedResult>>(
             selector: (_, fvm) => fvm.results,
             builder: (_, results, __) {
               logIfDebug(results);
@@ -139,7 +139,7 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return Selector<
-        FilmographyViewModel,
+        FilmographyProvider,
         Tuple3<Map<String, FilterState>, Map<String, FilterState>,
             Map<String, FilterState>>>(
       builder: (_, tuple, __) {
@@ -149,7 +149,7 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
         if (depts.isEmpty && types.isEmpty && genres.isEmpty) {
           return const SizedBox.shrink();
         } else {
-          var fvm = context.read<FilmographyViewModel>();
+          var fvm = context.read<FilmographyProvider>();
           return Container(
             // color: kScaffoldBackgroundColor
             //     .withOpacity(SliverFrostedAppBar.frostOpacity),
@@ -202,7 +202,7 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   Widget buildGenresList(BuildContext context, Map<String, FilterState> genres,
-      FilmographyViewModel fvm) {
+      FilmographyProvider fvm) {
     return SizedBox(
       height: rowHeight,
       child: Row(
@@ -237,7 +237,7 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
   Widget buildDepartmentsList(
       BuildContext context,
       Map<String, FilterState> depts,
-      FilmographyViewModel fvm,
+      FilmographyProvider fvm,
       Map<String, FilterState> types) {
     return Expanded(
       child: buildListView(
@@ -267,7 +267,7 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   Widget buildMediaTypeList(BuildContext context,
-      Map<String, FilterState> types, FilmographyViewModel fvm) {
+      Map<String, FilterState> types, FilmographyProvider fvm) {
     return buildListView(
       context,
       itemBuilder: (_, index) {

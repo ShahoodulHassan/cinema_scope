@@ -13,7 +13,7 @@ enum FilterType { department, mediaType, genre }
 
 enum FilterState { unselected, selected, forceSelected }
 
-class FilmographyViewModel extends ChangeNotifier
+class FilmographyProvider extends ChangeNotifier
     with GenericFunctions, Utilities, CommonFunctions {
   late final CombinedCredits combinedCredits;
   late final List<MediaGenre> _combinedGenres;

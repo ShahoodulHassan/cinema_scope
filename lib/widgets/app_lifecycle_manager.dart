@@ -1,8 +1,7 @@
+import 'package:cinema_scope/providers/configuration_provider.dart';
+import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../architecture/config_view_model.dart';
-import '../utilities/generic_functions.dart';
 
 class AppLifecycleManager extends StatefulWidget {
   const AppLifecycleManager({super.key, required this.child});
@@ -23,8 +22,6 @@ class _AppLifecycleManager extends State<AppLifecycleManager>
     WidgetsBinding.instance.addObserver(this);
   }
 
-
-
   @override
   void dispose() {
     // Remove the observer
@@ -33,11 +30,10 @@ class _AppLifecycleManager extends State<AppLifecycleManager>
     super.dispose();
   }
 
-
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     logIfDebug('lifecycle state:$state');
-    context.read<ConfigViewModel>().appState = state;
+    context.read<ConfigurationProvider>().appState = state;
   }
 
   @override

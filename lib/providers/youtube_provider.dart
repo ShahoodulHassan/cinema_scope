@@ -2,7 +2,7 @@ import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-class YoutubeViewModel extends ChangeNotifier with GenericFunctions {
+class YoutubeProvider extends ChangeNotifier with GenericFunctions {
   YoutubePlayerController? controller;
 
   PlayerState playerState = PlayerState.unknown;
@@ -27,7 +27,7 @@ class YoutubeViewModel extends ChangeNotifier with GenericFunctions {
 
 
 
-  YoutubeViewModel();
+  YoutubeProvider();
 
   initialize(List<String> youtubeKeys) {
     if (controller == null) {

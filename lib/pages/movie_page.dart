@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:card_swiper/card_swiper.dart';
-import 'package:cinema_scope/architecture/movie_view_model.dart';
+import 'package:cinema_scope/providers/movie_provider.dart';
 import 'package:cinema_scope/models/configuration.dart';
 import 'package:cinema_scope/models/search.dart';
 import 'package:cinema_scope/models/similar_titles_params.dart';
@@ -22,8 +22,8 @@ import 'package:sliver_tools/sliver_tools.dart';
 import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-import '../architecture/config_view_model.dart';
-import '../architecture/tv_view_model.dart';
+import '../providers/configuration_provider.dart';
+import '../providers/tv_provider.dart';
 import '../constants.dart';
 import '../main.dart';
 import '../models/movie.dart';
@@ -110,9 +110,9 @@ class _MoviePageChildState extends State<_MoviePageChild>
     mvm = context.read<MovieViewModel>()
       ..getMovieWithDetail(
         widget.id,
-        context.read<ConfigViewModel>().combinedGenres,
+        context.read<ConfigurationProvider>().combinedGenres,
       );
-    final cvm = context.read<ConfigViewModel>();
+    final cvm = context.read<ConfigurationProvider>();
     String base = cvm.apiConfig!.images.secureBaseUrl;
     String size = cvm.apiConfig!.images.backdropSizes[1];
     backdropBaseUrl = '$base$size';
@@ -721,7 +721,7 @@ class _MoviePageChildState extends State<_MoviePageChild>
 // }
 }
 
-class MoreByLeadActorSection<M extends Media, T extends MediaViewModel<M>>
+class MoreByLeadActorSection<M extends Media, T extends MediaProvider<M>>
     extends StatelessWidget with GenericFunctions, Utilities, CommonFunctions {
   final int _maxCount = 20;
 
@@ -768,7 +768,7 @@ class MoreByLeadActorSection<M extends Media, T extends MediaViewModel<M>>
 // }
 }
 
-class StreamersView<M extends Media, V extends MediaViewModel<M>>
+class StreamersView<M extends Media, V extends MediaProvider<M>>
     extends StatelessWidget with Utilities {
   // final double maxIconSize = 64.0;
   final int id;
@@ -830,7 +830,7 @@ class StreamersView<M extends Media, V extends MediaViewModel<M>>
   }
 }
 
-class SimilarTitlesSection<M extends Media, T extends MediaViewModel<M>>
+class SimilarTitlesSection<M extends Media, T extends MediaProvider<M>>
     extends StatelessWidget with GenericFunctions, Utilities, CommonFunctions {
   final int _maxCount = 20;
 
@@ -916,7 +916,7 @@ class SimilarTitlesSection<M extends Media, T extends MediaViewModel<M>>
 // }
 }
 
-class MoreByDirectorSection<M extends Media, T extends MediaViewModel<M>>
+class MoreByDirectorSection<M extends Media, T extends MediaProvider<M>>
     extends StatelessWidget with GenericFunctions, Utilities, CommonFunctions {
   // final int _maxCount = 20;
 
@@ -1345,7 +1345,7 @@ class _MediaInfoSection extends StatelessWidget
     var releaseDate = getReadableDate(movie.releaseDate);
     var status = movie.status;
     var language = context
-        .read<ConfigViewModel>()
+        .read<ConfigurationProvider>()
         .cfgLanguages
         .firstWhere((element) => element.iso6391 == movie.originalLanguage)
         .englishName;
@@ -1365,7 +1365,7 @@ class _MediaInfoSection extends StatelessWidget
                         list: movie.releaseDates.results
                           ..sort((a, b) {
                             var countries =
-                                context.read<ConfigViewModel>().cfgCountries;
+                                context.read<ConfigurationProvider>().cfgCountries;
                             var countryA = countries.firstWhere(
                                 (element) => element.iso31661 == a.iso31661);
                             var countryB = countries.firstWhere(
@@ -1479,7 +1479,7 @@ class _MediaInfoSection extends StatelessWidget
   }
 }
 
-class KeywordsSection<M extends Media, VM extends MediaViewModel<M>>
+class KeywordsSection<M extends Media, VM extends MediaProvider<M>>
     extends StatelessWidget with GenericFunctions, Utilities, CommonFunctions {
   final int _maxCount = 10;
 
@@ -2092,7 +2092,7 @@ class SliverPosterGridSwiper extends StatelessWidget with Utilities {
         final movie = titles[index];
         final destUrl = movie.backdropPath == null
             ? null
-            : context.read<ConfigViewModel>().getImageUrl(
+            : context.read<ConfigurationProvider>().getImageUrl(
                 ImageType.backdrop, ImageQuality.high, movie.backdropPath!);
         return Card(
           shape: RoundedRectangleBorder(
@@ -2230,7 +2230,7 @@ class ImageDelegate extends SliverPersistentHeaderDelegate
       return ClipRRect(
         borderRadius: BorderRadius.circular(radius),
         child: NetworkImageView(
-          context.read<ConfigViewModel>().getImageUrl(
+          context.read<ConfigurationProvider>().getImageUrl(
                 ImageType.backdrop,
                 ImageQuality.high,
                 entry.key,
@@ -2283,7 +2283,7 @@ class ImageDelegate extends SliverPersistentHeaderDelegate
                 if (mediaType == MediaType.movie) {
                   _context!.read<MovieViewModel>().initialVideoId = entry.key;
                 } else if (mediaType == MediaType.tv) {
-                  _context!.read<TvViewModel>().initialVideoId = entry.key;
+                  _context!.read<TvProvider>().initialVideoId = entry.key;
                 }
               },
               icon: Icon(

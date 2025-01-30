@@ -5,13 +5,13 @@ import '../models/movie.dart';
 import '../utilities/common_functions.dart';
 import '../utilities/generic_functions.dart';
 import '../utilities/utilities.dart';
-import 'filmography_view_model.dart';
+import 'filmography_provider.dart';
 
-class CreditsViewModel extends ChangeNotifier
+class CreditsProvider extends ChangeNotifier
     with GenericFunctions, Utilities, CommonFunctions {
   final Credits credits;
 
-  CreditsViewModel(this.credits);
+  CreditsProvider(this.credits);
 
   final Map<int, Map<String, List<String>>> _mediaToDeptJobsMap = {};
 

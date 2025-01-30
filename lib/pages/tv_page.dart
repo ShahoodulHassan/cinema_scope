@@ -7,9 +7,9 @@ import 'package:provider/provider.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 import 'package:tuple/tuple.dart';
 
-import '../architecture/config_view_model.dart';
-import '../architecture/movie_view_model.dart';
-import '../architecture/tv_view_model.dart';
+import '../providers/configuration_provider.dart';
+import '../providers/movie_provider.dart';
+import '../providers/tv_provider.dart';
 import '../constants.dart';
 import '../main.dart';
 import '../models/configuration.dart';
@@ -38,7 +38,7 @@ class TvPage extends MultiProvider {
     required String heroImageTag,
   }) : super(
             providers: [
-              ChangeNotifierProvider(create: (_) => TvViewModel()),
+              ChangeNotifierProvider(create: (_) => TvProvider()),
               // ChangeNotifierProvider(create: (_) => YoutubeViewModel()),
             ],
             child: _TvPageChild(
@@ -74,17 +74,17 @@ class _TvPageChild extends StatefulWidget {
 
 class _TvPageChildState extends State<_TvPageChild>
     with GenericFunctions, Utilities, CommonFunctions {
-  late final TvViewModel tvm;
+  late final TvProvider tvm;
 
   final animDuration = const Duration(milliseconds: 250);
 
   @override
   void initState() {
     super.initState();
-    tvm = context.read<TvViewModel>()
+    tvm = context.read<TvProvider>()
       ..getTvWithDetail(
         widget.id,
-        context.read<ConfigViewModel>().combinedGenres,
+        context.read<ConfigurationProvider>().combinedGenres,
       );
   }
 
@@ -126,7 +126,7 @@ class _TvPageChildState extends State<_TvPageChild>
                   toolbarHeight: 40.0,
                   pinned: true,
                 ),
-                Selector<TvViewModel,
+                Selector<TvProvider,
                     Tuple3<List<String>, Map<String, ThumbnailType>, String?>>(
                   builder: (_, tuple, __) {
                     logIfDebug('isPinned, thumbnails:$tuple');
@@ -164,11 +164,11 @@ class _TvPageChildState extends State<_TvPageChild>
                     );
                   },
                 ),
-                Selector<TvViewModel, String?>(
+                Selector<TvProvider, String?>(
                   selector: (_, tvm) => tvm.initialVideoId,
                   builder: (_, id, __) {
                     return SliverToBoxAdapter(
-                      child: StreamersView<Tv, TvViewModel>(id: widget.id),
+                      child: StreamersView<Tv, TvProvider>(id: widget.id),
                     );
                   },
                 ),
@@ -185,7 +185,7 @@ class _TvPageChildState extends State<_TvPageChild>
                   ),
                 ),
                 const _MediaInfoSection(),
-                const KeywordsSection<Tv, TvViewModel>(),
+                const KeywordsSection<Tv, TvProvider>(),
                 const SliverToBoxAdapter(child: SizedBox(height: 16)),
               ],
             ),
@@ -234,11 +234,11 @@ class _TvPageChildState extends State<_TvPageChild>
                   ),
                 ),
                 const _CastCrewSection(),
-                const SimilarTitlesSection<Tv, TvViewModel>(),
-                const RecommendationsSection<Tv, TvViewModel>(),
-                const MoreByDirectorSection<Tv, TvViewModel>(),
-                const MoreByLeadActorSection<Tv, TvViewModel>(),
-                const ImagesSection<TvViewModel>(),
+                const SimilarTitlesSection<Tv, TvProvider>(),
+                const RecommendationsSection<Tv, TvProvider>(),
+                const MoreByDirectorSection<Tv, TvProvider>(),
+                const MoreByLeadActorSection<Tv, TvProvider>(),
+                const ImagesSection<TvProvider>(),
                 const SliverToBoxAdapter(child: SizedBox(height: 16)),
               ],
             ),
@@ -264,7 +264,7 @@ class _TvPageChildState extends State<_TvPageChild>
               ),
             ],
           ),
-          Selector<TvViewModel,
+          Selector<TvProvider,
               Tuple3<List<String>, Map<String, ThumbnailType>, String?>>(
             builder: (_, tuple, __) {
               logIfDebug('isPinned, thumbnails:$tuple');
@@ -300,16 +300,16 @@ class _TvPageChildState extends State<_TvPageChild>
               );
             },
           ),
-          Selector<TvViewModel, String?>(
+          Selector<TvProvider, String?>(
             selector: (_, tvm) => tvm.initialVideoId,
             builder: (_, id, __) {
               if (id != null && id.isNotEmpty) {
                 return SliverPinnedHeader(
-                  child: StreamersView<Tv, TvViewModel>(id: widget.id),
+                  child: StreamersView<Tv, TvProvider>(id: widget.id),
                 );
               } else {
                 return SliverToBoxAdapter(
-                  child: StreamersView<Tv, TvViewModel>(id: widget.id),
+                  child: StreamersView<Tv, TvProvider>(id: widget.id),
                 );
               }
             },
@@ -352,14 +352,14 @@ class _TvPageChildState extends State<_TvPageChild>
             ),
           ),
           const _CastCrewSection(),
-          const SimilarTitlesSection<Tv, TvViewModel>(),
-          const RecommendationsSection<Tv, TvViewModel>(),
-          const MoreByDirectorSection<Tv, TvViewModel>(),
-          const MoreByLeadActorSection<Tv, TvViewModel>(),
-          const ImagesSection<TvViewModel>(),
+          const SimilarTitlesSection<Tv, TvProvider>(),
+          const RecommendationsSection<Tv, TvProvider>(),
+          const MoreByDirectorSection<Tv, TvProvider>(),
+          const MoreByLeadActorSection<Tv, TvProvider>(),
+          const ImagesSection<TvProvider>(),
           const _MediaInfoSection(),
           // const ReviewsSection(),
-          const KeywordsSection<Tv, TvViewModel>(),
+          const KeywordsSection<Tv, TvProvider>(),
           const SliverToBoxAdapter(child: SizedBox(height: 16)),
         ],
       ),
@@ -369,7 +369,7 @@ class _TvPageChildState extends State<_TvPageChild>
   Widget buildYearRow() {
     return AnimatedSize(
       duration: animDuration,
-      child: Selector<TvViewModel, Tuple2<String?, double?>>(
+      child: Selector<TvProvider, Tuple2<String?, double?>>(
         builder: (_, tuple, __) {
           var year = tuple.item1 ?? '';
           var voteAverage = tuple.item2 ?? 0.0;
@@ -399,7 +399,7 @@ class _TvPageChildState extends State<_TvPageChild>
   Widget buildEpisodesRow(BuildContext context) {
     return AnimatedSize(
       duration: animDuration,
-      child: Selector<TvViewModel, Tuple2<int?, int?>>(
+      child: Selector<TvProvider, Tuple2<int?, int?>>(
         builder: (_, tuple, __) {
           var seasonCount = tuple.item1 ?? 0;
           var epiCount = tuple.item2 ?? 0;
@@ -508,7 +508,7 @@ class _TvPageChildState extends State<_TvPageChild>
   AnimatedSize buildTagline() {
     return AnimatedSize(
       duration: animDuration,
-      child: Selector<TvViewModel, String?>(
+      child: Selector<TvProvider, String?>(
         builder: (_, tagline, __) {
           return tagline == null || tagline.isEmpty
               ? const SizedBox.shrink()
@@ -535,7 +535,7 @@ class _TvPageChildState extends State<_TvPageChild>
   AnimatedSize buildGenresAndLinks() {
     return AnimatedSize(
       duration: animDuration,
-      child: Selector<TvViewModel, Tuple3<String?, String?, List<Genre>?>>(
+      child: Selector<TvProvider, Tuple3<String?, String?, List<Genre>?>>(
         selector: (_, tvm) => Tuple3<String?, String?, List<Genre>>(
           tvm.imdbId,
           tvm.homepage,
@@ -681,7 +681,7 @@ class _CastCrewSection extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    return Selector<TvViewModel, Tuple3<List<TvCast>, int, List<TvCrew>>>(
+    return Selector<TvProvider, Tuple3<List<TvCast>, int, List<TvCrew>>>(
       selector: (_, tvm) =>
           Tuple3(tvm.cast, tvm.crew.length, tvm.creators ?? []),
       builder: (_, tuple, __) {
@@ -812,7 +812,7 @@ class _CastCrewSection extends StatelessWidget
     AggregateCredits? credits,
     String? title,
   }) {
-    var tvm = context.read<TvViewModel>();
+    var tvm = context.read<TvProvider>();
     Navigator.push(context, MaterialPageRoute(builder: (_) {
       return TvCreditsPage(
         title: title,
@@ -1035,7 +1035,7 @@ class _MediaInfoSection extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    return Selector<TvViewModel, Tv?>(
+    return Selector<TvProvider, Tv?>(
       builder: (_, tv, __) {
         if (tv == null) {
           return SliverToBoxAdapter(child: Container());
@@ -1065,7 +1065,7 @@ class _MediaInfoSection extends StatelessWidget
     var nextEpisode = tv.nextEpisodeToAir;
     var status = tv.status;
     var language = context
-        .read<ConfigViewModel>()
+        .read<ConfigurationProvider>()
         .cfgLanguages
         .firstWhere((element) => element.iso6391 == tv.originalLanguage)
         .englishName;

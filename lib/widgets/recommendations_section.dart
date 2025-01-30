@@ -5,8 +5,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
-import '../architecture/config_view_model.dart';
-import '../architecture/movie_view_model.dart';
+import '../providers/configuration_provider.dart';
+import '../providers/movie_provider.dart';
 import '../constants.dart';
 import '../models/movie.dart';
 import '../models/search.dart';
@@ -18,7 +18,7 @@ import 'base_section_sliver.dart';
 import 'compact_text_button.dart';
 import 'image_view.dart';
 
-class RecommendationsSection<M extends Media, T extends MediaViewModel<M>>
+class RecommendationsSection<M extends Media, T extends MediaProvider<M>>
     extends StatelessWidget with Utilities, GenericFunctions, CommonFunctions {
   const RecommendationsSection({Key? key}) : super(key: key);
 
@@ -257,7 +257,7 @@ class RecommendationsSection<M extends Media, T extends MediaViewModel<M>>
   }
 }
 
-class _PosterGrid<M extends Media, T extends MediaViewModel<M>>
+class _PosterGrid<M extends Media, T extends MediaProvider<M>>
     extends StatelessWidget with Utilities, GenericFunctions, CommonFunctions {
   final List<CombinedResult> _recommendations;
   final int _itemsPerRow;
@@ -373,7 +373,7 @@ class _PosterGrid<M extends Media, T extends MediaViewModel<M>>
         final media = titles[index];
         final destUrl = media.backdropPath == null
             ? null
-            : context.read<ConfigViewModel>().getImageUrl(
+            : context.read<ConfigurationProvider>().getImageUrl(
                   ImageType.backdrop,
                   ImageQuality.high,
                   media.backdropPath!,
@@ -478,7 +478,7 @@ class _PosterGrid<M extends Media, T extends MediaViewModel<M>>
   }
 }
 
-class _RecommendationsView<M extends Media, T extends MediaViewModel<M>>
+class _RecommendationsView<M extends Media, T extends MediaProvider<M>>
     extends StatelessWidget with Utilities, GenericFunctions, CommonFunctions {
   final int mediaId;
   final List<CombinedResult> recommendations;
@@ -567,7 +567,7 @@ class _RecommendationsView<M extends Media, T extends MediaViewModel<M>>
   }
 }
 
-class _SliverPosterGrid<M extends Media, T extends MediaViewModel<M>>
+class _SliverPosterGrid<M extends Media, T extends MediaProvider<M>>
     extends StatelessWidget with Utilities, GenericFunctions, CommonFunctions {
   final int itemsPerRow;
   final int itemsPerPage;
@@ -677,7 +677,7 @@ class _SliverPosterGrid<M extends Media, T extends MediaViewModel<M>>
             final media = titles[index];
             final destUrl = media.backdropPath == null
                 ? null
-                : context.read<ConfigViewModel>().getImageUrl(
+                : context.read<ConfigurationProvider>().getImageUrl(
                     ImageType.backdrop, ImageQuality.high, media.backdropPath!);
             return Card(
               color: Colors.white,

@@ -4,8 +4,8 @@ import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../architecture/filmography_view_model.dart';
-import '../architecture/tv_credits_view_model.dart';
+import '../providers/filmography_provider.dart';
+import '../providers/tv_credits_provider.dart';
 import '../constants.dart';
 import '../models/tv.dart';
 import '../widgets/frosted_app_bar.dart';
@@ -21,7 +21,7 @@ class TvCreditsPage extends MultiProvider {
   }) : super(
             providers: [
               ChangeNotifierProvider(
-                  create: (_) => TvCreditsViewModel(credits)),
+                  create: (_) => TvCreditsProvider(credits)),
             ],
             child: _TvCreditsPageChild(
               id: id,
@@ -69,7 +69,7 @@ class _TvCreditsPageChildState extends State<_TvCreditsPageChild>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(
-        (_) => context.read<TvCreditsViewModel>().initialize());
+        (_) => context.read<TvCreditsProvider>().initialize());
   }
 
   @override
@@ -139,7 +139,7 @@ class _TvCreditsPageChildState extends State<_TvCreditsPageChild>
                 slivers: [
                   SliverToBoxAdapter(
                     child:
-                        Selector<TvCreditsViewModel, Map<String, FilterState>>(
+                        Selector<TvCreditsProvider, Map<String, FilterState>>(
                       selector: (_, cvm) => cvm.availableDepartments,
                       builder: (_, filters, __) {
                         return (filters.length <= 1)
@@ -157,9 +157,9 @@ class _TvCreditsPageChildState extends State<_TvCreditsPageChild>
     );
   }
 
-  Selector<TvCreditsViewModel, List<T>>
+  Selector<TvCreditsProvider, List<T>>
       getSliverTabData<T extends BaseTvCredit>(BuildContext context) {
-    return Selector<TvCreditsViewModel, List<T>>(
+    return Selector<TvCreditsProvider, List<T>>(
       selector: (_, cvm) {
         logIfDebug('selector called for ${T.toString()}');
         return T.toString() == (TvCast).toString()
@@ -244,7 +244,7 @@ class _FilterBar extends StatelessWidget implements PreferredSizeWidget {
             var currentlySelected = item.value == FilterState.selected;
             if (isSelected != currentlySelected) {
               context
-                  .read<TvCreditsViewModel>()
+                  .read<TvCreditsProvider>()
                   .toggleDepartments(item, isSelected);
             }
           },

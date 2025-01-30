@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinema_scope/architecture/config_view_model.dart';
+import 'package:cinema_scope/providers/configuration_provider.dart';
 import 'package:cinema_scope/models/movie.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
@@ -317,7 +317,7 @@ class _ImagePageState extends State<ImagePage> with GenericFunctions {
     var imageUrl = image.filePath.contains('/http')
         ? image.filePath.replaceFirst('/http', 'http')
         : context
-            .read<ConfigViewModel>()
+            .read<ConfigurationProvider>()
             .getImageUrl(imageType, ImageQuality.original, image.filePath);
     return imageUrl;
   }

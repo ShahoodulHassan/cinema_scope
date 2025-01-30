@@ -3,7 +3,7 @@ import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../architecture/config_view_model.dart';
+import '../providers/configuration_provider.dart';
 import '../models/movie.dart';
 import '../widgets/frosted_app_bar.dart';
 
@@ -88,7 +88,7 @@ class _ReleaseDateTile extends StatelessWidget with GenericFunctions {
 
   @override
   Widget build(BuildContext context) {
-    var cvm = context.read<ConfigViewModel>();
+    var cvm = context.read<ConfigurationProvider>();
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(

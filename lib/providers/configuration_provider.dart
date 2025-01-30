@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:cinema_scope/architecture/search_view_model.dart';
+import 'package:cinema_scope/providers/search_provider.dart';
 import 'package:cinema_scope/constants.dart';
 import 'package:flutter/foundation.dart';
 
@@ -10,7 +10,7 @@ import '../models/configuration.dart';
 import '../models/movie.dart';
 import '../utilities/utilities.dart';
 
-class ConfigViewModel extends ApiViewModel {
+class ConfigurationProvider extends ApiProvider {
   final int interval = kDebugMode ? 2 : 15;
 
   /// In prod, it is 15 days
@@ -75,7 +75,7 @@ class ConfigViewModel extends ApiViewModel {
     return sizes[max(sizes.length - imageQuality.quality, 0)];
   }
 
-  ConfigViewModel() : super();
+  ConfigurationProvider() : super();
 
   _fetchConfigurations() async {
     logIfDebug('fetchConfigurations called');

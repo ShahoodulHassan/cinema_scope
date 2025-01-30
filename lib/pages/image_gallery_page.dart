@@ -1,4 +1,4 @@
-import 'package:cinema_scope/architecture/config_view_model.dart';
+import 'package:cinema_scope/providers/configuration_provider.dart';
 import 'package:cinema_scope/main.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/widgets/frosted_app_bar.dart';

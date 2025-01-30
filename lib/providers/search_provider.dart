@@ -11,7 +11,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import '../models/search.dart';
 import '../tmdb_api.dart';
 
-class SearchViewModel extends ApiViewModel with Utilities, CommonFunctions {
+class SearchProvider extends ApiProvider with Utilities, CommonFunctions {
   late final List<MediaGenre> _combinedGenres;
 
   MultiSearchResult? searchResult;
@@ -34,7 +34,7 @@ class SearchViewModel extends ApiViewModel with Utilities, CommonFunctions {
 
   final focusNode = FocusNode();
 
-  SearchViewModel() : super() {
+  SearchProvider() : super() {
     _pagingController = PagingController(firstPageKey: 1)
       ..appendLastPage(<BaseResult>[]);
   }
@@ -135,8 +135,8 @@ class SearchViewModel extends ApiViewModel with Utilities, CommonFunctions {
   }
 }
 
-abstract class ApiViewModel extends ChangeNotifier with GenericFunctions {
+abstract class ApiProvider extends ChangeNotifier with GenericFunctions {
   final TmdbApi api;
 
-  ApiViewModel() : api = TmdbApi(Dio());
+  ApiProvider() : api = TmdbApi(Dio());
 }

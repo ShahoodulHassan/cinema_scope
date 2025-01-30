@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinema_scope/architecture/config_view_model.dart';
+import 'package:cinema_scope/providers/configuration_provider.dart';
 import 'package:cinema_scope/main.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
@@ -73,7 +73,7 @@ class NetworkImageView extends StatelessWidget
           : imagePath!.contains('/http')
               ? imagePath!.replaceFirst('/http', 'http')
               : context
-                  .read<ConfigViewModel>()
+                  .read<ConfigurationProvider>()
                   .getImageUrl(imageType, imageQuality, imagePath!);
       // logIfDebug('imagePath:$imagePath, imageUrl:$imageUrl');
       child = CachedNetworkImage(

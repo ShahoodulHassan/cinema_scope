@@ -1,5 +1,5 @@
 import 'package:async/async.dart';
-import 'package:cinema_scope/architecture/search_view_model.dart';
+import 'package:cinema_scope/providers/search_provider.dart';
 import 'package:cinema_scope/models/movie.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
@@ -7,13 +7,13 @@ import 'package:cinema_scope/utilities/utilities.dart';
 import '../constants.dart';
 import '../models/person.dart';
 import '../models/search.dart';
-import 'config_view_model.dart';
+import 'configuration_provider.dart';
 
-abstract class BaseMediaViewModel extends ApiViewModel with Utilities {
+abstract class BaseMediaProvider extends ApiProvider with Utilities {
   List<ImageDetail>? images;
 }
 
-class PersonViewModel extends BaseMediaViewModel {
+class PersonProvider extends BaseMediaProvider {
   // Person? person;
 
   PersonWithKnownFor personWithKnownFor = PersonWithKnownFor();

@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:cinema_scope/architecture/movie_view_model.dart';
-import 'package:cinema_scope/architecture/youtube_view_model.dart';
+import 'package:cinema_scope/providers/movie_provider.dart';
+import 'package:cinema_scope/providers/youtube_provider.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/widgets/route_aware_state.dart';
 import 'package:flutter/material.dart';
@@ -9,8 +9,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-import '../architecture/config_view_model.dart';
-import '../architecture/tv_view_model.dart';
+import '../providers/configuration_provider.dart';
+import '../providers/tv_provider.dart';
 import '../constants.dart';
 
 class TrailerView extends MultiProvider {
@@ -27,7 +27,7 @@ class TrailerView extends MultiProvider {
   }) : super(
           providers: [
             ChangeNotifierProvider(
-              create: (_) => YoutubeViewModel()
+              create: (_) => YoutubeProvider()
                 ..currentKey = initialVideoId
                 ..initialize(youtubeKeys),
             ),
@@ -48,8 +48,8 @@ class _TrailerViewChild extends StatefulWidget {
 
 class _TrailerViewChildState extends RouteAwareState<_TrailerViewChild>
     with GenericFunctions {
-  late final ConfigViewModel cvm;
-  late final YoutubeViewModel yvm;
+  late final ConfigurationProvider cvm;
+  late final YoutubeProvider yvm;
 
   // late final MovieViewModel mvm;
 
@@ -80,8 +80,8 @@ class _TrailerViewChildState extends RouteAwareState<_TrailerViewChild>
   @override
   void initState() {
     super.initState();
-    cvm = context.read<ConfigViewModel>()..addListener(_appStateListener);
-    yvm = context.read<YoutubeViewModel>();
+    cvm = context.read<ConfigurationProvider>()..addListener(_appStateListener);
+    yvm = context.read<YoutubeProvider>();
     // mvm = context.read<MovieViewModel>();
   }
 
@@ -206,7 +206,7 @@ class PlayerOverlay extends StatefulWidget {
 }
 
 class _PlayerOverlayState extends State<PlayerOverlay> with GenericFunctions {
-  late final YoutubeViewModel yvm;
+  late final YoutubeProvider yvm;
 
   YoutubePlayerController get controller => widget.controller;
 
@@ -219,7 +219,7 @@ class _PlayerOverlayState extends State<PlayerOverlay> with GenericFunctions {
   @override
   void initState() {
     super.initState();
-    yvm = context.read<YoutubeViewModel>();
+    yvm = context.read<YoutubeProvider>();
   }
 
   @override
@@ -297,14 +297,14 @@ class _PlayerOverlayState extends State<PlayerOverlay> with GenericFunctions {
               child: AnimatedOpacity(
                 opacity: controller.value.isControlsVisible ? 1 : 0,
                 duration: const Duration(milliseconds: 300),
-                child: Selector<YoutubeViewModel, bool>(
+                child: Selector<YoutubeProvider, bool>(
                   selector: (_, yvm) => yvm.muted,
                   builder: (_, muted, __) {
                     return getIconButton(
                         muted
                             ? Icons.volume_off_rounded
                             : Icons.volume_up_rounded,
-                        () => context.read<YoutubeViewModel>().toggleMute());
+                        () => context.read<YoutubeProvider>().toggleMute());
                   },
                 ),
               ),
@@ -368,7 +368,7 @@ class _PlayerOverlayState extends State<PlayerOverlay> with GenericFunctions {
                   if (widget.mediaType == MediaType.movie) {
                     return context.read<MovieViewModel>().initialVideoId = null;
                   } else if (widget.mediaType == MediaType.tv) {
-                    return context.read<TvViewModel>().initialVideoId = null;
+                    return context.read<TvProvider>().initialVideoId = null;
                   }
                 }),
               ],

@@ -1,4 +1,4 @@
-import 'package:cinema_scope/architecture/home_view_model.dart';
+import 'package:cinema_scope/providers/home_provider.dart';
 import 'package:cinema_scope/main.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
@@ -31,7 +31,7 @@ class HomePage extends MultiProvider {
   HomePage({super.key})
       : super(
           providers: [
-            ChangeNotifierProvider(create: (_) => HomeViewModel()),
+            ChangeNotifierProvider(create: (_) => HomeProvider()),
           ],
           builder: (_, __) => const _HomePageChild(),
         );

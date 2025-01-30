@@ -1,4 +1,4 @@
-import 'package:cinema_scope/architecture/search_view_model.dart';
+import 'package:cinema_scope/providers/search_provider.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
 import 'package:cinema_scope/utilities/utilities.dart';
@@ -9,7 +9,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
-import '../architecture/config_view_model.dart';
+import '../providers/configuration_provider.dart';
 import '../constants.dart';
 import '../main.dart';
 import '../models/search.dart';
@@ -19,7 +19,7 @@ class SearchPage extends MultiProvider {
   SearchPage({super.key})
       : super(
           providers: [
-            ChangeNotifierProvider(create: (_) => SearchViewModel()),
+            ChangeNotifierProvider(create: (_) => SearchProvider()),
             // ChangeNotifierProvider(create: (_) => HeroViewModel()),
           ],
           builder: (_, __) => const _SearchPageChild(),
@@ -36,16 +36,16 @@ class _SearchPageChild extends StatefulWidget {
 
 class _SearchPageChildState extends State<_SearchPageChild>
     with GenericFunctions, Utilities, CommonFunctions {
-  late final ConfigViewModel cvm;
-  late final SearchViewModel svm;
+  late final ConfigurationProvider cvm;
+  late final SearchProvider svm;
 
   Map<int, List<String?>> imageUrlToId = {};
 
   @override
   void initState() {
     logIfDebug('initState called');
-    cvm = context.read<ConfigViewModel>();
-    svm = context.read<SearchViewModel>();
+    cvm = context.read<ConfigurationProvider>();
+    svm = context.read<SearchProvider>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       svm.initializePaging(cvm.combinedGenres);
       svm.focusNode.requestFocus();
@@ -220,13 +220,13 @@ class _SearchPageChildState extends State<_SearchPageChild>
                   // color: Theme.of(context).appBarTheme.iconTheme!.color!,
                 ),
               ),
-              suffixIcon: Selector<SearchViewModel, String>(
+              suffixIcon: Selector<SearchProvider, String>(
                 selector: (_, svm) => svm.lastQuery,
                 builder: (_, query, __) => query.isEmpty
                     ? const SizedBox.shrink()
                     : IconButton(
                         onPressed: () =>
-                            context.read<SearchViewModel>().clearQuery(),
+                            context.read<SearchProvider>().clearQuery(),
                         // borderRadius: borderRadius,
                         icon: const Icon(
                           Icons.clear_rounded,
@@ -253,7 +253,7 @@ class _SearchPageChildState extends State<_SearchPageChild>
 
   SliverPinnedHeader buildCountSliver() {
     return SliverPinnedHeader(
-      child: Selector<SearchViewModel, int>(
+      child: Selector<SearchProvider, int>(
         selector: (_, svm) => svm.searchResult?.totalResults ?? 0,
         builder: (_, count, __) {
           if (count > 0) {
@@ -346,7 +346,7 @@ class _SearchPageChildState extends State<_SearchPageChild>
     String? imageUrl;
     String? destImageUrl;
     if (movie.backdropPath != null) {
-      final cvm = context.read<ConfigViewModel>();
+      final cvm = context.read<ConfigurationProvider>();
       String base = cvm.apiConfig!.images.baseUrl;
       String size = cvm.apiConfig!.images.backdropSizes.first;
       imageUrl = '$base$size${movie.backdropPath}';
@@ -420,15 +420,15 @@ class SearchAppbar extends StatelessWidget
     logIfDebug('build called - isPortrait:$isPortrait');
     return AppBar(
       toolbarHeight: height,
-      automaticallyImplyLeading: context.read<SearchViewModel>().isBackVisible,
+      automaticallyImplyLeading: context.read<SearchProvider>().isBackVisible,
       title: SizedBox(
         width: double.infinity,
         height: height,
         child: Center(
           child: TextField(
-            focusNode: context.read<SearchViewModel>().focusNode,
-            controller: context.read<SearchViewModel>().controller,
-            onChanged: context.read<SearchViewModel>().onChanged,
+            focusNode: context.read<SearchProvider>().focusNode,
+            controller: context.read<SearchProvider>().controller,
+            onChanged: context.read<SearchProvider>().onChanged,
             decoration: InputDecoration(
               focusedBorder: OutlineInputBorder(
                 borderRadius: borderRadius,
@@ -468,7 +468,7 @@ class SearchAppbar extends StatelessWidget
                 ),
               ),
               suffixIcon: IconButton(
-                onPressed: () => context.read<SearchViewModel>().clearQuery(),
+                onPressed: () => context.read<SearchProvider>().clearQuery(),
                 // borderRadius: borderRadius,
                 icon: const Icon(
                   Icons.clear_rounded,
@@ -502,7 +502,7 @@ class CountDelegate extends SliverPersistentHeaderDelegate
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     logIfDebug('build called with offset:$shrinkOffset');
-    return Selector<SearchViewModel, int>(
+    return Selector<SearchProvider, int>(
       selector: (_, svm) => svm.searchResult?.totalResults ?? 0,
       builder: (_, count, __) {
         // extent = count == 0 ? 0 : 48.0;

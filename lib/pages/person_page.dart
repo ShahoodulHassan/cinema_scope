@@ -1,5 +1,5 @@
 import 'package:age_calculator/age_calculator.dart';
-import 'package:cinema_scope/architecture/config_view_model.dart';
+import 'package:cinema_scope/providers/configuration_provider.dart';
 import 'package:cinema_scope/constants.dart';
 import 'package:cinema_scope/models/movie.dart';
 import 'package:cinema_scope/models/person.dart';
@@ -14,7 +14,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 
-import '../architecture/person_view_model.dart';
+import '../providers/person_provider.dart';
 import '../models/search.dart';
 import '../utilities/generic_functions.dart';
 import '../widgets/base_section_sliver.dart';
@@ -34,7 +34,7 @@ class PersonPage extends MultiProvider {
     List<CombinedResult>? knownFor,
   }) : super(
             providers: [
-              ChangeNotifierProvider(create: (_) => PersonViewModel()),
+              ChangeNotifierProvider(create: (_) => PersonProvider()),
               // ChangeNotifierProvider(create: (_) => YoutubeViewModel()),
             ],
             child: _PersonPageChild(
@@ -75,7 +75,7 @@ class _PersonPageChildState extends State<_PersonPageChild>
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => context
-          .read<PersonViewModel>()
+          .read<PersonProvider>()
           .fetchPersonWithDetail(widget.id, widget.name, widget.knownFor),
     );
     super.initState();
@@ -104,7 +104,7 @@ class _PersonPageChildState extends State<_PersonPageChild>
           const _BiographySection(),
           _FilmographySection(),
           const _PersonalInfoSection(),
-          const ImagesSection<PersonViewModel>(),
+          const ImagesSection<PersonProvider>(),
           const SliverToBoxAdapter(child: SizedBox(height: 16)),
         ],
       ),
@@ -242,7 +242,7 @@ Widget buildName(String name) {
 Widget buildJobs(TextAlign textAlign) {
   return AnimatedSize(
     duration: const Duration(milliseconds: 250),
-    child: Selector<PersonViewModel, String?>(
+    child: Selector<PersonProvider, String?>(
       builder: (_, jobs, __) {
         if (jobs == null || jobs.isEmpty) {
           return const SizedBox.shrink();
@@ -267,7 +267,7 @@ class _ExternalIdsView extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    return Selector<PersonViewModel, Tuple2<String?, ExternalIds?>>(
+    return Selector<PersonProvider, Tuple2<String?, ExternalIds?>>(
       builder: (_, tuple, __) {
         String? homepage = tuple.item1;
         ExternalIds? externalIds = tuple.item2;
@@ -336,7 +336,7 @@ class _PersonalInfoSection extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    return Selector<PersonViewModel, Person?>(
+    return Selector<PersonProvider, Person?>(
       builder: (_, person, __) {
         if (person == null) {
           return SliverToBoxAdapter(child: Container());
@@ -553,7 +553,7 @@ class _BiographySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<PersonViewModel, String?>(
+    return Selector<PersonProvider, String?>(
       builder: (_, bio, __) {
         if (bio == null || bio.isEmpty) {
           return SliverToBoxAdapter(child: Container());
@@ -577,7 +577,7 @@ class _BiographySection extends StatelessWidget {
   }
 }
 
-class ImagesSection<T extends BaseMediaViewModel> extends StatelessWidget
+class ImagesSection<T extends BaseMediaProvider> extends StatelessWidget
     with GenericFunctions {
   const ImagesSection({Key? key}) : super(key: key);
 
@@ -743,7 +743,7 @@ class _FilmographySection extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    return Selector<PersonViewModel, Map<int, CombinedResult>>(
+    return Selector<PersonProvider, Map<int, CombinedResult>>(
       selector: (_, pvm) => pvm.knownForMediaResults,
       builder: (_, knownFor, __) {
         // logIfDebug('knownFor:$knownFor');
@@ -791,7 +791,7 @@ class _FilmographySection extends StatelessWidget
               alignment: Alignment.center,
               padding: const EdgeInsets.only(bottom: 8.0),
               child: CompactTextButton('All filmography', onPressed: () {
-                var pvm = context.read<PersonViewModel>();
+                var pvm = context.read<PersonProvider>();
                 var person = pvm.personWithKnownFor.person;
                 goToFilmographyPage(
                     context, person!.id, person.name, person.combinedCredits);

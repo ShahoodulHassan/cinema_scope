@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
-import '../architecture/config_view_model.dart';
-import '../architecture/home_view_model.dart';
+import '../providers/configuration_provider.dart';
+import '../providers/home_provider.dart';
 import '../constants.dart';
 import '../models/movie.dart';
 import '../models/search.dart';
@@ -144,12 +144,12 @@ class HomeSection extends StatefulWidget {
 
 class _HomeSectionState extends State<HomeSection>
     with GenericFunctions, Utilities, CommonFunctions {
-  late final HomeViewModel hvm;
+  late final HomeProvider hvm;
 
   @override
   void initState() {
     super.initState();
-    hvm = context.read<HomeViewModel>();
+    hvm = context.read<HomeProvider>();
     getResult(
       widget.sectionTitle,
     );
@@ -202,7 +202,7 @@ class _HomeSectionState extends State<HomeSection>
   @override
   Widget build(BuildContext context) {
     logIfDebug('build called');
-    return Selector<HomeViewModel, CombinedResults?>(
+    return Selector<HomeProvider, CombinedResults?>(
       selector: (_, hvm) => hvm.getResultBySectionTitle(widget.sectionTitle),
       builder: (_, result, __) {
         if (result == null) {
@@ -212,7 +212,7 @@ class _HomeSectionState extends State<HomeSection>
             title: widget.sectionTitle.name,
             children: [
               if (widget.params.isNotEmpty)
-                Selector<HomeViewModel, String?>(
+                Selector<HomeProvider, String?>(
                   selector: (_, hvm) =>
                       hvm.sectionParamMap[widget.sectionTitle],
                   builder: (_, param, __) {
@@ -628,7 +628,7 @@ class MediaPosterListView extends StatelessWidget
   }
 
   String? getImageUrl(BuildContext context, CombinedResult movie) {
-    final cvm = context.read<ConfigViewModel>();
+    final cvm = context.read<ConfigurationProvider>();
     final imageConfig = cvm.apiConfig!.images;
     String base = imageConfig.baseUrl;
     String size = imageConfig.posterSizes[3];

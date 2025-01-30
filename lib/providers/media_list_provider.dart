@@ -1,5 +1,5 @@
 import 'package:async/async.dart';
-import 'package:cinema_scope/architecture/search_view_model.dart';
+import 'package:cinema_scope/providers/search_provider.dart';
 import 'package:cinema_scope/models/similar_titles_params.dart';
 import 'package:cinema_scope/utilities/common_functions.dart';
 import 'package:cinema_scope/utilities/generic_functions.dart';
@@ -10,7 +10,7 @@ import '../constants.dart';
 import '../models/movie.dart';
 import '../models/search.dart';
 
-class MediaListViewModel extends ApiViewModel with Utilities, CommonFunctions {
+class MediaListProvider extends ApiProvider with Utilities, CommonFunctions {
   late final List<MediaGenre> _combinedGenres;
 
   CombinedResults? searchResult;
@@ -29,7 +29,7 @@ class MediaListViewModel extends ApiViewModel with Utilities, CommonFunctions {
   /// Map of page number & genrePairs
   Map<int, Set<String>> genrePairsMap = {};
 
-  MediaListViewModel()
+  MediaListProvider()
       : _pagingController = PagingController(
           firstPageKey: firstPageKey,
         );
