@@ -372,13 +372,14 @@ PersonResult _$PersonResultFromJson(Map<String, dynamic> json) => PersonResult(
       (json['id'] as num).toInt(),
       json['adult'] as bool,
       json['name'] as String,
-      (json['known_for'] as List<dynamic>)
-          .map((e) => CombinedResult.fromJson(e as Map<String, dynamic>))
-          .toList(),
       popularity: (json['popularity'] as num?)?.toDouble(),
       profilePath: json['profile_path'] as String?,
       gender: (json['gender'] as num?)?.toInt(),
       knownForDepartment: json['known_for_department'] as String? ?? '',
+      knownFor: (json['known_for'] as List<dynamic>?)
+              ?.map((e) => CombinedResult.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
     )..mediaType = json['media_type'] as String?;
 
 Map<String, dynamic> _$PersonResultToJson(PersonResult instance) =>

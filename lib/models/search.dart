@@ -307,13 +307,16 @@ class PersonResult extends BasePersonResult {
   PersonResult(
     super.id,
     super.adult,
-    super.name,
-    this.knownFor, {
-    // super.mediaType,
+    super.name, {
     super.popularity,
     super.profilePath,
     super.gender,
     super.knownForDepartment,
+
+    /// knownFor has been assigned an empty list now, to cater for the null
+    /// list being received due to the reported issue:
+    /// https://www.themoviedb.org/talk/679af9c5b00d3bad92bd7339
+    this.knownFor = const [],
   });
 
   factory PersonResult.fromJson(Map<String, dynamic> json) =>
